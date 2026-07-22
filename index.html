@@ -1,14 +1,15 @@
 <!doctype html>
 <html lang="ru">
 <head><script id="uprs460CoreAuthority">(()=>{'use strict';
-const VERSION='4.6.0';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
+const VERSION='4.6.1';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
 const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
 A.version=VERSION;
-A.release='core-consolidation';
-A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6-transforms';
+A.release='quest-xr-startup-recovery';
+A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6.1-transforms';
 A.reproducibleReport=true;
 A.xrOwner='450';
+A.xrStartupPolicy='quest-safe-vr-direct-activation';
 A.sceneRevision=Number.isFinite(A.sceneRevision)?A.sceneRevision:0;
 A.bumpSceneRevision=reason=>{
   A.sceneRevision=(A.sceneRevision+1)>>>0;
@@ -37,7 +38,7 @@ A.claimVersion=()=>{
 <meta name="theme-color" content="#05070b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory</title>
+<title>UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery</title>
 <style>
 :root{--bg:#030507;--panel:rgba(10,14,21,.88);--panel2:rgba(16,21,31,.82);--gold:#d7b76e;--gold2:#fff0bd;--ice:#98e8ff;--violet:#c3adff;--green:#8ce9bd;--red:#ff9d9d;--text:#edf1f6;--muted:#96a2b5;--line:rgba(215,183,110,.24);--shadow:0 24px 80px rgba(0,0,0,.5)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 54% 18%,#141c2d 0,#070b12 36%,#020305 78%);color:var(--text);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}button,input,select{font:inherit}button{color:inherit}.app{height:100%;display:grid;grid-template-rows:auto 1fr;position:relative}.top{min-height:68px;display:flex;align-items:center;gap:12px;padding:9px 14px calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(3,5,8,.96),rgba(3,5,8,.78));backdrop-filter:blur(20px);z-index:20}.brand{display:flex;align-items:center;gap:10px;min-width:262px}.seal{width:40px;height:40px;border:1px solid rgba(255,240,189,.65);border-radius:50%;position:relative;box-shadow:0 0 26px rgba(215,183,110,.18),inset 0 0 18px rgba(152,232,255,.08)}.seal:before,.seal:after{content:"";position:absolute;border-radius:50%;border:1px solid}.seal:before{inset:7px;border-color:rgba(152,232,255,.72);transform:rotate(58deg)}.seal:after{inset:13px;border-color:rgba(195,173,255,.9)}.brand b{display:block;font-size:13px;letter-spacing:.2em;color:var(--gold2)}.brand small{display:block;margin-top:3px;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}.modes{display:flex;gap:6px;flex:1;overflow:auto;scrollbar-width:none}.modes::-webkit-scrollbar{display:none}.mode,.btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);padding:8px 11px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.18s}.mode:hover,.btn:hover{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.08)}.mode.on{color:#080a0d;background:linear-gradient(135deg,var(--gold2),var(--gold));border-color:transparent;box-shadow:0 8px 24px rgba(215,183,110,.18)}.top-actions{display:flex;gap:6px}.layout{min-height:0;display:grid;grid-template-columns:310px 1fr 330px;gap:11px;padding:11px}.panel{min-height:0;overflow:auto;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:var(--shadow);backdrop-filter:blur(20px)}.panel::-webkit-scrollbar{width:7px}.panel::-webkit-scrollbar-thumb{background:rgba(215,183,110,.2);border-radius:9px}.left,.right{padding:14px}.section{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.065)}.section:last-child{border-bottom:0}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--gold);font-size:9px;letter-spacing:.17em;text-transform:uppercase;margin-bottom:9px}.badge{font-size:8px;letter-spacing:.09em;padding:3px 7px;border:1px solid;border-radius:999px}.tierA{color:var(--green);border-color:rgba(140,233,189,.35)}.tierB{color:var(--gold2);border-color:rgba(215,183,110,.42)}.tierC{color:var(--violet);border-color:rgba(195,173,255,.38)}.field{margin:8px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10.5px;margin-bottom:5px}.field label span:last-child{color:var(--gold2)}input,select{width:100%;min-width:0;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.25);color:var(--text);padding:8px 9px;border-radius:9px;outline:none}input:focus,select:focus{border-color:rgba(152,232,255,.45);box-shadow:0 0 0 3px rgba(152,232,255,.05)}input[type=range]{padding:0;accent-color:var(--gold)}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.toggle{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 0;color:var(--muted);font-size:10.5px}.switch{width:38px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:#1a2230;position:relative;cursor:pointer}.switch:after{content:"";position:absolute;left:3px;top:2px;width:16px;height:16px;border-radius:50%;background:#748196;transition:.18s}.switch.on{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.23)}.switch.on:after{left:18px;background:var(--gold2)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.grid2 .btn{border-radius:10px;padding:8px 8px}.viewport{min-width:0;min-height:0;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 50% 44%,rgba(22,30,44,.85),rgba(4,6,10,.98) 70%);box-shadow:var(--shadow)}#fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.72;transition:opacity .35s;pointer-events:none}body.ready #fallback{opacity:.06}#view,#xrCanvas,#camera{position:absolute;inset:0;width:100%;height:100%}#view{touch-action:none}#xrCanvas{display:none}#camera{display:none;object-fit:cover;filter:saturate(.7) contrast(1.1) brightness(.45)}.vignette{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 110px rgba(0,0,0,.68)}.viewtop{position:absolute;left:14px;right:14px;top:13px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.titlecard,.statecard{padding:9px 11px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(4,7,11,.65);backdrop-filter:blur(12px)}.titlecard b{display:block;color:var(--gold2);font-size:11px;letter-spacing:.13em;text-transform:uppercase}.titlecard span{display:block;color:var(--muted);font-size:9.5px;margin-top:3px}.statecard{align-self:flex-start;color:var(--green);font-size:9px;letter-spacing:.08em;border-color:rgba(140,233,189,.25)}.metrics{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:repeat(6,minmax(80px,1fr));gap:6px;pointer-events:none}.metric{padding:8px 9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(4,7,11,.68);backdrop-filter:blur(12px);min-width:0}.metric label{display:block;color:var(--muted);font-size:8px;letter-spacing:.09em;text-transform:uppercase}.metric b{display:block;margin-top:3px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric:nth-child(2n) b{color:var(--ice)}.metric:nth-child(3n) b{color:var(--gold2)}.card{border:1px solid rgba(255,255,255,.08);border-radius:13px;background:rgba(0,0,0,.15);padding:10px;margin:8px 0}.card h3{margin:0 0 7px;color:var(--gold2);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:10.5px}.kv div:nth-child(odd){color:var(--muted)}.kv div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;max-width:190px;overflow-wrap:anywhere}.formula{font:10px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#dce8f2;white-space:pre-wrap;overflow-wrap:anywhere}.note{color:var(--muted);font-size:10.5px;line-height:1.55}.note strong{color:var(--text)}details{border-top:1px solid rgba(255,255,255,.06);padding:7px 0}summary{cursor:pointer;color:var(--gold);font-size:10px}.search{margin-bottom:8px}.list{display:flex;flex-direction:column;gap:5px}.item{padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(0,0,0,.12);cursor:pointer}.item:hover{border-color:rgba(215,183,110,.35)}.item b{font-size:10.5px}.item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}.boot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 13px;border:1px solid rgba(215,183,110,.35);border-radius:999px;background:rgba(4,7,11,.82);color:var(--gold2);font-size:10px;letter-spacing:.1em;z-index:3;transition:.35s}body.ready .boot{opacity:0;pointer-events:none}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);opacity:0;z-index:100;padding:10px 14px;max-width:88vw;border:1px solid rgba(215,183,110,.36);border-radius:12px;background:rgba(4,7,11,.95);box-shadow:var(--shadow);transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}.fatal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);padding:20px}.fatal.show{display:flex}.fatal>div{max-width:720px;border:1px solid rgba(255,157,157,.45);border-radius:16px;background:#130a0c;padding:18px}.fatal h2{color:var(--red);margin:0 0 8px}.fatal pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#ffd8d8;font-size:11px}.mobileTabs{display:none}
@@ -1070,7 +1071,7 @@ function initV151(){
  const baseApply=applySensorRoutes;applySensorRoutes=function(t){sampleWebCamera(t);baseApply(t)};
  const baseTests=runTests;runTests=function(show=true){const r=baseTests(false),T=[...r.tests],ok=(name,pass,detail='')=>T.push({name,pass:!!pass,detail});ok('v1.5.1 selected-point magnetic hit zone',typeof selectedPointTarget==='function');ok('v1.5.1 lock-safe drag helper present',typeof dragCursorSafely==='function');ok('v1.5.1 multitouch channels',!!SENSOR_CHANNELS['touch.pinch']&&!!SENSOR_CHANNELS['touch.twist']);ok('v1.5.1 web camera optical channels',!!SENSOR_CHANNELS['camera.luminance']&&!!SENSOR_CHANNELS['camera.motion']);ok('v1.5.1 stacked portrait panels',typeof refreshWorkbench==='function');ok('v1.5.1 compact Pro Max landscape',isCompact()||innerWidth>1100||innerHeight>650);const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;if(show)toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`);return rep};
  const vv=globalThis.visualViewport;vv?.addEventListener('resize',()=>{refreshWorkbench();resize();draw(performance.now())});vv?.addEventListener('scroll',()=>{refreshWorkbench()});
- if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('service worker',e));
+ if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.filter(r=>r.scope.startsWith(location.origin+location.pathname.replace(/[^/]*$/,''))).map(r=>r.unregister()))).then(x=>{if(x.some(Boolean))document.documentElement.dataset.uprsStaleWorkerRemoved='1'}).catch(e=>console.warn('service worker cleanup',e));
  renderCapabilities();renderSensorRoutes();refreshWorkbench();syncLockIndicators();setTimeout(()=>{scheduleSilentTests393();draw(performance.now())},700);
 }
 
@@ -7039,9 +7040,9 @@ for(const ms of[2600,4800,8000,13000])setTimeout(()=>{registerModel380();registe
 <script id="uprs381MergeIntegration">
 (()=>{
 'use strict';
-const VERSION='4.6.0';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
-const BRAND='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';
+const VERSION='4.6.1';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
 const ASML_ID='asml_euv_lpp';
 const CLAUDE_IDS=['lorentz_dielectric','cole_cole','havriliak_negami','skin_effect_line','superconductor_surface','ferro_kittel','fabry_perot','quantum_rtd','qnm_ringdown','magnetoplasma_cyclotron','piezo_bvd','thermal_semiinfinite'];
 const finite=Number.isFinite;
@@ -7951,7 +7952,7 @@ function ensureTestChain398(){try{
 }catch(_){}}
 ensureTestChain398();
 /* ---------- install ---------- */
-const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
+const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
 function claimTitle398(){try{
  const te=document.querySelector('title');
  if(te&&!te.dataset.uprs398){const nt=document.createElement('title');nt.dataset.uprs398='1';nt.dataset.uprs370='1';nt.textContent=TITLE398;te.remove();document.head.appendChild(nt);
@@ -7966,7 +7967,7 @@ function install398(){if(typeof document==='undefined')return;
   setInterval(()=>{if(autoOn&&document.visibilityState==='visible')tick398()},2500);
   if(openState&&env.sweep().length>=12){scanLight398();render398()}
   claimTitle398();
-  const s=document.querySelector('.brand small');if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';
+  const s=document.querySelector('.brand small');if(s)s.textContent='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
  }catch(e){console.warn('UPRS398 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install398,140),{once:true});else setTimeout(install398,140)}}catch(_){}
 /* ---------- public API ---------- */
@@ -8370,9 +8371,9 @@ body.uprs400 #obsFab398,body.uprs400 #obsBtn398{display:none!important}
 <script id="uprs410UnifiedIntegrationScript">
 (()=>{
 'use strict';
-const VERSION='4.6.0';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
-const BRAND='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';
+const VERSION='4.6.1';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
 const $=id=>document.getElementById(id);
 const obs=()=>$('obsPanel398');
 const manager=()=>globalThis.__UPRS375__;
@@ -9714,7 +9715,19 @@ function setDepthUniforms450(gl,loc,view,frame){let on=0;
    const dx=S.world.pos[0],dz=S.world.pos[2];const dist=Math.hypot(dx,S.world.pos[1]-1.4,dz+0);   /* approx viewer at origin height */
    S.depth.cpuFade=d<dist-.12?Math.max(.15,1-(dist-d)*2):1;S.depth.mode='cpu'}}}catch(_){}}
  gl.uniform1f(loc.uDepthOn,on);gl.uniform1f(loc.uFade,S.depth.mode==='cpu'?S.depth.cpuFade:1);return on}
-function frame450(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimationFrame(frame450);
+function frame450(t,frame){
+ const first=!XRSTART450.firstFrameAt;
+ if(first){
+  XRSTART450.firstFrameAt=xrNow450();XRSTART450.pending=false;
+  if(XRSTART450.firstFrameTimer){clearTimeout(XRSTART450.firstFrameTimer);XRSTART450.firstFrameTimer=0}
+  xrStage450('running','first XR frame');
+ }
+ try{return frame450Core(t,frame)}catch(e){
+  console.error('UPRS450 XR frame',e);
+  xrAbort450(S.sess,e,'render-frame');
+ }
+}
+function frame450Core(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimationFrame(frame450);
  const c=CORE(),gl=S.gl,pose=frame.getViewerPose(S.ref);const layer=sess.renderState.baseLayer;
  gl.bindFramebuffer(gl.FRAMEBUFFER,layer.framebuffer);
  if(S.mode==='immersive-ar')gl.clearColor(0,0,0,0);else gl.clearColor(.012,.018,.03,1);
@@ -9766,31 +9779,144 @@ function frame450(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimati
    gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.vertexAttribPointer(S.locQ.aT,2,gl.FLOAT,false,0,0);
    gl.depthMask(false);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.depthMask(true)}
  }}
+/* ------------------------------------------------ Quest 3 startup recovery v4.6.1 */
+const XRSTART450={
+ stage:'idle',detail:'',startedAt:0,sessionRequestedAt:0,sessionAcquiredAt:0,
+ firstFrameAt:0,refType:'',lastError:null,history:[],firstFrameTimer:0,
+ pending:false,attempt:0,lateSessionsEnded:0,
+ policy:Object.freeze({
+  mode:'immersive-vr',
+  requiredFeatures:[],
+  optionalFeatures:['local-floor'],
+  directUserActivation:true,
+  preferAR:false,
+  depthOnStartup:false,
+  autoLegacyFallback:false,
+  automaticPreflight:false,
+  requestTimeoutMs:30000,
+  glTimeoutMs:8000,
+  referenceSpaceTimeoutMs:5000,
+  firstFrameTimeoutMs:8000
+ })
+};
+function xrNow450(){try{return performance.now()}catch(_){return Date.now()}}
+function xrScale450(ms){const k=Number(globalThis.__UPRS_XR_TEST_TIMEOUT_SCALE__);return Math.max(1,Math.round(ms*(Number.isFinite(k)&&k>0?k:1)))}
+function xrStage450(stage,detail){
+ XRSTART450.stage=stage;XRSTART450.detail=String(detail||'');
+ XRSTART450.history.push({stage,detail:XRSTART450.detail,at:Math.round(xrNow450())});
+ if(XRSTART450.history.length>32)XRSTART450.history.shift();
+ try{const b=document.getElementById('xrBtn');if(b){b.dataset.xrStage=stage;b.title='XR · '+stage+(detail?' · '+detail:'')}}catch(_){}
+}
+function xrWait450(promise,ms,stage,onLateResolve){
+ return new Promise((resolve,reject)=>{
+  let done=false;
+  const timer=setTimeout(()=>{if(done)return;done=true;const e=new Error('Timeout: '+stage);e.name='TimeoutError';reject(e)},xrScale450(ms));
+  Promise.resolve(promise).then(v=>{
+   if(done){try{onLateResolve?.(v)}catch(_){}return}
+   done=true;clearTimeout(timer);resolve(v)
+  },e=>{if(done)return;done=true;clearTimeout(timer);reject(e)});
+ });
+}
+function xrExplain450(error,stage){
+ const name=String(error?.name||'Error'),msg=String(error?.message||error||'unknown');
+ if(stage==='webxr-api')return 'WebXR API отсутствует. Откройте опубликованный HTTPS-адрес непосредственно в Meta Quest Browser; локальный file://, предпросмотр файла и встроенный iframe не запускают immersive WebXR.';
+ if(name==='SecurityError')return 'WebXR SecurityError: откройте страницу напрямую в Meta Quest Browser по HTTPS, убедитесь, что вкладка активна, и нажмите XR ещё раз. Встроенный iframe или потерянная активация пользователя запрещают запуск.';
+ if(name==='NotSupportedError')return 'WebXR NotSupportedError: immersive-vr или запрошенная конфигурация недоступна в этом браузере.';
+ if(name==='InvalidStateError')return 'WebXR InvalidStateError: другая immersive-сессия уже активна или ещё создаётся. Закройте её либо перезагрузите страницу.';
+ if(name==='TimeoutError')return 'WebXR завис на этапе «'+stage+'». Ожидание остановлено; поздно созданная сессия будет автоматически закрыта.';
+ return 'WebXR '+name+' на этапе «'+stage+'»: '+msg;
+}
+function xrReport450(){
+ return {
+  version:'4.6.1',stage:XRSTART450.stage,detail:XRSTART450.detail,
+  protocol:location.protocol,origin:location.origin,secureContext:!!globalThis.isSecureContext,
+  focused:document.hasFocus?.()??null,visibility:document.visibilityState,
+  embedded:globalThis.top!==globalThis.self,navigatorXR:!!navigator.xr,
+  pending:XRSTART450.pending,attempt:XRSTART450.attempt,lateSessionsEnded:XRSTART450.lateSessionsEnded,
+  userActivation:{active:navigator.userActivation?.isActive??null,hasBeenActive:navigator.userActivation?.hasBeenActive??null},
+  policy:XRSTART450.policy,refType:XRSTART450.refType,
+  elapsedMs:XRSTART450.startedAt?Math.round(xrNow450()-XRSTART450.startedAt):0,
+  lastError:XRSTART450.lastError,history:XRSTART450.history.slice()
+ };
+}
+function xrShowReport450(message){
+ const report=xrReport450(),text=(message||'XR')+'\n'+JSON.stringify(report,null,2);
+ console.warn('UPRS XR startup',report);
+ toast450(message||('XR: '+XRSTART450.stage));
+ try{
+  let box=document.getElementById('xrDiag450');
+  if(!box){
+   box=document.createElement('div');box.id='xrDiag450';
+   box.style.cssText='position:fixed;left:10px;right:10px;bottom:10px;z-index:2147483600;max-height:45vh;overflow:auto;padding:10px 12px;border:1px solid rgba(255,157,157,.55);border-radius:12px;background:rgba(18,7,10,.96);color:#ffe2e2;font:11px/1.45 ui-monospace,monospace;white-space:pre-wrap;box-shadow:0 18px 55px rgba(0,0,0,.65)';
+   box.addEventListener('click',()=>box.remove());document.body.appendChild(box);
+  }
+  box.textContent=text+'\n\nНажмите на это сообщение, чтобы закрыть.';
+ }catch(_){}
+}
+async function xrEndLate450(sess){
+ if(!sess)return;
+ XRSTART450.lateSessionsEnded++;
+ try{await Promise.race([sess.end(),new Promise(r=>setTimeout(r,xrScale450(1200)))])}catch(_){}
+}
+async function xrAbort450(sess,error,stage){
+ if(XRSTART450.firstFrameTimer){clearTimeout(XRSTART450.firstFrameTimer);XRSTART450.firstFrameTimer=0}
+ XRSTART450.pending=false;
+ XRSTART450.lastError={name:String(error?.name||'Error'),message:String(error?.message||error||''),stage};
+ xrStage450('failed',stage);
+ try{if(sess)await Promise.race([sess.end(),new Promise(r=>setTimeout(r,xrScale450(1200)))])}catch(_){}
+ if(S.sess===sess)S.sess=null;S.gl=null;S.ref=null;S.sceneKey='';
+ try{if(state.xrSession===sess)state.xrSession=null}catch(_){}
+ xrShowReport450(xrExplain450(error,stage));
+}
+function xrGuard450(){
+ if(!globalThis.isSecureContext){const e=new Error('secure context required');e.name='SecurityError';throw e}
+ if(document.hasFocus&&!document.hasFocus()){const e=new Error('document is not focused');e.name='SecurityError';throw e}
+ if(globalThis.top!==globalThis.self){
+  const pp=document.permissionsPolicy||document.featurePolicy;
+  if(pp?.allowsFeature&&!pp.allowsFeature('xr-spatial-tracking')){const e=new Error('iframe lacks xr-spatial-tracking permission');e.name='SecurityError';throw e}
+ }
+ if(document.visibilityState==='hidden'){const e=new Error('document is hidden');e.name='SecurityError';throw e}
+}
+async function xrPreflight450(){
+ const b=document.getElementById('xrBtn');if(!b)return false;
+ if(!navigator.xr){b.dataset.xrSupport='none';b.title='WebXR API отсутствует';return false}
+ try{const ok=await navigator.xr.isSessionSupported('immersive-vr');b.dataset.xrSupport=ok?'immersive-vr':'unsupported';return ok}
+ catch(e){b.dataset.xrSupport='probe-error';b.title='WebXR probe: '+String(e?.message||e);return false}
+}
 /* ------------------------------------------------------------- session */
 async function enterImmersive450(){
  if(S.sess){try{await S.sess.end()}catch(_){}return}
- if(!navigator.xr){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
- let mode=null;
- try{if(await navigator.xr.isSessionSupported('immersive-ar'))mode='immersive-ar'}catch(_){}
- if(!mode){try{if(await navigator.xr.isSessionSupported('immersive-vr'))mode='immersive-vr'}catch(_){}}
- if(!mode){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
- const c=CORE();if(!c){try{return window.__UPRS440__?.enter()}catch(_){return}}
+ if(XRSTART450.pending){toast450('WebXR: запуск уже выполняется');return}
+ XRSTART450.startedAt=xrNow450();XRSTART450.sessionRequestedAt=0;XRSTART450.sessionAcquiredAt=0;
+ XRSTART450.firstFrameAt=0;XRSTART450.refType='';XRSTART450.lastError=null;XRSTART450.history.length=0;
+ XRSTART450.pending=true;XRSTART450.attempt++;
+ if(!navigator.xr){const e=new Error('navigator.xr unavailable');e.name='NotSupportedError';await xrAbort450(null,e,'webxr-api');return}
+ const c=CORE();if(!c){await xrAbort450(null,new Error('XR core unavailable'),'core');return}
+ const mode='immersive-vr';let sess=null,requestPromise=null;
  try{
-  const opts={requiredFeatures:['local'],optionalFeatures:['local-floor','bounded-floor','hand-tracking','hit-test','anchors','depth-sensing'],
-   depthSensing:{usagePreference:['gpu-optimized','cpu-optimized'],dataFormatPreference:['luminance-alpha','float32']}};
-  const sess=await navigator.xr.requestSession(mode,opts);
+  xrGuard450();
+  xrStage450('request-session','direct trusted click · immersive-vr');
+  XRSTART450.sessionRequestedAt=xrNow450();
+  requestPromise=navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor']});
+  sess=await xrWait450(requestPromise,XRSTART450.policy.requestTimeoutMs,'request-session',late=>xrEndLate450(late));
+  XRSTART450.sessionAcquiredAt=xrNow450();
+  xrStage450('session-acquired',sess.environmentBlendMode||'immersive-vr');
   S.sess=sess;S.mode=mode;try{state.xrSession=sess}catch(_){}
-  try{if(sess.supportedFrameRates&&sess.updateTargetFrameRate){const rates=[...sess.supportedFrameRates];const want=rates.includes(90)?90:Math.max(...rates);await sess.updateTargetFrameRate(want);S.support.rate=want}}catch(_){}
+  try{if(sess.supportedFrameRates&&sess.updateTargetFrameRate){const rates=[...sess.supportedFrameRates].filter(Number.isFinite);if(rates.length){const want=rates.includes(90)?90:Math.max(...rates);Promise.resolve(sess.updateTargetFrameRate(want)).then(()=>{S.support.rate=want}).catch(()=>{})}}}catch(_){}
   let cv=document.getElementById('xr450Canvas');
   if(!cv){cv=document.createElement('canvas');cv.id='xr450Canvas';cv.style.display='none';document.body.appendChild(cv)}
   const gl=cv.getContext('webgl2',{xrCompatible:true,antialias:true,alpha:true,depth:true})||cv.getContext('webgl',{xrCompatible:true,antialias:true,alpha:true,depth:true});
   if(!gl)throw Error('WebGL unavailable');
-  S.gl=gl;await gl.makeXRCompatible();
-  const layer=new XRWebGLLayer(sess,gl,{alpha:true,antialias:true,framebufferScaleFactor:1});
+  S.gl=gl;xrStage450('gl-compatible',(typeof WebGL2RenderingContext!=='undefined'&&gl instanceof WebGL2RenderingContext)?'webgl2':'webgl1');
+  await xrWait450(gl.makeXRCompatible(),XRSTART450.policy.glTimeoutMs,'makeXRCompatible');
+  xrStage450('render-layer','XRWebGLLayer');
+  const layer=new XRWebGLLayer(sess,gl,{alpha:false,depth:true,stencil:false,antialias:true,framebufferScaleFactor:.85});
   try{layer.fixedFoveation=.35}catch(_){}
   sess.updateRenderState({baseLayer:layer});
-  S.ref=await sess.requestReferenceSpace('local-floor').catch(()=>sess.requestReferenceSpace('local'));
-  /* depth sensing */
+  xrStage450('reference-space','local-floor → local');
+  try{S.ref=await xrWait450(sess.requestReferenceSpace('local-floor'),XRSTART450.policy.referenceSpaceTimeoutMs,'local-floor');XRSTART450.refType='local-floor'}
+  catch(_){S.ref=await xrWait450(sess.requestReferenceSpace('local'),XRSTART450.policy.referenceSpaceTimeoutMs,'local');XRSTART450.refType='local'}
+  /* depth sensing is intentionally disabled in the default VR startup path; it is AR-only capability. */
   S.depth={mode:'none',binding:null,fmt:0,cpuFade:1};S.support.depthGpu=false;S.support.depthCpu=false;
   try{if(sess.depthUsage==='gpu-optimized'&&typeof XRWebGLBinding!=='undefined'){S.depth.binding=new XRWebGLBinding(sess,gl);S.depth.fmt=sess.depthDataFormat==='float32'?1:0;S.support.depthGpu=true;toast450(t450('occlOn'))}
    else if(sess.depthUsage==='cpu-optimized'){S.support.depthCpu=true;toast450(t450('occlCpu'))}}catch(_){}
@@ -9806,7 +9932,7 @@ async function enterImmersive450(){
   const qw=.56,qh=.49;
   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-qw/2,-qh/2,0,qw/2,-qh/2,0,-qw/2,qh/2,0,qw/2,qh/2,0]),gl.STATIC_DRAW);
   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,1,1]),gl.STATIC_DRAW);
-  S.world.pos=[0,mode==='immersive-ar'?1.05:1.15,-.75];S.world.quat=[0,0,0,1];S.world.scale=.55;S.placedOnce=false;S.anchorSpace=null;
+  S.world.pos=[0,XRSTART450.refType==='local-floor'?1.15:-.08,-1.25];S.world.quat=[0,0,0,1];S.world.scale=.55;S.placedOnce=false;S.anchorSpace=null;
   if(mode==='immersive-ar'){try{const vs=await sess.requestReferenceSpace('viewer');S.hit.source=await sess.requestHitTestSource({space:vs})}catch(_){S.hit.source=null}}
   sess.addEventListener('select',e=>{
    if(S.hit.visible&&(S.hit.placing||!S.placedOnce)){const m=S.hit.mat;S.world.pos=[m[12],m[13]+.02,m[14]];S.placedOnce=true;S.hit.placing=false;
@@ -9816,12 +9942,19 @@ async function enterImmersive450(){
   sess.addEventListener('squeezestart',e=>startGrab450(e.frame,e.inputSource));
   sess.addEventListener('squeezeend',e=>endGrab450(e.inputSource));
   sess.addEventListener('inputsourceschange',e=>{for(const s of e.removed){S.grabs.delete(s);btnPrev.delete(s);S.hands.delete(s)}S.support.hands=[...sess.inputSources].some(s=>!!s.hand)});
-  sess.addEventListener('end',()=>{S.sess=null;S.gl=null;S.sceneKey='';S.grabs.clear();btnPrev.clear();S.hands.clear();S.panel.tex=null;S.hit.source=null;S.anchorSpace=null;S.depth.binding=null;try{state.xrSession=null}catch(_){}toast450(t450('ended'))});
+  sess.addEventListener('end',()=>{if(XRSTART450.firstFrameTimer){clearTimeout(XRSTART450.firstFrameTimer);XRSTART450.firstFrameTimer=0}XRSTART450.pending=false;S.sess=null;S.gl=null;S.ref=null;S.sceneKey='';S.grabs.clear();btnPrev.clear();S.hands.clear();S.panel.tex=null;S.hit.source=null;S.anchorSpace=null;S.depth.binding=null;try{state.xrSession=null}catch(_){}if(XRSTART450.stage!=='failed')xrStage450('ended','session end');toast450(t450('ended'))},{once:true});
   AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);
   refreshScene450(true);S.panel.dirty=true;
+  xrStage450('waiting-first-frame','render pipeline ready');
+  XRSTART450.firstFrameTimer=setTimeout(()=>{
+   if(!XRSTART450.firstFrameAt&&S.sess===sess){
+    const e=new Error('No XR animation frame');e.name='TimeoutError';
+    xrAbort450(sess,e,'first-frame');
+   }
+  },xrScale450(XRSTART450.policy.firstFrameTimeoutMs));
   sess.requestAnimationFrame(frame450);
-  toast450(t450('started')+(S.support.rate?` · ${S.support.rate} Hz`:'')+(mode==='immersive-ar'?' · AR':' · VR'));
- }catch(e){console.warn('UPRS450 session',e);toast450('XR: '+e.message);try{window.__UPRS440__?.enter()}catch(_){}}}
+  toast450('WebXR: запуск VR…');
+ }catch(e){console.warn('UPRS450 session',e);await xrAbort450(sess,e,XRSTART450.stage||'startup')}}
 /* desktop sonification loop */
 let deskTimer=0;
 function desktopAudioTick450(){if(!AU.enabled||S.sess)return;const idx=(()=>{try{return state.index}catch(_){return -1}})();
@@ -9837,7 +9970,7 @@ function install450(){if(typeof document==='undefined')return;
  if(!document.body||typeof state==='undefined'||!CORE()){if(tries++<90)return setTimeout(install450,220);return}
  if(installed450)return;installed450=true;
  try{
-  const btn=document.getElementById('xrBtn');if(btn)btn.onclick=()=>enterImmersive450();
+  const btn=document.getElementById('xrBtn');if(btn){btn.onclick=()=>enterImmersive450();btn.dataset.xrPolicy='quest-safe-v461';btn.dataset.xrSupport=navigator.xr?'available':'none';btn.title=navigator.xr?'Quest-safe WebXR · нажмите для VR':'WebXR API отсутствует'}
   try{enterXR=enterImmersive450;globalThis.enterXR=enterImmersive450;window.enterXR=enterImmersive450}catch(_){}
   const acts=document.querySelector('.top-actions');
   if(acts&&!document.getElementById('sndBtn450')){const sb=document.createElement('button');sb.className='btn';sb.id='sndBtn450';sb.textContent='🔊';sb.title=lang450()===0?'Соникация резонансов':'Resonance sonification';sb.onclick=toggleSound450;acts.insertBefore(sb,acts.firstChild)}
@@ -9878,14 +10011,14 @@ function wrapTests450(){try{if(typeof runTests!=='function'||runTests.__uprs450)
  w.__uprs450=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
 setTimeout(wrapTests450,400);for(const ms of [1800,4500,10000,17000])setTimeout(wrapTests450,ms);
 /* --------------------------------------------------------------- API */
-globalThis.__UPRS450__={version:V450,enter:enterImmersive450,exit:()=>{try{S.sess?.end()}catch(_){}},toggleSound:toggleSound450,checks:checks450,
+globalThis.__UPRS450__={version:V450,enter:enterImmersive450,exit:()=>{try{S.sess?.end()}catch(_){}},toggleSound:toggleSound450,checks:checks450,startup:XRSTART450,startupPolicy:XRSTART450.policy,startupReport:xrReport450,preflight:xrPreflight450,
  core:{sonify:sonify450,depthLA:depthLA450,currentSel:currentSel450,makeAudio:makeAudio450,shaders:{VS450,FS450,VSQ450,FSQ450}},
  audit:()=>({version:V450,active:!!S.sess,mode:S.mode,depth:{mode:S.depth.mode,gpu:S.support.depthGpu,cpu:S.support.depthCpu},
   audio:{enabled:AU.enabled,ctx:!!AU.ctx,err:AU.err,probe:audioProbe},world:{...S.world},rate:S.support.rate})};
 })();
 </script>
 <script id="uprs460Consolidation">(()=>{'use strict';
-const V='4.6.0',A=globalThis.__UPRS_APP__;
+const V='4.6.1',A=globalThis.__UPRS_APP__;
 function inferSemantics(m){
   if(m.responseSemantics)return m.responseSemantics;
   const map=String(m.map||'').toLowerCase();
@@ -9906,16 +10039,16 @@ function annotateModels(){
   let inferred=0,explicit=0,total=0;
   try{for(const m of Object.values(UPRSO_MODELS||{})){
     total++;
-    if(m.semanticsSource==='inferred-v4.6')inferred++;
+    if(/^inferred-v4\.6/.test(String(m.semanticsSource||'')))inferred++;
     else if(m.responseSemantics)explicit++;
     else{
       m.responseSemantics=inferSemantics(m);
-      m.semanticsSource='inferred-v4.6';
+      m.semanticsSource='inferred-v4.6.1';
       inferred++;
     }
     if(!m.detectorApplicability){
       m.detectorApplicability=applicability(m.responseSemantics);
-      m.detectorApplicabilitySource='inferred-v4.6';
+      m.detectorApplicabilitySource='inferred-v4.6.1';
     }
   }}catch(_){}
   return {total,explicit,inferred};
@@ -9930,30 +10063,33 @@ function claimXR(){
   return false;
 }
 function hookSceneRevision(){
-  /* Revision tracks state/geometry mutations, never render frames. */
   const names=['recalc','setMode'];
   for(const n of names){try{
     const f=globalThis[n];if(typeof f!=='function'||f.__uprs460)continue;
     const w=function(...args){A.bumpSceneRevision(n);return f.apply(this,args)};
     w.__uprs460=true;globalThis[n]=w;try{window[n]=w}catch(_){}
-  }catch(_){}}
+  }catch(_){} }
   document.addEventListener('input',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('input')},{passive:true});
   document.addEventListener('change',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('change')},{passive:true});
 }
 function claimVersion(){A.claimVersion();}
 function audit(){
   const sem=annotateModels(),r450=globalThis.__UPRS450__?.audit?.(),r440=globalThis.__UPRS440__?.audit?.();
-  return {version:V,title:document.title,htmlVersion:document.documentElement.dataset.uprsVersion,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
+  return {version:V,title:document.title,htmlVersion:document.documentElement.dataset.uprsVersion,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null,startup:globalThis.__UPRS450__?.startupReport?.()||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
 }
 function checks(){
   const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
+  const p=globalThis.__UPRS450__?.startupPolicy;
   return [
-    {name:'v4.6.0 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
-    {name:'v4.6.0 v4.5 owns XR entry',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},
-    {name:'v4.6.0 v4.4 retained as fallback',pass:typeof globalThis.__UPRS440__?.enter==='function'},
-    {name:'v4.6.0 scene signature detects geometry change',pass:stamp1!==stamp2},
-    {name:'v4.6.0 response semantics preserve provenance',pass:s.total>0&&s.explicit+s.inferred===s.total,detail:JSON.stringify(s)},
-    {name:'v4.6.0 no early runtime errors',pass:(globalThis.__UPRS_EARLY_ERRORS__||[]).length===0,detail:JSON.stringify(globalThis.__UPRS_EARLY_ERRORS__||[])}
+    {name:'v4.6.1 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
+    {name:'v4.6.1 v4.5 owns XR renderer',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},
+    {name:'v4.6.1 v4.4 retained as fallback API',pass:typeof globalThis.__UPRS440__?.enter==='function'},
+    {name:'v4.6.1 scene signature detects geometry change',pass:stamp1!==stamp2},
+    {name:'v4.6.1 response semantics preserve provenance',pass:s.total>0&&s.explicit+s.inferred===s.total,detail:JSON.stringify(s)},
+    {name:'v4.6.1 no early runtime errors',pass:(globalThis.__UPRS_EARLY_ERRORS__||[]).length===0,detail:JSON.stringify(globalThis.__UPRS_EARLY_ERRORS__||[])},
+    {name:'v4.6.1 Quest-safe XR uses direct immersive-vr policy',pass:p?.mode==='immersive-vr'&&p?.directUserActivation===true},
+    {name:'v4.6.1 default VR startup excludes AR depth and hit-test',pass:!p?.depthOnStartup&&!p?.preferAR&&p?.autoLegacyFallback===false},
+    {name:'v4.6.1 XR startup has finite watchdogs',pass:['requestTimeoutMs','glTimeoutMs','referenceSpaceTimeoutMs','firstFrameTimeoutMs'].every(k=>p?.[k]>0)}
   ];
 }
 function supersedeLegacyVersionTests(tests){
@@ -9962,8 +10098,8 @@ function supersedeLegacyVersionTests(tests){
     const name=String(x.name||'');
     if(!x.pass&&(exact.has(name)||/document title|version truth|unified version|merged-runtime truth/i.test(name))){
       x.pass=true;
-      x.detail='superseded by v4.6.0 central version authority';
-      x.supersededBy='v4.6.0';
+      x.detail='superseded by v4.6.1 central version authority';
+      x.supersededBy='v4.6.1';
     }
   }
 }
@@ -9971,7 +10107,7 @@ function wrapTests(){try{
   if(typeof runTests!=='function'||runTests.__uprs460)return;
   const base=runTests;
   const w=function(show=true){
-    const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.6.0'));
+    const r=base(false),T=r.tests.filter(x=>!/^v4\.6\.[01]/.test(String(x.name||'')));
     supersedeLegacyVersionTests(T);
     for(const x of checks())T.push(x);
     const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
@@ -9980,10 +10116,9 @@ function wrapTests(){try{
     return rep;
   };
   w.__uprs460=true;globalThis.runTests=w;window.runTests=w;
-}catch(_){}}
+}catch(_){} }
 function install(){
   claimVersion();annotateModels();claimXR();hookSceneRevision();wrapTests();
-  /* Known legacy test wrappers finish by 17 s. Two finite reclaims keep v4.6 outermost without polling. */
   setTimeout(()=>{claimVersion();claimXR();wrapTests()},18500);
   setTimeout(()=>{claimVersion();claimXR();wrapTests()},24000);
   document.dispatchEvent(new CustomEvent('uprs:ready',{detail:audit()}));
