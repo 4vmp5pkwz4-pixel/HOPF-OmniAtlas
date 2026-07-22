@@ -22,9 +22,9 @@ layout: null
 {% assign app = app | remove: timer440 %}
 
 {% capture install450_old %}let tries=0;
-function install450(){{% endcapture %}
+function install450(){% endcapture %}
 {% capture install450_new %}let tries=0,installed450=false;
-function install450(){{% endcapture %}
+function install450(){% endcapture %}
 {% assign app = app | replace: install450_old, install450_new %}
 
 {% capture guard450_old %}if(!document.body||typeof state==='undefined'||!CORE()){if(tries++<90)return setTimeout(install450,220);return}{% endcapture %}
