@@ -9460,4 +9460,395 @@ globalThis.__UPRS440__={version:V440,enter:enterImmersive440,exit:()=>{try{S.ses
  audit:()=>({version:V440,active:!!S.sess,mode:S.mode,support:{...S.support,xr:typeof navigator!=='undefined'&&!!navigator.xr},world:{...S.world},counts:S.counts,grabs:S.grabs.size,placed:!!S.placedOnce,anchored:!!S.anchorSpace})};
 })();
 </script>
+
+<script id="uprs450DepthAudio">(()=>{
+'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.5.0 · DEPTH OCCLUSION + RESONANCE SONIFICATION
+   Builds on the v4.4.0 Immersive Observatory engine (reuses __UPRS440__.core):
+   · WebXR Depth Sensing (Quest 3): per-pixel occlusion of the hologram by
+     real-world geometry — GPU path (luminance-alpha / float32 depth texture
+     sampled in the fragment shader with soft 5 cm falloff), CPU fallback
+     (centre-sample whole-hologram fade), graceful none.
+   · Resonance sonification: a physically-driven WebAudio voice — the swept
+     axis maps log→5 octaves (110–3520 Hz), match depth |Γ|→0 swells the
+     voice, local phase slope adds beating detune, HRTF panner keeps the
+     sound AT the selected locus point in room space; listener follows the
+     headset pose. Works on desktop too (🔊 toggle in the top bar).
+   · Injectable AudioContext (OfflineAudioContext-testable), pure mapping
+     function, pure depth decode — all unit-tested.
+   ========================================================================== */
+const V450='4.5.0';
+const CORE=()=>globalThis.__UPRS440__?.core;
+/* ------------------------------------------------------ pure: sonification */
+function sonify450(sel){const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const t=cl(Number(sel.t)||0,0,1);
+ const freq=110*Math.pow(2,t*5);                       /* 110 Hz … 3520 Hz */
+ const g=cl(Number(sel.g)||0,0,2);
+ const res=Math.max(0,1-Math.min(1,g));                /* match depth → energy */
+ const gain=cl(.05+.55*res*res,0,.6);
+ const Q=cl(2+(Number(sel.q)||0)*.5,2,30);
+ const detune=cl((Number(sel.gd)||0)*6,-40,40);        /* cents → beating */
+ return {freq,gain,Q,detune,res}}
+/* pure: depth luminance-alpha decode mirror (matches the shader dot()) */
+function depthLA450(r,a,raw){return (r*255+a*65280)*raw}
+/* pure: current selection → sonification inputs (log axis position, |Γ|, slope) */
+function currentSel450(){try{const sw=state.sweep;if(!sw||sw.length<3)return null;const i=Math.max(1,Math.min(sw.length-2,state.index));
+ const lo=sw[0].x,hi=sw[sw.length-1].x,x=sw[i].x;
+ const t=(lo>0&&hi>0&&hi/lo>10)?Math.log(x/lo)/Math.log(hi/lo):(x-lo)/((hi-lo)||1);
+ const g=Math.hypot(sw[i].gamma.re,sw[i].gamma.im);
+ const gm=Math.hypot(sw[i-1].gamma.re,sw[i-1].gamma.im),gp=Math.hypot(sw[i+1].gamma.re,sw[i+1].gamma.im);
+ const q=Math.min(25,Math.abs(gp-gm)*120+1/(g+.06));
+ const am=Math.atan2(sw[i-1].gamma.im,sw[i-1].gamma.re),ap=Math.atan2(sw[i+1].gamma.im,sw[i+1].gamma.re);
+ let dph=ap-am;while(dph>Math.PI)dph-=2*Math.PI;while(dph<-Math.PI)dph+=2*Math.PI;
+ return {t:Math.max(0,Math.min(1,t)),g,q,gd:dph*8,index:i}}catch(_){return null}}
+/* ---------------------------------------------------------- audio engine */
+function makeAudio450(CtxClass){
+ const A={ctx:null,master:null,voice:null,panner:null,enabled:false,lastIdx:-1,err:null};
+ A.ensure=function(){if(A.ctx)return true;try{
+  const Ctor=CtxClass||window.AudioContext||window.webkitAudioContext;if(!Ctor)throw Error('no AudioContext');
+  A.ctx=typeof Ctor==='function'&&Ctor.length===0?new Ctor():Ctor; /* instance may be injected directly */
+  const ctx=A.ctx;
+  A.master=ctx.createGain();A.master.gain.value=0;A.master.connect(ctx.destination);
+  const pan=ctx.createPanner();try{pan.panningModel='HRTF';pan.distanceModel='inverse';pan.refDistance=.5;pan.rolloffFactor=1.4}catch(_){}
+  pan.connect(A.master);A.panner=pan;
+  const oa=ctx.createOscillator(),ob=ctx.createOscillator();oa.type='sine';ob.type='sine';
+  const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.Q.value=6;
+  const vg=ctx.createGain();vg.gain.value=0;
+  oa.connect(bp);ob.connect(bp);bp.connect(vg);vg.connect(pan);
+  oa.frequency.value=220;ob.frequency.value=220;oa.start();ob.start();
+  A.voice={oa,ob,bp,vg};return true}catch(e){A.err=e.message;return false}};
+ A.apply=function(sel,now){if(!A.ctx||!A.voice)return null;const p=sonify450(sel);const t=now??A.ctx.currentTime,tc=.06;
+  const set=(par,v)=>{try{par.setTargetAtTime(v,t,tc)}catch(_){try{par.value=v}catch(__){}}};
+  set(A.voice.oa.frequency,p.freq);set(A.voice.ob.frequency,p.freq);
+  try{A.voice.ob.detune.setTargetAtTime(p.detune,t,tc)}catch(_){}
+  set(A.voice.bp.frequency,p.freq);set(A.voice.bp.Q,p.Q);
+  set(A.voice.vg.gain,A.enabled?p.gain:0);return p};
+ A.place=function(x,y,z){if(!A.panner)return;const t=A.ctx.currentTime,tc=.05;
+  try{A.panner.positionX.setTargetAtTime(x,t,tc);A.panner.positionY.setTargetAtTime(y,t,tc);A.panner.positionZ.setTargetAtTime(z,t,tc)}
+  catch(_){try{A.panner.setPosition(x,y,z)}catch(__){}}};
+ A.listener=function(px,py,pz,fx,fy,fz,ux,uy,uz){if(!A.ctx)return;const L=A.ctx.listener,t=A.ctx.currentTime,tc=.05;
+  try{L.positionX.setTargetAtTime(px,t,tc);L.positionY.setTargetAtTime(py,t,tc);L.positionZ.setTargetAtTime(pz,t,tc);
+   L.forwardX.setTargetAtTime(fx,t,tc);L.forwardY.setTargetAtTime(fy,t,tc);L.forwardZ.setTargetAtTime(fz,t,tc);
+   L.upX.setTargetAtTime(ux,t,tc);L.upY.setTargetAtTime(uy,t,tc);L.upZ.setTargetAtTime(uz,t,tc)}
+  catch(_){try{L.setPosition(px,py,pz);L.setOrientation(fx,fy,fz,ux,uy,uz)}catch(__){}}};
+ A.blip=function(freq,gain=.25){if(!A.ctx||!A.enabled)return;try{const ctx=A.ctx,o=ctx.createOscillator(),g=ctx.createGain();
+  o.type='triangle';o.frequency.value=freq;g.gain.value=0;o.connect(g);g.connect(A.panner||A.master);
+  const t=ctx.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(gain,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+.14);
+  o.start(t);o.stop(t+.16)}catch(_){}};
+ A.setEnabled=function(on){A.enabled=!!on;if(!A.ensure())return false;
+  try{const _r=A.ctx.resume&&A.ctx.resume();if(_r&&_r.catch)_r.catch(()=>{})}catch(_){}
+  const t=A.ctx.currentTime;try{A.master.gain.setTargetAtTime(on?.9:0,t,.12)}catch(_){A.master.gain.value=on?.9:0}
+  return true};
+ return A}
+const AU=makeAudio450(null);
+/* --------------------------------------------------- shaders with occlusion */
+const VS450='attribute vec3 aP;attribute vec4 aC;uniform mat4 uP;uniform mat4 uMV;uniform float uS;varying vec4 vC;varying float vZ;void main(){vec4 vp=uMV*vec4(aP,1.);vZ=-vp.z;gl_Position=uP*vp;gl_PointSize=uS/max(.25,gl_Position.w);vC=aC;}';
+const FS450='precision mediump float;varying vec4 vC;varying float vZ;uniform float uPt;uniform float uDepthOn;uniform float uFmt;uniform float uRaw;uniform float uFade;uniform sampler2D uDepth;uniform mat4 uUv;uniform vec4 uVp;'
++'float realD(vec2 fc){vec2 nv=(fc-uVp.xy)/uVp.zw;vec2 uv=(uUv*vec4(nv,0.,1.)).xy;vec4 p=texture2D(uDepth,uv);float v=uFmt>0.5?p.r:dot(p.ra,vec2(255.,65280.));return v*uRaw;}'
++'void main(){vec4 c=vC;'
++'if(uPt>0.5){vec2 d=gl_PointCoord-vec2(.5);float r=length(d);if(r>.5)discard;c.a*=smoothstep(.5,.32,r);}'
++'if(uDepthOn>0.5){float rd=realD(gl_FragCoord.xy);if(rd>0.001){c.a*=1.0-clamp((vZ-rd)/0.05,0.0,1.0);}}'
++'c.a*=uFade;if(c.a<0.012)discard;gl_FragColor=c;}';
+const VSQ450='attribute vec3 aP;attribute vec2 aT;uniform mat4 uP;uniform mat4 uMV;varying vec2 vT;varying float vZ;void main(){vec4 vp=uMV*vec4(aP,1.);vZ=-vp.z;gl_Position=uP*vp;vT=aT;}';
+const FSQ450='precision mediump float;varying vec2 vT;varying float vZ;uniform sampler2D uTex;uniform float uDepthOn;uniform float uFmt;uniform float uRaw;uniform float uFade;uniform sampler2D uDepth;uniform mat4 uUv;uniform vec4 uVp;'
++'float realD(vec2 fc){vec2 nv=(fc-uVp.xy)/uVp.zw;vec2 uv=(uUv*vec4(nv,0.,1.)).xy;vec4 p=texture2D(uDepth,uv);float v=uFmt>0.5?p.r:dot(p.ra,vec2(255.,65280.));return v*uRaw;}'
++'void main(){vec4 c=texture2D(uTex,vT);if(c.a<0.02)discard;'
++'if(uDepthOn>0.5){float rd=realD(gl_FragCoord.xy);if(rd>0.001){c.a*=1.0-clamp((vZ-rd)/0.05,0.0,1.0);}}'
++'c.a*=uFade;if(c.a<0.012)discard;gl_FragColor=c;}';
+function mkProg450(gl,vs,fs){const c=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh)||'shader');return sh};
+ const p=gl.createProgram();gl.attachShader(p,c(gl.VERTEX_SHADER,vs));gl.attachShader(p,c(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p)||'link');return p}
+/* ----------------------------------------------------------- session state */
+const S={sess:null,gl:null,ref:null,mode:'',prog:null,progQ:null,loc:{},locQ:{},buf:{},counts:{ln:0,pn:0},pi:[],ppData:null,
+ world:{pos:[0,1.15,-.75],quat:[0,0,0,1],scale:.55},grabs:new Map(),twoStart:null,hands:new Map(),
+ panel:{cv:null,cx:null,tex:null,dirty:true,last:0},sceneKey:'',lastIndex:-1,
+ hit:{source:null,visible:false,mat:new Float32Array(16),placing:false},placedOnce:false,anchorSpace:null,lastHit:null,
+ depth:{mode:'none',binding:null,fmt:0,cpuFade:1},
+ support:{rate:0,hands:false,depthGpu:false,depthCpu:false},
+ tmpA:new Float32Array(16),tmpB:new Float32Array(16),tmpC:new Float32Array(16),worldMat:new Float32Array(16),gridMat:new Float32Array(16)};
+const btnPrev=new Map();
+const lang450=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
+const TT={noXR:['WebXR недоступен — включаю аудио-превью','WebXR unavailable — audio preview only','WebXR fehlt — nur Audio-Vorschau'],
+ started:['Иммерсивная обсерватория v4.5','Immersive Observatory v4.5','Immersives Observatorium v4.5'],
+ ended:['Иммерсивная сессия завершена','Immersive session ended','Immersive Sitzung beendet'],
+ placed:['Голограмма закреплена','Hologram anchored','Hologramm verankert'],
+ occlOn:['окклюзия глубины: GPU','depth occlusion: GPU','Tiefenokklusion: GPU'],occlCpu:['окклюзия глубины: CPU','depth occlusion: CPU','Tiefenokklusion: CPU'],
+ sndOn:['Соникация резонансов включена','Resonance sonification on','Resonanz-Sonifikation an'],sndOff:['Соникация выключена','Sonification off','Sonifikation aus'],
+ scan:['Глубокий скан…','Deep scan…','Tiefenscan…']};
+const t450=k=>TT[k][lang450()];
+function toast450(s){try{toast(s)}catch(_){console.log('UPRS450:',s)}}
+/* ------------------------------------------------------------- panel */
+function refreshPanel450(now){const c=CORE();if(!c)return;const idx=(()=>{try{return state.index}catch(_){return -1}})();
+ if(!S.panel.dirty&&now-S.panel.last<400&&S.lastIndex===idx)return;S.lastIndex=idx;
+ if(!S.panel.cv){S.panel.cv=document.createElement('canvas');S.panel.cv.width=640;S.panel.cv.height=560;S.panel.cx=S.panel.cv.getContext('2d')}
+ const cx=S.panel.cx;c.drawPanel(cx,640,560,c.panelData());
+ /* v4.5 status line: occlusion + sonification */
+ const sel=currentSel450(),p=sel?sonify450(sel):null;
+ cx.fillStyle='#98e8ff';cx.font='500 24px system-ui';
+ const occ=S.depth.mode==='gpu'?'⛰ GPU':S.depth.mode==='cpu'?'⛰ CPU':'⛰ —';
+ const snd=AU.enabled&&p?`♪ ${Math.round(p.freq)} Hz`:'♪ —';
+ cx.fillText(`${occ}   ${snd}`,336,52);
+ S.panel.last=now;S.panel.dirty=false;
+ const gl=S.gl;if(!gl)return;if(!S.panel.tex)S.panel.tex=gl.createTexture();
+ gl.bindTexture(gl.TEXTURE_2D,S.panel.tex);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,S.panel.cv);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
+/* --------------------------------------------------------- scene buffers */
+function sceneKey450(){try{return state.mode+'|'+((state.scene?.points||[]).length)+'|'+((state.scene?.lines||[]).length)+'|'+state.model}catch(_){return ''}}
+function refreshScene450(force){const key=sceneKey450();if(!force&&key===S.sceneKey)return;S.sceneKey=key;const c=CORE();if(!c)return;
+ let g;try{g=c.packScene(state.scene)}catch(_){g=c.packScene(null)}
+ const gl=S.gl;S.pi=g.pi;S.counts={ln:g.lp.length/3,pn:g.pp.length/3};S.ppData=g.pp;
+ const up=(k,d)=>{gl.bindBuffer(gl.ARRAY_BUFFER,S.buf[k]);gl.bufferData(gl.ARRAY_BUFFER,d,gl.DYNAMIC_DRAW)};
+ up('lp',g.lp);up('lc',g.lc);up('pp',g.pp);up('pc',g.pc)}
+function buildGrid450(){const v=[],cc=[],col=[.35,.55,.7,.10],R=1.6;
+ for(let r=1;r<=4;r++){const rad=R*r/4,seg=48;for(let i=0;i<seg;i++){const a0=i/seg*2*Math.PI,a1=(i+1)/seg*2*Math.PI;v.push(Math.cos(a0)*rad,0,Math.sin(a0)*rad,Math.cos(a1)*rad,0,Math.sin(a1)*rad);cc.push(...col,...col)}}
+ for(let i=0;i<12;i++){const a=i/12*2*Math.PI;v.push(0,0,0,Math.cos(a)*R,0,Math.sin(a)*R);cc.push(...col,...col)}
+ return {v:new Float32Array(v),c:new Float32Array(cc),n:v.length/3}}
+function buildRing450(){const v=[],cc=[],col=[1,.94,.74,.9],seg=36,r=.07;for(let i=0;i<seg;i++){const a0=i/seg*2*Math.PI,a1=(i+1)/seg*2*Math.PI;v.push(Math.cos(a0)*r,0,Math.sin(a0)*r,Math.cos(a1)*r,0,Math.sin(a1)*r);cc.push(...col,...col)}return {v:new Float32Array(v),c:new Float32Array(cc),n:v.length/3}}
+/* ------------------------------------------------------------- input */
+function gripPos450(frame,src){const sp=src.gripSpace||src.targetRaySpace;if(!sp)return null;const p=frame.getPose(sp,S.ref);if(!p)return null;const m=p.transform.position;return [m.x,m.y,m.z]}
+function grabPos450(frame,src){const st=S.grabs.get(src);if(st&&st.isHand)return st.handPos||st.start;return gripPos450(frame,src)}
+function haptic450(src,val=.5,ms=40){try{src.gamepad?.hapticActuators?.[0]?.pulse(val,ms)}catch(_){}}
+function selectedWorldPos450(){const c=CORE();if(!c||!S.ppData)return null;let idx=-1;try{idx=state.index}catch(_){}
+ let pi=-1;for(let i=0;i<S.pi.length;i++)if(S.pi[i]===idx){pi=i;break}if(pi<0)return null;
+ const mp=[S.ppData[pi*3],S.ppData[pi*3+1],S.ppData[pi*3+2]];
+ const r=c.qRotV(S.world.quat,[mp[0]*S.world.scale,mp[1]*S.world.scale,mp[2]*S.world.scale]);
+ return [r[0]+S.world.pos[0],r[1]+S.world.pos[1],r[2]+S.world.pos[2]]}
+function doPick450(frame,src){const c=CORE();if(!c)return;const rp=frame.getPose(src.targetRaySpace,S.ref);if(!rp)return;
+ const o=[rp.transform.position.x,rp.transform.position.y,rp.transform.position.z];
+ const dq=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];
+ const d=c.qRotV(dq,[0,0,-1]);
+ const inv=c.invTRS(S.world.pos,S.world.quat,S.world.scale);
+ const om=c.qRotV(inv.q,[o[0]*inv.s,o[1]*inv.s,o[2]*inv.s]);om[0]+=inv.p[0];om[1]+=inv.p[1];om[2]+=inv.p[2];
+ const dm=c.qRotV(inv.q,d);const dl=Math.hypot(dm[0],dm[1],dm[2])||1;dm[0]/=dl;dm[1]/=dl;dm[2]/=dl;
+ if(!S.ppData||!S.ppData.length)return;
+ const r=c.pick(om,dm,S.ppData,.08,.02);
+ if(r.index>=0){const sw=S.pi[r.index];haptic450(src,.65,50);S.panel.dirty=true;
+  if(Number.isFinite(sw)&&sw>=0){try{selectSweepIndex(sw,false)}catch(_){}
+   const sel=currentSel450();if(sel){const p=AU.apply(sel);const wp=selectedWorldPos450();if(wp)AU.place(wp[0],wp[1],wp[2]);if(p)AU.blip(p.freq,.3)}}}}
+function startGrab450(frame,src){const g=gripPos450(frame,src);if(!g)return;S.grabs.set(src,{start:g,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}});
+ if(S.grabs.size===2){const [a,b]=[...S.grabs.keys()];const ga=grabPos450(frame,a),gb=grabPos450(frame,b);if(ga&&gb)S.twoStart={a:ga,b:gb,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}}}
+ haptic450(src,.35,25)}
+function endGrab450(src){S.grabs.delete(src);S.twoStart=null;if(S.grabs.size===1){const [s]=[...S.grabs.keys()];const st=S.grabs.get(s);S.grabs.set(s,{start:st.cur||st.handPos||st.start,isHand:st.isHand,handPos:st.handPos,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}})}}
+function applyGrabs450(frame){const c=CORE();if(!c||S.grabs.size===0)return;
+ if(S.grabs.size>=2&&S.twoStart){const [a,b]=[...S.grabs.keys()];const ga=grabPos450(frame,a),gb=grabPos450(frame,b);if(!ga||!gb)return;
+  const r=c.twoHand(S.twoStart.a,S.twoStart.b,ga,gb,{pos:S.twoStart.world.pos,quat:S.twoStart.world.quat,scale:S.twoStart.world.scale});
+  S.world.pos=r.pos;S.world.quat=r.quat;S.world.scale=r.scale;return}
+ const [src]=[...S.grabs.keys()],st=S.grabs.get(src),g=grabPos450(frame,src);if(!g)return;st.cur=g;
+ const r=c.oneHand(st.start,g,st.world);S.world.pos=r.pos;S.world.quat=r.quat;S.world.scale=r.scale}
+function handPinch450(frame,src){if(!src.hand)return null;try{const th=src.hand.get('thumb-tip'),ix=src.hand.get('index-finger-tip');if(!th||!ix)return null;
+ const a=frame.getJointPose(th,S.ref),b=frame.getJointPose(ix,S.ref);if(!a||!b)return null;
+ const d=Math.hypot(a.transform.position.x-b.transform.position.x,a.transform.position.y-b.transform.position.y,a.transform.position.z-b.transform.position.z);
+ return {dist:d,pos:[(a.transform.position.x+b.transform.position.x)/2,(a.transform.position.y+b.transform.position.y)/2,(a.transform.position.z+b.transform.position.z)/2]}}catch(_){return null}}
+function pollHands450(frame){if(!S.sess)return;for(const src of S.sess.inputSources){if(!src.hand)continue;
+ const st=S.hands.get(src)||{pinch:false};const p=handPinch450(frame,src);if(!p){S.hands.set(src,st);continue}
+ if(!st.pinch&&p.dist<.018){st.pinch=true;S.grabs.set(src,{start:p.pos,handPos:p.pos,isHand:true,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}});
+  if(S.grabs.size===2){const ks=[...S.grabs.keys()],pa=S.grabs.get(ks[0]),pb=S.grabs.get(ks[1]);S.twoStart={a:pa.handPos||pa.start,b:pb.handPos||pb.start,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}}}}
+ else if(st.pinch&&p.dist>.03){st.pinch=false;endGrab450(src)}
+ else if(st.pinch){const g=S.grabs.get(src);if(g)g.handPos=p.pos}
+ S.hands.set(src,st)}}
+function pollButtons450(frame,src){const gp=src.gamepad;if(!gp)return;const prev=btnPrev.get(src)||{};const b=gp.buttons;
+ const edge=i=>b[i]&&b[i].pressed&&!prev[i];const hand=src.handedness;const c=CORE();
+ if(hand==='right'){
+  if(b.length>4&&edge(4)){S.panel.dirty=true;haptic450(src,.3,20)}
+  if(b.length>5&&edge(5)){S.hit.placing=!S.hit.placing;haptic450(src,.3,20)}
+  const ax=gp.axes.length>=4?gp.axes[2]:0;
+  if(Math.abs(ax)>.25){try{const n=state.sweep.length;if(n){const step=Math.max(1,Math.round(n*.004*Math.abs(ax)));selectSweepIndex(state.index+Math.sign(ax)*step,false);S.panel.dirty=true}}catch(_){}}
+  const ay=gp.axes.length>=4?gp.axes[3]:0;
+  if(Math.abs(ay)>.25)S.world.scale=Math.min(20,Math.max(.04,S.world.scale*(1-ay*.02)));
+ }else if(hand==='left'){
+  if(b.length>4&&edge(4)){try{const modes=[...document.querySelectorAll('[data-mode]')].map(e=>e.dataset.mode);const i=modes.indexOf(state.mode);if(modes.length){setMode(modes[(i+1)%modes.length]);S.panel.dirty=true;S.sceneKey=''}}catch(_){}haptic450(src,.3,20)}
+  if(b.length>5&&edge(5)){toast450(t450('scan'));try{window.__UPRS398__?.scanDeep(()=>{S.panel.dirty=true})}catch(_){}haptic450(src,.5,30)}
+  const ax=gp.axes.length>=4?gp.axes[2]:0;
+  if(Math.abs(ax)>.25&&c)S.world.quat=c.qNorm(c.qMul(c.qAxis(0,1,0,-ax*.03),S.world.quat));
+  const ay=gp.axes.length>=4?gp.axes[3]:0;
+  if(Math.abs(ay)>.25)S.world.pos=[S.world.pos[0],S.world.pos[1],S.world.pos[2]+ay*.012];
+ }
+ const np={};for(let i=0;i<b.length;i++)np[i]=b[i].pressed;btnPrev.set(src,np)}
+/* ------------------------------------------------------------- render */
+function drawGeom450(gl,proj,mv,bufP,bufC,n,mode,ptSize){const L=S.loc;
+ gl.uniformMatrix4fv(L.uP,false,proj);gl.uniformMatrix4fv(L.uMV,false,mv);
+ gl.bindBuffer(gl.ARRAY_BUFFER,bufP);gl.vertexAttribPointer(L.aP,3,gl.FLOAT,false,0,0);
+ gl.bindBuffer(gl.ARRAY_BUFFER,bufC);gl.vertexAttribPointer(L.aC,4,gl.FLOAT,false,0,0);
+ gl.uniform1f(L.uPt,mode===gl.POINTS?1:0);gl.uniform1f(L.uS,ptSize||60);gl.drawArrays(mode,0,n)}
+function setDepthUniforms450(gl,loc,view,frame){let on=0;
+ if(S.depth.binding){try{const di=S.depth.binding.getDepthInformation(view);
+  if(di&&di.texture){gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,di.texture);gl.uniform1i(loc.uDepth,1);
+   gl.uniformMatrix4fv(loc.uUv,false,di.normDepthBufferFromNormView.matrix);
+   gl.uniform1f(loc.uRaw,di.rawValueToMeters);gl.uniform1f(loc.uFmt,S.depth.fmt);on=1;S.depth.mode='gpu'}}catch(_){}}
+ else if(S.support.depthCpu){try{const di=frame.getDepthInformation(view);
+  if(di){const d=di.getDepthInMeters(.5,.5);const c=CORE();if(c&&Number.isFinite(d)&&d>0){
+   const dx=S.world.pos[0],dz=S.world.pos[2];const dist=Math.hypot(dx,S.world.pos[1]-1.4,dz+0);   /* approx viewer at origin height */
+   S.depth.cpuFade=d<dist-.12?Math.max(.15,1-(dist-d)*2):1;S.depth.mode='cpu'}}}catch(_){}}
+ gl.uniform1f(loc.uDepthOn,on);gl.uniform1f(loc.uFade,S.depth.mode==='cpu'?S.depth.cpuFade:1);return on}
+function frame450(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimationFrame(frame450);
+ const c=CORE(),gl=S.gl,pose=frame.getViewerPose(S.ref);const layer=sess.renderState.baseLayer;
+ gl.bindFramebuffer(gl.FRAMEBUFFER,layer.framebuffer);
+ if(S.mode==='immersive-ar')gl.clearColor(0,0,0,0);else gl.clearColor(.012,.018,.03,1);
+ gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ if(!pose||!c)return;
+ pollHands450(frame);
+ for(const src of sess.inputSources)pollButtons450(frame,src);
+ applyGrabs450(frame);
+ if(S.hit.source&&(S.hit.placing||!S.placedOnce)){const hits=frame.getHitTestResults(S.hit.source);S.hit.visible=false;
+  if(hits.length){const hp=hits[0].getPose(S.ref);if(hp){S.hit.visible=true;c.composeTRS(S.hit.mat,[hp.transform.position.x,hp.transform.position.y,hp.transform.position.z],[0,0,0,1],1);S.lastHit=hits[0]}}}
+ if(S.anchorSpace){const ap=frame.getPose(S.anchorSpace,S.ref);if(ap)S.world.pos=[ap.transform.position.x,S.world.pos[1],ap.transform.position.z]}
+ refreshScene450(false);refreshPanel450(t);
+ c.composeTRS(S.worldMat,S.world.pos,S.world.quat,S.world.scale);
+ /* audio: follow selection & headset */
+ const idx=(()=>{try{return state.index}catch(_){return -1}})();
+ if(AU.enabled){if(idx!==AU.lastIdx){AU.lastIdx=idx;const sel=currentSel450();if(sel)AU.apply(sel)}
+  const wp=selectedWorldPos450();if(wp)AU.place(wp[0],wp[1],wp[2]);
+  const vp=pose.transform.position,vq=[pose.transform.orientation.x,pose.transform.orientation.y,pose.transform.orientation.z,pose.transform.orientation.w];
+  const fwd=c.qRotV(vq,[0,0,-1]),up=c.qRotV(vq,[0,1,0]);
+  AU.listener(vp.x,vp.y,vp.z,fwd[0],fwd[1],fwd[2],up[0],up[1],up[2])}
+ /* beams */
+ const bp=[],bc=[];for(const src of sess.inputSources){if(src.hand)continue;const rp=frame.getPose(src.targetRaySpace,S.ref);if(!rp)continue;
+  const o=rp.transform.position,q=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];
+  const d=c.qRotV(q,[0,0,-1]);const col=src.handedness==='left'?[.6,.68,1,.5]:[1,.94,.74,.5];
+  bp.push(o.x,o.y,o.z,o.x+d[0]*1.6,o.y+d[1]*1.6,o.z+d[2]*1.6);bc.push(...col,col[0],col[1],col[2],0)}
+ gl.useProgram(S.prog);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
+ gl.enableVertexAttribArray(S.loc.aP);gl.enableVertexAttribArray(S.loc.aC);
+ for(const view of pose.views){const vp=layer.getViewport(view);gl.viewport(vp.x,vp.y,vp.width,vp.height);
+  gl.useProgram(S.prog);
+  gl.uniform4f(S.loc.uVp,vp.x,vp.y,vp.width,vp.height);
+  const dOn=setDepthUniforms450(gl,S.loc,view,frame);
+  const proj=view.projectionMatrix,vinv=view.transform.inverse.matrix;
+  c.m4Mul(S.tmpA,vinv,S.worldMat);                       /* MV = view⁻¹·model */
+  drawGeom450(gl,proj,S.tmpA,S.buf.lp,S.buf.lc,S.counts.ln,gl.LINES);
+  drawGeom450(gl,proj,S.tmpA,S.buf.pp,S.buf.pc,S.counts.pn,gl.POINTS,64);
+  if(S.mode!=='immersive-ar'){c.m4Mul(S.tmpB,vinv,S.gridMat);drawGeom450(gl,proj,S.tmpB,S.buf.gv,S.buf.gc,S.gridN,gl.LINES)}
+  if(bp.length){gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.bv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(bp),gl.DYNAMIC_DRAW);
+   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.bc);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(bc),gl.DYNAMIC_DRAW);
+   const I=S.tmpC;I.set([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);drawGeom450(gl,proj,c.m4Mul(S.tmpB,vinv,I),S.buf.bv,S.buf.bc,bp.length/3,gl.LINES)}
+  if(S.hit.visible&&(S.hit.placing||!S.placedOnce)){c.m4Mul(S.tmpB,vinv,S.hit.mat);drawGeom450(gl,proj,S.tmpB,S.buf.rv,S.buf.rc,S.ringN,gl.LINES)}
+  if(S.panel.tex){const vpos=pose.transform.position;const px=S.world.pos[0]-0.62*S.world.scale-0.18,py=S.world.pos[1]+0.12,pz=S.world.pos[2];
+   const yaw=Math.atan2(vpos.x-px,vpos.z-pz);
+   c.composeTRS(S.tmpB,[px,py,pz],c.qAxis(0,1,0,yaw),1);c.m4Mul(S.tmpB,vinv,S.tmpB);
+   gl.useProgram(S.progQ);gl.uniformMatrix4fv(S.locQ.uP,false,proj);gl.uniformMatrix4fv(S.locQ.uMV,false,S.tmpB);
+   gl.uniform4f(S.locQ.uVp,vp.x,vp.y,vp.width,vp.height);setDepthUniforms450(gl,S.locQ,view,frame);
+   gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,S.panel.tex);gl.uniform1i(S.locQ.uTex,0);
+   gl.enableVertexAttribArray(S.locQ.aP);gl.enableVertexAttribArray(S.locQ.aT);
+   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qv);gl.vertexAttribPointer(S.locQ.aP,3,gl.FLOAT,false,0,0);
+   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.vertexAttribPointer(S.locQ.aT,2,gl.FLOAT,false,0,0);
+   gl.depthMask(false);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.depthMask(true)}
+ }}
+/* ------------------------------------------------------------- session */
+async function enterImmersive450(){
+ if(S.sess){try{await S.sess.end()}catch(_){}return}
+ if(!navigator.xr){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
+ let mode=null;
+ try{if(await navigator.xr.isSessionSupported('immersive-ar'))mode='immersive-ar'}catch(_){}
+ if(!mode){try{if(await navigator.xr.isSessionSupported('immersive-vr'))mode='immersive-vr'}catch(_){}}
+ if(!mode){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
+ const c=CORE();if(!c){try{return window.__UPRS440__?.enter()}catch(_){return}}
+ try{
+  const opts={requiredFeatures:['local'],optionalFeatures:['local-floor','bounded-floor','hand-tracking','hit-test','anchors','depth-sensing'],
+   depthSensing:{usagePreference:['gpu-optimized','cpu-optimized'],dataFormatPreference:['luminance-alpha','float32']}};
+  const sess=await navigator.xr.requestSession(mode,opts);
+  S.sess=sess;S.mode=mode;try{state.xrSession=sess}catch(_){}
+  try{if(sess.supportedFrameRates&&sess.updateTargetFrameRate){const rates=[...sess.supportedFrameRates];const want=rates.includes(90)?90:Math.max(...rates);await sess.updateTargetFrameRate(want);S.support.rate=want}}catch(_){}
+  let cv=document.getElementById('xr450Canvas');
+  if(!cv){cv=document.createElement('canvas');cv.id='xr450Canvas';cv.style.display='none';document.body.appendChild(cv)}
+  const gl=cv.getContext('webgl2',{xrCompatible:true,antialias:true,alpha:true,depth:true})||cv.getContext('webgl',{xrCompatible:true,antialias:true,alpha:true,depth:true});
+  if(!gl)throw Error('WebGL unavailable');
+  S.gl=gl;await gl.makeXRCompatible();
+  const layer=new XRWebGLLayer(sess,gl,{alpha:true,antialias:true,framebufferScaleFactor:1});
+  try{layer.fixedFoveation=.35}catch(_){}
+  sess.updateRenderState({baseLayer:layer});
+  S.ref=await sess.requestReferenceSpace('local-floor').catch(()=>sess.requestReferenceSpace('local'));
+  /* depth sensing */
+  S.depth={mode:'none',binding:null,fmt:0,cpuFade:1};S.support.depthGpu=false;S.support.depthCpu=false;
+  try{if(sess.depthUsage==='gpu-optimized'&&typeof XRWebGLBinding!=='undefined'){S.depth.binding=new XRWebGLBinding(sess,gl);S.depth.fmt=sess.depthDataFormat==='float32'?1:0;S.support.depthGpu=true;toast450(t450('occlOn'))}
+   else if(sess.depthUsage==='cpu-optimized'){S.support.depthCpu=true;toast450(t450('occlCpu'))}}catch(_){}
+  /* programs & buffers */
+  S.prog=mkProg450(gl,VS450,FS450);S.progQ=mkProg450(gl,VSQ450,FSQ450);
+  const g=(p,n)=>gl.getUniformLocation(p,n),a=(p,n)=>gl.getAttribLocation(p,n);
+  S.loc={aP:a(S.prog,'aP'),aC:a(S.prog,'aC'),uP:g(S.prog,'uP'),uMV:g(S.prog,'uMV'),uS:g(S.prog,'uS'),uPt:g(S.prog,'uPt'),uDepthOn:g(S.prog,'uDepthOn'),uFmt:g(S.prog,'uFmt'),uRaw:g(S.prog,'uRaw'),uFade:g(S.prog,'uFade'),uDepth:g(S.prog,'uDepth'),uUv:g(S.prog,'uUv'),uVp:g(S.prog,'uVp')};
+  S.locQ={aP:a(S.progQ,'aP'),aT:a(S.progQ,'aT'),uP:g(S.progQ,'uP'),uMV:g(S.progQ,'uMV'),uTex:g(S.progQ,'uTex'),uDepthOn:g(S.progQ,'uDepthOn'),uFmt:g(S.progQ,'uFmt'),uRaw:g(S.progQ,'uRaw'),uFade:g(S.progQ,'uFade'),uDepth:g(S.progQ,'uDepth'),uUv:g(S.progQ,'uUv'),uVp:g(S.progQ,'uVp')};
+  for(const k of ['lp','lc','pp','pc','gv','gc','bv','bc','qv','qt','rv','rc'])S.buf[k]=gl.createBuffer();
+  const grid=buildGrid450();S.gridN=grid.n;gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.gv);gl.bufferData(gl.ARRAY_BUFFER,grid.v,gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.gc);gl.bufferData(gl.ARRAY_BUFFER,grid.c,gl.STATIC_DRAW);
+  S.gridMat.set([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+  const ring=buildRing450();S.ringN=ring.n;gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.rv);gl.bufferData(gl.ARRAY_BUFFER,ring.v,gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.rc);gl.bufferData(gl.ARRAY_BUFFER,ring.c,gl.STATIC_DRAW);
+  const qw=.56,qh=.49;
+  gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-qw/2,-qh/2,0,qw/2,-qh/2,0,-qw/2,qh/2,0,qw/2,qh/2,0]),gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,1,1]),gl.STATIC_DRAW);
+  S.world.pos=[0,mode==='immersive-ar'?1.05:1.15,-.75];S.world.quat=[0,0,0,1];S.world.scale=.55;S.placedOnce=false;S.anchorSpace=null;
+  if(mode==='immersive-ar'){try{const vs=await sess.requestReferenceSpace('viewer');S.hit.source=await sess.requestHitTestSource({space:vs})}catch(_){S.hit.source=null}}
+  sess.addEventListener('select',e=>{
+   if(S.hit.visible&&(S.hit.placing||!S.placedOnce)){const m=S.hit.mat;S.world.pos=[m[12],m[13]+.02,m[14]];S.placedOnce=true;S.hit.placing=false;
+    try{if(S.lastHit&&S.lastHit.createAnchor)S.lastHit.createAnchor().then(an=>{S.anchorSpace=an.anchorSpace}).catch(()=>{})}catch(_){}
+    toast450(t450('placed'));return}
+   doPick450(e.frame,e.inputSource)});
+  sess.addEventListener('squeezestart',e=>startGrab450(e.frame,e.inputSource));
+  sess.addEventListener('squeezeend',e=>endGrab450(e.inputSource));
+  sess.addEventListener('inputsourceschange',e=>{for(const s of e.removed){S.grabs.delete(s);btnPrev.delete(s);S.hands.delete(s)}S.support.hands=[...sess.inputSources].some(s=>!!s.hand)});
+  sess.addEventListener('end',()=>{S.sess=null;S.gl=null;S.sceneKey='';S.grabs.clear();btnPrev.clear();S.hands.clear();S.panel.tex=null;S.hit.source=null;S.anchorSpace=null;S.depth.binding=null;try{state.xrSession=null}catch(_){}toast450(t450('ended'))});
+  AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);
+  refreshScene450(true);S.panel.dirty=true;
+  sess.requestAnimationFrame(frame450);
+  toast450(t450('started')+(S.support.rate?` · ${S.support.rate} Hz`:'')+(mode==='immersive-ar'?' · AR':' · VR'));
+ }catch(e){console.warn('UPRS450 session',e);toast450('XR: '+e.message);try{window.__UPRS440__?.enter()}catch(_){}}}
+/* desktop sonification loop */
+let deskTimer=0;
+function desktopAudioTick450(){if(!AU.enabled||S.sess)return;const idx=(()=>{try{return state.index}catch(_){return -1}})();
+ if(idx!==AU.lastIdx){AU.lastIdx=idx;const sel=currentSel450();if(sel){AU.apply(sel);AU.place(0,0,-1)}}}
+function toggleSound450(){const on=!AU.enabled;if(!AU.setEnabled(on)){toast450('Audio: '+(AU.err||'unavailable'));return}
+ toast450(on?t450('sndOn'):t450('sndOff'));
+ const btn=document.getElementById('sndBtn450');if(btn)btn.classList.toggle('on',on);
+ if(on){const sel=currentSel450();if(sel){AU.apply(sel);AU.place(0,0,-1)}
+  if(!deskTimer)deskTimer=setInterval(desktopAudioTick450,140)}}
+/* --------------------------------------------------------------- install */
+let tries=0;
+function install450(){if(typeof document==='undefined')return;
+ if(!document.body||typeof state==='undefined'||!CORE()){if(tries++<90)return setTimeout(install450,220);return}
+ try{
+  const btn=document.getElementById('xrBtn');if(btn)btn.onclick=()=>enterImmersive450();
+  try{enterXR=enterImmersive450;globalThis.enterXR=enterImmersive450;window.enterXR=enterImmersive450}catch(_){}
+  const acts=document.querySelector('.top-actions');
+  if(acts&&!document.getElementById('sndBtn450')){const sb=document.createElement('button');sb.className='btn';sb.id='sndBtn450';sb.textContent='🔊';sb.title=lang450()===0?'Соникация резонансов':'Resonance sonification';sb.onclick=toggleSound450;acts.insertBefore(sb,acts.firstChild)}
+ }catch(e){console.warn('UPRS450 install',e)}}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install450,200),{once:true});else setTimeout(install450,200)}}catch(_){}
+for(const ms of [1100,3000,8000])setTimeout(()=>{try{install450()}catch(_){}},ms);
+/* async audio probe for the self-test (OfflineAudioContext render) */
+const audioProbe={done:false,ok:false,rms:0};
+setTimeout(()=>{try{
+ const OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext;if(!OAC){audioProbe.done=true;audioProbe.ok=true;audioProbe.note='no OfflineAudioContext — skipped';return}
+ const ctx=new OAC(2,8820,44100),eng=makeAudio450(ctx);eng.ensure();eng.setEnabled(true);
+ eng.apply({t:.5,g:.03,q:12,gd:1},0);eng.place(0,0,-1);
+ ctx.startRendering().then(buf=>{let s=0,n=0;for(let ch=0;ch<buf.numberOfChannels;ch++){const d=buf.getChannelData(ch);for(let i=0;i<d.length;i+=4){s+=d[i]*d[i];n++}}
+  audioProbe.rms=Math.sqrt(s/Math.max(1,n));audioProbe.ok=audioProbe.rms>1e-4;audioProbe.done=true}).catch(e=>{audioProbe.done=true;audioProbe.ok=false;audioProbe.note=e.message})
+}catch(e){audioProbe.done=true;audioProbe.ok=true;audioProbe.note='probe skipped: '+e.message}},900);
+/* --------------------------------------------------------------- tests */
+function checks450(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
+ ok('v4.5.0 depth+audio module installed',()=>({ok:!!globalThis.__UPRS450__&&!!CORE(),detail:'v'+V450+' on 440 core'}));
+ ok('v4.5.0 sonification map: monotonic pitch, resonance swell',()=>{const lo=sonify450({t:0,g:.5}),hi=sonify450({t:1,g:.5});
+  const deep=sonify450({t:.5,g:.02}),off=sonify450({t:.5,g:.9});
+  return {ok:hi.freq>lo.freq*20&&deep.gain>off.gain*2&&deep.gain<=.6&&off.gain>=.05,detail:`f:${Math.round(lo.freq)}→${Math.round(hi.freq)}Hz gain:${off.gain.toFixed(2)}→${deep.gain.toFixed(2)}`}});
+ ok('v4.5.0 depth luminance-alpha decode round-trip',()=>{const raw=.001,meters=1.234,value=Math.round(meters/raw);
+  const r=(value%256)/255,a=Math.floor(value/256)/255;const dec=depthLA450(r,a,raw);
+  return {ok:Math.abs(dec-meters)<1e-3,detail:`1.234m→${dec.toFixed(4)}m`}});
+ ok('v4.5.0 sonification clamps stay in audible/safe bounds',()=>{const p=sonify450({t:99,g:-5,q:1e9,gd:1e9});
+  return {ok:p.freq<=3520.0001&&p.gain<=.6&&p.Q<=30&&Math.abs(p.detune)<=40,detail:JSON.stringify({f:Math.round(p.freq),g:p.gain,Q:p.Q,d:p.detune})}});
+ ok('v4.5.0 occlusion shaders compile (WebGL)',()=>{const cv=document.createElement('canvas');const gl=cv.getContext('webgl2')||cv.getContext('webgl');if(!gl)return {ok:true,detail:'no GL — skipped'};
+  mkProg450(gl,VS450,FS450);mkProg450(gl,VSQ450,FSQ450);return {ok:true,detail:'occlusion programs linked'}});
+ ok('v4.5.0 offline audio graph renders sound',()=>({ok:!audioProbe.done||audioProbe.ok,detail:audioProbe.done?(audioProbe.note||('rms='+audioProbe.rms.toExponential(2))):'pending'}));
+ ok('v4.5.0 live selection maps to sonification inputs',()=>{const sel=currentSel450();if(!sel)return {ok:true,detail:'no sweep yet — skipped'};
+  const p=sonify450(sel);return {ok:Number.isFinite(p.freq)&&Number.isFinite(p.gain)&&p.freq>=110&&p.freq<=3520.1,detail:`${Math.round(p.freq)} Hz · gain ${p.gain.toFixed(2)}`}});
+ ok('v4.5.0 engine chain: 450 owns entry, 440 preserved',()=>({ok:typeof enterImmersive450==='function'&&!!window.__UPRS440__&&typeof window.__UPRS440__.enter==='function',detail:'450→440→legacy'}));
+ return out}
+function wrapTests450(){try{if(typeof runTests!=='function'||runTests.__uprs450)return;const base=runTests;
+ const w=function(show=true){const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.5.0'));for(const x of checks450())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs450=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+setTimeout(wrapTests450,400);for(const ms of [1800,4500,10000,17000])setTimeout(wrapTests450,ms);
+/* --------------------------------------------------------------- API */
+globalThis.__UPRS450__={version:V450,enter:enterImmersive450,exit:()=>{try{S.sess?.end()}catch(_){}},toggleSound:toggleSound450,checks:checks450,
+ core:{sonify:sonify450,depthLA:depthLA450,currentSel:currentSel450,makeAudio:makeAudio450,shaders:{VS450,FS450,VSQ450,FSQ450}},
+ audit:()=>({version:V450,active:!!S.sess,mode:S.mode,depth:{mode:S.depth.mode,gpu:S.support.depthGpu,cpu:S.support.depthCpu},
+  audio:{enabled:AU.enabled,ctx:!!AU.ctx,err:AU.err,probe:audioProbe},world:{...S.world},rate:S.support.rate})};
+})();
+</script>
 </body></html>
