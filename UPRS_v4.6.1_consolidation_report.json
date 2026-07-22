@@ -3,8 +3,8 @@
   "source": "app-v4.5.0.html",
   "sourceBytes": 1665867,
   "sourceSha256": "c4457a9023798c20e99a3c4a0ebbef2a2f0311dfa87600d4addd913dd5407926",
-  "outputBytes": 1681000,
-  "outputSha256": "9b49a82af9cb4fb2c0d978fe6a4e6c74f009cd1821cdbca6e4bfd4ae0697799c",
+  "outputBytes": 1682632,
+  "outputSha256": "5f1cf1626c1f0acf515bcc4a779a37e29c9ba2a3965d31e7d321a5adc413329e",
   "inlineScripts": 71,
   "syntaxFailures": [],
   "changes": [
@@ -61,6 +61,10 @@
       "count": 1
     },
     {
+      "label": "remove stale service-worker registration",
+      "count": 1
+    },
+    {
       "label": "insert Quest XR startup recovery",
       "count": 1
     },
@@ -101,7 +105,7 @@
       "count": 1
     },
     {
-      "label": "Quest-safe button preflight",
+      "label": "Quest-safe button binding without automatic preflight",
       "count": 1
     },
     {
@@ -131,9 +135,16 @@
     "preferAR": false,
     "depthOnStartup": false,
     "autoLegacyFallback": false,
-    "requestTimeoutMs": 15000,
+    "automaticPreflight": false,
+    "optionalFeatures": [
+      "local-floor"
+    ],
+    "lateSessionCleanup": true,
+    "staleServiceWorkerCleanup": true,
+    "requestTimeoutMs": 30000,
     "glTimeoutMs": 8000,
     "referenceSpaceTimeoutMs": 5000,
-    "firstFrameTimeoutMs": 8000
+    "firstFrameTimeoutMs": 8000,
+    "framebufferScaleFactor": 0.85
   }
 }
