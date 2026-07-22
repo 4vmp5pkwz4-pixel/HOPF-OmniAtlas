@@ -46,4 +46,4 @@ jobs:
           git commit -m 'v4.6.0: consolidate version, XR ownership, scene cache and lifecycle [skip ci]'
           git push origin HEAD:codex/v4.6-core-consolidation
 
-# Triggered through the Contents API so GitHub Actions receives a normal push event.
+# Registered on main; this branch update triggers the production transformation.
