@@ -1,12 +1,13 @@
 <script id="uprs460CoreAuthority">(()=>{'use strict';
-const VERSION='4.6.0';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
+const VERSION='4.6.1';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
 const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
 A.version=VERSION;
-A.release='core-consolidation';
-A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6-transforms';
+A.release='quest-xr-startup-recovery';
+A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6.1-transforms';
 A.reproducibleReport=true;
 A.xrOwner='450';
+A.xrStartupPolicy='quest-safe-vr-direct-activation';
 A.sceneRevision=Number.isFinite(A.sceneRevision)?A.sceneRevision:0;
 A.bumpSceneRevision=reason=>{
   A.sceneRevision=(A.sceneRevision+1)>>>0;
