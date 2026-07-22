@@ -1,0 +1,83 @@
+<script id="uprs460Consolidation">(()=>{'use strict';
+const V='4.6.0',A=globalThis.__UPRS_APP__;
+function inferSemantics(m){
+  if(m.responseSemantics)return m.responseSemantics;
+  const map=String(m.map||'').toLowerCase();
+  if(map.includes('reflect'))return 'reflection-coefficient';
+  if(map.includes('impedance'))return 'impedance';
+  if(map.includes('admittance'))return 'admittance';
+  if(map.includes('transfer'))return 'transfer-function';
+  return 'derived-complex-response';
+}
+function applicability(s){return {
+  resonance:true,phase:true,powerLaw:true,plateau:true,fano:true,
+  directGamma:s==='reflection-coefficient',
+  directPassivity:s==='reflection-coefficient',
+  cayleyPassivity:s==='impedance'||s==='admittance',
+  groupDelay:s==='transfer-function'||s==='reflection-coefficient'
+}}
+function annotateModels(){
+  let inferred=0,explicit=0,total=0;
+  try{for(const m of Object.values(UPRSO_MODELS||{})){
+    total++;
+    if(m.responseSemantics)explicit++;
+    else{m.responseSemantics=inferSemantics(m);m.semanticsSource='inferred-v4.6';inferred++}
+    m.detectorApplicability=m.detectorApplicability||applicability(m.responseSemantics);
+  }}catch(_){}
+  return {total,explicit,inferred};
+}
+function claimXR(){
+  if(globalThis.__UPRS450__?.enter){
+    globalThis.enterXR=globalThis.__UPRS450__.enter;
+    window.enterXR=globalThis.__UPRS450__.enter;
+    const b=document.getElementById('xrBtn');if(b)b.onclick=()=>globalThis.__UPRS450__.enter();
+    A.xrOwner='450';return true;
+  }
+  return false;
+}
+function hookSceneRevision(){
+  const names=['draw','setMode','rebuildModelOptions'];
+  for(const n of names){try{
+    const f=globalThis[n];if(typeof f!=='function'||f.__uprs460)continue;
+    const w=function(...args){A.bumpSceneRevision(n);return f.apply(this,args)};
+    w.__uprs460=true;globalThis[n]=w;try{window[n]=w}catch(_){}
+  }catch(_){}}
+  document.addEventListener('input',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('input')},{passive:true});
+  document.addEventListener('change',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('change')},{passive:true});
+}
+function claimVersion(){A.claimVersion();}
+function audit(){
+  const sem=annotateModels(),r450=globalThis.__UPRS450__?.audit?.(),r440=globalThis.__UPRS440__?.audit?.();
+  return {version:V,title:document.title,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
+}
+function checks(){
+  const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
+  return [
+    {name:'v4.6.0 single version authority',pass:A.version===V&&document.title.includes('v'+V)},
+    {name:'v4.6.0 v4.5 owns XR entry',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},
+    {name:'v4.6.0 v4.4 retained as fallback',pass:typeof globalThis.__UPRS440__?.enter==='function'},
+    {name:'v4.6.0 scene signature detects geometry change',pass:stamp1!==stamp2},
+    {name:'v4.6.0 response semantics cover model registry',pass:s.total>0&&s.explicit+s.inferred===s.total,detail:JSON.stringify(s)},
+    {name:'v4.6.0 no early runtime errors',pass:(globalThis.__UPRS_EARLY_ERRORS__||[]).length===0,detail:JSON.stringify(globalThis.__UPRS_EARLY_ERRORS__||[])}
+  ];
+}
+function wrapTests(){try{
+  if(typeof runTests!=='function'||runTests.__uprs460)return;
+  const base=runTests;
+  const w=function(show=true){
+    const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.6.0'));
+    for(const x of checks())T.push(x);
+    const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+    globalThis.__UPRS_SELF_TEST__=rep;
+    if(show)try{toast(rep.failed.length?'Self-test: '+rep.failed.length+' failed':'Self-test: '+rep.passed+'/'+rep.total)}catch(_){}
+    return rep;
+  };
+  w.__uprs460=true;globalThis.runTests=w;window.runTests=w;
+}catch(_){}}
+function install(){
+  claimVersion();annotateModels();claimXR();hookSceneRevision();wrapTests();
+  document.dispatchEvent(new CustomEvent('uprs:ready',{detail:audit()}));
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+globalThis.__UPRS460__={version:V,audit,checks,annotateModels,claimXR,bumpSceneRevision:A.bumpSceneRevision};
+})();</script>
