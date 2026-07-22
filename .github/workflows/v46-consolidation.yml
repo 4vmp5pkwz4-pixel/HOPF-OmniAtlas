@@ -35,7 +35,13 @@ jobs:
           fetch-depth: 0
 
       - name: Build deterministic single-file v4.6 release
-        run: node tools/consolidate-v46.mjs
+        shell: bash
+        run: |
+          set +e
+          node tools/consolidate-v46.mjs > build-v46.log 2>&1
+          code=$?
+          cat build-v46.log
+          exit $code
 
       - name: Verify generated artifact
         run: |
@@ -47,7 +53,17 @@ jobs:
           grep -q '__UPRS450__' build/index.html
           grep -q 'asml_euv_lpp' build/index.html
 
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: UPRS-v4.6.0-build-diagnostics
+          path: build-v46.log
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload standalone release candidate
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: UPRS-v4.6.0-release-candidate
