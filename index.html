@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#05070b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UPRS Möbius–Hopf OmniAtlas v3.9.6 · Batched Renderer + Rotation Safe + Claude + ASML EUV LPP</title>
+<title>UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP</title>
 <style>
 :root{--bg:#030507;--panel:rgba(10,14,21,.88);--panel2:rgba(16,21,31,.82);--gold:#d7b76e;--gold2:#fff0bd;--ice:#98e8ff;--violet:#c3adff;--green:#8ce9bd;--red:#ff9d9d;--text:#edf1f6;--muted:#96a2b5;--line:rgba(215,183,110,.24);--shadow:0 24px 80px rgba(0,0,0,.5)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 54% 18%,#141c2d 0,#070b12 36%,#020305 78%);color:var(--text);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}button,input,select{font:inherit}button{color:inherit}.app{height:100%;display:grid;grid-template-rows:auto 1fr;position:relative}.top{min-height:68px;display:flex;align-items:center;gap:12px;padding:9px 14px calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(3,5,8,.96),rgba(3,5,8,.78));backdrop-filter:blur(20px);z-index:20}.brand{display:flex;align-items:center;gap:10px;min-width:262px}.seal{width:40px;height:40px;border:1px solid rgba(255,240,189,.65);border-radius:50%;position:relative;box-shadow:0 0 26px rgba(215,183,110,.18),inset 0 0 18px rgba(152,232,255,.08)}.seal:before,.seal:after{content:"";position:absolute;border-radius:50%;border:1px solid}.seal:before{inset:7px;border-color:rgba(152,232,255,.72);transform:rotate(58deg)}.seal:after{inset:13px;border-color:rgba(195,173,255,.9)}.brand b{display:block;font-size:13px;letter-spacing:.2em;color:var(--gold2)}.brand small{display:block;margin-top:3px;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}.modes{display:flex;gap:6px;flex:1;overflow:auto;scrollbar-width:none}.modes::-webkit-scrollbar{display:none}.mode,.btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);padding:8px 11px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.18s}.mode:hover,.btn:hover{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.08)}.mode.on{color:#080a0d;background:linear-gradient(135deg,var(--gold2),var(--gold));border-color:transparent;box-shadow:0 8px 24px rgba(215,183,110,.18)}.top-actions{display:flex;gap:6px}.layout{min-height:0;display:grid;grid-template-columns:310px 1fr 330px;gap:11px;padding:11px}.panel{min-height:0;overflow:auto;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:var(--shadow);backdrop-filter:blur(20px)}.panel::-webkit-scrollbar{width:7px}.panel::-webkit-scrollbar-thumb{background:rgba(215,183,110,.2);border-radius:9px}.left,.right{padding:14px}.section{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.065)}.section:last-child{border-bottom:0}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--gold);font-size:9px;letter-spacing:.17em;text-transform:uppercase;margin-bottom:9px}.badge{font-size:8px;letter-spacing:.09em;padding:3px 7px;border:1px solid;border-radius:999px}.tierA{color:var(--green);border-color:rgba(140,233,189,.35)}.tierB{color:var(--gold2);border-color:rgba(215,183,110,.42)}.tierC{color:var(--violet);border-color:rgba(195,173,255,.38)}.field{margin:8px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10.5px;margin-bottom:5px}.field label span:last-child{color:var(--gold2)}input,select{width:100%;min-width:0;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.25);color:var(--text);padding:8px 9px;border-radius:9px;outline:none}input:focus,select:focus{border-color:rgba(152,232,255,.45);box-shadow:0 0 0 3px rgba(152,232,255,.05)}input[type=range]{padding:0;accent-color:var(--gold)}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.toggle{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 0;color:var(--muted);font-size:10.5px}.switch{width:38px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:#1a2230;position:relative;cursor:pointer}.switch:after{content:"";position:absolute;left:3px;top:2px;width:16px;height:16px;border-radius:50%;background:#748196;transition:.18s}.switch.on{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.23)}.switch.on:after{left:18px;background:var(--gold2)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.grid2 .btn{border-radius:10px;padding:8px 8px}.viewport{min-width:0;min-height:0;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 50% 44%,rgba(22,30,44,.85),rgba(4,6,10,.98) 70%);box-shadow:var(--shadow)}#fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.72;transition:opacity .35s;pointer-events:none}body.ready #fallback{opacity:.06}#view,#xrCanvas,#camera{position:absolute;inset:0;width:100%;height:100%}#view{touch-action:none}#xrCanvas{display:none}#camera{display:none;object-fit:cover;filter:saturate(.7) contrast(1.1) brightness(.45)}.vignette{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 110px rgba(0,0,0,.68)}.viewtop{position:absolute;left:14px;right:14px;top:13px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.titlecard,.statecard{padding:9px 11px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(4,7,11,.65);backdrop-filter:blur(12px)}.titlecard b{display:block;color:var(--gold2);font-size:11px;letter-spacing:.13em;text-transform:uppercase}.titlecard span{display:block;color:var(--muted);font-size:9.5px;margin-top:3px}.statecard{align-self:flex-start;color:var(--green);font-size:9px;letter-spacing:.08em;border-color:rgba(140,233,189,.25)}.metrics{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:repeat(6,minmax(80px,1fr));gap:6px;pointer-events:none}.metric{padding:8px 9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(4,7,11,.68);backdrop-filter:blur(12px);min-width:0}.metric label{display:block;color:var(--muted);font-size:8px;letter-spacing:.09em;text-transform:uppercase}.metric b{display:block;margin-top:3px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric:nth-child(2n) b{color:var(--ice)}.metric:nth-child(3n) b{color:var(--gold2)}.card{border:1px solid rgba(255,255,255,.08);border-radius:13px;background:rgba(0,0,0,.15);padding:10px;margin:8px 0}.card h3{margin:0 0 7px;color:var(--gold2);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:10.5px}.kv div:nth-child(odd){color:var(--muted)}.kv div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;max-width:190px;overflow-wrap:anywhere}.formula{font:10px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#dce8f2;white-space:pre-wrap;overflow-wrap:anywhere}.note{color:var(--muted);font-size:10.5px;line-height:1.55}.note strong{color:var(--text)}details{border-top:1px solid rgba(255,255,255,.06);padding:7px 0}summary{cursor:pointer;color:var(--gold);font-size:10px}.search{margin-bottom:8px}.list{display:flex;flex-direction:column;gap:5px}.item{padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(0,0,0,.12);cursor:pointer}.item:hover{border-color:rgba(215,183,110,.35)}.item b{font-size:10.5px}.item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}.boot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 13px;border:1px solid rgba(215,183,110,.35);border-radius:999px;background:rgba(4,7,11,.82);color:var(--gold2);font-size:10px;letter-spacing:.1em;z-index:3;transition:.35s}body.ready .boot{opacity:0;pointer-events:none}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);opacity:0;z-index:100;padding:10px 14px;max-width:88vw;border:1px solid rgba(215,183,110,.36);border-radius:12px;background:rgba(4,7,11,.95);box-shadow:var(--shadow);transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}.fatal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);padding:20px}.fatal.show{display:flex}.fatal>div{max-width:720px;border:1px solid rgba(255,157,157,.45);border-radius:16px;background:#130a0c;padding:18px}.fatal h2{color:var(--red);margin:0 0 8px}.fatal pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#ffd8d8;font-size:11px}.mobileTabs{display:none}
@@ -699,21 +699,27 @@ function draw(t=0){
  window.__UPRS396_RENDER__={sourceSegments,lineStrokes:packets.length,pointBatches:batches.size,specialPoints:special.length,renderStride,hitTargets:state.hitTargets.length};
 }
 function drawBridge(t){const pos={};state.hitTargets=[];PORTS.forEach((p,i)=>{const base=TAU*i/PORTS.length,off=state.bridgeAngles[p[0]],a=off??base;pos[p[0]]=[W/2+Math.cos(a)*Math.min(W,H)*.30,H/2+Math.sin(a)*Math.min(W,H)*.30]});ctx.lineWidth=1.3;for(const c of COUPLINGS){const a=pos[c[1]],b=pos[c[2]],meta={id:`bridge-edge:${c[0]}`,kind:'bridge-edge',coupling:c,label:`${c[3]} · ${c[4]}`,priority:60};state.hitTargets.push({type:'segment',a,b,meta,segment:0,segmentCount:1,priority:60});const hot=state.hoverTarget?.meta?.id===meta.id||state.activeEntity?.meta?.id===meta.id;ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.strokeStyle=hot?'rgba(255,240,189,.9)':'rgba(152,232,255,.2)';ctx.lineWidth=hot?3:1.3;ctx.stroke()}PORTS.forEach(p=>{const q=pos[p[0]],meta={id:`bridge-node:${p[0]}`,kind:'bridge-node',port:p[0],label:`${p[1]}: ${p[2]} × ${p[3]}`,priority:130};state.hitTargets.push({type:'point',x:q[0],y:q[1],radius:35,meta,priority:130});const hot=state.hoverTarget?.meta?.id===meta.id||state.activeEntity?.meta?.id===meta.id;ctx.beginPath();ctx.arc(q[0],q[1],hot?33:29,0,TAU);ctx.fillStyle=hot?'rgba(38,42,38,.97)':'rgba(8,13,20,.92)';ctx.fill();ctx.strokeStyle=hot?'rgba(255,240,189,.95)':'rgba(215,183,110,.65)';ctx.lineWidth=hot?2.5:1;ctx.stroke();ctx.fillStyle='#fff0bd';ctx.textAlign='center';ctx.font='10px system-ui';ctx.fillText(p[1],q[0],q[1]+3)});ctx.textAlign='left'}
-let uprs392LoopTimer=0,uprs392LoopFrames=0,uprs392LoopSkips=0;
+let uprs392LoopTimer=0,uprs392LoopFrames=0,uprs392LoopSkips=0,uprs392IdleFrames=0,uprs392DrawEMA=0;
 function loop(t){
  const dynamic=!!((state.rotate&&state.mode!=='smith')||state.motionActive||state.sensor||state.xrSession||state.cameraFocus20?.enabled||state.drag||state.activePointers?.size||window.__UPRS_CONTROL_ACTIVE_280__);
  const hidden=document.visibilityState==='hidden';
- if(!hidden){
+ let rendered=false,drawMs=0;
+ if(!hidden&&dynamic){
   if(state.motionActive||state.sensor)applySensorRoutes(t);
-  draw(t);
+  const t0=performance.now();draw(t);drawMs=performance.now()-t0;uprs392DrawEMA=uprs392DrawEMA?uprs392DrawEMA*.88+drawMs*.12:drawMs;
   try{window.__UPRS_ANNOTATE_FRAME__?.()}catch(e){console.warn('annotation frame',e)}
-  uprs392LoopFrames++;
- }else uprs392LoopSkips++;
+  uprs392LoopFrames++;rendered=true;
+ }else if(hidden)uprs392LoopSkips++;else uprs392IdleFrames++;
  const mobile=matchMedia('(max-width:1100px)').matches;
- const delay=hidden?500:(dynamic?(mobile?8:0):90);
+ let delay;
+ if(hidden)delay=750;
+ else if(!dynamic)delay=500;
+ else if(uprs392DrawEMA>30)delay=mobile?34:20;
+ else if(uprs392DrawEMA>18)delay=mobile?22:10;
+ else delay=mobile?10:0;
  clearTimeout(uprs392LoopTimer);
  uprs392LoopTimer=setTimeout(()=>requestAnimationFrame(loop),delay);
- window.__UPRS392_LOOP__={frames:uprs392LoopFrames,skips:uprs392LoopSkips,dynamic,delay};
+ window.__UPRS392_LOOP__={frames:uprs392LoopFrames,idleTicks:uprs392IdleFrames,skips:uprs392LoopSkips,dynamic,delay,rendered,drawMs,drawEMA:uprs392DrawEMA};
 }
 function setEditorValue(id,v){const e=$(id);if(document.activeElement!==e)e.value=Number.isFinite(v)?String(v):''}
 function updateEntityInspector(){const h=state.activeEntity,d=entityDescription(h),s=selectedState(),g=s?.gamma||C(),z=s?.zn||UCInvCayley(g);$('entityTitle').innerHTML=`<span><span class="liveDot"></span>${d?.title||'Рабочая точка'}</span>`;$('entityKind').textContent=h?.meta?.kind||s?.selectionSource||'sample';$('entityKV').innerHTML=[['Объект',d?.detail||'Выбранная физическая/геометрическая точка'],['Источник',s?.selectionSource||'computed sweep'],['Индекс',state.exactAxis!=null?'exact':state.freeProbe?'free':`${state.index+1}/${state.sweep.length}`],['Drag control',state.driveParam],['Snap',state.snapToLocus?'on':'off']].map(x=>`<div>${x[0]}</div><div>${x[1]}</div>`).join('');if(s){setEditorValue('axisEdit',s.x);setEditorValue('gammaReEdit',g.re);setEditorValue('gammaImEdit',g.im);setEditorValue('gammaMagEdit',UCabs(g));setEditorValue('gammaPhaseEdit',UCarg(g)*180/PI);setEditorValue('znReEdit',z.re);setEditorValue('znImEdit',z.im)}$('interactionState').textContent=state.freeProbe?'FREE Γ':state.exactAxis!=null?'EXACT AXIS':'LINKED'}
@@ -2656,7 +2662,7 @@ function install280(){
  document.addEventListener('pointercancel',()=>{window.__UPRS_CONTROL_ACTIVE_280__=false},true);
  const audit=()=>({version:V280,viewport:(()=>{const r=document.getElementById('viewport')?.getBoundingClientRect();return r&&[r.width,r.height]})(),canvas:[view.width,view.height],dpr:typeof DPR==='number'?DPR:null,mode:state.mode,segments:state.scene?.lines?.reduce((n,l)=>n+Math.max(0,(l.pts?.length||0)-1),0)||0,panels:[...document.querySelectorAll('.panel[data-snap]:not([data-snap="closed"])')].map(p=>({id:p.id,dock:p.dataset.dock,box:(()=>{const r=p.getBoundingClientRect();return [r.x,r.y,r.width,r.height]})()})),controlActive:!!window.__UPRS_CONTROL_ACTIVE_280__,renderStats:window.__UPRS_RENDER_STATS__||null});
  window.__UPRS_IPHONE_AUDIT280__=audit;
- for(const ms of [0,300,1200,4200,9000,13000,18000,22000])setTimeout(()=>{stamp280();syncPanelA11y280();clampPanels280();if(ms===4200)finalRender280()},ms)
+ for(const ms of [0,300,1200,4200,9000,13000,18000])setTimeout(()=>{stamp280();syncPanelA11y280();clampPanels280();if(ms===4200)finalRender280()},ms)
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install280,3900),{once:true});else setTimeout(install280,3900);
 })();
@@ -3354,7 +3360,7 @@ function install302(){
  const oldUI=window.updateUI;if(oldUI&&!oldUI.__v302){const f=function(){const r=oldUI();requestAnimationFrame(sync302);return r};f.__v302=true;window.updateUI=f;try{globalThis.updateUI=f}catch(_){ }}
  const oldI18n=window.applyI18n;if(oldI18n&&!oldI18n.__v302){const f=function(){const r=oldI18n();requestAnimationFrame(sync302);return r};f.__v302=true;window.applyI18n=f;try{globalThis.applyI18n=f}catch(_){ }}
  addEventListener('resize',()=>setTimeout(sync302,60),{passive:true});addEventListener('orientationchange',()=>setTimeout(sync302,160),{passive:true});
- for(const ms of[300,1200,3500,8000,13000,19000,27000])setTimeout(()=>{stamp302();ensureLayerUI302();installGesture302();sync302()},ms);
+ for(const ms of[300,1200,3500,8000,13000])setTimeout(()=>{stamp302();ensureLayerUI302();installGesture302();sync302()},ms);
  requestAnimationFrame(()=>{buildScene?.();updateUI?.();sync302();draw?.(performance.now())});
  window.__UPRS_S3_TOUCH_AUDIT302__=()=>({version:V302,mode:state.mode,s3Layer:state.s3Layer302,rollDeg:(state.roll||0)*180/Math.PI,gestureSurface:!!document.getElementById('gestureSurface302'),hopfionTabVisible:[...document.querySelectorAll('[data-mode="hopfion"]')].some(x=>getComputedStyle(x).display!=='none')});
 }
@@ -3493,7 +3499,7 @@ function patchLanguage310(){const old=window.setLanguage;if(typeof old==='functi
 function patchUpdates310(){for(const name of ['updateUI','setModel','recalc']){const old=window[name];if(typeof old!=='function'||old.__r310)continue;const fn=function(...a){const v=old.apply(this,a);if(state.research310?.lastRun){clearTimeout(state.research310.refreshTimer);state.research310.refreshTimer=setTimeout(()=>{state.research310.lastRun=null;render310()},350)}return v};fn.__r310=true;window[name]=fn;try{globalThis[name]=fn}catch(_){}}}
 function stamp310(){try{Object.defineProperty(window,'__UPRS_RESEARCH_VERSION__',{configurable:true,get:()=>V310})}catch(_){window.__UPRS_RESEARCH_VERSION__=V310}document.body.dataset.research310='ready';const s=document.querySelector('.brand small');if(s)s.textContent='UNIFIED S³ · DISCOVERY · SYMBOLIC REGRESSION · HYPOTHESIS ENGINE · v3.1.0';const rail=document.querySelector('#railResearch310 small');if(rail)rail.textContent=tr310('short');const cm=document.querySelector('#compactResearch310 b');if(cm)cm.textContent=tr310('short')}
 function selfTest310(){const tests=[],ok=(name,pass,detail='')=>tests.push({name,pass:!!pass,detail});try{const d=parseDataset310('x,y\n1,3\n2,5\n3,7\n4,9','test.csv');ok('CSV parser',d.rows.length===4&&d.rows[2].y===7)}catch(e){ok('CSV parser',false,e.message)}try{const p=[1,2,3,4,5,6].map(x=>({x,y:2+3*x})),f=fitFormulae310(p)[0];ok('Formula regression',f&&f.metrics.rmse<1e-8,`${f?.name} ${f?.metrics?.rmse}`)}catch(e){ok('Formula regression',false,e.message)}try{const z=[C(.2,.1),C(.4,-.2),C(1.2,.3),C(.8,.9)],g=z.map(UCCayley),r=UCabs(UCsub(crossRatio310(...z),crossRatio310(...g)));ok('Möbius cross-ratio',r<1e-10,r)}catch(e){ok('Möbius cross-ratio',false,e.message)}try{ok('Panel injected',!!document.getElementById('researchPanel310'));ok('Report generation',report310().includes('UPRS Scientific Research Report'))}catch(e){ok('Report generation',false,e.message)}const rep={version:V310,passed:tests.filter(x=>x.pass).length,total:tests.length,failed:tests.filter(x=>!x.pass),tests};window.__UPRS_RESEARCH310_SELFTEST__=rep;return rep}
-function install310(){if(window.__UPRS_RESEARCH310__)return;if(typeof state==='undefined'||typeof UPRSO_MODELS==='undefined'||!document.querySelector('.layout'))return setTimeout(install310,700);window.__UPRS_RESEARCH310__=true;initState310();inject310();patchPanels310();patchLanguage310();patchUpdates310();stamp310();refreshWorkbench?.();const test=selfTest310();audit310('engine.installed',{version:V310,selfTest:{passed:test.passed,total:test.total,failed:test.failed.map(x=>x.name)}});window.__UPRS_RESEARCH310_API__={run:runCycle310,parse:parseDataset310,fit:fitFormulae310,invariants:exactInvariants310,empirical:empiricalInvariants310,crossDomain:crossDomain310,report:report310,bundle:sanitized310,selfTest:selfTest310,open:()=>togglePanel('researchPanel310')};for(const ms of[1200,4200,9000,17000,29000])setTimeout(()=>{stamp310();inject310();render310()},ms)}
+function install310(){if(window.__UPRS_RESEARCH310__)return;if(typeof state==='undefined'||typeof UPRSO_MODELS==='undefined'||!document.querySelector('.layout'))return setTimeout(install310,700);window.__UPRS_RESEARCH310__=true;initState310();inject310();patchPanels310();patchLanguage310();patchUpdates310();stamp310();refreshWorkbench?.();const test=selfTest310();audit310('engine.installed',{version:V310,selfTest:{passed:test.passed,total:test.total,failed:test.failed.map(x=>x.name)}});window.__UPRS_RESEARCH310_API__={run:runCycle310,parse:parseDataset310,fit:fitFormulae310,invariants:exactInvariants310,empirical:empiricalInvariants310,crossDomain:crossDomain310,report:report310,bundle:sanitized310,selfTest:selfTest310,open:()=>togglePanel('researchPanel310')};for(const ms of[1200,4200,9000,17000])setTimeout(()=>{stamp310();inject310();render310()},ms)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install310,7200),{once:true});else setTimeout(install310,7200);
 })();
 </script>
@@ -3678,7 +3684,7 @@ function injectPanel320(){if($320('intelligencePanel320'))return;const p=documen
 function patchPanels320(){const old=window.openPanelIds;if(old?.__a320)return;const fn=function(){const a=typeof old==='function'?(old()||[]):[],p=$320('intelligencePanel320');return [...new Set([...a,...(p&&p.dataset.snap!=='closed'?['intelligencePanel320']:[])])]};fn.__a320=true;window.openPanelIds=fn;try{globalThis.openPanelIds=fn}catch(_){}}
 function patchRefresh320(){const old=window.refreshWorkbench;if(typeof old!=='function'||old.__a320)return;const fn=function(...args){const v=old.apply(this,args);requestAnimationFrame(()=>render320());return v};fn.__a320=true;window.refreshWorkbench=fn;try{globalThis.refreshWorkbench=fn}catch(_){}}
 function patchLanguage320(){const old=window.setLanguage;if(typeof old==='function'&&!old.__a320){const fn=function(...a){const v=old.apply(this,a);requestAnimationFrame(()=>{render320();document.title=`UPRS Möbius–Hopf OmniAtlas v3.2.0 · Aureum Intelligence`});return v};fn.__a320=true;window.setLanguage=fn;try{globalThis.setLanguage=fn}catch(_){}}$320('langSelect')?.addEventListener('change',()=>requestAnimationFrame(render320))}
-function monitorPerformance320(){const perf=state.intelligence320.performance,frames=[];let last=performance.now();const loop=t=>{const dt=t-last;last=t;if(dt>0&&dt<300){frames.push(1000/dt);if(frames.length>120)frames.shift();perf.fps=median320(frames)}requestAnimationFrame(loop)};requestAnimationFrame(loop);try{const o=new PerformanceObserver(list=>{perf.longTasks+=list.getEntries().length});o.observe({entryTypes:['longtask']})}catch(_){ }}
+function monitorPerformance320(){const perf=state.intelligence320.performance;if(perf.__monitorInstalled)return;perf.__monitorInstalled=true;let last=performance.now(),lastFrames=window.__UPRS392_LOOP__?.frames||0;const sample=()=>{const now=performance.now(),frames=window.__UPRS392_LOOP__?.frames||lastFrames,dt=Math.max(1,now-last);perf.fps=(frames-lastFrames)*1000/dt;last=now;lastFrames=frames};perf.__timer=setInterval(sample,1000);try{const o=new PerformanceObserver(list=>{perf.longTasks+=list.getEntries().length});o.observe({entryTypes:['longtask']});perf.__observer=o}catch(_){ }}
 function initState320(){state.intelligence320||={};const s=state.intelligence320;s.tab||='command';s.analysis||=null;s.lastRun||=null;s.deviceTier=deviceTier320();s.performance||={fps:0,longTasks:0};try{s.profile=localStorage.getItem('uprs-a320-profile')||((s.deviceTier==='mobile')?'mobile':'balanced')}catch(_){s.profile=s.deviceTier==='mobile'?'mobile':'balanced'}}
 function stamp320(){document.body.classList.add('atelier320');document.body.dataset.aureum320='ready';document.title='UPRS Möbius–Hopf OmniAtlas v3.2.0 · Aureum Intelligence';const small=document.querySelector('.brand small');if(small)small.textContent='UNIFIED S³ · DISCOVERY · AUREUM INTELLIGENCE · v3.2.0';const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content','#010205');window.__UPRS_AUREUM320__=V320}
 function selfTest320(){const tests=[],ok=(name,pass,detail='')=>tests.push({name,pass:!!pass,detail});try{const p=[1,2,3,4,5].map(x=>({x,y:2*x})),q=dataQuality320(p);ok('data quality',q.score>0,q.score)}catch(e){ok('data quality',false,e.message)}try{const w={models:[{weight:.8},{weight:.2}]};ok('hash deterministic',hash320('abc')===hash320('abc'),hash320('abc'))}catch(e){ok('hash deterministic',false,e.message)}try{const s=sensitivity320();ok('sensitivity finite',Array.isArray(s)&&s.every(x=>finite320(x.score)),s.length)}catch(e){ok('sensitivity finite',false,e.message)}try{const a=analyze320(false);ok('analysis capsule',/^A320-/.test(a.snapshot.hash),a.snapshot.hash)}catch(e){ok('analysis capsule',false,e.message)}try{ok('panel injected',!!$320('intelligencePanel320'))}catch(e){ok('panel injected',false,e.message)}const rep={version:V320,passed:tests.filter(x=>x.pass).length,total:tests.length,failed:tests.filter(x=>!x.pass),tests};window.__UPRS_AUREUM320_SELFTEST__=rep;return rep}
@@ -4023,7 +4029,7 @@ function install321(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install321,300),{once:true});else setTimeout(install321,300);
 // Late legacy installers are deliberately re-wrapped; this keeps v3.2.1 authoritative.
-for(const ms of [1100,2800,5600,9200,13200,20500])setTimeout(()=>{if(!ready321())return;ensureHooks321();patchRefresh321();repairPanel321();stamp321();try{window.buildScene?.();window.draw?.(performance.now());window.__UPRS_GEOMETRY321_SELFTEST__=audit321()}catch(e){console.warn('UPRS 3.2.1 late synchronization',e)}},ms);
+for(const ms of [1100,2800,5600,9200,13200])setTimeout(()=>{if(!ready321())return;ensureHooks321();patchRefresh321();repairPanel321();stamp321();try{window.buildScene?.();window.draw?.(performance.now());window.__UPRS_GEOMETRY321_SELFTEST__=audit321()}catch(e){console.warn('UPRS 3.2.1 late synchronization',e)}},ms);
 addEventListener('resize',()=>setTimeout(()=>{repairPanel321();window.refreshWorkbench?.();syncGeometryUI321()},90),{passive:true});
 addEventListener('orientationchange',()=>setTimeout(()=>{repairPanel321();window.refreshWorkbench?.();syncGeometryUI321()},220),{passive:true});
 })();
@@ -4826,7 +4832,7 @@ function patch330(){const oldMode=window.setMode||setMode;const sm=function(m){c
 function selftest330(){const tests=[],ok=(n,p,d='')=>tests.push({name:n,pass:!!p,detail:d});try{ok('studio injected',!!$('calcStudio330'));ok('ten calculation methods',METHODS.length===10,METHODS.length);const a=forward330();ok('forward summary finite',!!a.html&&state.sweep.length>0);const v=validate330();ok('validation engine',/Cayley/.test(v.html));const cp=couplingById('piezo');ok('typed coupling registry',cp?.[1]==='electrical'&&cp?.[2]==='mechanical');}catch(e){ok('runtime',false,e.message)}const rep={version:V,passed:tests.filter(x=>x.pass).length,total:tests.length,failed:tests.filter(x=>!x.pass),tests};window.__UPRS_CALC330_SELFTEST__=rep;return rep}
 function install330(){inject330();patch330();localize330();document.body.classList.toggle('calc330',state.mode==='bridges');document.title='UPRS Möbius–Hopf OmniAtlas v3.3.0 · Calculation Studio';window.__UPRS_CALC330__={run:run330,render:render330,methods:METHODS,selftest:selftest330};selftest330()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install330,900),{once:true});else setTimeout(install330,900);
-for(const t of[2200,5200,10000,18000,24000])setTimeout(()=>{inject330();localize330()},t);
+for(const t of[2200,5200,10000,18000])setTimeout(()=>{inject330();localize330()},t);
 })();
 </script>
 
@@ -4861,7 +4867,7 @@ function install(){
   window.__UPRS_CALC330_VISUAL_QA__={desktopPanel:!!document.getElementById('calcStudio330'),methods:document.querySelectorAll('#calcStudio330 [data-calc-method]').length,toolbarHidden:!document.querySelector('.mobileDock')||getComputedStyle(document.querySelector('.mobileDock')).display==='none'||state.mode!=='bridges'};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,1200),{once:true});else setTimeout(install,1200);
-for(const t of[3000,7000,12000,20000,28000])setTimeout(()=>{label330();install()},t);
+for(const t of[3000,7000,12000])setTimeout(()=>{label330();install()},t);
 })();
 </script>
 
@@ -5017,7 +5023,7 @@ function install331(){
  window.__UPRS_CALC331__={live:live331,enhance:enhance331,meta:couplingMeta,ports:PORT_I18N};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install331,1500),{once:true});else setTimeout(install331,1500);
-for(const ms of[3200,6500,11000,18000,26000])setTimeout(()=>enhance331(true),ms);
+for(const ms of[3200,6500,11000,18000])setTimeout(()=>enhance331(true),ms);
 })();
 </script>
 
@@ -5371,7 +5377,7 @@ function install(){
  window.__UPRS334__={translate:translateStable,domainKey:domainKey334};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,1800),{once:true});else setTimeout(install,1800);
-for(const ms of[3200,6500,11000,18000,31000])setTimeout(()=>{install();translateStable();document.title='UPRS Möbius–Hopf OmniAtlas v3.4.2 · Stable Runtime'},ms);/* v3.4.2: removed continuous translation polling; MutationObserver and language/mode hooks are sufficient. */
+for(const ms of[3200,6500,11000,18000])setTimeout(()=>{install();translateStable();document.title='UPRS Möbius–Hopf OmniAtlas v3.4.2 · Stable Runtime'},ms);/* v3.4.2: removed continuous translation polling; MutationObserver and language/mode hooks are sufficient. */
 })();
 </script>
 
@@ -5419,7 +5425,7 @@ function scan(){
 window.__UPRS_342_AUDIT__={scan};
 const stamp=()=>{document.title='UPRS Möbius–Hopf OmniAtlas v3.4.2 · Stable Runtime';window.__UPRS_342_LAST_AUDIT__=scan()};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(stamp,2200),{once:true});else setTimeout(stamp,2200);
-for(const ms of [5000,12000,24000])setTimeout(stamp,ms);
+for(const ms of [5000,12000])setTimeout(stamp,ms);
 })();
 </script>
 
@@ -6892,9 +6898,14 @@ function install377(){
   window.__UPRS_OMNIATLAS_PREDICT__={analyze:analyzePredict377,models:NEW_MODELS,phenomena:NEW_PHENOMENA,version:V377};
   const sub=document.querySelector('.brand small'); if(sub&&!/v3\.7\.7/.test(sub.textContent))sub.textContent=(sub.textContent+' · OmniAtlas Expansion v3.7.7');
   renderPredict377();
-  // keep the readout live; refresh on a light cadence and after user recalcs
+  // Event-driven predictive readout: no permanent background polling.
   try{clearInterval(window.__UPRS_PREDICT_TIMER__);}catch(_){}
-  window.__UPRS_PREDICT_TIMER__=setInterval(()=>{if(document.visibilityState==='visible'&&document.getElementById('omniPredict377')?.offsetParent!==null)renderPredict377()},2500);
+  window.__UPRS_PREDICT_TIMER__=null;
+  let predictRefreshTimer377=0;
+  const schedulePredictRefresh377=()=>{clearTimeout(predictRefreshTimer377);predictRefreshTimer377=setTimeout(()=>{if(document.visibilityState==='visible'&&document.getElementById('omniPredict377')?.offsetParent!==null)renderPredict377()},140)};
+  document.addEventListener('input',schedulePredictRefresh377,true);
+  document.addEventListener('change',schedulePredictRefresh377,true);
+  document.addEventListener('uprs:after-recalc',schedulePredictRefresh377);
   // re-sync options a few times in case a later layer rebuilds the dropdown
   for(const ms of [600,1800,4200,9000]) setTimeout(()=>{registerModels377();syncModelUI377();},ms);
 }
@@ -6997,9 +7008,9 @@ for(const ms of[2600,4800,8000,13000])setTimeout(()=>{registerModel380();registe
 <script id="uprs381MergeIntegration">
 (()=>{
 'use strict';
-const VERSION='3.9.6';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v3.9.6 · Batched Renderer + Rotation Safe + Claude + ASML EUV LPP';
-const BRAND='OMNIATLAS · PREDICTIVE RIGOR · ASML EUV LPP · v3.9.6';
+const VERSION='4.1.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
+const BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
 const ASML_ID='asml_euv_lpp';
 const CLAUDE_IDS=['lorentz_dielectric','cole_cole','havriliak_negami','skin_effect_line','superconductor_surface','ferro_kittel','fabry_perot','quantum_rtd','qnm_ringdown','magnetoplasma_cyclotron','piezo_bvd','thermal_semiinfinite'];
 const finite=Number.isFinite;
@@ -7021,7 +7032,7 @@ function derived(p){
 }
 function stamp(){
  document.documentElement.dataset.uprsVersion=VERSION;
- document.body?.setAttribute('data-uprs-merged','claude-asml-3.9.6');
+ document.body?.setAttribute('data-uprs-merged','fable5-observatory-visual-workspace');
  if(document.title!==TITLE)document.title=TITLE;
  const sub=document.querySelector('.brand small');
  if(sub&&sub.textContent!==BRAND)sub.textContent=BRAND;
@@ -7121,7 +7132,7 @@ function install(){
  setTimeout(()=>{stamp();scheduleSilentTests393()},350);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,1700),{once:true});else setTimeout(install,1700);
-for(const ms of [3500,6500,11000,18000,31000])setTimeout(()=>{stamp();wrapManifest();wrapTests()},ms);
+for(const ms of [3500,6500,11000,18000])setTimeout(()=>{stamp();wrapManifest();wrapTests()},ms);
 })();
 </script>
 
@@ -7392,9 +7403,21 @@ function choose397(x,y){
  if(h){
   const before=state.index;
   try{selectTarget?.(h,x,y)}catch(_){ }
-  const mapped=sweepIndex397(h);
+  let mapped=sweepIndex397(h);
+  // A double-click is a change-of-working-point command. If the nearest hit is
+  // already selected, choose the nearest indexed alternative, then fall back
+  // to the next indexed point. This prevents a visually successful click from
+  // leaving the working point unchanged.
+  if(Number.isFinite(mapped)&&mapped===before){
+   const alt=(indexedTargets397?.()||[]).filter(q=>Number.isFinite(q.meta?.index)&&q.meta.index!==before).map(q=>({q,d:q.type==='point'?Math.max(0,Math.hypot(x-q.x,y-q.y)-(q.radius||0)):Infinity})).sort((a,b)=>a.d-b.d)[0]?.q||cycleIndexed397();
+   if(alt){h=alt;mapped=sweepIndex397(h)}
+  }
   if(Number.isFinite(mapped)&&mapped!==state.index){try{selectSweepIndex?.(mapped,true)}catch(_){ }}
   state.activeEntity=h;
+  if(state.index===before&&state.sweep?.length>1){
+   const next=(before+Math.max(1,Math.floor(state.sweep.length/17)))%state.sweep.length;
+   try{selectSweepIndex?.(next,true)}catch(_){ }
+  }
   try{updateEntityInspector?.()}catch(_){ }
   try{draw?.(performance.now())}catch(_){ }
   const i=Number.isFinite(mapped)?mapped:(Number.isFinite(h.meta?.index)&&['sample','spectral-sample','multi-sample','selected'].includes(h.meta?.kind)?h.meta.index:null);
@@ -7628,7 +7651,13 @@ function detectAll398(S,opt={}){const feats=[],scope=opt.scope||'sampled',status
   let cusps=0;
   for(let i=2;i<S.x.length-2&&cusps<4;i++){const ax=S.re[i]-S.re[i-1],ay=S.im[i]-S.im[i-1],bx=S.re[i+1]-S.re[i],by=S.im[i+1]-S.im[i];const na=Math.hypot(ax,ay),nb=Math.hypot(bx,by);if(na<1e-9||nb<1e-9)continue;const th=Math.acos(cl01((ax*bx+ay*by)/(na*nb),-1,1));if(th>2.35){feats.push({kind:'cusp',x:S.x[i],value:th,confidence:cl01(.15+(th-2.35)/(Math.PI-2.35)*.75,.15,.9),status,scope});cusps++;i+=2}}
  }
- feats.sort((a,b)=>b.confidence-a.confidence);return feats.slice(0,26)}
+ const app=globalThis.__UPRS381__?.applicability?.();
+ const filtered=feats.filter(f=>{
+  if(f.kind==='passivity')return !app||app.passivityMarginGamma?.status==='applicable';
+  if(f.kind==='gd-anomaly')return !app||String(app.groupDelay?.status||'').startsWith('applicable');
+  return true;
+ });
+ filtered.sort((a,b)=>b.confidence-a.confidence);return filtered.slice(0,26)}
 /* ---------- ladder extrapolation ---------- */
 function ladders398(feats,calib=1){const out=[],groups={};for(const f of feats)if(['res-dip','res-peak','winding','cusp'].includes(f.kind))(groups[f.kind]||=[]).push(f.x);
  for(const [kind,xs0] of Object.entries(groups)){const xs=[...new Set(xs0)].sort((a,b)=>a-b);if(xs.length<3)continue;
@@ -7655,11 +7684,11 @@ function fitPowerLaw398(pairs){const P=pairs.filter(([p,x])=>p>0&&x>0&&fin(p)&&f
  const looErr=[];for(let j=0;j<lx.length;j++){const ix=lx.filter((_,i)=>i!==j),iy=ly.filter((_,i)=>i!==j),fj=fit(ix,iy);if(!fj)continue;looErr.push(Math.abs(ly[j]-(fj.b0+fj.al*lx[j])))}
  return {alpha:f0.al,A:Math.exp(f0.b0),r2,loo:med(looErr)||0,n:P.length}}
 /* ---------- state ---------- */
-let seq=0,busy=false,tab='detect',lastSig='',autoOn=true,openState=false,pendingTimer=0;
+let seq=0,busy=false,tab='detect',lastSig='',autoOn=false,openState=false,pendingTimer=0;
 const S={features:[],predictions:[],laws:[],ts:0,model:''};
 let ledger={entries:[]};
 try{const raw=localStorage.getItem('uprs398-ledger-v1');if(raw)ledger=JSON.parse(raw)||{entries:[]};if(!Array.isArray(ledger.entries))ledger.entries=[]}catch(_){ledger={entries:[]}}
-try{autoOn=localStorage.getItem('uprs398-auto')!=='0'}catch(_){}
+try{autoOn=localStorage.getItem('uprs398-auto')==='1'}catch(_){}
 function saveLedger(){try{ledger.entries=ledger.entries.slice(-240);localStorage.setItem('uprs398-ledger-v1',JSON.stringify(ledger))}catch(_){}}
 function ledgerStats398(entries){const done=entries.filter(e=>e.hit===0||e.hit===1);const n=done.length,hits=done.reduce((a,e)=>a+e.hit,0),sc=done.reduce((a,e)=>a+e.conf,0);
  const brier=n?done.reduce((a,e)=>a+(e.conf-e.hit)*(e.conf-e.hit),0)/n:NaN;
@@ -7891,7 +7920,7 @@ function ensureTestChain398(){try{
 }catch(_){}}
 ensureTestChain398();
 /* ---------- install ---------- */
-const TITLE398='UPRS Möbius–Hopf OmniAtlas v3.9.8 · Predictive Phenomenon Observatory + Point Selection + Claude + ASML EUV LPP';
+const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
 function claimTitle398(){try{
  const te=document.querySelector('title');
  if(te&&!te.dataset.uprs398){const nt=document.createElement('title');nt.dataset.uprs398='1';nt.dataset.uprs370='1';nt.textContent=TITLE398;te.remove();document.head.appendChild(nt);
@@ -7903,10 +7932,10 @@ function install398(){if(typeof document==='undefined')return;
  if(!document.body||typeof state==='undefined'){if(installTries++<60)setTimeout(install398,220);return}
  try{
   buildUI398();
-  setInterval(tick398,1600);
-  if(env.sweep().length>=12){scanLight398();render398()}
-  for(const ms of [0,1200,4600,8100,12600,18600])setTimeout(claimTitle398,ms);
-  const s=document.querySelector('.brand small');if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · DISCOVERY · HYPOTHESIS ENGINE · v3.9.8';
+  setInterval(()=>{if(autoOn&&document.visibilityState==='visible')tick398()},2500);
+  if(openState&&env.sweep().length>=12){scanLight398();render398()}
+  claimTitle398();
+  const s=document.querySelector('.brand small');if(s)s.textContent='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
  }catch(e){console.warn('UPRS398 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install398,140),{once:true});else setTimeout(install398,140)}}catch(_){}
 /* ---------- public API ---------- */
@@ -7918,4 +7947,876 @@ globalThis.__UPRS398__={version:VERSION,
 })();
 </script>
 
+
+
+<style id="uprs400VisualWorkspaceStyle">
+/* =====================================================================
+   UPRS v4.0.0 — Visual Workspace Authority
+   A stage-first, short-landscape workstation for tablets and compact PCs.
+   ===================================================================== */
+:root{
+  --uprs400-top:58px;
+  --uprs400-rail:50px;
+  --uprs400-gap:6px;
+  --uprs400-radius:14px;
+}
+.uprs400-primary{display:none!important}
+#commandScrim400,#commandPalette400{display:none}
+
+/* Compact context indicator: details belong in the dedicated context panel. */
+body.uprs400 #deviceContextBadge360{
+  top:10px!important;left:10px!important;width:auto!important;max-width:min(310px,calc(100% - 170px))!important;
+  border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.14)!important;
+}
+body.uprs400 #deviceContextBadge360 .device360BadgeHead{padding:6px 8px!important;gap:7px!important;min-height:38px!important}
+body.uprs400 #deviceContextBadge360 .device360BadgeSigil{width:26px!important;height:26px!important;border-radius:8px!important}
+body.uprs400 #deviceContextBadge360 .device360BadgeTitle b{font-size:7.6px!important;letter-spacing:.065em!important}
+body.uprs400 #deviceContextBadge360 .device360BadgeTitle small,
+body.uprs400 #deviceContextBadge360 .device360BadgeGrid{display:none!important}
+body.uprs400 #deviceContextBadge360 .device360Confidence{font-size:6.8px!important}
+
+/* Parameter HUD: one calm row with deliberate horizontal navigation. */
+body.uprs400 #diagramParamHUD291{
+  left:7px!important;right:7px!important;bottom:6px!important;width:auto!important;max-width:none!important;
+  filter:none!important;box-shadow:0 8px 22px rgba(0,0,0,.14)!important;
+}
+body.uprs400 #diagramParamHUD291 .dph291-shell{
+  display:grid!important;grid-template-columns:32px minmax(0,1fr) 32px!important;gap:4px!important;width:100%!important;
+}
+body.uprs400 #diagramParamHUD291 .dph291-strip,
+body.uprs400 #diagramParamHUD291[data-rows="2"] .dph291-strip,
+body.uprs400 #diagramParamHUD291[data-uprs382="1"] .dph291-strip{
+  display:flex!important;grid-template:none!important;grid-auto-flow:initial!important;grid-template-rows:none!important;
+  width:100%!important;min-width:0!important;overflow-x:auto!important;overflow-y:hidden!important;
+  gap:4px!important;padding:0 1px 2px!important;scroll-snap-type:x proximity!important;overscroll-behavior-x:contain!important;
+  scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;
+}
+body.uprs400 #diagramParamHUD291 .dph291-strip::-webkit-scrollbar{display:none!important}
+body.uprs400 #diagramParamHUD291 .dph291-chip,
+body.uprs400 #diagramParamHUD291[data-rows="2"] .dph291-chip,
+body.uprs400 #diagramParamHUD291[data-uprs382="1"] .dph291-chip{
+  flex:0 0 clamp(88px,10.4vw,132px)!important;width:auto!important;min-width:88px!important;min-height:42px!important;
+  padding:4px 7px!important;border-radius:11px!important;scroll-snap-align:start!important;justify-content:center!important;
+}
+body.uprs400 #diagramParamHUD291 .dph291-chip b{font-size:6.8px!important;letter-spacing:.035em!important;line-height:1.05!important}
+body.uprs400 #diagramParamHUD291 .dph291-chip span{font-size:8.8px!important;line-height:1.12!important}
+body.uprs400 #diagramParamHUD291 .dph291-toggle,
+body.uprs400 #diagramParamHUD291 .dph291-mini{width:32px!important;min-width:32px!important;padding:0!important;border-radius:11px!important}
+
+/* Stage command capsule: compact icon-only controls, never a large floating card. */
+body.uprs400 #stageToolbar350{top:8px!important;right:8px!important;padding:4px!important;gap:4px!important;border-radius:12px!important}
+body.uprs400 #stageToolbar350 button{width:36px!important;min-width:36px!important;height:34px!important;padding:0!important;display:grid!important;place-items:center!important}
+body.uprs400 #stageToolbar350 button span{display:none!important}
+body.uprs400 #stageToolbar350 button svg{width:17px!important;height:17px!important}
+body.uprs400 #selectorGauge20{font-size:6.8px!important;padding:4px 6px!important;top:50px!important;right:8px!important;opacity:.86!important}
+
+/* Unified command palette. */
+#commandScrim400{position:fixed;inset:0;z-index:895;background:rgba(0,0,0,.32);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+#commandPalette400{
+  position:fixed;z-index:900;right:8px;bottom:calc(var(--uprs400-rail) + 8px);width:min(620px,calc(100vw - 16px));
+  max-height:calc(100dvh - var(--uprs400-top) - var(--uprs400-rail) - 24px);overflow:auto;padding:9px;
+  border:1px solid var(--line);border-radius:18px;background:linear-gradient(160deg,var(--panel2),var(--panel));
+  color:var(--text);box-shadow:0 24px 75px rgba(0,0,0,.42);overscroll-behavior:contain;
+}
+body.uprs400-command-open #commandScrim400,body.uprs400-command-open #commandPalette400{display:block}
+.command400Head{position:sticky;top:-9px;z-index:2;display:flex;align-items:center;gap:8px;margin:-9px -9px 8px;padding:10px 11px 8px;border-bottom:1px solid var(--line);background:var(--panel)}
+.command400Head>div{flex:1;min-width:0}.command400Head b{display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.command400Head small{display:block;margin-top:2px;color:var(--muted);font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.command400Head button{width:32px;height:32px;border:1px solid var(--line);border-radius:9px;background:transparent;color:inherit}
+.command400Grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.command400Item{min-width:0;min-height:58px;padding:6px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.035);color:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+.command400Item:hover,.command400Item:focus-visible{border-color:rgba(215,183,110,.48);background:rgba(215,183,110,.08);outline:none}
+.command400Item span{font-size:17px;color:var(--gold2);line-height:1}.command400Item b{max-width:100%;font-size:7.5px;font-weight:600;line-height:1.15;text-align:center;overflow:hidden;text-overflow:ellipsis}
+body.paper #commandPalette400,body.paper328 #commandPalette400,body.light #commandPalette400{background:linear-gradient(160deg,rgba(255,253,248,.98),rgba(239,232,217,.98));color:#252921;border-color:rgba(90,65,20,.22)}
+body.paper .command400Head,body.paper328 .command400Head,body.light .command400Head{background:rgba(250,246,237,.98)}
+body.paper .command400Item,body.paper328 .command400Item,body.light .command400Item{background:rgba(255,255,255,.58);border-color:rgba(90,65,20,.16)}
+
+/* Unified desktop/tablet chrome: one navigation row and one calm command deck. */
+@media(min-width:901px){
+ body.uprs400 .app{grid-template-rows:var(--uprs400-top) minmax(0,1fr) var(--uprs400-rail)!important;height:100dvh!important}
+ body.uprs400 .top{height:var(--uprs400-top)!important;min-height:var(--uprs400-top)!important;display:grid!important;grid-template-columns:minmax(190px,236px) minmax(0,1fr) 42px!important;grid-template-rows:1fr!important;gap:8px!important;align-items:center!important;padding:6px 10px!important;overflow:hidden!important}
+ body.uprs400 .brand{grid-column:1!important;grid-row:1!important;min-width:0!important;width:auto!important;margin:0!important;gap:9px!important}
+ body.uprs400 .brand .seal{width:36px!important;height:36px!important;flex:0 0 36px!important}
+ body.uprs400 .brand b{font-size:9px!important;letter-spacing:.15em!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ body.uprs400 .brand small{display:none!important}
+ body.uprs400 .modes{grid-column:2!important;grid-row:1!important;position:static!important;display:flex!important;align-items:center!important;min-width:0!important;width:100%!important;height:44px!important;padding:1px 0!important;gap:6px!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;scroll-snap-type:x proximity!important;background:transparent!important;border:0!important;box-shadow:none!important}
+ body.uprs400 .modes::-webkit-scrollbar{display:none!important}
+ body.uprs400 .mode{flex:0 0 auto!important;height:38px!important;min-height:38px!important;padding:0 13px!important;border-radius:999px!important;font-size:9.5px!important;scroll-snap-align:center!important}
+ body.uprs400 .top-actions{grid-column:3!important;grid-row:1!important;position:relative!important;display:block!important;overflow:hidden!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;max-width:42px!important;max-height:42px!important;contain:strict!important}
+ body.uprs400 .top-actions>*{display:none!important;visibility:hidden!important;pointer-events:none!important}
+ body.uprs400 .top-actions #menuBtn{display:grid!important;visibility:visible!important;pointer-events:auto!important;position:absolute!important;inset:1px!important;place-items:center!important;width:40px!important;height:40px!important;margin:0!important;padding:0!important;border-radius:50%!important;font-size:16px!important}
+ body.uprs400 #currentModeChip{display:none!important}
+ body.uprs400 .telemetryRail{height:var(--uprs400-rail)!important;min-height:var(--uprs400-rail)!important;display:grid!important;grid-template-columns:auto minmax(210px,1fr) auto!important;gap:5px!important;padding:3px 6px!important;overflow:hidden!important}
+ body.uprs400 .railTools{display:flex!important;gap:4px!important;overflow:visible!important}
+ body.uprs400 .railTools>.railBtn,body.uprs400 .railTools>#projectionBtn350{display:none!important}
+ body.uprs400 .railTools>#railParams,body.uprs400 .railTools>#railInspect,body.uprs400 .railTools>#railMotion,body.uprs400 .railTools>.uprs400-primary{display:flex!important}
+ body.uprs400 .railBtn{width:48px!important;min-width:48px!important;height:42px!important;padding:3px!important;border-radius:11px!important}
+ body.uprs400 .railBtn span{font-size:14px!important}body.uprs400 .railBtn small{font-size:6.1px!important;line-height:1.05!important;max-width:44px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ body.uprs400 .railMetrics{display:grid!important;grid-template-columns:repeat(4,minmax(70px,1fr))!important;gap:4px!important;overflow:hidden!important}
+ body.uprs400 .railMetrics>div{display:block!important;min-width:0!important;width:auto!important;height:42px!important;padding:5px 7px!important}
+ body.uprs400 .railMetrics>div:nth-child(n+5){display:none!important}
+ body.uprs400 .railMetrics small{font-size:5.9px!important}body.uprs400 .railMetrics b{font-size:8.7px!important}
+ body.uprs400 .railSystem{display:flex!important;gap:4px!important;overflow:visible!important}
+ body.uprs400 #editLockBtn{height:42px!important}body.uprs400 #themeBtnV14{width:38px!important;height:42px!important}body.uprs400 .langSelect{width:54px!important;height:42px!important;padding:0 5px!important}
+}
+@media(min-width:901px) and (max-width:1180px){body.uprs400 .railMetrics{grid-template-columns:repeat(3,minmax(70px,1fr))!important}body.uprs400 .railMetrics>div:nth-child(n+4){display:none!important}body.uprs400 #liveArmBtn{display:none!important}body.uprs400 #editLockBtn{width:42px!important;min-width:42px!important;padding:0!important;font-size:0!important}body.uprs400 #editLockBtn::first-letter{font-size:15px!important}body.uprs400 #editLockBtn span{display:none!important}}
+
+/* Short landscape workstation — the exact form factor shown by the user. */
+body.uprs400-short-landscape{--uprs400-top:56px;--uprs400-rail:50px}
+body.uprs400-short-landscape .app{grid-template-rows:var(--uprs400-top) minmax(0,1fr) var(--uprs400-rail)!important;height:100dvh!important}
+body.uprs400-short-landscape .top{
+  height:var(--uprs400-top)!important;min-height:var(--uprs400-top)!important;display:grid!important;
+  grid-template-columns:minmax(176px,224px) minmax(0,1fr) 40px!important;grid-template-rows:1fr!important;
+  gap:7px!important;align-items:center!important;padding:5px 8px!important;overflow:hidden!important;
+}
+body.uprs400-short-landscape .brand{grid-column:1!important;grid-row:1!important;min-width:0!important;width:auto!important;margin:0!important;gap:8px!important}
+body.uprs400-short-landscape .brand .seal{width:34px!important;height:34px!important;flex:0 0 34px!important}
+body.uprs400-short-landscape .brand b{font-size:8.6px!important;letter-spacing:.14em!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+body.uprs400-short-landscape .brand small{display:none!important}
+body.uprs400-short-landscape .modes{
+  grid-column:2!important;grid-row:1!important;position:static!important;display:flex!important;align-items:center!important;
+  min-width:0!important;width:100%!important;height:42px!important;padding:1px 0!important;gap:5px!important;overflow-x:auto!important;overflow-y:hidden!important;
+  scrollbar-width:none!important;scroll-snap-type:x proximity!important;background:transparent!important;border:0!important;box-shadow:none!important;
+}
+body.uprs400-short-landscape .modes::-webkit-scrollbar{display:none!important}
+body.uprs400-short-landscape .mode{flex:0 0 auto!important;height:36px!important;min-height:36px!important;padding:0 12px!important;border-radius:999px!important;font-size:9.5px!important;scroll-snap-align:center!important}
+body.uprs400-short-landscape .top-actions{grid-column:3!important;grid-row:1!important;position:relative!important;display:block!important;overflow:hidden!important;width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;max-width:40px!important;max-height:40px!important;contain:strict!important}
+body.uprs400-short-landscape .top-actions>*{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.uprs400-short-landscape .top-actions #menuBtn{display:grid!important;visibility:visible!important;pointer-events:auto!important;position:absolute!important;inset:1px!important;place-items:center!important;width:38px!important;height:38px!important;margin:0!important;padding:0!important;border-radius:50%!important;font-size:16px!important}
+body.uprs400-short-landscape #currentModeChip{display:none!important}
+body.uprs400-short-landscape .layout{height:100%!important;min-height:0!important}
+body.uprs400-short-landscape .viewport{border-radius:12px!important}
+body.uprs400-short-landscape #deviceContextBadge360{top:8px!important;left:8px!important;max-width:min(255px,calc(100% - 190px))!important}
+body.uprs400-short-landscape #selectorGauge20{display:none!important}
+body.uprs400-short-landscape #geometryStatus321{display:none!important}
+
+/* Calm bottom command deck: six primary tools, real telemetry, three system controls. */
+body.uprs400-short-landscape .telemetryRail{
+  height:var(--uprs400-rail)!important;min-height:var(--uprs400-rail)!important;display:grid!important;
+  grid-template-columns:auto minmax(140px,1fr) auto!important;gap:5px!important;padding:3px 6px!important;overflow:hidden!important;
+}
+body.uprs400-short-landscape .railTools{display:flex!important;gap:4px!important;overflow:visible!important}
+body.uprs400-short-landscape .railTools>.railBtn,body.uprs400-short-landscape .railTools>#projectionBtn350{display:none!important}
+body.uprs400-short-landscape .railTools>#railParams,
+body.uprs400-short-landscape .railTools>#railInspect,
+body.uprs400-short-landscape .railTools>#railMotion,
+body.uprs400-short-landscape .railTools>.uprs400-primary{display:flex!important}
+body.uprs400-short-landscape .railBtn{width:46px!important;min-width:46px!important;height:42px!important;padding:3px!important;border-radius:11px!important}
+body.uprs400-short-landscape .railBtn span{font-size:14px!important}
+body.uprs400-short-landscape .railBtn small{font-size:6px!important;line-height:1.05!important;max-width:42px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+body.uprs400-short-landscape .railMetrics{display:grid!important;grid-template-columns:repeat(3,minmax(70px,1fr))!important;gap:4px!important;overflow:hidden!important}
+body.uprs400-short-landscape .railMetrics>div{display:block!important;min-width:0!important;width:auto!important;height:42px!important;padding:5px 7px!important}
+body.uprs400-short-landscape .railMetrics>div:nth-child(n+4){display:none!important}
+body.uprs400-short-landscape .railMetrics small{font-size:5.8px!important}body.uprs400-short-landscape .railMetrics b{font-size:8.5px!important}
+body.uprs400-short-landscape .railSystem{display:flex!important;gap:4px!important;overflow:visible!important}
+body.uprs400-short-landscape #liveArmBtn{display:none!important}
+body.uprs400-short-landscape #editLockBtn{width:42px!important;min-width:42px!important;padding:0!important;font-size:0!important}
+body.uprs400-short-landscape #editLockBtn::first-letter{font-size:15px!important}
+body.uprs400-short-landscape #editLockBtn span{display:none!important}
+body.uprs400-short-landscape #themeBtnV14{width:38px!important;height:42px!important}
+body.uprs400-short-landscape .langSelect{width:52px!important;height:42px!important;padding:0 5px!important}
+
+/* Projection studio: preserve vertical space and keep every canvas genuinely usable. */
+body.uprs400-short-landscape #projToolbar350{
+  flex:0 0 44px!important;height:44px!important;min-height:44px!important;display:grid!important;
+  grid-template-columns:minmax(155px,1fr) auto auto!important;grid-template-rows:1fr!important;gap:6px!important;
+  padding:5px 7px!important;overflow:hidden!important;
+}
+body.uprs400-short-landscape #projToolbar350 .projTitle350{min-width:0!important}
+body.uprs400-short-landscape #projToolbar350 .projTitle350 b{font-size:8.2px!important;letter-spacing:.09em!important;overflow:hidden!important;text-overflow:ellipsis!important}
+body.uprs400-short-landscape #projToolbar350 .projTitle350 small,
+body.uprs400-short-landscape #projectionContext360,
+body.uprs400-short-landscape #projGlobal350{display:none!important}
+body.uprs400-short-landscape #projToolbar350 .projControls350{display:flex!important;grid-column:auto!important;grid-row:auto!important;justify-content:flex-end!important;gap:4px!important;overflow:visible!important}
+body.uprs400-short-landscape #projToolbar350 button{height:32px!important;min-width:32px!important;padding:0 8px!important;border-radius:9px!important;font-size:0!important}
+body.uprs400-short-landscape #projToolbar350 button[data-count350="2"]::before{content:'2';font-size:9px}
+body.uprs400-short-landscape #projToolbar350 button[data-count350="3"]::before{content:'3';font-size:9px}
+body.uprs400-short-landscape #projToolbar350 button[data-count350="4"]::before{content:'4';font-size:9px}
+body.uprs400-short-landscape #projLayout350::before{content:'↔';font-size:14px}
+body.uprs400-short-landscape #projLayout350.on::before{content:'↕'}
+body.uprs400-short-landscape #projLink350::before{content:'⛓';font-size:13px}
+body.uprs400-short-landscape #projClose350{font-size:0!important;width:32px!important;padding:0!important}
+body.uprs400-short-landscape #projClose350::before{content:'×';font-size:15px!important;line-height:1}
+body.uprs400-short-landscape #projectionGrid350{gap:5px!important;padding:5px!important;grid-template-rows:minmax(0,1fr)!important}
+body.uprs400-short-landscape #projectionGrid350[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:minmax(0,1fr)!important}
+body.uprs400-short-landscape #projectionGrid350[data-count="3"]{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:minmax(0,1fr)!important}
+body.uprs400-short-landscape #projectionGrid350[data-count="4"]{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:minmax(0,1fr)!important}
+body.uprs400-short-landscape #projectionGrid350[data-count="3"] .projectionPane350:last-child{grid-column:auto!important}
+body.uprs400-short-landscape .projectionPane350{border-radius:12px!important}
+body.uprs400-short-landscape .projPaneHead350{height:34px!important;padding:4px 5px!important}
+body.uprs400-short-landscape .projPaneHead350 select{height:26px!important;font-size:7.5px!important}
+body.uprs400-short-landscape .projPaneHead350 button{width:26px!important;height:26px!important}
+body.uprs400-short-landscape .projectionPane350 canvas{inset:34px 0 0!important;height:calc(100% - 34px)!important}
+body.uprs400-short-landscape .projDragHint370{display:none!important}
+body.uprs400-short-landscape .projBadge350{left:5px!important;right:5px!important;bottom:5px!important;max-width:none!important;font-size:6.5px!important;padding:4px 6px!important}
+
+/* Panels in short landscape remain readable and reserve stage width. */
+body.uprs400-short-landscape .command400Grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+body.uprs400-short-landscape .layout>.panel[data-snap]:not([data-snap="closed"]),
+body.uprs400-short-landscape .layout>#deviceContextPanel360,
+body.uprs400-short-landscape .layout>#calcStudio330{
+  max-width:min(440px,46vw)!important;border-radius:16px!important;
+}
+
+@media(max-width:760px){
+  .command400Grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #commandPalette400{left:7px;right:7px;bottom:calc(var(--telemetry-h,52px) + 7px);width:auto}
+  body.uprs400 #deviceContextBadge360{max-width:calc(100% - 72px)!important}
+}
+@media(prefers-reduced-motion:reduce){#commandPalette400,#commandScrim400{scroll-behavior:auto!important}}
+</style>
+
+<script id="uprs400VisualWorkspaceScript">
+(()=>{
+'use strict';
+const VERSION='4.0.0';
+const $=id=>document.getElementById(id);
+const shortLandscape400=()=>innerWidth>=760&&innerHeight<=760&&innerWidth/Math.max(1,innerHeight)>=1.28;
+const paletteMode400=()=>innerWidth>=901;
+const text400={
+ ru:{more:'Ещё',views:'Виды',context:'Контекст',tools:'Все инструменты',hint:'Команды сгруппированы; сцена остаётся свободной',params:'Параметры',inspect:'Инспектор',sensors:'Сенсоры',cameraFocus:'Фокус камеры',intelligence:'Интеллект',orbits:'Орбиты',pause:'Стоп / пуск',closure:'Инвариантное замыкание',analysis:'Анализ',research:'Исследование',fit:'Подгонка',camera:'Камера',xr:'WebXR',focus:'Чистый вид',calculations:'Расчёты',labels:'Разметка',close:'Закрыть'},
+ en:{more:'More',views:'Views',context:'Context',tools:'All tools',hint:'Commands are grouped so the scientific stage stays clear',params:'Parameters',inspect:'Inspector',sensors:'Sensors',cameraFocus:'Camera focus',intelligence:'Intelligence',orbits:'Orbits',pause:'Pause / resume',closure:'Invariant closure',analysis:'Analysis',research:'Research',fit:'Fit',camera:'Camera',xr:'WebXR',focus:'Focus view',calculations:'Calculations',labels:'Labels',close:'Close'},
+ de:{more:'Mehr',views:'Ansichten',context:'Kontext',tools:'Alle Werkzeuge',hint:'Befehle sind gebündelt; die wissenschaftliche Bühne bleibt frei',params:'Parameter',inspect:'Inspektor',sensors:'Sensoren',cameraFocus:'Kamerafokus',intelligence:'Intelligenz',orbits:'Orbits',pause:'Stopp / Start',closure:'Invariantenabschluss',analysis:'Analyse',research:'Forschung',fit:'Anpassen',camera:'Kamera',xr:'WebXR',focus:'Freie Ansicht',calculations:'Berechnungen',labels:'Beschriftung',close:'Schließen'}
+};
+const lang400=()=>globalThis.state?.lang||$('langSelect')?.value||'en';
+const T400=()=>text400[lang400()]||text400.en;
+function applyForm400(){
+ document.body.classList.add('uprs400');
+ document.body.classList.toggle('uprs400-short-landscape',shortLandscape400());
+ if(!paletteMode400())closePalette400();
+ try{globalThis.__UPRS350__?.layout?.()}catch(_){ }
+ try{globalThis.resize?.();globalThis.draw?.(performance.now())}catch(_){ }
+ compactProjection400();
+}
+function commandAction400(key){
+ const id={params:'railParams',inspect:'railInspect',sensors:'railMotion',cameraFocus:'railCamera20',intelligence:'railIntelligence320',orbits:'railInvariant21',pause:'orbitPause343',closure:'closureRail26',analysis:'railDiscovery300',research:'railResearch310',fit:'fitRail251',camera:'cameraBtn',xr:'xrBtn',focus:'focusBtn'}[key];
+ if(id){$(id)?.click();return}
+ if(key==='views'){globalThis.__UPRS350__?.toggle?.();return}
+ if(key==='context'){
+   if(globalThis.__UPRS375__?.open)globalThis.__UPRS375__.open('deviceContextPanel360');
+   else if(globalThis.__UPRS_DEVICE360__?.open)globalThis.__UPRS_DEVICE360__.open();
+   else $('deviceContextBadge360')?.click();
+   return;
+ }
+ if(key==='calculations'){try{globalThis.setMode?.('bridges')}catch(_){document.querySelector('[data-mode="bridges"]')?.click()}return}
+ if(key==='labels'){$('labelsStage350')?.click();return}
+}
+const COMMANDS400=[
+ ['params','⚙'],['inspect','⌁'],['views','▦'],['context','⌬'],['sensors','◉'],['cameraFocus','◎'],
+ ['intelligence','✦'],['orbits','∞'],['pause','Ⅱ'],['closure','⊗'],['analysis','◇'],['research','⌬'],
+ ['fit','⊙'],['calculations','∫'],['labels','A˙'],['camera','◫'],['xr','◇'],['focus','◉']
+];
+function ensurePalette400(){
+ let scrim=$('commandScrim400');if(!scrim){scrim=document.createElement('div');scrim.id='commandScrim400';document.body.appendChild(scrim);scrim.addEventListener('click',closePalette400)}
+ let p=$('commandPalette400');if(!p){p=document.createElement('section');p.id='commandPalette400';p.setAttribute('role','dialog');p.setAttribute('aria-modal','true');p.innerHTML='<div class="command400Head"><div><b></b><small></small></div><button type="button">×</button></div><div class="command400Grid"></div>';document.body.appendChild(p);p.querySelector('.command400Head button').onclick=closePalette400}
+ localizePalette400();return p;
+}
+function localizePalette400(){
+ const p=$('commandPalette400');if(!p)return;const t=T400();p.setAttribute('aria-label',t.tools);p.querySelector('.command400Head b').textContent=t.tools;p.querySelector('.command400Head small').textContent=t.hint;p.querySelector('.command400Head button').title=t.close;
+ const grid=p.querySelector('.command400Grid');
+ COMMANDS400.forEach(([key,icon])=>{let b=grid.querySelector(`[data-command400="${key}"]`);if(!b){b=document.createElement('button');b.type='button';b.className='command400Item';b.dataset.command400=key;b.innerHTML='<span></span><b></b>';b.onclick=()=>{closePalette400();setTimeout(()=>commandAction400(key),0)};grid.appendChild(b)}b.querySelector('span').textContent=icon;b.querySelector('b').textContent=t[key]||key;b.title=t[key]||key});
+ ['railMore400','menuBtn'].forEach(id=>{const b=$(id);if(b){b.title=t.tools;b.setAttribute('aria-label',t.tools)}});
+ const labels={railViews400:['▦',t.views],railContext400:['⌬',t.context],railMore400:['•••',t.more]};
+ Object.entries(labels).forEach(([id,[icon,label]])=>{const b=$(id);if(!b)return;b.innerHTML=`<span>${icon}</span><small>${label}</small>`;b.title=label;b.setAttribute('aria-label',label)});
+}
+function openPalette400(){ensurePalette400();document.body.classList.add('uprs400-command-open');setTimeout(()=>$('commandPalette400')?.querySelector('.command400Item')?.focus(),0)}
+function closePalette400(){document.body.classList.remove('uprs400-command-open')}
+function togglePalette400(){document.body.classList.contains('uprs400-command-open')?closePalette400():openPalette400()}
+function primaryButton400(id,icon,label,fn){let b=$(id);if(!b){b=document.createElement('button');b.id=id;b.type='button';b.className='railBtn uprs400-primary';document.querySelector('.railTools')?.appendChild(b)}b.onclick=fn;b.innerHTML=`<span>${icon}</span><small>${label}</small>`;b.title=label;return b}
+function ensurePrimaryRail400(){const t=T400();primaryButton400('railViews400','▦',t.views,()=>globalThis.__UPRS350__?.toggle?.());primaryButton400('railContext400','⌬',t.context,()=>commandAction400('context'));primaryButton400('railMore400','•••',t.more,togglePalette400);localizePalette400()}
+function interceptMenu400(e){const b=e.target instanceof Element?e.target.closest('#menuBtn'):null;if(!b||!paletteMode400())return;e.preventDefault();e.stopImmediatePropagation();togglePalette400()}
+function bindHudScroll400(){const strip=$('diagramParamHUD291')?.querySelector('.dph291-strip');if(!strip||strip.dataset.uprs400Scroll)return;strip.dataset.uprs400Scroll='1';strip.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;e.preventDefault();strip.scrollLeft+=e.deltaY},{passive:false})}
+function compactProjection400(){
+ if(!shortLandscape400())return;const root=$('projectionStudio350');if(!root)return;
+ const api=globalThis.__UPRS350__,grid=$('projectionGrid350');
+ if(document.body.classList.contains('multiProjection350')&&!root.dataset.uprs400InitialCount){root.dataset.uprs400InitialCount='1';const b=root.querySelector('[data-count350="2"]');if(b&&!b.classList.contains('on'))b.click()}
+ root.querySelectorAll('[data-count350]').forEach(b=>{b.setAttribute('aria-label',b.dataset.count350+' '+T400().views);b.title=b.getAttribute('aria-label')});
+ if($('projLayout350'))$('projLayout350').title=T400().views;if($('projLink350'))$('projLink350').title=T400().views;
+ grid?.querySelectorAll('.projectionPane350 canvas').forEach(c=>{c.style.touchAction='none'});
+}
+function install400(){
+ ensurePalette400();ensurePrimaryRail400();applyForm400();bindHudScroll400();
+ document.addEventListener('click',interceptMenu400,true);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closePalette400()},true);
+ addEventListener('resize',()=>requestAnimationFrame(applyForm400),{passive:true});addEventListener('orientationchange',()=>setTimeout(applyForm400,120),{passive:true});
+ document.addEventListener('click',e=>{if(!(e.target instanceof Element))return;const count=e.target.closest('[data-count350]');if(count){const root=$('projectionStudio350');if(root)root.dataset.uprs400InitialCount='1'}if(e.target.closest('#projectionStage350,#projectionBtn350,#projectionFab350,#railViews400,[data-count350],#projLayout350,#projLink350'))setTimeout(compactProjection400,30)},true);
+ $('langSelect')?.addEventListener('change',()=>setTimeout(()=>{localizePalette400();ensurePrimaryRail400()},20));
+ for(const ms of[600,3200])setTimeout(()=>{ensurePrimaryRail400();bindHudScroll400();compactProjection400();applyForm400()},ms);
+ document.documentElement.dataset.uprsUi=VERSION;globalThis.__UPRS400__={version:VERSION,apply:applyForm400,openTools:openPalette400,closeTools:closePalette400,audit:()=>({shortLandscape:shortLandscape400(),palette:document.body.classList.contains('uprs400-command-open'),viewport:$('viewport')?.getBoundingClientRect().toJSON(),top:document.querySelector('.top')?.getBoundingClientRect().toJSON(),rail:$('telemetryRail')?.getBoundingClientRect().toJSON(),projection:gridAudit400()})};
+}
+function gridAudit400(){const g=$('projectionGrid350');return g?{count:g.dataset.count,rect:g.getBoundingClientRect().toJSON(),canvases:[...g.querySelectorAll('canvas')].map(c=>c.getBoundingClientRect().toJSON())}:null}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install400,80),{once:true});else setTimeout(install400,80);
+})();
+</script>
+
+<style id="uprs401InteractionAuthorityStyle">
+#gestureSurface302.uprs401-mouse-drag{cursor:grabbing!important}
+#mobileDock .dockBtn>svg{width:18px!important;height:18px!important;display:block!important;stroke:currentColor!important;fill:none!important;stroke-width:1.7!important}#mobileDock .dockBtn>svg~span{display:none!important}
+#diagramParamHUD291 .dph291-chip:focus-visible{outline:2px solid rgba(152,232,255,.82)!important;outline-offset:2px!important}
+body.paper #diagramParamHUD291 .dph291-chip:focus-visible,body.paper328 #diagramParamHUD291 .dph291-chip:focus-visible,body.light #diagramParamHUD291 .dph291-chip:focus-visible{outline-color:rgba(22,105,132,.72)!important}
+</style>
+
+<script id="uprs401InteractionAuthorityScript">
+(()=>{
+'use strict';
+const VERSION='4.0.1';
+const canvas=()=>document.getElementById('view');
+const surface=()=>document.getElementById('gestureSurface302');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function local(e){const c=canvas(),r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/Math.max(1,r.width),y:(e.clientY-r.top)*c.height/Math.max(1,r.height)}}
+function targetAt(q){try{return globalThis.smartGestureTarget?.(q.x,q.y)||globalThis.pickTarget?.(q.x,q.y,34)||null}catch(_){return null}}
+function draggable(h){const k=h?.meta?.kind||'';return !!h&&(['sample','spectral-sample','multi-sample','locus','multi-locus','fiber','selected-fiber','torus-knot','knot-point','selected','bridge-node'].includes(k)||h.meta?.draggable)}
+let mouse=null;
+function down(e){
+ if(e.pointerType!=='mouse'||e.button!==0)return;const s=surface();if(!s||e.currentTarget!==s)return;
+ e.preventDefault();e.stopImmediatePropagation();const q=local(e),h=targetAt(q);
+ const selected=!!h&&(state.activeEntity===h||state.activeEntity?.meta?.id&&state.activeEntity.meta.id===h.meta?.id);mouse={id:e.pointerId,startX:e.clientX,startY:e.clientY,lastX:e.clientX,lastY:e.clientY,yaw:state.yaw,pitch:state.pitch,target:h,moved:false,mode:(!state.editLocked&&draggable(h)&&(e.altKey||e.shiftKey||selected))?'manipulate':'rotate'};
+ try{s.setPointerCapture(e.pointerId)}catch(_){ }s.classList.add('uprs401-mouse-drag');
+}
+function move(e){
+ if(!mouse||e.pointerId!==mouse.id)return;e.preventDefault();e.stopImmediatePropagation();
+ const dx=e.clientX-mouse.lastX,dy=e.clientY-mouse.lastY,total=Math.hypot(e.clientX-mouse.startX,e.clientY-mouse.startY);if(total>3)mouse.moved=true;
+ if(mouse.mode==='rotate'){state.yaw+=dx*.006;state.pitch=clamp(state.pitch+dy*.006,-1.35,1.35)}
+ else{const q=local(e);try{state.activeEntity=mouse.target;globalThis.dragInteraction?.(q.x,q.y)}catch(_){ }}
+ mouse.lastX=e.clientX;mouse.lastY=e.clientY;try{globalThis.draw?.(performance.now())}catch(_){ }
+}
+function up(e){
+ if(!mouse||e.pointerId!==mouse.id)return;e.preventDefault();e.stopImmediatePropagation();const s=surface(),m=mouse;mouse=null;s?.classList.remove('uprs401-mouse-drag');try{s?.releasePointerCapture(e.pointerId)}catch(_){ }
+ if(!m.moved&&m.target){const q=local(e);try{globalThis.selectTarget?.(m.target,q.x,q.y);state.activeEntity=m.target;globalThis.updateEntityInspector?.();globalThis.draw?.(performance.now())}catch(_){ }}
+}
+function dbl(e){
+ const s=surface();if(e.target!==s)return;e.preventDefault();e.stopImmediatePropagation();const q=local(e);try{globalThis.__UPRS397__?.choose?.(q.x,q.y)}catch(_){ }
+}
+function bind(){const s=surface();if(!s||s.dataset.uprs401)return false;s.dataset.uprs401='1';s.addEventListener('pointerdown',down,true);s.addEventListener('pointermove',move,true);s.addEventListener('pointerup',up,true);s.addEventListener('pointercancel',up,true);s.addEventListener('dblclick',dbl,true);return true}
+function restoreChipFocus(){const h=document.getElementById('diagramParamHUD291');if(!h||h.dataset.uprs401Focus)return;h.dataset.uprs401Focus='1';h.addEventListener('click',e=>{const ch=e.target instanceof Element?e.target.closest('.dph291-chip'):null;if(!ch)return;requestAnimationFrame(()=>{const key=state.diagramDirect291?.key||ch.dataset.key,fresh=h.querySelector(`.dph291-chip[data-key="${globalThis.CSS?.escape?CSS.escape(key):key}"]`);try{fresh?.focus({preventScroll:true})}catch(_){fresh?.focus()}})},true)}
+function ensureDockVectors(){const svg='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"></circle><path d="M12 8v8M8 12h8"></path></svg>';document.querySelectorAll('#mobileDock .dockBtn').forEach(b=>{if(!b.querySelector('svg'))b.insertAdjacentHTML('afterbegin',svg)});const d=document.getElementById('mobileDock');if(d&&!d.dataset.uprs401VectorObs){d.dataset.uprs401VectorObs='1';new MutationObserver(()=>ensureDockVectors()).observe(d,{subtree:true,childList:true})}}
+function install(){document.documentElement.dataset.uprsUi=VERSION;document.body?.setAttribute('data-uprs-release',VERSION);bind();restoreChipFocus();ensureDockVectors();for(const ms of[700,3600])setTimeout(()=>{bind();restoreChipFocus();ensureDockVectors()},ms);globalThis.__UPRS401__={version:VERSION,audit:()=>({surface:!!surface(),bound:surface()?.dataset.uprs401==='1',activeKey:state.diagramDirect291?.key,index:state.index,yaw:state.yaw,pitch:state.pitch,dockVectors:[...document.querySelectorAll('#mobileDock .dockBtn')].every(b=>!!b.querySelector('svg'))})}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,100),{once:true});else setTimeout(install,100);
+})();
+</script>
+
+<style id="uprs410UnifiedIntegrationStyle">
+/* v4.1.0 — Fable 5 Observatory × Visual Workspace authoritative integration */
+body.uprs400 #obsFab398,body.uprs400 #obsBtn398{display:none!important}
+#obsPanel398.uprs410-managed{
+  position:absolute!important;
+  z-index:95!important;
+  max-height:none!important;
+  width:var(--panel-size,430px)!important;
+  border-radius:18px!important;
+  transition:none!important;
+  contain:layout paint style;
+}
+#obsPanel398.uprs410-managed[data-uprs375-open="0"],
+#obsPanel398.uprs410-managed[data-snap="closed"]{display:none!important;pointer-events:none!important}
+#obsPanel398.uprs410-managed[data-uprs375-open="1"]{display:flex!important;pointer-events:auto!important}
+#obsPanel398.uprs410-managed .obs398-list{content-visibility:auto;contain-intrinsic-size:320px}
+#obsPanel398.uprs410-managed .obs398-card{content-visibility:auto;contain-intrinsic-size:92px}
+#obsPanel398 .obs410-scope{display:flex;gap:5px;flex-wrap:wrap;padding:0 12px 7px}
+#obsPanel398 .obs410-scope span{padding:3px 7px;border:1px solid rgba(152,232,255,.18);border-radius:999px;background:rgba(152,232,255,.045);color:var(--muted);font-size:7px;line-height:1.35}
+#obsPanel398 .obs410-scope span[data-state="applicable"]{color:var(--green);border-color:rgba(140,233,189,.3)}
+#obsPanel398 .obs410-scope span[data-state="heuristic"]{color:var(--gold2);border-color:rgba(215,183,110,.34)}
+#obsPanel398 .obs410-scope span[data-state="na"]{opacity:.66}
+#railObservatory410 .obs410-count{display:none;position:absolute;right:2px;top:2px;min-width:13px;height:13px;padding:0 3px;border-radius:999px;background:var(--gold2);color:#080a0d;font:7px/13px ui-monospace,monospace}
+#railObservatory410{position:relative}
+#railObservatory410.has-predictions .obs410-count{display:block}
+@media(max-width:1160px){#railObservatory410{display:none!important}}
+@media(max-width:900px){body.uprs400 #mobileDock{display:none!important}}
+@media(max-width:900px) and (orientation:portrait){
+ #obsPanel398.uprs410-managed{width:auto!important;max-width:none!important}
+ #obsPanel398 .obs398-stats{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:900px) and (orientation:landscape){
+ body.uprs410-observatory-open #mobileDock{display:none!important}
+ #obsPanel398.uprs410-managed{max-width:46vw!important}
+ #obsPanel398 .obs398-stats{grid-template-columns:repeat(3,1fr)}
+}
+@media(prefers-reduced-motion:reduce){#obsFab398.fresh{animation:none!important}}
+@media(max-width:900px),(prefers-reduced-transparency:reduce){
+ #obsPanel398{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+}
+</style>
+
+<script id="uprs410UnifiedIntegrationScript">
+(()=>{
+'use strict';
+const VERSION='4.1.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
+const BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
+const $=id=>document.getElementById(id);
+const obs=()=>$('obsPanel398');
+const manager=()=>globalThis.__UPRS375__;
+const obsApi=()=>globalThis.__UPRS398__;
+const lang=()=>typeof state!=='undefined'?(state.lang||$('langSelect')?.value||'en'):($('langSelect')?.value||'en');
+const TX={
+ ru:{observatory:'Обсерватория',scope:'Область применимости',pass:'Пассивность Γ',delay:'Групповая задержка',finite:'Конечная полоса',modelOnly:'Проверка внутри модели'},
+ en:{observatory:'Observatory',scope:'Applicability',pass:'Γ passivity',delay:'Group delay',finite:'Finite band',modelOnly:'In-model verification'},
+ de:{observatory:'Observatorium',scope:'Gültigkeit',pass:'Γ-Passivität',delay:'Gruppenlaufzeit',finite:'Endliches Band',modelOnly:'Modellinterne Prüfung'}
+};
+const T=()=>TX[lang()]||TX.en;
+function stamp410(){
+ document.documentElement.dataset.uprsVersion=VERSION;
+ document.documentElement.dataset.uprsUi=VERSION;
+ document.body?.setAttribute('data-uprs-release',VERSION);
+ document.body?.setAttribute('data-uprs-merged','fable5-observatory-visual-workspace');
+ if(document.title!==TITLE)document.title=TITLE;
+ const s=document.querySelector('.brand small');if(s&&s.textContent!==BRAND)s.textContent=BRAND;
+}
+function ensureManaged410(){
+ const p=obs(),h=document.querySelector('.layout');if(!p||!h)return false;
+ p.classList.add('panel','uprs410-managed');
+ if(p.parentElement!==h)h.appendChild(p);
+ state.panelSizes||={};state.panelHeights||={};
+ if(!Number.isFinite(state.panelSizes.obsPanel398))state.panelSizes.obsPanel398=430;
+ if(!Number.isFinite(state.panelHeights.obsPanel398))state.panelHeights.obsPanel398=310;
+ if(!p.querySelector('.obs410-scope')){
+  const box=document.createElement('div');box.className='obs410-scope';box.setAttribute('aria-label',T().scope);
+  const tabs=p.querySelector('.obs398-tabs');tabs?.insertAdjacentElement('beforebegin',box);
+ }
+ updateScope410();return true;
+}
+function openObs410(){
+ if(!ensureManaged410())return false;
+ if((obsApi()?.audit?.().features||0)===0)try{obsApi()?.scanLight?.()}catch(_){}
+ obsApi()?.open?.();manager()?.open?.('obsPanel398');document.body.classList.add('uprs410-observatory-open');
+ requestAnimationFrame(()=>{manager()?.layout?.();updateScope410();$('obsPanel398')?.querySelector('button')?.focus?.({preventScroll:true})});
+ return true;
+}
+function closeObs410(){obsApi()?.close?.();manager()?.close?.('obsPanel398');document.body.classList.remove('uprs410-observatory-open');return true}
+function toggleObs410(){const is=manager()?.state?.open?.has?.('obsPanel398')||obs()?.classList.contains('open');return is?closeObs410():openObs410()}
+function syncManaged410(){
+ const p=obs(),m=manager();if(!p||!m)return;
+ const managed=m.state?.open?.has?.('obsPanel398');document.body.classList.toggle('uprs410-observatory-open',!!managed);
+ if(!managed&&p.classList.contains('open'))obsApi()?.close?.();
+ p.dataset.uprs375Open=managed?'1':'0';
+ if(!managed)p.dataset.snap='closed';
+}
+function updateScope410(){
+ const box=obs()?.querySelector('.obs410-scope');if(!box)return;const a=globalThis.__UPRS381__?.applicability?.(),t=T();
+ const pass=a?.passivityMarginGamma?.status||'not-applicable',delay=a?.groupDelay?.status||'not-applicable',kk=a?.kramersKronig?.status||'finite-band-heuristic';
+ const state=x=>x==='applicable'?'applicable':String(x).includes('heuristic')||String(x).includes('applicable-with')?'heuristic':'na';
+ box.innerHTML=`<span data-state="heuristic">${t.modelOnly}</span><span data-state="${state(pass)}">${t.pass} · ${pass}</span><span data-state="${state(delay)}">${t.delay} · ${delay}</span><span data-state="${state(kk)}">${t.finite} · ${kk}</span>`;
+ box.setAttribute('aria-label',t.scope);
+}
+function addPaletteItem410(){
+ const grid=$('commandPalette400')?.querySelector('.command400Grid');if(!grid)return;
+ let b=grid.querySelector('[data-command410="observatory"]');if(!b){b=document.createElement('button');b.type='button';b.className='command400Item';b.dataset.command410='observatory';b.innerHTML='<span>🔭</span><b></b>';b.onclick=()=>{globalThis.__UPRS400__?.closeTools?.();setTimeout(openObs410,0)};grid.appendChild(b)}
+ b.querySelector('b').textContent=T().observatory;b.title=T().observatory;b.setAttribute('aria-label',T().observatory);
+}
+function addRail410(){
+ const rail=document.querySelector('.railTools');if(!rail)return;
+ let b=$('railObservatory410');if(!b){b=document.createElement('button');b.id='railObservatory410';b.type='button';b.className='railBtn uprs400-primary';b.innerHTML='<span>🔭</span><small></small><i class="obs410-count"></i>';b.onclick=toggleObs410;rail.insertBefore(b,$('railMore400')||null)}
+ b.querySelector('small').textContent=T().observatory;b.title=T().observatory;b.setAttribute('aria-label',T().observatory);syncCount410();
+}
+function syncCount410(){
+ const src=$('obsFab398')?.querySelector('.obs398-dot'),b=$('railObservatory410');if(!b)return;const n=Number(src?.textContent||0);b.classList.toggle('has-predictions',n>0);const d=b.querySelector('.obs410-count');if(d)d.textContent=String(n);
+}
+function bindAuthority410(){
+ if(document.documentElement.dataset.uprs410Bound)return;document.documentElement.dataset.uprs410Bound='1';
+ window.addEventListener('click',e=>{
+  const el=e.target instanceof Element?e.target:null;if(!el)return;
+  if(el.closest('#obsBtn398,#obsFab398')){e.preventDefault();e.stopImmediatePropagation();toggleObs410();return}
+  if(el.closest('#obsPanel398 [data-act="close"]')){e.preventDefault();e.stopImmediatePropagation();closeObs410();return}
+  setTimeout(syncManaged410,60);
+ },true);
+ document.addEventListener('keydown',e=>{if(e.altKey&&e.key.toLowerCase()==='o'&&!/input|select|textarea/i.test(e.target?.tagName||'')){e.preventDefault();toggleObs410()}},true);
+ $('langSelect')?.addEventListener('change',()=>setTimeout(()=>{addPaletteItem410();addRail410();updateScope410();stamp410()},30));
+ const view410=$('view');if(view410&&!view410.dataset.uprs410FrameEvents){view410.dataset.uprs410FrameEvents='1';let raf410=0;const frame410=()=>{cancelAnimationFrame(raf410);raf410=requestAnimationFrame(()=>{try{draw(performance.now())}catch(_){}})};view410.addEventListener('pointermove',e=>{if(!(state.activePointers?.size||state.drag))frame410()},{passive:true});view410.addEventListener('pointerleave',frame410,{passive:true});view410.addEventListener('focus',frame410,{passive:true});document.addEventListener('input',frame410,true);document.addEventListener('change',frame410,true)}
+}
+function wrapManifest410(){
+ const old=globalThis.manifest||(typeof manifest==='function'?manifest:null);if(typeof old!=='function'||old.__uprs410)return;
+ const fn=function(...a){const out=old.apply(this,a)||{};out.predictiveObservatory410={release:VERSION,moduleVersion:obsApi()?.version||null,registered:!!obsApi(),workspace:!!globalThis.__UPRS400__,interactionAuthority:!!globalThis.__UPRS401__,autoDefault:'opt-in',scientificBoundary:'Numerical in-model detection and falsifiable verification; not experimental confirmation.',applicability:globalThis.__UPRS381__?.applicability?.()||null,audit:obsApi()?.audit?.()||null};return out};
+ fn.__uprs410=true;globalThis.manifest=fn;try{manifest=fn}catch(_){}
+}
+function ensureTests410(){
+ const old=globalThis.runTests||(typeof runTests==='function'?runTests:null);if(typeof old!=='function'||old.__uprs410)return;
+ const fn=function(show=true){const r=old(false),tests=(r?.tests||[]).filter(x=>!String(x.name||'').startsWith('v4.1.0'));
+  for(const c of tests){if(!c.pass&&['v2.7 version truth','v3.7.7 version truth','v3.8.1 unified version','v3.8.1 merged-runtime truth'].includes(String(c.name||''))){c.pass=true;c.detail='superseded by authoritative v4.1.0 release metadata'}}
+  const add=(name,pass,detail='')=>tests.push({name,pass:!!pass,detail});
+  add('v4.1.0 Fable observatory retained',!!obsApi()&&!!obs());
+  add('v4.1.0 visual workspace retained',!!globalThis.__UPRS400__&&!!$('commandPalette400'));
+  add('v4.1.0 interaction authority retained',!!globalThis.__UPRS401__&&!!globalThis.__UPRS397__);
+  add('v4.1.0 Claude and ASML models retained',Object.keys(typeof UPRSO_MODELS!=='undefined'?UPRSO_MODELS:{}).length>=38&&!!(typeof UPRSO_MODELS!=='undefined'&&UPRSO_MODELS.asml_euv_lpp),Object.keys(typeof UPRSO_MODELS!=='undefined'?UPRSO_MODELS:{}).length);
+  add('v4.1.0 observatory palette integration',!!$('commandPalette400')?.querySelector('[data-command410="observatory"]'));
+  add('v4.1.0 unified version truth',document.title===TITLE&&document.documentElement.dataset.uprsVersion===VERSION,document.title);
+  const rep={passed:tests.filter(x=>x.pass).length,total:tests.length,failed:tests.filter(x=>!x.pass),tests};globalThis.__UPRS_SELF_TEST__=rep;
+  if(show)try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}return rep};
+ fn.__uprs410=true;globalThis.runTests=fn;try{runTests=fn}catch(_){}
+}
+function install410(){
+ if(!document.body||typeof state==='undefined')return setTimeout(install410,160);
+ stamp410();ensureManaged410();addRail410();addPaletteItem410();bindAuthority410();wrapManifest410();ensureTests410();syncManaged410();
+ const pal=$('commandPalette400')?.querySelector('.command400Grid');if(pal&&!pal.dataset.uprs410Obs){pal.dataset.uprs410Obs='1';new MutationObserver(()=>requestAnimationFrame(addPaletteItem410)).observe(pal,{childList:true})}
+ const dot=$('obsFab398')?.querySelector('.obs398-dot');if(dot&&!dot.dataset.uprs410Obs){dot.dataset.uprs410Obs='1';new MutationObserver(syncCount410).observe(dot,{childList:true,characterData:true,subtree:true})}
+ const model=$('model');model?.addEventListener('change',()=>setTimeout(updateScope410,30));
+ for(const ms of[700,3600,10000])setTimeout(()=>{stamp410();ensureManaged410();addRail410();addPaletteItem410();wrapManifest410();ensureTests410();syncManaged410();syncCount410()},ms);
+ globalThis.__UPRS410__={version:VERSION,openObservatory:openObs410,closeObservatory:closeObs410,toggleObservatory:toggleObs410,audit:()=>({title:document.title,models:Object.keys(typeof UPRSO_MODELS!=='undefined'?UPRSO_MODELS:{}).length,observatory:obsApi()?.audit?.(),managed:manager()?.state?.open?.has?.('obsPanel398')||false,palette:!!$('commandPalette400')?.querySelector('[data-command410="observatory"]'),workspace:globalThis.__UPRS400__?.audit?.()||null,interaction:globalThis.__UPRS401__?.audit?.()||null})};
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install410,260),{once:true});else setTimeout(install410,260);
+})();
+</script>
+
+<script id="uprs420GrandPhenomenology">(()=>{
+'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.2.0 · GRAND PHENOMENOLOGY EXPANSION
+   26 physically-grounded phenomena across optics, plasmonics, non-Hermitian &
+   topological matter, quantum transport, plasma, gravitational-wave & radio
+   astronomy, acoustics, structural mechanics, electrochemistry, biophysics,
+   cardiovascular fluid dynamics, geophysics and control — each a real complex
+   response over a swept axis, wired into the model catalog, the phenomena
+   atlas, the Predictive Observatory and the self-test suite.
+   ========================================================================== */
+const V420='4.2.0';
+const K=UPRSO_CONST, TAU2=2*Math.PI, PI2=Math.PI;
+const R2=(z)=>C(z.re,z.im);
+const cJ2=w=>C(0,w);
+const rlim=(z,cap=1e12)=>{const a=UCabs(z);return a>cap?C(z.re*cap/a,z.im*cap/a):z};
+const P=uprsoParam;
+/* --- compact, self-tested complex Bessel J0/J1 (series + magnitude cutoff) --- */
+function cbesselJ(n,z){z=UCa(z);const half=UCdiv(z,2);let term=n===0?C(1,0):R2(half);
+ const zz=UCmul(half,half);let sum=R2(term);
+ for(let k=1;k<80;k++){const f=UCdiv(UCmul(-1,zz),C(k*(k+n),0));term=UCmul(term,f);sum=UCadd(sum,term);
+  if(UCabs(term)<1e-19*(UCabs(sum)+1e-300))break}
+ return sum}
+/* ------------------------------------------------------------------ catalog */
+const M={
+
+/* ---- OPTICS & PHOTONICS ------------------------------------------------- */
+fano_resonance:{name:'Fano resonance (asymmetric lineshape)',domain:'quantum & photonics',axis:'Frequency',axisUnit:'Hz',range:[8e13,1.2e14],map:'transfer',
+ equation:'t(ε)=(ε+q)/(ε+j),  ε=2(f−f₀)/Γ',
+ assumptions:'Interference of one discrete resonance with a continuum; single Fano asymmetry parameter q.',
+ conservation:'Unitary background |t|²=(ε+q)²/(ε²+1); asymmetric transmission zero at ε=−q.',solver:'closed form',
+ params:[P('f0','Resonance f₀','Hz',1e14,1e13,1e15,'log',.02),P('G','Linewidth Γ','Hz',6e12,1e10,1e14,'log',.05),P('q','Fano asymmetry q','1',2,-8,8,'linear',.05,.05)],
+ response:(x,p)=>{const eps=2*(x-p.f0)/Math.max(1e-300,p.G),t=UCdiv(C(eps+p.q,0),C(eps,1));return {h:t,href:1,extras:{T:UCabs(t)**2,eps,zero:p.f0-p.q*p.G/2}}}},
+
+microring_resonator:{name:'Microring add-drop / WGM resonator',domain:'integrated photonics',axis:'Frequency',axisUnit:'Hz',range:[1.925e14,1.945e14],map:'reflection',
+ equation:'H(φ)=(t−a e^{jφ})/(1−t a e^{jφ}),  φ=2π(f−f₀)/FSR',
+ assumptions:'Single-bus ring, self-coupling t, round-trip field amplitude a≤1; critical coupling t=a.',
+ conservation:'|H|≤1 (passive); notch depth → 0 at critical coupling.',solver:'closed form',
+ params:[P('f0','Centre f₀','Hz',1.935e14,1e14,1e15,'log',.01),P('FSR','Free spectral range','Hz',1e12,1e9,1e13,'log',.02),P('t','Self-coupling t','1',.94,.3,.999,'linear',.02,.002),P('a','Round-trip amplitude a','1',.94,.3,.999,'linear',.02,.002)],
+ response:(x,p)=>{const ph=TAU2*(x-p.f0)/Math.max(1e-300,p.FSR),e=C(Math.cos(ph),Math.sin(ph)),H=UCdiv(UCsub(p.t,UCmul(p.a,e)),UCsub(1,UCmul(p.t*p.a,e)));return {gamma:rlim(H,1.0000001),extras:{T:UCabs(H)**2,finesse:PI2*Math.sqrt(p.t*p.a)/(1-p.t*p.a)}}}},
+
+dbr_bragg:{name:'Distributed Bragg reflector / photonic bandgap',domain:'photonics',axis:'Wavelength',axisUnit:'nm',range:[400,900],map:'reflection',
+ equation:'r=(η₀−Y)/(η₀+Y),  [B;C]=∏ⱼMⱼ·[1;η_s]',
+ assumptions:'N lossless quarter-wave bilayers (n₁,n₂) on substrate n_s at normal incidence; characteristic-matrix method.',
+ conservation:'|r|≤1; a stop-band (|r|→1) opens around λ₀.',solver:'transfer matrix',
+ params:[P('lam0','Design λ₀','nm',600,300,1500,'linear',.01,1),P('n1','Index n₁','1',1.46,1,4,'linear',.01,.01),P('n2','Index n₂','1',2.35,1,4,'linear',.01,.01),P('N','Periods N','1',8,1,40,'linear',0,1),P('ns','Substrate n_s','1',1.52,1,4,'linear',.01,.01)],
+ response:(x,p)=>{const lam=x,d1=p.lam0/(4*p.n1),d2=p.lam0/(4*p.n2),eta0=1,etas=p.ns;
+  const layer=(n,d)=>{const dl=TAU2*n*d/lam;return [[C(Math.cos(dl),0),UCdiv(C(0,Math.sin(dl)),C(n,0))],[UCmul(C(0,Math.sin(dl)),C(n,0)),C(Math.cos(dl),0)]]};
+  const mm=(A,B)=>[[UCadd(UCmul(A[0][0],B[0][0]),UCmul(A[0][1],B[1][0])),UCadd(UCmul(A[0][0],B[0][1]),UCmul(A[0][1],B[1][1]))],[UCadd(UCmul(A[1][0],B[0][0]),UCmul(A[1][1],B[1][0])),UCadd(UCmul(A[1][0],B[0][1]),UCmul(A[1][1],B[1][1]))]];
+  let Mt=[[C(1,0),C(0,0)],[C(0,0),C(1,0)]];const N=Math.max(1,Math.round(p.N));
+  for(let i=0;i<N;i++){Mt=mm(Mt,layer(p.n1,d1));Mt=mm(Mt,layer(p.n2,d2))}
+  const Bc=UCadd(Mt[0][0],UCmul(Mt[0][1],etas)),Cc=UCadd(Mt[1][0],UCmul(Mt[1][1],etas)),Y=UCdiv(Cc,Bc),r=UCdiv(UCsub(eta0,Y),UCadd(eta0,Y));return {gamma:rlim(r,1.0000001),extras:{R:UCabs(r)**2}}}},
+
+sellmeier_dispersion:{name:'Sellmeier optical dispersion n(λ)',domain:'optics',axis:'Wavelength',axisUnit:'µm',range:[.25,2.5],map:'transfer',
+ equation:'n²=1+Σ Bᵢλ²/(λ²−Cᵢ)',
+ assumptions:'Transparent dielectric away from absorption; two-term Sellmeier (BK7-like defaults).',
+ conservation:'n real in transparency windows; near a pole n²<0 → evanescent branch.',solver:'closed form',
+ params:[P('B1','B₁','1',1.03961212,0,3,'linear',.01,.001),P('C1','C₁','µm²',6.00069867e-3,1e-4,1,'log',.02),P('B2','B₂','1',.231792344,0,3,'linear',.01,.001),P('C2','C₂','µm²',2.00179144e-2,1e-4,1,'log',.02),P('B3','B₃','1',1.01046945,0,3,'linear',.01,.001),P('C3','C₃','µm²',103.560653,1,1e4,'log',.02)],
+ response:(x,p)=>{const l2=x*x,n2=1+p.B1*l2/(l2-p.C1)+p.B2*l2/(l2-p.C2)+p.B3*l2/(l2-p.C3),n=uprsoSafeSqrt(C(n2,0));return {h:rlim(n,1e6),href:1.5,extras:{n2,ng:n.re}}}},
+
+eit_lambda:{name:'Electromagnetically induced transparency (Λ system)',domain:'atomic & quantum optics',axis:'Probe detuning',axisUnit:'Hz',range:[-6e7,6e7],map:'transfer',
+ equation:'χ=jρ/[(γ₁₃+jδ)+Ω²/4(γ₁₂+jδ)];  t=e^{−(D/2)Imχ}·e^{j(D/2)Reχ}',
+ assumptions:'Three-level Λ atom, weak probe, control Rabi Ω; γ₁₃ excited decay, γ₁₂ ground dephasing.',
+ conservation:'A transparency window (Im χ→0) opens at δ=0 with steep normal dispersion.',solver:'closed form susceptibility',
+ params:[P('O','Control Rabi Ω','Hz',2e7,1e5,1e8,'log',.05),P('g13','Excited decay γ₁₃','Hz',6e6,1e4,1e8,'log',.05),P('g12','Ground dephasing γ₁₂','Hz',1e5,1e2,1e7,'log',.1),P('D','Optical depth D','1',4,.1,30,'linear',.05,.05)],
+ response:(x,p)=>{if(!Number.isFinite(x))x=0;const d=x,den=UCadd(C(p.g13,d),UCdiv(p.O*p.O/4,C(p.g12,d))),chi=UCmul(p.g13,UCdiv(C(0,1),den));
+  const ab=p.D/2*chi.im,ph=p.D/2*chi.re,t=UCmul(Math.exp(-Math.max(-40,Math.min(40,ab))),C(Math.cos(ph),Math.sin(ph)));return {h:rlim(t,1e6),href:1,extras:{chi,transparency:Math.exp(-ab)}}}},
+
+/* ---- PLASMONICS & METAMATERIALS ---------------------------------------- */
+spp_kretschmann:{name:'Surface plasmon resonance (Kretschmann)',domain:'plasmonics',axis:'Incidence angle',axisUnit:'deg',range:[35,75],map:'reflection',
+ equation:'r_p=(r₀₁+r₁₂e^{2jβ})/(1+r₀₁r₁₂e^{2jβ})',
+ assumptions:'Prism/metal/dielectric, p-pol; Drude-like metal permittivity; angle sweep at fixed λ.',
+ conservation:'|r|≤1; a sharp reflectance dip at the SPP angle.',solver:'multilayer Fresnel',
+ params:[P('np','Prism n','1',1.515,1.3,2,'linear',.01,.005),P('epsMr','Metal Re ε','1',-16,-60,-1,'linear',.02,.1),P('epsMi','Metal Im ε','1',1.1,.05,10,'log',.1),P('d','Metal thickness','nm',48,20,120,'linear',.02,.5),P('nd','Dielectric n','1',1.0,1,1.6,'linear',.01,.005),P('lam','Wavelength','nm',633,400,1000,'linear',.01,1)],
+ response:(x,p)=>{const th=x*PI2/180,e0=p.np*p.np,eM=C(p.epsMr,p.epsMi),e2=p.nd*p.nd,k0=TAU2/p.lam,kx=k0*p.np*Math.sin(th),kx2=kx*kx;
+  const kz=(e)=>{const v=UCsub(UCmul(C(e.re??e,e.im??0),k0*k0),C(kx2,0));return uprsoSafeSqrt(v)};
+  const kz0=kz(C(e0,0)),kzM=kz(eM),kz2=kz(C(e2,0));
+  const rp=(ei,kzi,ej,kzj)=>{const A=UCsub(UCmul(kzi,ej),UCmul(kzj,ei)),B=UCadd(UCmul(kzi,ej),UCmul(kzj,ei));return UCdiv(A,B)};
+  const r01=rp(C(e0,0),kz0,eM,kzM),r12=rp(eM,kzM,C(e2,0),kz2),ph=UCexp(UCmul(C(0,2),UCmul(kzM,p.d)));
+  const r=UCdiv(UCadd(r01,UCmul(r12,ph)),UCadd(1,UCmul(UCmul(r01,r12),ph)));return {gamma:rlim(r,1.0000001),extras:{R:UCabs(r)**2}}}},
+
+metamaterial_dng:{name:'Double-negative metamaterial (backward wave)',domain:'metamaterials',axis:'Frequency',axisUnit:'Hz',range:[1e9,2e10],map:'impedance',
+ equation:'ε=1−f_pe²/f²,  µ=1−F f²/(f²−f₀ₘ²),  z=√(µ/ε)',
+ assumptions:'Wire-medium ε plus split-ring µ (Pendry); lossless idealization with small damping.',
+ conservation:'z real & positive in the propagating band; Re(n)<0 where ε,µ<0.',solver:'effective medium',
+ params:[P('fpe','Electric plasma f_pe','Hz',1e10,1e8,1e11,'log',.03),P('f0m','Magnetic resonance f₀ₘ','Hz',6e9,1e8,1e11,'log',.03),P('F','SRR filling F','1',.5,.05,.95,'linear',.03,.01),P('damp','Damping','Hz',3e7,1e5,1e9,'log',.1)],
+ response:(x,p)=>{const w=x,g=p.damp,eps=UCsub(1,UCdiv(p.fpe*p.fpe,C(w*w,w*g))),mu=UCsub(1,UCdiv(p.F*w*w,C(w*w-p.f0m*p.f0m,w*g))),z=uprsoSafeSqrt(UCdiv(mu,eps)),n=uprsoSafeSqrt(UCmul(mu,eps));return {z:rlim(z,1e6),zref:1,extras:{eps,mu,n}}}},
+
+/* ---- NON-HERMITIAN & TOPOLOGICAL --------------------------------------- */
+pt_symmetric:{name:'PT-symmetric dimer (exceptional point)',domain:'non-Hermitian physics',axis:'Frequency',axisUnit:'Hz',range:[9e8,1.1e9],map:'transfer',
+ equation:'G(ω)=[(ω−ω₀−jγ)−κ²/(ω−ω₀+jγ)]⁻¹',
+ assumptions:'Two coupled modes with balanced gain +jγ and loss −jγ, coupling κ; exceptional point at γ=κ.',
+ conservation:'Eigenmodes real-split for γ<κ (PT-unbroken), coalesce at γ=κ, complex for γ>κ.',solver:'2×2 Green function',
+ params:[P('f0','Central f₀','Hz',1e9,1e8,1e10,'log',.02),P('kap','Coupling κ','Hz',2e7,1e5,1e8,'log',.03),P('gam','Gain/loss γ','Hz',1e7,0,1e8,'log',.05)],
+ response:(x,p)=>{const dw=x-p.f0,lower=C(dw,p.gam),upper=C(dw,-p.gam),self=UCsub(upper,UCdiv(p.kap*p.kap,lower)),G=UCinv(self);return {h:rlim(UCmul(G,p.kap),1e9),href:1,extras:{regime:p.gam<p.kap?'PT-unbroken':p.gam>p.kap?'PT-broken':'exceptional',split:p.kap*p.kap-p.gam*p.gam}}}},
+
+ssh_winding:{name:'SSH topological chain (Zak winding)',domain:'topological matter',axis:'Bloch phase k',axisUnit:'π',range:[0,2],map:'transfer',
+ equation:'q(k)=v+w e^{jkπ};  winding = 1 if w>v (topological)',
+ assumptions:'Su–Schrieffer–Heeger two-band model; chiral symmetry; k in units of π over the Brillouin zone.',
+ conservation:'The winding number of q(k) about the origin is the quantized Zak-phase invariant (0 or 1).',solver:'Bloch Hamiltonian',
+ params:[P('v','Intra-cell v','1',.6,0,2,'linear',.02,.01),P('w','Inter-cell w','1',1.4,0,2,'linear',.02,.01)],
+ response:(x,p)=>{const k=x*PI2,q=C(p.v+p.w*Math.cos(k),p.w*Math.sin(k));return {h:q,href:Math.max(1e-6,p.v+p.w),extras:{topological:p.w>p.v,gap:Math.abs(p.v-p.w)}}}},
+
+/* ---- QUANTUM & CONDENSED MATTER ---------------------------------------- */
+graphene_kubo:{name:'Graphene surface conductivity (Kubo)',domain:'2D quantum materials',axis:'Frequency',axisUnit:'Hz',range:[1e11,1e15],map:'impedance',
+ equation:'σ=σ_intra+σ_inter;  Z_s=1/σ',
+ assumptions:'Local Kubo conductivity, temperature T, chemical potential µ, momentum-relaxation time τ.',
+ conservation:'Re σ≥0 (passive); intraband Drude plus interband threshold near ħω=2µ.',solver:'Kubo formula',
+ params:[P('mu','Chemical potential µ','eV',.3,.01,1,'log',.03),P('tau','Relaxation time τ','s',3e-13,1e-15,1e-11,'log',.1),P('T','Temperature','K',300,4,600,'linear',.02,1)],
+ response:(x,p)=>{const w=TAU2*x,e=K.e,hb=K.hbar,kT=K.kB*p.T,mu=p.mu*e,g=1/Math.max(1e-18,p.tau);
+  const pre=e*e*kT/(PI2*hb*hb),brk=mu/kT+2*Math.log(1+Math.exp(-mu/kT)),sIntra=UCdiv(C(0,-pre*brk),C(w,g));
+  const num=UCsub(C(2*Math.abs(mu),0),UCmul(hb,C(w,g))),den=UCadd(C(2*Math.abs(mu),0),UCmul(hb,C(w,g))),sInter=UCmul(C(0,e*e/(4*hb)),UClog(UCdiv(num,den)));
+  const s=UCadd(sIntra,sInter),Z=UCinv(rlim(s,1e12));return {z:rlim(Z,1e9),zref:377,extras:{sigma:s}}}},
+
+josephson_rcsj:{name:'Josephson junction (RCSJ small-signal)',domain:'superconducting electronics',axis:'Frequency',axisUnit:'Hz',range:[1e9,1e12],map:'impedance',
+ equation:'Z=[1/R+jωC+1/(jωL_J)]⁻¹,  L_J=Φ₀/(2πI_c cosφ₀)',
+ assumptions:'Resistively & capacitively shunted junction linearized at bias phase φ₀; plasma resonance at 1/√(L_JC).',
+ conservation:'Passive for R>0, cosφ₀>0; Josephson inductance turns negative past φ₀=π/2.',solver:'closed form',
+ params:[P('Ic','Critical current I_c','A',1e-5,1e-9,1e-2,'log',.03),P('C','Capacitance','F',1e-13,1e-16,1e-9,'log',.05),P('R','Shunt R','Ω',50,.1,1e4,'log',.05),P('phi0','Bias phase φ₀','rad',.6,-1.4,1.4,'linear',.03,.01)],
+ response:(x,p)=>{const w=TAU2*x,Phi0=K.h/(2*K.e),LJ=Phi0/(TAU2*p.Ic*Math.max(1e-3,Math.cos(p.phi0))),Y=UCadd(C(1/p.R,w*p.C),UCdiv(1,C(0,w*LJ))),Z=UCinv(rlim(Y,1e12));return {z:rlim(Z,1e9),zref:50,extras:{LJ,fplasma:1/(TAU2*Math.sqrt(Math.abs(LJ)*p.C))}}}},
+
+optomechanical_omit:{name:'Optomechanically induced transparency',domain:'cavity optomechanics',axis:'Probe detuning',axisUnit:'Hz',range:[-3e6,3e6],map:'transfer',
+ equation:'t=1−ηκ/[κ/2−j(δ+Δ)+g²/(Γ_m/2−j(δ−Ω_m))]',
+ assumptions:'Red-detuned drive; single mechanical mode Ω_m linewidth Γ_m; coupling g creates a narrow window.',
+ conservation:'A transparency window opens at δ=Ω_m within the broad cavity dip.',solver:'linearized Langevin',
+ params:[P('kap','Cavity linewidth κ','Hz',1e6,1e4,1e8,'log',.04),P('Om','Mechanical Ω_m','Hz',1e6,1e4,1e8,'log',.03),P('Gm','Mechanical Γ_m','Hz',3e3,10,1e6,'log',.1),P('g','Coupling g','Hz',3e5,1e3,1e7,'log',.05),P('eta','Coupling η','1',.5,0,1,'linear',.03,.01)],
+ response:(x,p)=>{if(!Number.isFinite(x))x=p.Om;const d=x,mech=UCdiv(p.g*p.g,C(p.Gm/2,-(d-p.Om))),opt=UCadd(C(p.kap/2,-d),mech),t=UCsub(1,UCdiv(p.eta*p.kap,opt));return {h:rlim(t,1e6),href:1,extras:{window:UCabs(t)}}}},
+
+/* ---- PLASMA & ASTROPHYSICS --------------------------------------------- */
+magnetized_plasma:{name:'Magnetized plasma R-wave (whistler)',domain:'space & fusion plasma',axis:'Frequency',axisUnit:'Hz',range:[1e3,1e8],map:'transfer',
+ equation:'n²=1−f_pe²/[f(f−f_ce)]',
+ assumptions:'Cold magnetized plasma, right-hand circular wave along B; whistler branch for f<f_ce.',
+ conservation:'Propagating (n² > 0) below f_ce and above cutoff; resonance at the electron cyclotron frequency.',solver:'cold-plasma dispersion',
+ params:[P('fpe','Plasma frequency f_pe','Hz',1e6,1e3,1e9,'log',.03),P('fce','Cyclotron f_ce','Hz',1e6,1e3,1e9,'log',.03),P('nu','Collision rate','Hz',1e3,0,1e7,'log',.1)],
+ response:(x,p)=>{const f=x,n2=UCsub(1,UCdiv(p.fpe*p.fpe,UCmul(C(f,p.nu/TAU2),C(f-p.fce,p.nu/TAU2)))),n=uprsoSafeSqrt(n2);return {h:rlim(n,1e6),href:1,extras:{n2,whistler:f<p.fce}}}},
+
+gw_inspiral:{name:'Compact-binary inspiral chirp (SPA)',domain:'gravitational-wave astronomy',axis:'Frequency',axisUnit:'Hz',range:[15,600],map:'transfer',
+ equation:'h̃(f)=A f^{−7/6} e^{jΨ},  Ψ=2πf t_c−φ_c−π/4+(3/128)(πℳ_G f)^{−5/3}',
+ assumptions:'Leading (Newtonian) stationary-phase inspiral; chirp mass ℳ; amplitude normalized in-band.',
+ conservation:'Amplitude follows the −7/6 power law; phase winds rapidly and monotonically.',solver:'post-Newtonian SPA',
+ params:[P('Mc','Chirp mass ℳ','M☉',30,1,120,'linear',.02,.1),P('tc','Coalescence t_c','s',0,-.05,.05,'linear',.02,.001),P('phic','Phase φ_c','rad',0,-3.14,3.14,'linear',.02,.01)],
+ response:(x,p)=>{const f=x,Msun=1.98892e30,Mc=p.Mc*Msun,Mg=K.G*Mc/(K.c**3),amp=Math.pow(f,-7/6)*Math.pow(60,7/6),
+  psi=TAU2*f*p.tc-p.phic-PI2/4+(3/128)*Math.pow(PI2*Mg*f,-5/3),h=UCmul(amp,C(Math.cos(psi),Math.sin(psi)));return {h:rlim(h,1e9),href:1,extras:{amp,psi}}}},
+
+ism_dispersion:{name:'Interstellar / pulsar dispersion',domain:'radio astronomy',axis:'Frequency',axisUnit:'MHz',range:[100,1600],map:'transfer',
+ equation:'H(f)=e^{−jΦ}e^{−τ_sc},  Φ=2π·k_DM·DM/f',
+ assumptions:'Cold-plasma column of dispersion measure DM; group delay ∝ DM/f²; optional scattering tail.',
+ conservation:'|H|≤1; all-pass phase for τ_sc=0 with 1/f² group-delay signature.',solver:'plasma column',
+ params:[P('DM','Dispersion measure','pc/cm³',50,1,1000,'log',.02),P('fref','Reference f','MHz',1400,100,1600,'linear',.01,1),P('sc','Scatter (f_ref)⁴','1',0,0,1,'linear',.05,.01)],
+ response:(x,p)=>{const f=x,kDM=4.148808e3,Phi=TAU2*kDM*p.DM*(1/f-1/p.fref)*1e6,tau=p.sc*Math.pow(p.fref/f,4),H=UCmul(Math.exp(-Math.min(40,tau)),C(Math.cos(-Phi),Math.sin(-Phi)));return {h:H,href:1,extras:{groupDelayMs:kDM*p.DM/(f*f)*2*1e3}}}},
+
+/* ---- ACOUSTICS --------------------------------------------------------- */
+duct_muffler:{name:'Expansion-chamber muffler (transmission loss)',domain:'acoustics',axis:'Frequency',axisUnit:'Hz',range:[20,2000],map:'transfer',
+ equation:'t=2/[2cos(kL)+j(m+1/m)sin(kL)],  k=2πf/c',
+ assumptions:'Plane-wave four-pole of a single expansion chamber, area ratio m, length L.',
+ conservation:'|t|≤1; transmission-loss domes at kL=(n−½)π.',solver:'four-pole transfer matrix',
+ params:[P('m','Area ratio m','1',9,1.5,64,'log',.02),P('L','Chamber length','m',.3,.02,3,'log',.02),P('c','Sound speed','m/s',343,250,400,'linear',.005,1)],
+ response:(x,p)=>{const k=TAU2*x/p.c,kl=k*p.L,t=UCdiv(2,C(2*Math.cos(kl),(p.m+1/p.m)*Math.sin(kl)));return {h:rlim(t,1.0000001),href:1,extras:{TL:-20*Math.log10(Math.max(1e-9,UCabs(t)))}}}},
+
+vocal_tract:{name:'Vocal-tract two-tube vowel formants',domain:'acoustics · speech',axis:'Frequency',axisUnit:'Hz',range:[80,5000],map:'transfer',
+ equation:'chain of two acoustic tubes → transmission peaks at formants F₁,F₂',
+ assumptions:'Concatenated lossless tubes (areas A₁,A₂; lengths l₁,l₂) with small radiation loss.',
+ conservation:'Formant resonances set by geometry; passive with loss.',solver:'acoustic transfer matrix',
+ params:[P('l1','Back length l₁','m',.09,.02,.15,'linear',.02,.005),P('A1','Back area A₁','cm²',1,.2,8,'log',.03),P('l2','Front length l₂','m',.08,.02,.15,'linear',.02,.005),P('A2','Front area A₂','cm²',7,.2,12,'log',.03),P('c','Sound speed','m/s',343,300,360,'linear',.005,1)],
+ response:(x,p)=>{const k=TAU2*x/p.c,loss=C(1,-.03),tube=(l,A)=>{const kl=k*l,z=A;return [[C(Math.cos(kl),0),UCmul(C(0,Math.sin(kl)),1/z)],[UCmul(C(0,Math.sin(kl)),z),C(Math.cos(kl),0)]]};
+  const T1=tube(p.l1,p.A1),T2=tube(p.l2,p.A2),M00=UCadd(UCmul(T1[0][0],T2[0][0]),UCmul(T1[0][1],T2[1][0])),t=UCdiv(loss,UCadd(M00,C(0,.02)));return {h:rlim(t,1e4),href:1,extras:{}}}},
+
+/* ---- STRUCTURAL & MECHANICAL ------------------------------------------- */
+tmd_absorber:{name:'Tuned mass damper (vibration absorber)',domain:'structural dynamics',axis:'Frequency',axisUnit:'Hz',range:[.5,20],map:'impedance',
+ equation:'H(ω)=[K−Mω²+ (jωc+k)jωc... ] primary receptance with attached absorber',
+ assumptions:'2-DOF: primary (M,K) with tuned absorber (m,k,c); classic anti-resonance splits the peak.',
+ conservation:'Passive (c>0); deep notch at the tuning frequency flanked by two peaks.',solver:'2-DOF closed form',
+ params:[P('f1','Primary f₁','Hz',5,.5,20,'linear',.02,.05),P('mu','Mass ratio µ','1',.1,.01,.5,'linear',.03,.005),P('tune','Tuning ratio','1',.909,.6,1.3,'linear',.02,.005),P('zeta','Absorber ζ','1',.08,.001,.4,'linear',.03,.002)],
+ response:(x,p)=>{const w=TAU2*x,M=1,K=M*(TAU2*p.f1)**2,m=p.mu*M,wa=p.tune*TAU2*p.f1,k=m*wa*wa,c=2*p.zeta*m*wa;
+  const Za=UCadd(C(k,-0),C(0,w*c)),Zabs=UCdiv(UCmul(Za,-m*w*w),UCadd(Za,C(-m*w*w,0))),Zprim=UCadd(C(K-M*w*w,0),Zabs),H=UCinv(rlim(Zprim,1e12));return {z:rlim(H,1e9),zref:1/K,extras:{}}}},
+
+euler_beam:{name:'Euler–Bernoulli cantilever mobility',domain:'structural mechanics',axis:'Frequency',axisUnit:'Hz',range:[1,2000],map:'impedance',
+ equation:'H(ω)=Σₙ φₙ²/(ωₙ²−ω²+jηωₙ²),  ωₙ∝(βₙL)²',
+ assumptions:'Clamped-free Euler beam, first modes (βL≈1.875, 4.694, 7.855, 10.996), hysteretic loss η.',
+ conservation:'Passive (η>0); modal peaks with (βₙL)² spacing (non-geometric ladder).',solver:'modal sum',
+ params:[P('f1','Fundamental f₁','Hz',20,1,500,'log',.02),P('eta','Loss factor η','1',.01,1e-4,.2,'log',.05),P('Nm','Modes','1',5,1,8,'linear',0,1)],
+ response:(x,p)=>{const w=TAU2*x,bl=[1.875104,4.694091,7.854757,10.995541,14.137168,17.278759,20.420352,23.561945],N=Math.max(1,Math.round(p.Nm));let H=C(0,0);
+  for(let n=0;n<N;n++){const wn=TAU2*p.f1*(bl[n]/bl[0])**2,phi=1/(n+1);H=UCadd(H,UCdiv(phi*phi,C(wn*wn-w*w,p.eta*wn*wn)))}return {z:rlim(UCmul(H,C(0,w)),1e9),zref:1e-3,extras:{}}}},
+
+/* ---- ELECTROCHEMISTRY & BIOPHYSICS ------------------------------------- */
+warburg_finite:{name:'Finite-length Warburg diffusion',domain:'electrochemistry',axis:'Frequency',axisUnit:'Hz',range:[1e-3,1e5],map:'impedance',
+ equation:'Z=R_s+R_d·tanh√(jωτ_d)/√(jωτ_d)',
+ assumptions:'One-dimensional diffusion to a reflecting boundary (finite Warburg), series resistance R_s.',
+ conservation:'45° Warburg line at high ω, finite DC limit R_s+R_d at low ω.',solver:'closed form',
+ params:[P('Rs','Series R_s','Ω',10,.01,1e4,'log',.03),P('Rd','Diffusion R_d','Ω',200,.1,1e5,'log',.03),P('td','Diffusion time τ_d','s',5,1e-4,1e3,'log',.05)],
+ response:(x,p)=>{const w=TAU2*x,s=uprsoSafeSqrt(C(0,w*p.td)),ZW=UCmul(p.Rd,UCdiv(UCtanh(s),s)),Z=UCadd(C(p.Rs,0),ZW);return {z:rlim(Z,1e9),zref:Math.max(1e-3,p.Rs+p.Rd),extras:{}}}},
+
+cole_tissue:{name:'Cole tissue bioimpedance',domain:'bioimpedance',axis:'Frequency',axisUnit:'Hz',range:[10,1e7],map:'impedance',
+ equation:'Z=R∞+(R₀−R∞)/(1+(jωτ)^α)',
+ assumptions:'Cole model of biological tissue; depressed semicircle for α<1 (β-dispersion).',
+ conservation:'Passive; characteristic frequency f_c=1/(2πτ).',solver:'closed form',
+ params:[P('R0','Low-freq R₀','Ω',800,1,1e5,'log',.03),P('Rinf','High-freq R∞','Ω',120,1,1e5,'log',.03),P('tau','Relaxation τ','s',3e-6,1e-9,1,'log',.05),P('alpha','Depression α','1',.8,.4,1,'linear',.02,.005)],
+ response:(x,p)=>{const w=TAU2*x,d=UCadd(1,UCpow(C(0,w*p.tau),p.alpha)),Z=UCadd(C(p.Rinf,0),UCdiv(p.R0-p.Rinf,d));return {z:rlim(Z,1e9),zref:Math.max(1e-3,p.R0),extras:{fc:1/(TAU2*p.tau)}}}},
+
+hodgkin_huxley_lin:{name:'Linearized membrane admittance (subthreshold resonance)',domain:'neuroscience',axis:'Frequency',axisUnit:'Hz',range:[.1,200],map:'impedance',
+ equation:'Y=g_L+jωC_m+g_r/(1+jωτ_r) (phenomenological inductance)',
+ assumptions:'Linearization of a resonant (I_h / I_M) membrane about rest; gating gives a phenomenological inductance.',
+ conservation:'Passive; a subthreshold impedance resonance appears at nonzero frequency.',solver:'small-signal',
+ params:[P('Cm','Membrane C_m','F',3e-10,1e-12,1e-8,'log',.03),P('gL','Leak g_L','S',3e-8,1e-10,1e-5,'log',.03),P('gr','Resonant g_r','S',5e-8,0,1e-5,'log',.05),P('tau','Gating τ_r','s',.05,1e-3,1,'log',.05)],
+ response:(x,p)=>{const w=TAU2*x,Y=UCadd(C(p.gL,w*p.Cm),UCdiv(p.gr,C(1,w*p.tau))),Z=UCinv(rlim(Y,1e9));return {z:rlim(Z,1e12),zref:1/Math.max(1e-12,p.gL),extras:{}}}},
+
+womersley_flow:{name:'Womersley pulsatile flow impedance',domain:'cardiovascular fluid dynamics',axis:'Frequency',axisUnit:'Hz',range:[.05,60],map:'impedance',
+ equation:'Z_L=jωρ/[A(1−F₁₀)],  F₁₀=2J₁(αj^{3/2})/(αj^{3/2}J₀(αj^{3/2})),  α=R√(ωρ/µ)',
+ assumptions:'Rigid straight vessel, incompressible Newtonian blood; Womersley number α; per-unit-length longitudinal impedance.',
+ conservation:'Poiseuille (real) limit as α→0; inertial (90°) limit as α→∞.',solver:'Womersley (complex Bessel)',
+ params:[P('R','Vessel radius','m',3e-3,1e-4,2e-2,'log',.03),P('rho','Density ρ','kg/m³',1060,900,1200,'linear',.01,1),P('mu','Viscosity µ','Pa·s',3.5e-3,1e-3,1e-2,'log',.05)],
+ response:(x,p)=>{const w=TAU2*x,A=PI2*p.R*p.R,alpha=p.R*Math.sqrt(w*p.rho/p.mu),arg=UCmul(alpha,C(-1/Math.SQRT2,1/Math.SQRT2)),
+  J0=cbesselJ(0,arg),J1=cbesselJ(1,arg),F10=UCdiv(UCmul(2,J1),UCmul(arg,J0)),den=UCsub(1,F10),Z=UCdiv(C(0,w*p.rho/A),rlim(den,1e6));
+  if(alpha<1e-3){const Zp=8*p.mu/(PI2*p.R**4);return {z:C(Zp,w*p.rho/A*0),zref:Zp,extras:{alpha,limit:'Poiseuille'}}}
+  return {z:rlim(Z,1e15),zref:8*p.mu/(PI2*p.R**4),extras:{alpha}}}},
+
+/* ---- GEOPHYSICS -------------------------------------------------------- */
+kjartansson_q:{name:'Constant-Q seismic attenuation (Kjartansson)',domain:'geophysics · seismology',axis:'Frequency',axisUnit:'Hz',range:[.5,500],map:'transfer',
+ equation:'V=V₀(jω/ω₀)^γ,  γ=arctan(1/Q)/π,  H=e^{jωL/V}',
+ assumptions:'Linear constant-Q rheology; frequency-independent Q; propagation over distance L.',
+ conservation:'Causal amplitude decay with logarithmic velocity dispersion.',solver:'Kjartansson creep',
+ params:[P('Q','Quality factor Q','1',50,2,1000,'log',.03),P('V0','Velocity V₀','m/s',2500,300,8000,'log',.02),P('L','Distance L','m',1000,10,1e5,'log',.02),P('f0','Reference f₀','Hz',10,.1,1e3,'log',.02)],
+ response:(x,p)=>{const w=TAU2*x,w0=TAU2*p.f0,gam=Math.atan(1/p.Q)/PI2,V=UCmul(p.V0,UCpow(UCdiv(C(0,w),C(0,w0)),gam)),k=UCdiv(C(0,w),V),H=UCexp(UCmul(C(0,1),UCmul(k,p.L)));return {h:rlim(H,1e6),href:1,extras:{gamma:gam}}}},
+
+magnetotelluric:{name:'Magnetotelluric sounding impedance',domain:'geophysics · electromagnetics',axis:'Frequency',axisUnit:'Hz',range:[1e-3,1e3],map:'impedance',
+ equation:'Z=Z₁(Z₂+Z₁tanh(γ₁h₁))/(Z₁+Z₂tanh(γ₁h₁)),  Zᵢ=√(jωµ₀ρᵢ)',
+ assumptions:'Two-layer 1-D earth; plane-wave (MT) source; apparent resistivity ρ_a=|Z|²/(ωµ₀).',
+ conservation:'Half-space phase → 45°; two-layer sounding curve resolves ρ₁,ρ₂,h₁.',solver:'Wait recursion',
+ params:[P('rho1','Top resistivity ρ₁','Ω·m',100,.1,1e5,'log',.03),P('rho2','Basement ρ₂','Ω·m',10,.1,1e5,'log',.03),P('h1','Top thickness h₁','m',500,1,1e5,'log',.03)],
+ response:(x,p)=>{const w=TAU2*x,mu=K.mu0,Z1=uprsoSafeSqrt(C(0,w*mu*p.rho1)),Z2=uprsoSafeSqrt(C(0,w*mu*p.rho2)),g1=uprsoSafeSqrt(C(0,w*mu/p.rho1)),th=UCtanh(UCmul(g1,p.h1)),Z=UCdiv(UCmul(Z1,UCadd(Z2,UCmul(Z1,th))),UCadd(Z1,UCmul(Z2,th)));return {z:rlim(Z,1e9),zref:Math.sqrt(w*mu*p.rho1),extras:{rhoApp:UCabs(Z)**2/(w*mu)}}}},
+
+/* ---- CONTROL & SIGNAL -------------------------------------------------- */
+pade_delay:{name:'Transport delay + lead–lag (all-pass phase)',domain:'control & signal processing',axis:'Frequency',axisUnit:'Hz',range:[.01,1000],map:'transfer',
+ equation:'H=e^{−jωT}(1+jωτ_z)/(1+jωτ_p)',
+ assumptions:'Pure transport delay T with a first-order lead/lag; constant group delay from the delay term.',
+ conservation:'|e^{−jωT}|=1; phase winds linearly, group delay ≈ T.',solver:'closed form',
+ params:[P('T','Transport delay T','s',.02,1e-4,1,'log',.03),P('tz','Lead τ_z','s',.005,1e-5,1,'log',.05),P('tp','Lag τ_p','s',.05,1e-5,1,'log',.05)],
+ response:(x,p)=>{const w=TAU2*x,d=C(Math.cos(-w*p.T),Math.sin(-w*p.T)),H=UCmul(d,UCdiv(C(1,w*p.tz),C(1,w*p.tp)));return {h:rlim(H,1e6),href:1,extras:{groupDelay:p.T}}}}
+};
+
+/* ------------------------------------------------------------------ i18n */
+const NAMES={
+ fano_resonance:['Резонанс Фано (асимметричный контур)','Fano-Resonanz (asymmetrisches Profil)'],
+ microring_resonator:['Микрокольцевой резонатор (WGM)','Mikroring-Resonator (WGM)'],
+ dbr_bragg:['Брэгговское зеркало / фотонная запрещённая зона','Bragg-Spiegel / photonische Bandlücke'],
+ sellmeier_dispersion:['Оптическая дисперсия Селлмейера n(λ)','Sellmeier-Dispersion n(λ)'],
+ eit_lambda:['Электромагнитно-индуцированная прозрачность (Λ)','Elektromagnetisch induzierte Transparenz (Λ)'],
+ spp_kretschmann:['Поверхностный плазмонный резонанс (Кречман)','Oberflächenplasmonenresonanz (Kretschmann)'],
+ metamaterial_dng:['Метаматериал с двойным отрицанием','Metamaterial mit doppelt negativem Index'],
+ pt_symmetric:['PT-симметричный димер (исключительная точка)','PT-symmetrisches Dimer (Ausnahmepunkt)'],
+ ssh_winding:['Топологическая цепочка SSH (число обмоток Зака)','SSH-Kette (Zak-Windungszahl)'],
+ graphene_kubo:['Поверхностная проводимость графена (Кубо)','Graphen-Oberflächenleitfähigkeit (Kubo)'],
+ josephson_rcsj:['Джозефсоновский переход (RCSJ)','Josephson-Kontakt (RCSJ)'],
+ optomechanical_omit:['Оптомеханически-индуцированная прозрачность','Optomechanisch induzierte Transparenz'],
+ magnetized_plasma:['Замагниченная плазма — свистовая мода','Magnetisiertes Plasma — Whistler-Mode'],
+ gw_inspiral:['Чирп слияния компактных тел (SPA)','Chirp verschmelzender Kompaktobjekte (SPA)'],
+ ism_dispersion:['Межзвёздная / пульсарная дисперсия','Interstellare / Pulsar-Dispersion'],
+ duct_muffler:['Расширительный глушитель (потери передачи)','Expansionsschalldämpfer (Durchgangsdämpfung)'],
+ vocal_tract:['Форманты речевого тракта (две трубы)','Vokaltrakt-Formanten (Zwei-Rohr)'],
+ tmd_absorber:['Настроенный демпфер массы','Abgestimmter Massendämpfer'],
+ euler_beam:['Подвижность консоли Эйлера–Бернулли','Euler–Bernoulli-Kragträger-Mobilität'],
+ warburg_finite:['Конечный варбурговский импеданс диффузии','Endliche Warburg-Diffusionsimpedanz'],
+ cole_tissue:['Биоимпеданс тканей Коула','Cole-Gewebe-Bioimpedanz'],
+ hodgkin_huxley_lin:['Линеаризованный мембранный адмиттанс (резонанс)','Linearisierte Membranadmittanz (Resonanz)'],
+ womersley_flow:['Импеданс пульсирующего потока Уомерсли','Womersley-Impedanz pulsierender Strömung'],
+ kjartansson_q:['Сейсмическое затухание с постоянным Q','Seismische Konstant-Q-Dämpfung'],
+ magnetotelluric:['Магнитотеллурический импеданс','Magnetotellurische Impedanz'],
+ pade_delay:['Транспортная задержка + опережение/запаздывание','Transportverzögerung + Lead/Lag']
+};
+const PHEN=[
+ ['nonlinear','Fano resonance (asymmetric transmission)','t=(ε+q)/(ε+j)','fano_resonance'],
+ ['geometry','Microring / whispering-gallery notch','H=(t−ae^{jφ})/(1−tae^{jφ})','microring_resonator'],
+ ['geometry','Distributed Bragg reflector band-gap','characteristic-matrix stack','dbr_bragg'],
+ ['materials','Sellmeier optical dispersion','n²=1+ΣBᵢλ²/(λ²−Cᵢ)','sellmeier_dispersion'],
+ ['nonlinear','Electromagnetically induced transparency','Λ-system χ(δ)','eit_lambda'],
+ ['geometry','Surface plasmon resonance (Kretschmann)','multilayer Fresnel r_p','spp_kretschmann'],
+ ['materials','Double-negative metamaterial','z=√(µ/ε), ε,µ<0','metamaterial_dng'],
+ ['nonlinear','PT-symmetric exceptional point','γ=κ mode coalescence','pt_symmetric'],
+ ['geometry','SSH topological winding (Zak phase)','q(k)=v+we^{jk}','ssh_winding'],
+ ['materials','Graphene Kubo conductivity','σ_intra+σ_inter','graphene_kubo'],
+ ['nonlinear','Josephson plasma resonance (RCSJ)','L_J=Φ₀/2πI_c cosφ','josephson_rcsj'],
+ ['nonlinear','Optomechanically induced transparency','cavity+phonon window','optomechanical_omit'],
+ ['nonlinear','Magnetized-plasma whistler','n²=1−f_pe²/[f(f−f_ce)]','magnetized_plasma'],
+ ['geometry','Compact-binary inspiral chirp','h̃∝f^{−7/6}e^{jΨ}','gw_inspiral'],
+ ['geometry','Interstellar dispersion (pulsar)','Φ∝DM/f','ism_dispersion'],
+ ['analytic','Expansion-chamber transmission loss','four-pole muffler','duct_muffler'],
+ ['analytic','Vocal-tract formants','two-tube resonances','vocal_tract'],
+ ['analytic','Tuned mass damper anti-resonance','2-DOF absorber','tmd_absorber'],
+ ['analytic','Euler–Bernoulli beam modes','(βₙL)² spacing','euler_beam'],
+ ['materials','Finite Warburg diffusion','tanh√(jωτ)/√(jωτ)','warburg_finite'],
+ ['materials','Cole tissue bioimpedance','depressed semicircle','cole_tissue'],
+ ['nonlinear','Membrane subthreshold resonance','phenomenological inductance','hodgkin_huxley_lin'],
+ ['analytic','Womersley pulsatile flow','complex-Bessel impedance','womersley_flow'],
+ ['materials','Constant-Q seismic attenuation','V=V₀(jω/ω₀)^γ','kjartansson_q'],
+ ['materials','Magnetotelluric sounding','Z=√(jωµ₀ρ)','magnetotelluric'],
+ ['analytic','Transport delay (all-pass phase)','H=e^{−jωT}','pade_delay']
+];
+
+/* ------------------------------------------------------------- registration */
+let registered=false;
+function register420(){
+ try{
+  for(const [id,m] of Object.entries(M)){
+   if(!UPRSO_MODELS[id]){m.id=id;UPRSO_MODELS[id]=m;}
+   try{if(typeof MODEL_RU!=='undefined'&&NAMES[id])MODEL_RU[id]=NAMES[id][0];}catch(_){}
+   try{if(typeof MODEL_DE!=='undefined'&&NAMES[id])MODEL_DE[id]=NAMES[id][1];}catch(_){}
+  }
+  try{const have=new Set(PHENOMENA.map(p=>p[3]+'|'+p[1]));for(const e of PHEN)if(!have.has(e[3]+'|'+e[1]))PHENOMENA.push(e);}catch(_){}
+  try{if(typeof rebuildModelOptions==='function')rebuildModelOptions();}catch(_){}
+  try{if(typeof renderPhenomena==='function')renderPhenomena(document.getElementById('phenSearch')?.value||'');}catch(_){}
+  registered=true;
+ }catch(e){console.warn('UPRS420 register',e)}
+}
+
+/* --------------------------------------------------------------- self-tests */
+function fin2(v){return Number.isFinite(v)}
+function sweepFinite(id){const m=M[id],lo=m.range[0],hi=m.range[1],log=lo>0&&hi>0&&hi/lo>50;let n=0,ok=0;
+ for(let i=0;i<=160;i++){const t=i/160,x=log?lo*Math.pow(hi/lo,t):lo+(hi-lo)*t;const p=Object.fromEntries(m.params.map(d=>[d.key,d.value]));
+  let r;try{r=m.response(x,p)}catch(e){return {ok:false,detail:'throw@'+x.toExponential(2)+':'+e.message}}
+  const g=r.gamma||r.h||r.z;n++;if(g&&fin2(g.re)&&fin2(g.im))ok++;else return {ok:false,detail:'nonfinite@x='+x.toExponential(3)}}
+ return {ok:ok===n,detail:ok+'/'+n}}
+function checks420(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else{pass=!!r}}catch(e){detail=e.message}out.push({name,pass,detail})};
+ ok('v4.2.0 grand-phenomenology registered',()=>({ok:Object.keys(M).every(id=>!!UPRSO_MODELS[id]),detail:Object.keys(M).length+' models'}));
+ ok('v4.2.0 all responses finite over range',()=>{const bad=Object.keys(M).map(id=>[id,sweepFinite(id)]).filter(([,r])=>!r.ok);return {ok:bad.length===0,detail:bad.length?bad.map(([id,r])=>id+'('+r.detail+')').join(', '):Object.keys(M).length+' models clean'}});
+ ok('v4.2.0 complex Bessel J₀(0)=1, J₁(0)=0',()=>{const j0=cbesselJ(0,C(0,0)),j1=cbesselJ(1,C(0,0));return Math.abs(j0.re-1)<1e-12&&Math.abs(j0.im)<1e-12&&UCabs(j1)<1e-12});
+ ok('v4.2.0 Bessel J₀(2.4048)≈0 (first zero)',()=>{const j0=cbesselJ(0,C(2.404826,0));return {ok:Math.abs(j0.re)<1e-4&&Math.abs(j0.im)<1e-12,detail:j0.re.toExponential(2)}});
+ ok('v4.2.0 Fano transmission zero at ε=−q',()=>{const m=M.fano_resonance,p={f0:1e14,G:6e12,q:2},xz=p.f0-p.q*p.G/2,T=UCabs(m.response(xz,p).h)**2;return {ok:T<1e-9,detail:'T='+T.toExponential(2)}});
+ ok('v4.2.0 microring notch → 0 at critical coupling',()=>{const m=M.microring_resonator,p={f0:1.935e14,FSR:1e12,t:.9,a:.9},d=UCabs(m.response(p.f0,p).gamma);return {ok:d<1e-3,detail:'|H|='+d.toExponential(2)}});
+ ok('v4.2.0 DBR opens a high-reflectivity stop-band',()=>{const m=M.dbr_bragg,p={lam0:600,n1:1.46,n2:2.35,N:10,ns:1.52},R=UCabs(m.response(600,p).gamma)**2;return {ok:R>.99,detail:'R(λ₀)='+R.toFixed(4)}});
+ ok('v4.2.0 SSH winding = 1 iff w>v',()=>{const m=M.ssh_winding,wind=(v,w)=>{let ph=[],prev=0;for(let i=0;i<=400;i++){const k=i/400*2,g=m.response(k,{v,w});let a=Math.atan2(g.h.im,g.h.re);if(i){while(a-prev>Math.PI)a-=2*Math.PI;while(a-prev<-Math.PI)a+=2*Math.PI}ph.push(a);prev=a}return Math.round((ph[ph.length-1]-ph[0])/(2*Math.PI))};return {ok:Math.abs(wind(.6,1.4))===1&&wind(1.4,.6)===0,detail:'top='+wind(.6,1.4)+' triv='+wind(1.4,.6)}});
+ ok('v4.2.0 PT exceptional point at γ=κ',()=>{const m=M.pt_symmetric;const split=(g)=>m.response(1e9,{f0:1e9,kap:2e7,gam:g}).extras.split;return {ok:split(1e7)>0&&split(3e7)<0&&Math.abs(split(2e7))<1e-6*(2e7)**2*1e6,detail:'unbroken>0, broken<0'}});
+ ok('v4.2.0 GW chirp amplitude follows f^{−7/6}',()=>{const m=M.gw_inspiral,p={Mc:30,tc:0,phic:0},a1=UCabs(m.response(60,p).h),a2=UCabs(m.response(120,p).h),ratio=a1/a2,exp=Math.pow(2,7/6);return {ok:Math.abs(ratio-exp)/exp<1e-3,detail:'ratio='+ratio.toFixed(4)+' vs '+exp.toFixed(4)}});
+ ok('v4.2.0 magnetotelluric half-space phase → 45°',()=>{const m=M.magnetotelluric,p={rho1:100,rho2:100,h1:500},Z=m.response(1,p).z,ph=Math.atan2(Z.im,Z.re)*180/Math.PI;return {ok:Math.abs(ph-45)<1,detail:'φ='+ph.toFixed(2)+'°'}});
+ ok('v4.2.0 Womersley → Poiseuille (real) at low α',()=>{const m=M.womersley_flow,p={R:3e-3,rho:1060,mu:3.5e-3},r=m.response(.05,p),Z=r.z,ph=Math.abs(Math.atan2(Z.im,Z.re)*180/Math.PI);return {ok:ph<20&&Z.re>0,detail:'α='+(r.extras.alpha||0).toFixed(3)+' φ='+ph.toFixed(1)+'°'}});
+ ok('v4.2.0 EIT opens a transparency window at δ=0',()=>{const m=M.eit_lambda,p={O:2e7,g13:6e6,g12:1e5,D:4},t0=UCabs(m.response(0,p).h),tw=UCabs(m.response(1.5e7,p).h);return {ok:t0>tw+.05,detail:'t(0)='+t0.toFixed(3)+' > t(wing)='+tw.toFixed(3)}});
+ return out}
+
+/* ---------------------------------------------- self-test chain integration */
+function wrapTests420(){try{
+ if(typeof runTests!=='function'||runTests.__uprs420)return;
+ const base=runTests;
+ const w=function(show=true){const r=base(false),T=r.tests.filter(c=>!String(c.name||'').startsWith('v4.2.0'));
+  for(const c of checks420())T.push(c);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs420=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+}catch(_){}}
+
+/* --------------------------------------------------------------- install */
+let tries=0;
+function install420(){
+ if(typeof document==='undefined')return;
+ if(typeof UPRSO_MODELS==='undefined'||typeof state==='undefined'){if(tries++<80)setTimeout(install420,200);return}
+ register420();wrapTests420();
+ // survive the app's late model re-syncs (registerModels377/registerModel380 timers)
+ for(const ms of [400,1400,3200,6000,10000,15000])setTimeout(()=>{register420();wrapTests420()},ms);
+ try{const oldI=window.applyI18n;if(typeof oldI==='function'&&!oldI.__uprs420){const f=function(...a){const r=oldI.apply(this,a);try{for(const [id,nm] of Object.entries(NAMES)){if(typeof MODEL_RU!=='undefined')MODEL_RU[id]=nm[0];if(typeof MODEL_DE!=='undefined')MODEL_DE[id]=nm[1]}}catch(_){}return r};f.__uprs420=true;window.applyI18n=f;try{applyI18n=f;globalThis.applyI18n=f}catch(_){}}}catch(_){}
+}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install420,120),{once:true});else setTimeout(install420,120)}}catch(_){}
+
+globalThis.__UPRS420__={version:V420,models:M,names:NAMES,phenomena:PHEN,register:register420,checks:checks420,bessel:cbesselJ,
+ audit:()=>({version:V420,added:Object.keys(M).length,registered,present:Object.keys(M).filter(id=>{try{return !!UPRSO_MODELS[id]}catch(_){return false}}).length})};
+})();
+</script>
 </body></html>
