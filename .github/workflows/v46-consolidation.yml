@@ -1,0 +1,47 @@
+name: v4.6 Core Consolidation
+
+on:
+  push:
+    branches:
+      - codex/v4.6-core-consolidation
+    paths:
+      - tools/consolidate-v46.mjs
+      - .github/workflows/v46-consolidation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout consolidation branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/v4.6-core-consolidation
+          fetch-depth: 0
+
+      - name: Apply deterministic v4.6 consolidation
+        run: node tools/consolidate-v46.mjs
+
+      - name: Verify generated HTML structure
+        run: |
+          git diff --check
+          grep -q 'uprs460CoreAuthority' index.html
+          grep -q 'uprs460Consolidation' index.html
+          grep -q 'v4.6.0' index.html
+          test -s UPRS_v4.6.0_consolidation_report.json
+
+      - name: Commit generated production file
+        run: |
+          if git diff --quiet; then
+            echo 'No generated changes.'
+            exit 0
+          fi
+          git config user.name 'UPRS Consolidation Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html UPRS_v4.6.0_consolidation_report.json
+          git commit -m 'v4.6.0: consolidate version, XR ownership, scene cache and lifecycle [skip ci]'
+          git push origin HEAD:codex/v4.6-core-consolidation
