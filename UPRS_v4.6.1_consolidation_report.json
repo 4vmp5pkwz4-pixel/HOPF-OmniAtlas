@@ -1,0 +1,139 @@
+{
+  "version": "4.6.1",
+  "source": "app-v4.5.0.html",
+  "sourceBytes": 1665867,
+  "sourceSha256": "c4457a9023798c20e99a3c4a0ebbef2a2f0311dfa87600d4addd913dd5407926",
+  "outputBytes": 1681000,
+  "outputSha256": "9b49a82af9cb4fb2c0d978fe6a4e6c74f009cd1821cdbca6e4bfd4ae0697799c",
+  "inlineScripts": 71,
+  "syntaxFailures": [],
+  "changes": [
+    {
+      "label": "source title",
+      "count": 1
+    },
+    {
+      "label": "Predictive Observatory title authority",
+      "count": 1
+    },
+    {
+      "label": "Predictive Observatory brand version",
+      "count": 1
+    },
+    {
+      "label": "v4.1 integration authorities",
+      "count": 2
+    },
+    {
+      "label": "early core authority",
+      "count": 1
+    },
+    {
+      "label": "v4.4 XR ownership deferral",
+      "count": 1
+    },
+    {
+      "label": "remove v4.4 repair installers",
+      "count": 1
+    },
+    {
+      "label": "idempotent v4.5 installer declaration",
+      "count": 1
+    },
+    {
+      "label": "idempotent v4.5 installer guard",
+      "count": 1
+    },
+    {
+      "label": "remove v4.5 repair installers",
+      "count": 1
+    },
+    {
+      "label": "audio polling lifecycle",
+      "count": 1
+    },
+    {
+      "label": "v4.4 scene signature",
+      "count": 1
+    },
+    {
+      "label": "v4.5 scene signature",
+      "count": 1
+    },
+    {
+      "label": "insert Quest XR startup recovery",
+      "count": 1
+    },
+    {
+      "label": "guard XR render frame",
+      "count": 1
+    },
+    {
+      "label": "direct trusted immersive-vr request",
+      "count": 1
+    },
+    {
+      "label": "non-blocking target frame rate",
+      "count": 1
+    },
+    {
+      "label": "finite WebGL compatibility stage",
+      "count": 1
+    },
+    {
+      "label": "finite reference-space fallback",
+      "count": 1
+    },
+    {
+      "label": "visible placement for local reference space",
+      "count": 1
+    },
+    {
+      "label": "first-frame watchdog",
+      "count": 1
+    },
+    {
+      "label": "session end cleanup",
+      "count": 1
+    },
+    {
+      "label": "abort failed session without legacy retry",
+      "count": 1
+    },
+    {
+      "label": "Quest-safe button preflight",
+      "count": 1
+    },
+    {
+      "label": "expose XR startup diagnostics",
+      "count": 1
+    },
+    {
+      "label": "late consolidation module",
+      "count": 1
+    }
+  ],
+  "requiredCapabilities": [
+    "uprs460CoreAuthority",
+    "uprs460Consolidation",
+    "XRSTART450",
+    "quest-safe-v461",
+    "__UPRS420__",
+    "__UPRS430__",
+    "__UPRS440__",
+    "__UPRS450__",
+    "__UPRS398__",
+    "asml_euv_lpp"
+  ],
+  "xrStartupPolicy": {
+    "mode": "immersive-vr",
+    "directUserActivation": true,
+    "preferAR": false,
+    "depthOnStartup": false,
+    "autoLegacyFallback": false,
+    "requestTimeoutMs": 15000,
+    "glTimeoutMs": 8000,
+    "referenceSpaceTimeoutMs": 5000,
+    "firstFrameTimeoutMs": 8000
+  }
+}
