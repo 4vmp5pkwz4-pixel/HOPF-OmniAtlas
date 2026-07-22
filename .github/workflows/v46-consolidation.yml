@@ -3,6 +3,7 @@ name: v4.6 Core Consolidation
 on:
   push:
     branches:
+      - main
       - codex/v4.6-core-consolidation
     paths:
       - tools/consolidate-v46.mjs
