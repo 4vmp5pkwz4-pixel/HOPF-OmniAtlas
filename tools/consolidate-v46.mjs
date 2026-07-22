@@ -40,12 +40,12 @@ replaceExact(
 );
 replaceExact(
   'Predictive Observatory title authority',
-  "const TITLE398='UPRS Möbius–Hopf OmniAtlas v3.9.8 · Predictive Phenomenon Observatory + Point Selection + Claude + ASML EUV LPP';",
+  "const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';",
   `const TITLE398='${title}';`
 );
 replaceExact(
   'Predictive Observatory brand version',
-  "if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · DISCOVERY · HYPOTHESIS ENGINE · v3.9.8';",
+  "if(s)s.textContent='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';",
   "if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';"
 );
 replaceExact('early core authority', '<head>', `<head>${core}`);
