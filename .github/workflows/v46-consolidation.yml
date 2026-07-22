@@ -10,6 +10,7 @@ on:
       - tools/consolidate-v46.mjs
       - _includes/uprs460-core-authority.html
       - _includes/uprs460-consolidation.html
+      - _includes/uprs461-xr-startup-recovery.js
       - .github/workflows/v46-consolidation.yml
   pull_request:
     branches:
@@ -22,6 +23,7 @@ on:
       - tools/consolidate-v46.mjs
       - _includes/uprs460-core-authority.html
       - _includes/uprs460-consolidation.html
+      - _includes/uprs461-xr-startup-recovery.js
       - .github/workflows/v46-consolidation.yml
   workflow_dispatch:
 
