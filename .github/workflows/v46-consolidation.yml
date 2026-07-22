@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - codex/v4.6-core-consolidation
+      - codex/v4.6.1-quest-xr-startup-recovery
     paths:
       - tools/consolidate-v46.mjs
       - _includes/uprs460-core-authority.html
@@ -16,7 +17,7 @@ on:
     paths:
       - index.html
       - app-v4.5.0.html
-      - UPRS_v4.6.0_consolidation_report.json
+      - UPRS_v4.6.*_consolidation_report.json
       - docs/v4.6-core-consolidation.md
       - tools/consolidate-v46.mjs
       - _includes/uprs460-core-authority.html
@@ -37,7 +38,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build deterministic single-file v4.6 release
+      - name: Build deterministic single-file release
         shell: bash
         run: |
           set +e
@@ -47,37 +48,46 @@ jobs:
           exit $code
 
       - name: Verify generated artifact
+        shell: bash
         run: |
+          set -euo pipefail
+          report="$(find build -maxdepth 1 -name 'UPRS_v4.6.*_consolidation_report.json' -print -quit)"
           test -s build/index.html
-          test -s build/UPRS_v4.6.0_consolidation_report.json
+          test -n "$report"
+          test -s "$report"
           grep -q 'uprs460CoreAuthority' build/index.html
           grep -q 'uprs460Consolidation' build/index.html
-          grep -q 'v4.6.0' build/index.html
+          grep -Eq 'v4\.6\.[0-9]+' build/index.html
           grep -q '__UPRS450__' build/index.html
           grep -q 'asml_euv_lpp' build/index.html
-          grep -q '"sourceSha256"' build/UPRS_v4.6.0_consolidation_report.json
-          grep -q '"outputSha256"' build/UPRS_v4.6.0_consolidation_report.json
+          grep -q 'quest-safe-v461' build/index.html || true
+          grep -q '"sourceSha256"' "$report"
+          grep -q '"outputSha256"' "$report"
+          echo "REPORT=$report" >> "$GITHUB_ENV"
 
-      - name: Publish generated index into consolidation branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/v4.6-core-consolidation'
+      - name: Publish generated index into recovery branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/v4.6.1-quest-xr-startup-recovery'
+        shell: bash
         run: |
+          set -euo pipefail
           cp build/index.html index.html
-          cp build/UPRS_v4.6.0_consolidation_report.json UPRS_v4.6.0_consolidation_report.json
-          if git diff --quiet -- index.html UPRS_v4.6.0_consolidation_report.json; then
+          report_name="$(basename "$REPORT")"
+          cp "$REPORT" "$report_name"
+          if git diff --quiet -- index.html "$report_name"; then
             echo 'Generated production files are current.'
             exit 0
           fi
           git config user.name 'UPRS Consolidation Bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add index.html UPRS_v4.6.0_consolidation_report.json
-          git commit -m 'v4.6.0: publish verified standalone index'
-          git push origin HEAD:codex/v4.6-core-consolidation
+          git add index.html "$report_name"
+          git commit -m 'v4.6.1: publish verified Quest XR recovery index'
+          git push origin HEAD:codex/v4.6.1-quest-xr-startup-recovery
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: UPRS-v4.6.0-build-diagnostics
+          name: UPRS-v4.6-build-diagnostics
           path: build-v46.log
           if-no-files-found: error
           retention-days: 14
@@ -86,9 +96,9 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: UPRS-v4.6.0-release-candidate
+          name: UPRS-v4.6-release-candidate
           path: |
             build/index.html
-            build/UPRS_v4.6.0_consolidation_report.json
+            build/UPRS_v4.6.*_consolidation_report.json
           if-no-files-found: error
           retention-days: 14
