@@ -3,9 +3,9 @@
   "source": "app-v4.5.0.html",
   "sourceBytes": 1665867,
   "sourceSha256": "c4457a9023798c20e99a3c4a0ebbef2a2f0311dfa87600d4addd913dd5407926",
-  "outputBytes": 1682632,
-  "outputSha256": "5f1cf1626c1f0acf515bcc4a779a37e29c9ba2a3965d31e7d321a5adc413329e",
-  "inlineScripts": 71,
+  "outputBytes": 1700630,
+  "outputSha256": "99cb87d6edc8f868fd412120979a49af817053386f5b81169b5a98b539c640d2",
+  "inlineScripts": 72,
   "syntaxFailures": [],
   "changes": [
     {
@@ -127,7 +127,9 @@
     "__UPRS440__",
     "__UPRS450__",
     "__UPRS398__",
-    "asml_euv_lpp"
+    "asml_euv_lpp",
+    "uprs461QuestXRRecovery",
+    "__UPRS461__"
   ],
   "xrStartupPolicy": {
     "mode": "immersive-vr",
@@ -146,5 +148,19 @@
     "referenceSpaceTimeoutMs": 5000,
     "firstFrameTimeoutMs": 8000,
     "framebufferScaleFactor": 0.85
+  },
+  "questXrHotfix": {
+    "version": "4.6.1-v2",
+    "defaultMode": "immersive-vr",
+    "requestSessionFirst": true,
+    "continuousBootstrapFrames": true,
+    "firstFrameTimeoutMs": 8000,
+    "frameWatchdogMs": 6500,
+    "cleanupOnSetupFailure": true,
+    "capturePhaseAuthority": true,
+    "separateSafeMrButton": true,
+    "depthExcludedFromDefaultStart": true,
+    "webgl1Preferred": true,
+    "framebufferScaleFactorQuest": 0.7
   }
 }
