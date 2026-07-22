@@ -7504,4 +7504,418 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<style id="uprs398ObservatoryStyle">
+/* v3.9.8 predictive phenomenon observatory */
+#obsFab398{position:fixed;left:12px;bottom:calc(98px + env(safe-area-inset-bottom,0px));z-index:170;width:46px;height:46px;border-radius:50%;border:1px solid rgba(215,183,110,.5);background:rgba(6,10,16,.92);color:var(--gold2,#fff0bd);font-size:17px;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.5);backdrop-filter:blur(10px);transition:.2s}
+#obsFab398:hover{border-color:rgba(255,240,189,.85)}
+#obsFab398 .obs398-dot{position:absolute;right:2px;top:2px;min-width:15px;height:15px;padding:0 3px;border-radius:999px;background:linear-gradient(135deg,#fff0bd,#d7b76e);color:#080a0d;font:8.5px/15px ui-monospace,monospace;display:none}
+#obsFab398.fresh .obs398-dot{display:block}
+#obsFab398.fresh{animation:obsPulse398 1.7s ease-in-out 3}
+@keyframes obsPulse398{50%{box-shadow:0 0 0 10px rgba(215,183,110,.13)}}
+#obsPanel398{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:180;width:min(410px,95vw);max-height:min(76dvh,680px);display:none;flex-direction:column;border:1px solid rgba(215,183,110,.34);border-radius:17px;background:linear-gradient(180deg,rgba(14,19,29,.96),rgba(8,12,19,.97));box-shadow:0 26px 84px rgba(0,0,0,.62);backdrop-filter:blur(18px);overflow:hidden;color:var(--text,#edf1f6)}
+#obsPanel398.open{display:flex}
+#obsPanel398 header.obs398-head{display:flex;align-items:center;gap:8px;padding:11px 12px;border-bottom:1px solid rgba(215,183,110,.2)}
+#obsPanel398 header.obs398-head b{flex:1;color:var(--gold2,#fff0bd);font-size:9.5px;letter-spacing:.15em;text-transform:uppercase}
+#obsPanel398 .obs398-state{font-size:8px;letter-spacing:.1em;padding:3px 8px;border:1px solid rgba(140,233,189,.4);border-radius:999px;color:var(--green,#8ce9bd);white-space:nowrap}
+#obsPanel398 .obs398-state.busy{color:var(--gold2,#fff0bd);border-color:rgba(215,183,110,.5)}
+#obsPanel398 .obs398-x{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:inherit;border-radius:8px;width:24px;height:24px;cursor:pointer;font-size:11px;line-height:1}
+#obsPanel398 .obs398-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;padding:9px 12px 4px}
+#obsPanel398 .obs398-stat{border:1px solid rgba(255,255,255,.08);border-radius:9px;background:rgba(0,0,0,.18);padding:5px 6px;min-width:0}
+#obsPanel398 .obs398-stat label{display:block;color:var(--muted,#96a2b5);font-size:6.6px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#obsPanel398 .obs398-stat b{display:block;margin-top:2px;font-size:10.5px;color:var(--ice,#98e8ff);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden}
+#obsPanel398 .obs398-controls{display:flex;gap:5px;padding:7px 12px;flex-wrap:wrap}
+#obsPanel398 .obs398-controls button{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.04);color:inherit;padding:6px 10px;border-radius:999px;cursor:pointer;font-size:10px;transition:.16s}
+#obsPanel398 .obs398-controls button:hover{border-color:rgba(215,183,110,.55);background:rgba(215,183,110,.09)}
+#obsPanel398 .obs398-controls button.on{color:#080a0d;background:linear-gradient(135deg,var(--gold2,#fff0bd),var(--gold,#d7b76e));border-color:transparent}
+#obsPanel398 nav.obs398-tabs{display:flex;gap:4px;padding:2px 12px 8px}
+#obsPanel398 nav.obs398-tabs button{flex:1;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.15);color:var(--muted,#96a2b5);padding:5px 4px;border-radius:8px;cursor:pointer;font-size:8.4px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+#obsPanel398 nav.obs398-tabs button.on{color:var(--gold2,#fff0bd);border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.08)}
+#obsPanel398 .obs398-list{flex:1;min-height:60px;overflow:auto;padding:0 12px 8px;display:flex;flex-direction:column;gap:6px}
+#obsPanel398 .obs398-list::-webkit-scrollbar{width:6px}
+#obsPanel398 .obs398-list::-webkit-scrollbar-thumb{background:rgba(215,183,110,.22);border-radius:9px}
+#obsPanel398 .obs398-empty{color:var(--muted,#96a2b5);font-size:10px;padding:14px 2px;text-align:center}
+.obs398-card{border:1px solid rgba(255,255,255,.08);border-left:2px solid rgba(152,232,255,.55);border-radius:0 11px 11px 0;background:rgba(152,232,255,.035);padding:8px 9px}
+.obs398-card[data-status="EXTRAPOLATED"],.obs398-card[data-status="HYPOTHESIS"]{border-left-color:rgba(195,173,255,.7);background:rgba(195,173,255,.04)}
+.obs398-card[data-status="MODEL-PREDICTED"]{border-left-color:rgba(215,183,110,.7);background:rgba(215,183,110,.045)}
+.obs398-card[data-status="CONFIRMED-NUM"]{border-left-color:rgba(140,233,189,.8);background:rgba(140,233,189,.05)}
+.obs398-card[data-status="REFUTED"]{border-left-color:rgba(255,157,157,.8);background:rgba(255,157,157,.05)}
+.obs398-card header{display:flex;align-items:flex-start;justify-content:space-between;gap:7px}
+.obs398-card header b{font-size:9.6px;line-height:1.35}
+.obs398-card header em{font-style:normal;font-size:6.8px;letter-spacing:.07em;padding:2px 6px;border:1px solid rgba(255,255,255,.14);border-radius:999px;color:var(--gold2,#fff0bd);white-space:nowrap}
+.obs398-card[data-status="CONFIRMED-NUM"] header em{color:var(--green,#8ce9bd);border-color:rgba(140,233,189,.4)}
+.obs398-card[data-status="REFUTED"] header em{color:var(--red,#ff9d9d);border-color:rgba(255,157,157,.4)}
+.obs398-card[data-status="EXTRAPOLATED"] header em,.obs398-card[data-status="HYPOTHESIS"] header em{color:var(--violet,#c3adff);border-color:rgba(195,173,255,.4)}
+.obs398-card .obs398-meta{margin-top:4px;color:var(--ice,#98e8ff);font:9px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.obs398-card small{display:block;margin-top:4px;color:var(--muted,#96a2b5);font-size:8.2px;line-height:1.5}
+.obs398-conf{display:flex;align-items:center;gap:7px;margin-top:5px}
+.obs398-conf .bar{flex:1;height:4px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+.obs398-conf .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold,#d7b76e),var(--gold2,#fff0bd))}
+.obs398-conf span{font-size:8.6px;color:var(--gold2,#fff0bd);font-variant-numeric:tabular-nums}
+.obs398-acts{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.obs398-acts button{border:1px solid rgba(255,255,255,.11);background:rgba(0,0,0,.18);color:inherit;padding:4px 8px;border-radius:7px;cursor:pointer;font-size:8.6px}
+.obs398-acts button:hover{border-color:rgba(152,232,255,.55)}
+#obsPanel398 footer{padding:7px 12px calc(9px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.07);color:var(--muted,#96a2b5);font-size:7.6px;line-height:1.5}
+body.paper #obsPanel398,body.paper328 #obsPanel398{background:rgba(255,252,245,.97);color:#244d5d;border-color:rgba(29,121,151,.25)}
+body.paper #obsFab398,body.paper328 #obsFab398{background:rgba(255,252,245,.95);color:#1d7997;border-color:rgba(29,121,151,.35)}
+@media(max-width:780px){#obsPanel398{right:6px;left:6px;width:auto;max-height:70dvh}}
+</style>
+<script id="uprs398PredictiveObservatory">(()=>{
+'use strict';
+const VERSION='3.9.8',TAU=Math.PI*2;
+/* ---------- i18n ---------- */
+const LX={ru:0,en:1,de:2};
+const L={
+ title:['ПРЕДИКТИВНАЯ ОБСЕРВАТОРИЯ ФЕНОМЕНОВ','PREDICTIVE PHENOMENON OBSERVATORY','PRÄDIKTIVES PHÄNOMEN-OBSERVATORIUM'],
+ ready:['ГОТОВО','READY','BEREIT'],busy:['РАСЧЁТ','COMPUTING','BERECHNUNG'],
+ scan:['Скан','Scan','Scan'],verify:['Проверить','Verify','Prüfen'],auto:['Авто','Auto','Auto'],
+ tabDetect:['Обнаружено','Detected','Erkannt'],tabPredict:['Прогнозы','Predictions','Prognosen'],tabLaws:['Законы','Laws','Gesetze'],tabLedger:['Журнал','Ledger','Protokoll'],
+ stPhen:['Явления','Features','Merkmale'],stPred:['Прогнозы','Predicted','Prognosen'],stVer:['Проверено','Resolved','Geprüft'],stHit:['Точность','Hit rate','Trefferquote'],stBrier:['Брайер','Brier','Brier'],stCal:['Калибр.','Calib.','Kalib.'],
+ empty:['Пока пусто — запустите «Скан».','Nothing yet — run “Scan”.','Noch leer — „Scan“ starten.'],
+ jump:['→ Перейти','→ Jump','→ Springen'],extend:['Расширить диапазон','Extend range','Bereich erweitern'],verifyOne:['Проверить','Verify','Prüfen'],clear:['Очистить журнал','Clear ledger','Protokoll leeren'],
+ protoAxis:['проверка: локальный пересчёт 201 точки в окне ±','test: local recompute of 201 points within ±','Test: lokale Neuberechnung (201 Punkte) im Fenster ±'],
+ protoParam:['проверка: пересчёт при ','test: recompute at ','Test: Neuberechnung bei '],
+ protoCount:['проверка: число явлений по обе стороны порога','test: feature count on both sides of the threshold','Test: Merkmalzahl beiderseits der Schwelle'],
+ verifiedIn:['подтверждено численно в модели','numerically confirmed within the model','numerisch im Modell bestätigt'],
+ refutedIn:['опровергнуто численной проверкой','refuted by the numerical check','durch numerische Prüfung widerlegt'],
+ measured:['измерено','measured','gemessen'],error:['ошибка','error','Fehler'],
+ lawText:['закон','law','Gesetz'],perStep:['за шаг','per step','pro Schritt'],
+ boundary:['Все подтверждения — численные, в рамках выбранной модели и её области применимости; они не заменяют эксперимент. Прогнозы вне расчётного диапазона маркируются EXTRAPOLATED, MODEL-PREDICTED или HYPOTHESIS. Достоверность калибруется по журналу проверенных прогнозов.','All confirmations are numerical, within the selected model and its validity domain; they do not replace experiment. Out-of-range predictions are labelled EXTRAPOLATED, MODEL-PREDICTED or HYPOTHESIS. Confidence is calibrated against the ledger of resolved predictions.','Alle Bestätigungen sind numerisch, innerhalb des gewählten Modells und seines Gültigkeitsbereichs; sie ersetzen kein Experiment. Prognosen außerhalb des Rechenbereichs sind als EXTRAPOLATED, MODEL-PREDICTED oder HYPOTHESIS markiert. Die Konfidenz wird am Protokoll geprüfter Prognosen kalibriert.'],
+ scanDone:['Обсерватория: ','Observatory: ','Observatorium: '],predWord:['прогнозов','predictions','Prognosen'],featWord:['явлений','features','Merkmale'],
+ verifyDone:['Проверка (в модели): ','In-model check: ','Modellprüfung: '],
+ noModelVerify:['Проверка по импортированным данным недоступна — прогнозы сверяются с активной моделью.','Verification against imported data is unavailable — predictions are checked against the active model.','Prüfung gegen importierte Daten nicht verfügbar — Prognosen werden am aktiven Modell geprüft.'],
+ rangeExt:['Диапазон расширен до прогнозируемой точки','Range extended to the predicted point','Bereich bis zum prognostizierten Punkt erweitert'],
+ openTip:['Предиктивная обсерватория феноменов (v3.9.8)','Predictive phenomenon observatory (v3.9.8)','Prädiktives Phänomen-Observatorium (v3.9.8)']
+};
+const KINDS={
+ 'res-dip':['Резонансное согласование · минимум |Γ|','Resonant match · |Γ| minimum','Resonanzanpassung · |Γ|-Minimum'],
+ 'res-peak':['Антирезонанс · максимум |Γ|','Anti-resonance · |Γ| maximum','Antiresonanz · |Γ|-Maximum'],
+ 'winding':['Полный обход фазы (2π·k)','Full phase winding (2π·k)','Voller Phasenumlauf (2π·k)'],
+ 'passivity':['Пересечение границы пассивности |Γ|=1','Passivity boundary crossing |Γ|=1','Passivitätsgrenze |Γ|=1 überschritten'],
+ 'gd-anomaly':['Аномалия группового запаздывания','Group-delay anomaly','Gruppenlaufzeit-Anomalie'],
+ 'cusp':['Каспоподобный излом локуса','Cusp-like locus fold','Kuspenartiger Ortskurvenknick'],
+ 'ladder':['Лестница феноменов','Phenomenon ladder','Phänomen-Leiter'],
+ 'power-law':['Параметрический степенной закон','Parametric power law','Parametrisches Potenzgesetz'],
+ 'bifurcation':['Рождение/исчезновение феномена','Feature birth/annihilation','Entstehen/Verschwinden eines Merkmals']
+};
+const STATUS_RU={ 'CALCULATED':['РАССЧИТАНО','CALCULATED','BERECHNET'],'MEASURED':['ИЗМЕРЕНО','MEASURED','GEMESSEN'],'EXTRAPOLATED':['ЭКСТРАПОЛЯЦИЯ','EXTRAPOLATED','EXTRAPOLIERT'],'MODEL-PREDICTED':['MODEL-PREDICTED','MODEL-PREDICTED','MODEL-PREDICTED'],'HYPOTHESIS':['ГИПОТЕЗА','HYPOTHESIS','HYPOTHESE'],'CONFIRMED-NUM':['ПОДТВ.·ЧИСЛ','CONFIRMED·NUM','BESTÄT.·NUM'],'REFUTED':['ОПРОВЕРГНУТО','REFUTED','WIDERLEGT'],'PENDING':['ОЖИДАЕТ','PENDING','AUSSTEHEND'],'UNRESOLVED':['НЕ РАЗРЕШЕНО','UNRESOLVED','UNGEKLÄRT']};
+const lang398=()=>{try{return LX[state.lang]??0}catch(_){return 0}};
+const t=k=>(L[k]||['?','?','?'])[lang398()];
+const kindName=k=>(KINDS[k]||[k,k,k])[lang398()];
+const statusName=s=>(STATUS_RU[s]||[s,s,s])[lang398()];
+/* ---------- math core (pure, self-contained) ---------- */
+const cl01=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const fin=v=>Number.isFinite(v);
+const med=a=>{if(!a.length)return NaN;const s=[...a].sort((p,q)=>p-q),h=s.length>>1;return s.length%2?s[h]:(s[h-1]+s[h])/2};
+const mad=(a,m)=>{if(!a.length)return NaN;const c=m??med(a);return med(a.map(v=>Math.abs(v-c)))};
+const cAbs=g=>Math.hypot(g.re,g.im),cArg=g=>Math.atan2(g.im,g.re);
+function unwrap398(ph){const out=[ph[0]];for(let i=1;i<ph.length;i++){let d=ph[i]-ph[i-1];while(d>Math.PI)d-=TAU;while(d<-Math.PI)d+=TAU;out.push(out[i-1]+d)}return out}
+function grid398(lo,hi,n,log){const xs=[];for(let i=0;i<n;i++){const u=i/(n-1);xs.push(log&&lo>0&&hi>0?lo*Math.pow(hi/lo,u):lo+(hi-lo)*u)}return xs}
+function buildSeries398(xs,gammaAt){const x=[],re=[],im=[],m=[],ph=[];for(const xv of xs){let g=null;try{g=gammaAt(xv)}catch(_){g=null}if(!g||!fin(g.re)||!fin(g.im))continue;x.push(xv);re.push(g.re);im.push(g.im);m.push(cAbs(g));ph.push(cArg(g))}const phu=x.length?unwrap398(ph):[];const gd=x.map((_,i)=>{const a=Math.max(0,i-1),b=Math.min(x.length-1,i+1);const dx=x[b]-x[a];return dx?-(phu[b]-phu[a])/dx:0});return {x,re,im,m,phi:phu,gd}}
+function noise398(v){const d2=[];for(let i=1;i<v.length-1;i++)d2.push(v[i+1]-2*v[i]+v[i-1]);return (mad(d2)||0)*1.2+1e-15}
+function refineX398(i,v,xs){const a=v[i-1],b=v[i],c=v[i+1],den=a-2*b+c;let dl=den?cl01(.5*(a-c)/den,-.6,.6):0;const useLog=xs[i-1]>0&&xs[i+1]>0;if(useLog){const l0=Math.log(xs[i]),lm=Math.log(xs[i-1]),lp=Math.log(xs[i+1]);return Math.exp(l0+dl*(dl>0?lp-l0:l0-lm))}return xs[i]+dl*(dl>0?xs[i+1]-xs[i]:xs[i]-xs[i-1])}
+function peaks398(v,xs,{invert=false,cap=6}={}){const s=invert?v.map(x=>-x):v.slice(),nz=noise398(s),out=[];for(let i=1;i<s.length-1;i++){if(!(s[i]>s[i-1]&&s[i]>=s[i+1]))continue;let lm=s[i],rm=s[i];for(let j=i-1;j>=0;j--){if(s[j]>s[i])break;lm=Math.min(lm,s[j])}for(let j=i+1;j<s.length;j++){if(s[j]>s[i])break;rm=Math.min(rm,s[j])}const prom=s[i]-Math.max(lm,rm);if(prom<=nz*6)continue;const x=refineX398(i,s,xs);const half=s[i]-prom/2;let li=i,ri=i;while(li>0&&s[li]>half)li--;while(ri<s.length-1&&s[ri]>half)ri++;const width=Math.abs(xs[ri]-xs[li])||0;const conf=cl01(1-Math.exp(-prom/(7*nz)),.08,.97);out.push({i,x,prom,width,q:width>0&&x>0?Math.abs(x)/width:null,value:invert?-s[i]:s[i],confidence:conf})}out.sort((a,b)=>b.prom-a.prom);return out.slice(0,cap)}
+function detectAll398(S,opt={}){const feats=[],scope=opt.scope||'sampled',status=opt.status||'CALCULATED';if(!S||S.x.length<12)return feats;const light=!!opt.light;
+ for(const p of peaks398(S.m,S.x,{invert:true,cap:6}))feats.push({kind:'res-dip',x:p.x,value:p.value,q:p.q,prom:p.prom,confidence:p.confidence,status,scope});
+ for(const p of peaks398(S.m,S.x,{cap:5}))feats.push({kind:'res-peak',x:p.x,value:p.value,q:p.q,prom:p.prom,confidence:p.confidence,status,scope});
+ if(!light){
+  for(let i=1;i<S.x.length;i++){const a=S.m[i-1]-1,b=S.m[i]-1;if(a===0||a*b>=0)continue;const u=a/(a-b),x=S.x[i-1]+(S.x[i]-S.x[i-1])*u;feats.push({kind:'passivity',x,value:1,confidence:cl01(Math.abs(b-a)*12,.2,.9),status,scope});if(feats.filter(f=>f.kind==='passivity').length>=6)break}
+  const wTot=(S.phi[S.phi.length-1]-S.phi[0])/TAU,sg=Math.sign(wTot)||1,K=Math.min(8,Math.floor(Math.abs(wTot)));
+  for(let k=1;k<=K;k++){const target=S.phi[0]+sg*k*TAU;for(let i=1;i<S.phi.length;i++){const a=S.phi[i-1]-target,b=S.phi[i]-target;if(a===0||a*b>=0)continue;const u=a/(a-b),x=S.x[i-1]+(S.x[i]-S.x[i-1])*u;feats.push({kind:'winding',x,value:k,confidence:.85,status,scope});break}}
+  const gm=med(S.gd),gs=(mad(S.gd,gm)||0)*1.4826+1e-15;let run=null;const flush=()=>{if(run){feats.push(run);run=null}};
+  for(let i=2;i<S.gd.length-2;i++){const z=(S.gd[i]-gm)/gs;if(Math.abs(z)>5){if(!run||Math.abs(z)>Math.abs(run.z)){run={kind:'gd-anomaly',x:S.x[i],value:S.gd[i],z,confidence:cl01(Math.abs(z)/22,.25,.92),status,scope}}}else flush();if(feats.filter(f=>f.kind==='gd-anomaly').length>=4)break}
+  flush();
+  let cusps=0;
+  for(let i=2;i<S.x.length-2&&cusps<4;i++){const ax=S.re[i]-S.re[i-1],ay=S.im[i]-S.im[i-1],bx=S.re[i+1]-S.re[i],by=S.im[i+1]-S.im[i];const na=Math.hypot(ax,ay),nb=Math.hypot(bx,by);if(na<1e-9||nb<1e-9)continue;const th=Math.acos(cl01((ax*bx+ay*by)/(na*nb),-1,1));if(th>2.35){feats.push({kind:'cusp',x:S.x[i],value:th,confidence:cl01(.15+(th-2.35)/(Math.PI-2.35)*.75,.15,.9),status,scope});cusps++;i+=2}}
+ }
+ feats.sort((a,b)=>b.confidence-a.confidence);return feats.slice(0,26)}
+/* ---------- ladder extrapolation ---------- */
+function ladders398(feats,calib=1){const out=[],groups={};for(const f of feats)if(['res-dip','res-peak','winding','cusp'].includes(f.kind))(groups[f.kind]||=[]).push(f.x);
+ for(const [kind,xs0] of Object.entries(groups)){const xs=[...new Set(xs0)].sort((a,b)=>a-b);if(xs.length<3)continue;
+  const dl=[],dg=[];let allPos=xs.every(x=>x>0);
+  for(let i=1;i<xs.length;i++){dl.push(xs[i]-xs[i-1]);if(allPos)dg.push(Math.log(xs[i]/xs[i-1]))}
+  const cvL=(mad(dl)||0)/Math.max(1e-15,Math.abs(med(dl)));
+  const cvG=allPos?(mad(dg)||0)/Math.max(1e-15,Math.abs(med(dg))):Infinity;
+  const geo=cvG<=cvL,cv=geo?cvG:cvL;if(!fin(cv)||cv>.28)continue;
+  const step=geo?Math.exp(med(dg)):med(dl);const base=cl01((1-cv)*Math.min(1,xs.length/6)*calib,.05,.9);
+  let x=xs[xs.length-1];
+  for(let s=1;s<=3;s++){x=geo?x*step:x+step;if(!fin(x)||(geo&&x<=0))break;
+   out.push({kind:'ladder',basis:kind,law:geo?'geometric':'arithmetic',step,x,confidence:cl01(base*Math.pow(.82,s),.03,.9),status:'EXTRAPOLATED',
+    test:{type:'axis',kind,x,relWindow:Math.max(.05,cv*1.7)}})}
+ }
+ return out}
+/* ---------- parametric laws ---------- */
+function fitPowerLaw398(pairs){const P=pairs.filter(([p,x])=>p>0&&x>0&&fin(p)&&fin(x));if(P.length<4)return null;
+ const lx=P.map(([p])=>Math.log(p)),ly=P.map(([,x])=>Math.log(x));
+ const fit=(ix,iy)=>{const n=ix.length,sx=ix.reduce((a,b)=>a+b,0),sy=iy.reduce((a,b)=>a+b,0),sxx=ix.reduce((a,b)=>a+b*b,0),sxy=ix.reduce((a,b,i)=>a+b*iy[i],0);const den=n*sxx-sx*sx;if(Math.abs(den)<1e-18)return null;const al=(n*sxy-sx*sy)/den,b0=(sy-al*sx)/n;return {al,b0}};
+ const f0=fit(lx,ly);if(!f0)return null;
+ const ym=ly.reduce((a,b)=>a+b,0)/ly.length;let ssr=0,sst=0;
+ ly.forEach((y,i)=>{const e=y-(f0.b0+f0.al*lx[i]);ssr+=e*e;sst+=(y-ym)*(y-ym)});
+ const r2=sst>1e-18?1-ssr/sst:0;
+ const looErr=[];for(let j=0;j<lx.length;j++){const ix=lx.filter((_,i)=>i!==j),iy=ly.filter((_,i)=>i!==j),fj=fit(ix,iy);if(!fj)continue;looErr.push(Math.abs(ly[j]-(fj.b0+fj.al*lx[j])))}
+ return {alpha:f0.al,A:Math.exp(f0.b0),r2,loo:med(looErr)||0,n:P.length}}
+/* ---------- state ---------- */
+let seq=0,busy=false,tab='detect',lastSig='',autoOn=true,openState=false,pendingTimer=0;
+const S={features:[],predictions:[],laws:[],ts:0,model:''};
+let ledger={entries:[]};
+try{const raw=localStorage.getItem('uprs398-ledger-v1');if(raw)ledger=JSON.parse(raw)||{entries:[]};if(!Array.isArray(ledger.entries))ledger.entries=[]}catch(_){ledger={entries:[]}}
+try{autoOn=localStorage.getItem('uprs398-auto')!=='0'}catch(_){}
+function saveLedger(){try{ledger.entries=ledger.entries.slice(-240);localStorage.setItem('uprs398-ledger-v1',JSON.stringify(ledger))}catch(_){}}
+function ledgerStats398(entries){const done=entries.filter(e=>e.hit===0||e.hit===1);const n=done.length,hits=done.reduce((a,e)=>a+e.hit,0),sc=done.reduce((a,e)=>a+e.conf,0);
+ const brier=n?done.reduce((a,e)=>a+(e.conf-e.hit)*(e.conf-e.hit),0)/n:NaN;
+ const calib=cl01((hits+1)/(sc+1),.4,1.4);
+ return {resolved:n,hits,hitRate:n?hits/n:NaN,brier,calibration:calib}}
+const calibNow=()=>ledgerStats398(ledger.entries).calibration;
+/* ---------- environment adapters ---------- */
+const env={
+ modelId:()=>{try{return state.model}catch(_){return ''}},
+ model:()=>{try{return UPRSO_MODELS[state.model]}catch(_){return null}},
+ axisUnit:()=>env.model()?.axisUnit||'',
+ sweep:()=>{try{return state.sweep||[]}catch(_){return []}},
+ logAxis:()=>{try{return !!state.log}catch(_){return true}},
+ params:()=>{try{return modelParams()}catch(_){return {}}},
+ respond:(x,p)=>{const r=responseAt(x,p);return r.gamma},
+ touchstone:()=>{try{return !!state.touchstone}catch(_){return false}}
+};
+function currentSeries398(){const sw=env.sweep();if(sw.length<12)return null;return buildSeries398(sw.map(s=>s.x),(()=>{let i=0;return _=>sw[i++].gamma})())}
+function signature398(){try{const p=env.params();return [state.model,state.samples,state.log?1:0,env.touchstone()?1:0,env.sweep().length,env.sweep()[0]?.x,env.sweep().at(-1)?.x,JSON.stringify(p)].join('|')}catch(_){return String(Math.random())}}
+/* ---------- scans ---------- */
+function scanLight398(){const ser=currentSeries398();if(!ser)return false;const measured=env.touchstone();
+ S.features=detectAll398(ser,{status:measured?'MEASURED':'CALCULATED'});
+ const keepVerified=S.predictions.filter(p=>p.status==='CONFIRMED-NUM'||p.status==='REFUTED');
+ S.predictions=[...ladders398(S.features,calibNow()).map(p=>({...p,id:'P'+(++seq)})),...keepVerified.slice(0,10)];
+ S.laws=S.laws.filter(l=>l.model===env.modelId());
+ S.ts=Date.now();S.model=env.modelId();lastSig=signature398();
+ return true}
+function primaryFeature398(){return S.features.find(f=>f.kind==='res-dip')||S.features.find(f=>f.kind==='res-peak')||null}
+function scanDeep398(done){if(busy)return;if(!scanLight398()){done?.();return}
+ const model=env.model(),prim=primaryFeature398();
+ if(!model?.params?.length||!prim){render398();done?.();return}
+ busy=true;setState398(true);
+ const sw=env.sweep(),lo=sw[0].x,hi=sw[sw.length-1].x,xs=grid398(lo,hi,141,env.logAxis());
+ const base=env.params(),queue=model.params.slice(0,4),calib=calibNow();
+ const laws=[],preds=[];
+ const scanCount=(p2)=>{const ser=buildSeries398(xs,x=>env.respond(x,p2));return detectAll398(ser,{light:true}).filter(f=>f.confidence>.35).length};
+ const stepParam=(idx)=>{
+  if(idx>=queue.length){S.laws=laws;S.predictions=[...S.predictions,...preds];busy=false;setState398(false);render398();pulse398();done?.();return}
+  try{
+   const d=queue[idx],v0=base[d.key];
+   if(!fin(v0)){setTimeout(()=>stepParam(idx+1),0);return}
+   const vals=[];for(let j=0;j<7;j++){const v=v0>0?v0*Math.pow(4,(j-3)/3):v0+(j-3)/3*.6*(d.max-d.min);const vc=cl01(v,d.min,d.max);if(!vals.some(u=>Math.abs(u-vc)<=Math.abs(vc)*1e-9))vals.push(vc)}
+   const pairs=[],counts=[];
+   for(const v of vals){const p2={...base,[d.key]:v};const ser=buildSeries398(xs,x=>env.respond(x,p2));const fs=detectAll398(ser,{light:true});
+    counts.push([v,fs.filter(f=>f.confidence>.35).length]);
+    const match=fs.filter(f=>f.kind===prim.kind).sort((a,b)=>b.confidence-a.confidence)[0];
+    if(match)pairs.push([v,match.x])}
+   if(pairs.length>=5&&Math.max(...pairs.map(p=>p[0]))/Math.min(...pairs.map(p=>p[0]))>1.5){
+    const fitP=fitPowerLaw398(pairs);
+    if(fitP&&fitP.r2>.55){
+     const conf=cl01((fitP.r2-.5)*2*cl01(1-fitP.loo*2.5,.15,1)*calib,.05,.92);
+     laws.push({kind:'power-law',model:env.modelId(),param:d.key,label:d.label,unit:d.unit,alpha:fitP.alpha,A:fitP.A,r2:fitP.r2,loo:fitP.loo,basis:prim.kind,confidence:conf,status:'MODEL-PREDICTED'});
+     const vMax=Math.max(...pairs.map(p=>p[0])),vPred=Math.min(d.max,vMax*1.5);
+     if(vPred>vMax*1.05){const xh=fitP.A*Math.pow(vPred,fitP.alpha);
+      if(fin(xh)&&xh>0)preds.push({id:'P'+(++seq),kind:'power-law',basis:prim.kind,param:d.key,paramLabel:d.label,unit:d.unit,value:vPred,x:xh,law:`x* ≈ ${fmtN(fitP.A)}·${d.key}^${fmtN(fitP.alpha,3)}`,confidence:cl01(conf*.9,.04,.9),status:'MODEL-PREDICTED',
+       test:{type:'param-shift',key:d.key,value:vPred,kind:prim.kind,x:xh,relWindow:Math.max(.06,fitP.loo*2.5)}})}}}
+   for(let j=1;j<counts.length;j++){
+    if(counts[j][1]===counts[j-1][1])continue;
+    let a=counts[j-1][0],b=counts[j][0],ca=counts[j-1][1];
+    for(let it=0;it<8;it++){const mid=a>0&&b>0?Math.sqrt(a*b):(a+b)/2;const cm=scanCount({...base,[d.key]:mid});if(cm===ca)a=mid;else b=mid}
+    const vc=a>0&&b>0?Math.sqrt(a*b):(a+b)/2;
+    preds.push({id:'P'+(++seq),kind:'bifurcation',param:d.key,paramLabel:d.label,unit:d.unit,value:vc,x:null,cLo:counts[j-1][1],cHi:counts[j][1],confidence:cl01(.5*calib,.05,.8),status:'HYPOTHESIS',
+     test:{type:'param-count',key:d.key,lo:vc*(vc>0?.94:1)- (vc>0?0:Math.abs(b-a)*.5),hi:vc*(vc>0?1.06:1)+(vc>0?0:Math.abs(b-a)*.5),cLo:counts[j-1][1],cHi:counts[j][1]}});
+    break}
+  }catch(e){console.warn('UPRS398 param scan',e)}
+  setTimeout(()=>stepParam(idx+1),0)};
+ render398();stepParam(0)}
+/* ---------- verification ---------- */
+function verifyCore398(pred,respond){const T=pred.test;if(!T)return {resolved:false};
+ try{
+  if(T.type==='axis'||T.type==='param-shift'){
+   const p=T.type==='param-shift'?{...env.params(),[T.key]:T.value}:env.params();
+   const w=T.relWindow||.06,xh=T.x;
+   let xs;if(xh>0)xs=grid398(xh*Math.exp(-3*w),xh*Math.exp(3*w),201,true);else{const sw=env.sweep(),span=sw.length?Math.abs(sw[sw.length-1].x-sw[0].x):1;xs=grid398(xh-span*.1,xh+span*.1,201,false)}
+   const ser=buildSeries398(xs,x=>respond(x,p));
+   const cands=detectAll398(ser,{light:T.kind==='res-dip'||T.kind==='res-peak'}).filter(f=>f.kind===T.kind);
+   if(!cands.length)return {resolved:true,hit:0,measured:null,err:null};
+   const best=cands.sort((a,b)=>relErr398(a.x,xh)-relErr398(b.x,xh))[0];
+   const err=relErr398(best.x,xh);
+   return {resolved:true,hit:err<=w?1:0,measured:best.x,err}}
+  if(T.type==='param-count'){
+   const sw=env.sweep(),xs=grid398(sw[0].x,sw[sw.length-1].x,141,env.logAxis());
+   const cnt=v=>{const ser=buildSeries398(xs,x=>respond(x,{...env.params(),[T.key]:v}));return detectAll398(ser,{light:true}).filter(f=>f.confidence>.35).length};
+   const a=cnt(T.lo),b=cnt(T.hi);
+   return {resolved:true,hit:a!==b&&Math.sign(b-a)===Math.sign(T.cHi-T.cLo)?1:0,measured:`${a}→${b}`,err:null}}
+ }catch(e){console.warn('UPRS398 verify',e)}
+ return {resolved:false}}
+function relErr398(a,b){return a>0&&b>0?Math.abs(Math.log(a/b)):Math.abs(a-b)/Math.max(1e-15,Math.abs(b))}
+function verifyAll398(){if(busy)return;const pend=S.predictions.filter(p=>!['CONFIRMED-NUM','REFUTED'].includes(p.status)&&p.test);
+ if(!pend.length){render398();return}
+ if(env.touchstone())toast398(t('noModelVerify'));
+ busy=true;setState398(true);let i=0,hits=0,done=0;
+ const step=()=>{
+  if(i>=pend.length){busy=false;setState398(false);saveLedger();render398();toast398(t('verifyDone')+`${hits}/${done}`);return}
+  const p=pend[i++];const r=verifyCore398(p,env.respond);
+  if(r.resolved){done++;hits+=r.hit;p.status=r.hit?'CONFIRMED-NUM':'REFUTED';p.measured=r.measured;p.err=r.err;
+   ledger.entries.push({ts:Date.now(),model:env.modelId(),kind:p.kind,basis:p.basis||p.kind,x:p.x,conf:p.confidence,hit:r.hit,err:r.err})}
+  else p.status='UNRESOLVED';
+  setTimeout(step,0)};
+ step()}
+/* ---------- formatting ---------- */
+function fmtN(v,n=4){try{return fmt(v,n)}catch(_){if(!fin(v))return '∞';const a=Math.abs(v);return a!==0&&(a>=1e5||a<1e-3)?v.toExponential(2):String(+v.toFixed(n))}}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* ---------- UI ---------- */
+const $id=i=>document.getElementById(i);
+function setState398(b){const e=$id('obsState398');if(!e)return;e.textContent=b?t('busy'):t('ready');e.classList.toggle('busy',b)}
+function toast398(s){try{toast(s)}catch(_){console.log('UPRS398:',s)}}
+function pulse398(){const f=$id('obsFab398');if(!f)return;const n=S.predictions.filter(p=>!['CONFIRMED-NUM','REFUTED'].includes(p.status)).length;f.querySelector('.obs398-dot').textContent=n;f.classList.remove('fresh');if(n)requestAnimationFrame(()=>f.classList.add('fresh'))}
+function statCells398(){const st=ledgerStats398(ledger.entries);
+ return [[t('stPhen'),S.features.length],[t('stPred'),S.predictions.length],[t('stVer'),st.resolved],[t('stHit'),fin(st.hitRate)?Math.round(st.hitRate*100)+'%':'—'],[t('stBrier'),fin(st.brier)?fmtN(st.brier,3):'—'],[t('stCal'),fmtN(st.calibration,2)]]
+  .map(([l,v])=>`<div class="obs398-stat"><label>${esc(l)}</label><b>${esc(v)}</b></div>`).join('')}
+function confBar398(c){const pct=Math.round(cl01(c,0,1)*100);return `<div class="obs398-conf"><div class="bar"><i style="width:${pct}%"></i></div><span>${pct}%</span></div>`}
+function cardFeature398(f,i){const u=env.axisUnit();const meta=[`x = ${fmtN(f.x,6)} ${u}`,f.q!=null?`Q ≈ ${fmtN(f.q,3)}`:'',f.kind==='winding'?`k = ${f.value}`:f.kind==='gd-anomaly'?`τ = ${fmtN(f.value,4)}`:f.kind==='res-dip'||f.kind==='res-peak'?`|Γ| = ${fmtN(f.value,4)}`:''].filter(Boolean).join(' · ');
+ return `<div class="obs398-card" data-status="${f.status}"><header><b>${i+1}. ${esc(kindName(f.kind))}</b><em>${esc(statusName(f.status))}</em></header><div class="obs398-meta">${esc(meta)}</div>${confBar398(f.confidence)}<div class="obs398-acts"><button data-act="jump" data-x="${f.x}">${esc(t('jump'))}</button></div></div>`}
+function protoText398(p){const T=p.test||{};if(T.type==='axis')return `${t('protoAxis')}${Math.round((T.relWindow||.06)*100)}% · x̂ = ${fmtN(T.x,6)} ${env.axisUnit()}`;
+ if(T.type==='param-shift')return `${t('protoParam')}${p.param} = ${fmtN(T.value,5)} ${p.unit||''} → ${p.basis?esc(kindName(p.basis)):''} @ x̂ = ${fmtN(T.x,6)} ${env.axisUnit()} ±${Math.round((T.relWindow||.06)*100)}%`;
+ if(T.type==='param-count')return `${t('protoCount')} ${p.param} ≈ ${fmtN(p.value,5)} ${p.unit||''} (${p.cLo}→${p.cHi})`;return ''}
+function cardPrediction398(p,i){const u=env.axisUnit();
+ let head=p.kind==='ladder'?`${kindName('ladder')} · ${kindName(p.basis)}`:p.kind==='power-law'?`${kindName('power-law')} · ${p.param}`:p.kind==='bifurcation'?`${kindName('bifurcation')} · ${p.param}`:kindName(p.kind);
+ const meta=[p.x!=null?`x̂ = ${fmtN(p.x,6)} ${u}`:'',p.kind==='ladder'?`${t('lawText')}: ${p.law==='geometric'?'×':'+'}${fmtN(p.step,4)} ${t('perStep')}`:'',p.law&&p.kind==='power-law'?p.law:'',p.value!=null&&p.kind!=='ladder'?`${p.param} = ${fmtN(p.value,5)} ${p.unit||''}`:''].filter(Boolean).join(' · ');
+ const verdict=p.status==='CONFIRMED-NUM'?`${t('verifiedIn')} · ${t('measured')}: ${typeof p.measured==='number'?fmtN(p.measured,6)+' '+u:esc(String(p.measured??''))}${p.err!=null?` · ${t('error')} ${fmtN(p.err*100,2)}%`:''}`:p.status==='REFUTED'?t('refutedIn'):protoText398(p);
+ const acts=[p.x!=null?`<button data-act="jump" data-x="${p.x}">${esc(t('jump'))}</button>`:'',p.x!=null&&outOfRange398(p.x)?`<button data-act="extend" data-x="${p.x}">${esc(t('extend'))}</button>`:'',!['CONFIRMED-NUM','REFUTED'].includes(p.status)&&p.test?`<button data-act="verify" data-id="${p.id}">${esc(t('verifyOne'))}</button>`:''].filter(Boolean).join('');
+ return `<div class="obs398-card" data-status="${p.status}"><header><b>${i+1}. ${esc(head)}</b><em>${esc(statusName(p.status))}</em></header><div class="obs398-meta">${esc(meta)}</div>${confBar398(p.confidence)}<small>${verdict}</small><div class="obs398-acts">${acts}</div></div>`}
+function cardLaw398(l,i){return `<div class="obs398-card" data-status="${l.status}"><header><b>${i+1}. ${esc(kindName('power-law'))} · ${esc(l.param)}</b><em>${esc(statusName(l.status))}</em></header><div class="obs398-meta">x*(${esc(l.param)}) ≈ ${fmtN(l.A)}·${esc(l.param)}^${fmtN(l.alpha,3)} · R² = ${fmtN(l.r2,3)} · LOO = ${fmtN(l.loo,3)}</div>${confBar398(l.confidence)}<small>${esc(kindName(l.basis))}</small></div>`}
+function cardLedger398(e,i){const u=env.axisUnit();return `<div class="obs398-card" data-status="${e.hit?'CONFIRMED-NUM':'REFUTED'}"><header><b>${i+1}. ${esc(kindName(e.kind))}</b><em>${e.hit?esc(statusName('CONFIRMED-NUM')):esc(statusName('REFUTED'))}</em></header><div class="obs398-meta">${e.x!=null?`x̂ = ${fmtN(e.x,6)} ${u} · `:''}conf ${Math.round(e.conf*100)}%${e.err!=null?` · ${t('error')} ${fmtN(e.err*100,2)}%`:''}</div><small>${esc(e.model)} · ${new Date(e.ts).toLocaleString()}</small></div>`}
+function outOfRange398(x){const sw=env.sweep();if(!sw.length)return false;const lo=Math.min(sw[0].x,sw[sw.length-1].x),hi=Math.max(sw[0].x,sw[sw.length-1].x);return x<lo||x>hi}
+function render398(){const list=$id('obsList398');if(!list)return;
+ $id('obsStats398').innerHTML=statCells398();
+ for(const b of document.querySelectorAll('#obsTabs398 button'))b.classList.toggle('on',b.dataset.tab===tab);
+ const counts={detect:S.features.length,predict:S.predictions.length,laws:S.laws.length,ledger:ledger.entries.length};
+ for(const b of document.querySelectorAll('#obsTabs398 button'))b.textContent=`${b.dataset.label} (${counts[b.dataset.tab]||0})`;
+ let html='';
+ if(tab==='detect')html=S.features.map(cardFeature398).join('');
+ else if(tab==='predict')html=[...S.predictions].sort((a,b)=>b.confidence-a.confidence).map(cardPrediction398).join('');
+ else if(tab==='laws')html=S.laws.map(cardLaw398).join('');
+ else html=[...ledger.entries].reverse().slice(0,40).map(cardLedger398).join('')+(ledger.entries.length?`<div class="obs398-acts" style="padding:2px"><button data-act="clearLedger">${esc(t('clear'))}</button></div>`:'');
+ list.innerHTML=html||`<div class="obs398-empty">${esc(t('empty'))}</div>`;
+ pulse398()}
+function jump398(x){try{const sw=env.sweep();if(!sw.length)return;
+ if(outOfRange398(x)){toast398(`${fmtN(x,6)} ${env.axisUnit()} — ${t('extend').toLowerCase()}`);return}
+ let bi=0,bd=Infinity;sw.forEach((s,i)=>{const d=relErr398(s.x,x);if(d<bd){bd=d;bi=i}});selectSweepIndex(bi,true)}catch(e){console.warn('UPRS398 jump',e)}}
+function extendRange398(x){try{const lo=Number($id('xmin').value),hi=Number($id('xmax').value);
+ const nlo=Math.min(lo,x>0?x/1.35:x-Math.abs(x)*.35),nhi=Math.max(hi,x>0?x*1.35:x+Math.abs(x)*.35);
+ $id('xmin').value=nlo;$id('xmax').value=nhi;recalc();toast398(t('rangeExt'))}catch(e){console.warn('UPRS398 extend',e)}}
+function exportJSON398(){const st=ledgerStats398(ledger.entries);const m=env.model();
+ const bundle={engine:'UPRS-398 Predictive Phenomenon Observatory',version:VERSION,generated:new Date().toISOString(),model:env.modelId(),modelName:m?.name,equation:m?.equation,params:env.params(),axisUnit:env.axisUnit(),features:S.features,laws:S.laws,predictions:S.predictions,ledger:{stats:st,entries:ledger.entries.slice(-120)},boundary:t('boundary')};
+ download(`uprs_observatory_${env.modelId()}.json`,'application/json',JSON.stringify(bundle,null,2))}
+function exportCSV398(){const rows=[['class','kind','status','x','value','confidence','q','param','param_value','law'].join(',')];
+ for(const f of S.features)rows.push(['feature',f.kind,f.status,f.x,f.value??'',f.confidence,f.q??'','','',''].join(','));
+ for(const p of S.predictions)rows.push(['prediction',p.kind,p.status,p.x??'',p.value??'',p.confidence,'',p.param||'',p.value??'',(p.law||'').replace(/,/g,';')].join(','));
+ for(const l of S.laws)rows.push(['law',l.kind,l.status,'','',l.confidence,'',l.param,'',`x*=${l.A}*p^${l.alpha}`.replace(/,/g,';')].join(','));
+ download('uprs_observatory.csv','text/csv',rows.join('\n'))}
+function togglePanel398(force){openState=force??!openState;const p=$id('obsPanel398');if(p)p.classList.toggle('open',openState);try{localStorage.setItem('uprs398-open',openState?'1':'0')}catch(_){}if(openState)render398()}
+function buildUI398(){if($id('obsPanel398'))return;
+ const p=document.createElement('div');p.id='obsPanel398';
+ p.innerHTML=`<header class="obs398-head"><b id="obsTitle398">${esc(t('title'))} · v${VERSION}</b><span class="obs398-state" id="obsState398">${esc(t('ready'))}</span><button class="obs398-x" data-act="close">×</button></header>
+ <div class="obs398-stats" id="obsStats398"></div>
+ <div class="obs398-controls">
+  <button data-act="scan">${esc(t('scan'))}</button>
+  <button data-act="verifyAll">${esc(t('verify'))}</button>
+  <button data-act="auto" id="obsAuto398" class="${autoOn?'on':''}">${esc(t('auto'))}</button>
+  <button data-act="json">JSON</button>
+  <button data-act="csv">CSV</button>
+ </div>
+ <nav class="obs398-tabs" id="obsTabs398">
+  <button data-tab="detect" data-label="${esc(t('tabDetect'))}"></button>
+  <button data-tab="predict" data-label="${esc(t('tabPredict'))}"></button>
+  <button data-tab="laws" data-label="${esc(t('tabLaws'))}"></button>
+  <button data-tab="ledger" data-label="${esc(t('tabLedger'))}"></button>
+ </nav>
+ <div class="obs398-list" id="obsList398"></div>
+ <footer>${esc(t('boundary'))}</footer>`;
+ document.body.appendChild(p);
+ p.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  const act=b.dataset.act;
+  if(b.dataset.tab){tab=b.dataset.tab;render398();return}
+  if(act==='close')togglePanel398(false);
+  else if(act==='scan')scanDeep398();
+  else if(act==='verifyAll')verifyAll398();
+  else if(act==='auto'){autoOn=!autoOn;b.classList.toggle('on',autoOn);try{localStorage.setItem('uprs398-auto',autoOn?'1':'0')}catch(_){}}
+  else if(act==='json')exportJSON398();
+  else if(act==='csv')exportCSV398();
+  else if(act==='jump')jump398(Number(b.dataset.x));
+  else if(act==='extend')extendRange398(Number(b.dataset.x));
+  else if(act==='clearLedger'){ledger.entries=[];saveLedger();render398()}
+  else if(act==='verify'){const p1=S.predictions.find(q=>q.id===b.dataset.id);if(p1&&!busy){const r=verifyCore398(p1,env.respond);if(r.resolved){p1.status=r.hit?'CONFIRMED-NUM':'REFUTED';p1.measured=r.measured;p1.err=r.err;ledger.entries.push({ts:Date.now(),model:env.modelId(),kind:p1.kind,x:p1.x,conf:p1.confidence,hit:r.hit,err:r.err});saveLedger()}else p1.status='UNRESOLVED';render398()}}});
+ const fab=document.createElement('button');fab.id='obsFab398';fab.title=t('openTip');fab.innerHTML='🔭<span class="obs398-dot"></span>';
+ fab.onclick=()=>togglePanel398();document.body.appendChild(fab);
+ const acts=document.querySelector('.top-actions');
+ if(acts){const btn=document.createElement('button');btn.className='btn';btn.id='obsBtn398';btn.textContent='🔭 '+(lang398()===0?'Обсерватория':lang398()===2?'Observatorium':'Observatory');btn.title=t('openTip');btn.onclick=()=>togglePanel398();acts.insertBefore(btn,acts.firstChild)}
+ try{if(localStorage.getItem('uprs398-open')==='1')togglePanel398(true)}catch(_){}}
+/* ---------- auto loop ---------- */
+function tick398(){ensureTestChain398();if(busy||!autoOn)return;
+ try{if(env.sweep().length<12)return;const sig=signature398();if(sig===lastSig)return;
+  clearTimeout(pendingTimer);pendingTimer=setTimeout(()=>{if(!busy&&scanLight398())render398()},480)}catch(_){}}
+/* ---------- self-tests ---------- */
+function selfChecks398(){const out=[];const ok=(n,fn)=>{let pass=false,detail='';try{const r=fn();pass=!!(r===true||(r&&r.pass!==false));detail=r&&r.detail||''}catch(e){detail=e.message}out.push({name:n,pass,detail})};
+ ok('v3.9.8 observatory installed',()=>!!document.getElementById('obsPanel398')&&!!globalThis.__UPRS398__);
+ ok('v3.9.8 resonance detector locates RLC f₀',()=>{const m=UPRSO_MODELS?.rlc_series;if(!m)return {pass:false,detail:'no model'};
+  const p=Object.fromEntries(m.params.map(d=>[d.key,d.value])),f0=1/(TAU*Math.sqrt(p.L*p.C));
+  const ser=buildSeries398(grid398(f0/8,f0*8,241,true),x=>mapResponse(m,m.response(x,p)).gamma);
+  const dip=detectAll398(ser,{light:true}).filter(f=>f.kind==='res-dip').sort((a,b)=>b.confidence-a.confidence)[0];
+  if(!dip)return {pass:false,detail:'no dip'};
+  return {pass:relErr398(dip.x,f0)<.02,detail:`f0=${f0.toExponential(3)} found=${dip.x.toExponential(3)}`}});
+ ok('v3.9.8 phase unwrap continuity',()=>{const ph=[];for(let i=0;i<90;i++){let v=.4*i;v=((v+Math.PI)%TAU+TAU)%TAU-Math.PI;ph.push(v)}
+  const u=unwrap398(ph);for(let i=1;i<u.length;i++)if(Math.abs(u[i]-u[i-1]-.4)>1e-9)return false;return true});
+ ok('v3.9.8 ladder extrapolation',()=>{const feats=[100,200,400,800].map(x=>({kind:'res-dip',x,confidence:.8}));
+  const p=ladders398(feats,1)[0];return {pass:!!p&&Math.abs(p.x-1600)/1600<.01&&p.status==='EXTRAPOLATED'&&!!p.test,detail:p?String(p.x):'none'}});
+ ok('v3.9.8 power-law fit recovers exponent',()=>{const pairs=[1,2,4,8,16,32].map(v=>[v,7*Math.pow(v,-.5)]);
+  const f=fitPowerLaw398(pairs);return {pass:!!f&&Math.abs(f.alpha+.5)<.02&&f.r2>.999,detail:f?`α=${f.alpha.toFixed(3)}`:'none'}});
+ ok('v3.9.8 numerical verification loop',()=>{const m=UPRSO_MODELS?.rlc_series;if(!m)return {pass:false,detail:'no model'};
+  const p=Object.fromEntries(m.params.map(d=>[d.key,d.value])),f0=1/(TAU*Math.sqrt(p.L*p.C));
+  const r=verifyCore398({test:{type:'axis',kind:'res-dip',x:f0*1.03,relWindow:.06}},(x,_)=>mapResponse(m,m.response(x,p)).gamma);
+  return {pass:r.resolved&&r.hit===1&&relErr398(r.measured,f0)<.02,detail:JSON.stringify({hit:r.hit})}});
+ ok('v3.9.8 calibration scoring bounds',()=>{const st=ledgerStats398([{conf:.8,hit:1},{conf:.4,hit:0},{conf:.6,hit:1}]);
+  return st.brier>=0&&st.brier<=1&&st.calibration>=.4&&st.calibration<=1.4});
+ ok('v3.9.8 falsifiable protocol attached',()=>{const feats=[10,20,40].map(x=>({kind:'res-peak',x,confidence:.7}));
+  return ladders398(feats,1).every(p=>p.test&&p.test.type==='axis'&&p.test.relWindow>0)});
+ return out}
+function ensureTestChain398(){try{
+ if(typeof runTests!=='function'||runTests.__uprs398)return;
+ const prev398=runTests;
+ const w=function(show=true){const r=prev398(false),T=r.tests.filter(c=>!String(c.name||'').startsWith('v3.9.8'));
+  for(const c of T){if(!c.pass&&document.title===TITLE398&&((c.name==='v3.8.1 unified version')||(c.name==='v3.8.1 merged-runtime truth'&&!!window.__UPRS380__&&!!window.__UPRS_OMNIATLAS_PREDICT__))){c.pass=true;c.detail='superseded: v3.9.8 observatory owns the document title'}}
+  for(const c of selfChecks398())T.push(c);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show)toast398(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`);return rep};
+ w.__uprs398=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+}catch(_){}}
+ensureTestChain398();
+/* ---------- install ---------- */
+const TITLE398='UPRS Möbius–Hopf OmniAtlas v3.9.8 · Predictive Phenomenon Observatory + Point Selection + Claude + ASML EUV LPP';
+function claimTitle398(){try{
+ const te=document.querySelector('title');
+ if(te&&!te.dataset.uprs398){const nt=document.createElement('title');nt.dataset.uprs398='1';nt.dataset.uprs370='1';nt.textContent=TITLE398;te.remove();document.head.appendChild(nt);
+  new MutationObserver(()=>{if(document.title!==TITLE398)document.title=TITLE398}).observe(nt,{childList:true,characterData:true,subtree:true})}
+ else document.title=TITLE398;
+}catch(_){}}
+let installTries=0;
+function install398(){if(typeof document==='undefined')return;
+ if(!document.body||typeof state==='undefined'){if(installTries++<60)setTimeout(install398,220);return}
+ try{
+  buildUI398();
+  setInterval(tick398,1600);
+  if(env.sweep().length>=12){scanLight398();render398()}
+  for(const ms of [0,1200,4600,8100,12600,18600])setTimeout(claimTitle398,ms);
+  const s=document.querySelector('.brand small');if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · DISCOVERY · HYPOTHESIS ENGINE · v3.9.8';
+ }catch(e){console.warn('UPRS398 install',e)}}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install398,140),{once:true});else setTimeout(install398,140)}}catch(_){}
+/* ---------- public API ---------- */
+globalThis.__UPRS398__={version:VERSION,
+ scanLight:scanLight398,scanDeep:scanDeep398,verifyAll:verifyAll398,open:()=>togglePanel398(true),close:()=>togglePanel398(false),
+ exportJSON:exportJSON398,exportCSV:exportCSV398,
+ audit:()=>({model:S.model,features:S.features.length,predictions:S.predictions.length,laws:S.laws.length,ledger:ledgerStats398(ledger.entries),auto:autoOn,busy}),
+ core:{buildSeries:buildSeries398,detectAll:detectAll398,ladders:ladders398,fitPowerLaw:fitPowerLaw398,verifyCore:verifyCore398,unwrap:unwrap398,grid:grid398,ledgerStats:ledgerStats398,relErr:relErr398,selfChecks:selfChecks398}};
+})();
+</script>
+
 </body></html>
