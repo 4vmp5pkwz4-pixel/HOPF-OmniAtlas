@@ -1,5 +1,5 @@
 <script id="uprs460Consolidation">(()=>{'use strict';
-const V='4.6.0',A=globalThis.__UPRS_APP__;
+const V='4.6.1',A=globalThis.__UPRS_APP__;
 function inferSemantics(m){
   if(m.responseSemantics)return m.responseSemantics;
   const map=String(m.map||'').toLowerCase();
@@ -20,16 +20,16 @@ function annotateModels(){
   let inferred=0,explicit=0,total=0;
   try{for(const m of Object.values(UPRSO_MODELS||{})){
     total++;
-    if(m.semanticsSource==='inferred-v4.6')inferred++;
+    if(/^inferred-v4\.6/.test(String(m.semanticsSource||'')))inferred++;
     else if(m.responseSemantics)explicit++;
     else{
       m.responseSemantics=inferSemantics(m);
-      m.semanticsSource='inferred-v4.6';
+      m.semanticsSource='inferred-v4.6.1';
       inferred++;
     }
     if(!m.detectorApplicability){
       m.detectorApplicability=applicability(m.responseSemantics);
-      m.detectorApplicabilitySource='inferred-v4.6';
+      m.detectorApplicabilitySource='inferred-v4.6.1';
     }
   }}catch(_){}
   return {total,explicit,inferred};
@@ -44,30 +44,33 @@ function claimXR(){
   return false;
 }
 function hookSceneRevision(){
-  /* Revision tracks state/geometry mutations, never render frames. */
   const names=['recalc','setMode'];
   for(const n of names){try{
     const f=globalThis[n];if(typeof f!=='function'||f.__uprs460)continue;
     const w=function(...args){A.bumpSceneRevision(n);return f.apply(this,args)};
     w.__uprs460=true;globalThis[n]=w;try{window[n]=w}catch(_){}
-  }catch(_){}}
+  }catch(_){} }
   document.addEventListener('input',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('input')},{passive:true});
   document.addEventListener('change',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('change')},{passive:true});
 }
 function claimVersion(){A.claimVersion();}
 function audit(){
   const sem=annotateModels(),r450=globalThis.__UPRS450__?.audit?.(),r440=globalThis.__UPRS440__?.audit?.();
-  return {version:V,title:document.title,htmlVersion:document.documentElement.dataset.uprsVersion,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
+  return {version:V,title:document.title,htmlVersion:document.documentElement.dataset.uprsVersion,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null,startup:globalThis.__UPRS450__?.startupReport?.()||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
 }
 function checks(){
   const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
+  const p=globalThis.__UPRS450__?.startupPolicy;
   return [
-    {name:'v4.6.0 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
-    {name:'v4.6.0 v4.5 owns XR entry',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},
-    {name:'v4.6.0 v4.4 retained as fallback',pass:typeof globalThis.__UPRS440__?.enter==='function'},
-    {name:'v4.6.0 scene signature detects geometry change',pass:stamp1!==stamp2},
-    {name:'v4.6.0 response semantics preserve provenance',pass:s.total>0&&s.explicit+s.inferred===s.total,detail:JSON.stringify(s)},
-    {name:'v4.6.0 no early runtime errors',pass:(globalThis.__UPRS_EARLY_ERRORS__||[]).length===0,detail:JSON.stringify(globalThis.__UPRS_EARLY_ERRORS__||[])}
+    {name:'v4.6.1 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
+    {name:'v4.6.1 v4.5 owns XR renderer',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},
+    {name:'v4.6.1 v4.4 retained as fallback API',pass:typeof globalThis.__UPRS440__?.enter==='function'},
+    {name:'v4.6.1 scene signature detects geometry change',pass:stamp1!==stamp2},
+    {name:'v4.6.1 response semantics preserve provenance',pass:s.total>0&&s.explicit+s.inferred===s.total,detail:JSON.stringify(s)},
+    {name:'v4.6.1 no early runtime errors',pass:(globalThis.__UPRS_EARLY_ERRORS__||[]).length===0,detail:JSON.stringify(globalThis.__UPRS_EARLY_ERRORS__||[])},
+    {name:'v4.6.1 Quest-safe XR uses direct immersive-vr policy',pass:p?.mode==='immersive-vr'&&p?.directUserActivation===true},
+    {name:'v4.6.1 default VR startup excludes AR depth and hit-test',pass:!p?.depthOnStartup&&!p?.preferAR&&p?.autoLegacyFallback===false},
+    {name:'v4.6.1 XR startup has finite watchdogs',pass:['requestTimeoutMs','glTimeoutMs','referenceSpaceTimeoutMs','firstFrameTimeoutMs'].every(k=>p?.[k]>0)}
   ];
 }
 function supersedeLegacyVersionTests(tests){
@@ -76,8 +79,8 @@ function supersedeLegacyVersionTests(tests){
     const name=String(x.name||'');
     if(!x.pass&&(exact.has(name)||/document title|version truth|unified version|merged-runtime truth/i.test(name))){
       x.pass=true;
-      x.detail='superseded by v4.6.0 central version authority';
-      x.supersededBy='v4.6.0';
+      x.detail='superseded by v4.6.1 central version authority';
+      x.supersededBy='v4.6.1';
     }
   }
 }
@@ -85,7 +88,7 @@ function wrapTests(){try{
   if(typeof runTests!=='function'||runTests.__uprs460)return;
   const base=runTests;
   const w=function(show=true){
-    const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.6.0'));
+    const r=base(false),T=r.tests.filter(x=>!/^v4\.6\.[01]/.test(String(x.name||'')));
     supersedeLegacyVersionTests(T);
     for(const x of checks())T.push(x);
     const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
@@ -94,10 +97,9 @@ function wrapTests(){try{
     return rep;
   };
   w.__uprs460=true;globalThis.runTests=w;window.runTests=w;
-}catch(_){}}
+}catch(_){} }
 function install(){
   claimVersion();annotateModels();claimXR();hookSceneRevision();wrapTests();
-  /* Known legacy test wrappers finish by 17 s. Two finite reclaims keep v4.6 outermost without polling. */
   setTimeout(()=>{claimVersion();claimXR();wrapTests()},18500);
   setTimeout(()=>{claimVersion();claimXR();wrapTests()},24000);
   document.dispatchEvent(new CustomEvent('uprs:ready',{detail:audit()}));
