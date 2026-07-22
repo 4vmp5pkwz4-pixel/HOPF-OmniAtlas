@@ -57,12 +57,12 @@ function hookSceneRevision(){
 function claimVersion(){A.claimVersion();}
 function audit(){
   const sem=annotateModels(),r450=globalThis.__UPRS450__?.audit?.(),r440=globalThis.__UPRS440__?.audit?.();
-  return {version:V,title:document.title,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
+  return {version:V,title:document.title,htmlVersion:document.documentElement.dataset.uprsVersion,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
 }
 function checks(){
   const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
   return [
-    {name:'v4.6.0 single version authority',pass:A.version===V&&document.title.includes('v'+V)},
+    {name:'v4.6.0 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
     {name:'v4.6.0 v4.5 owns XR entry',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},
     {name:'v4.6.0 v4.4 retained as fallback',pass:typeof globalThis.__UPRS440__?.enter==='function'},
     {name:'v4.6.0 scene signature detects geometry change',pass:stamp1!==stamp2},
@@ -71,7 +71,7 @@ function checks(){
   ];
 }
 function supersedeLegacyVersionTests(tests){
-  const exact=new Set(['v2.7 version truth','v3.8.1 unified version','v3.8.1 merged-runtime truth']);
+  const exact=new Set(['v2.7 version truth','v3.8.1 unified version','v3.8.1 merged-runtime truth','v4.1.0 unified version truth']);
   for(const x of tests){
     const name=String(x.name||'');
     if(!x.pass&&(exact.has(name)||/document title|version truth|unified version|merged-runtime truth/i.test(name))){
@@ -97,6 +97,9 @@ function wrapTests(){try{
 }catch(_){}}
 function install(){
   claimVersion();annotateModels();claimXR();hookSceneRevision();wrapTests();
+  /* Known legacy test wrappers finish by 17 s. Two finite reclaims keep v4.6 outermost without polling. */
+  setTimeout(()=>{claimVersion();claimXR();wrapTests()},18500);
+  setTimeout(()=>{claimVersion();claimXR();wrapTests()},24000);
   document.dispatchEvent(new CustomEvent('uprs:ready',{detail:audit()}));
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
