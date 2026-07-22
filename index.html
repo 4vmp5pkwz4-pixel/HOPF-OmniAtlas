@@ -8819,4 +8819,311 @@ globalThis.__UPRS420__={version:V420,models:M,names:NAMES,phenomena:PHEN,registe
  audit:()=>({version:V420,added:Object.keys(M).length,registered,present:Object.keys(M).filter(id=>{try{return !!UPRSO_MODELS[id]}catch(_){return false}}).length})};
 })();
 </script>
+
+<style id="uprs430DeepStyle">
+/* v4.3.0 deep-signature readout inside the Predictive Observatory */
+#deep430{border-top:1px solid rgba(195,173,255,.22);padding:8px 12px 4px;display:flex;flex-direction:column;gap:6px}
+#deep430 .d430-h{display:flex;align-items:center;gap:7px;color:var(--violet,#c3adff);font-size:8.4px;letter-spacing:.14em;text-transform:uppercase}
+#deep430 .d430-h b{flex:1}
+#deep430 .d430-h .d430-badge{font-size:7.4px;letter-spacing:.06em;padding:2px 6px;border:1px solid rgba(195,173,255,.4);border-radius:999px;white-space:nowrap}
+#deep430 .d430-badge.ok{color:var(--green,#8ce9bd);border-color:rgba(140,233,189,.45)}
+#deep430 .d430-badge.no{color:var(--red,#ff9d9d);border-color:rgba(255,157,157,.45)}
+#deep430 .d430-row{display:flex;gap:6px;flex-wrap:wrap}
+#deep430 .d430-chip{border:1px solid rgba(255,255,255,.09);border-left:2px solid rgba(152,232,255,.5);border-radius:0 8px 8px 0;background:rgba(152,232,255,.04);padding:5px 8px;min-width:0;flex:1 1 46%}
+#deep430 .d430-chip[data-t="powerlaw"]{border-left-color:rgba(215,183,110,.7);background:rgba(215,183,110,.045)}
+#deep430 .d430-chip[data-t="plateau"]{border-left-color:rgba(140,233,189,.7);background:rgba(140,233,189,.05)}
+#deep430 .d430-chip[data-t="fano"]{border-left-color:rgba(195,173,255,.7);background:rgba(195,173,255,.05)}
+#deep430 .d430-chip label{display:block;color:var(--muted,#96a2b5);font-size:6.6px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#deep430 .d430-chip b{display:block;margin-top:2px;font:10px/1.3 ui-monospace,SFMono-Regular,monospace;color:var(--ice,#98e8ff)}
+#deep430 .d430-chip small{display:block;margin-top:2px;color:var(--muted,#96a2b5);font-size:7.4px}
+#deep430 .d430-empty{color:var(--muted,#96a2b5);font-size:8.4px;padding:2px}
+body.paper #deep430,body.paper328 #deep430{border-top-color:rgba(29,121,151,.2)}
+</style>
+<script id="uprs430DeepPhenomenology">(()=>{
+'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.3.0 · DEEP PHENOMENOLOGY
+   + Nonlinear optics, Quantum-Hall transport, Turbulent spectra (12 models)
+   + Deepened Observatory: spectral power-law, plateau/staircase and Fano-
+     asymmetry detectors with a live theory↔detection cross-check driven by
+     per-model declared signatures (`expects`), surfaced inside the Observatory.
+   ========================================================================== */
+const V430='4.3.0';
+const K=UPRSO_CONST, TAU2=2*Math.PI, PI2=Math.PI, P=uprsoParam;
+const rlim=(z,cap=1e12)=>{const a=UCabs(z);return a>cap?C(z.re*cap/a,z.im*cap/a):z};
+const jpow=(x,p)=>UCpow(C(0,Math.max(1e-300,x)),p);           // (jx)^p : |·|=x^p, arg=pπ/2
+const sinc=x=>Math.abs(x)<1e-9?1:Math.sin(x)/x;
+const clampf=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* --------------------------------------------------------------- 12 models */
+const M={
+/* ---- NONLINEAR OPTICS -------------------------------------------------- */
+shg_phase_matching:{name:'Second-harmonic generation — phase-matching tuning',domain:'nonlinear optics',axis:'Crystal temperature',axisUnit:'°C',range:[20,120],map:'transfer',
+ equation:'A(Δk)=sinc(ΔkL/2)e^{jΔkL/2},  Δk=β(T−T₀)',
+ assumptions:'Undepleted SHG in a quasi-phase-matched crystal; temperature tunes the phase mismatch Δk.',
+ conservation:'Conversion η=|A|²=sinc²(ΔkL/2); central lobe at T₀ with symmetric side-lobes.',solver:'closed form',
+ params:[P('T0','Phase-match T₀','°C',60,20,120,'linear',.01,.1),P('L','Crystal length','mm',20,1,80,'linear',.02,.1),P('beta','dΔk/dT','1/(m·°C)',380,20,3000,'log',.05)],
+ expects:[{kind:'peak',near:'T0'},{kind:'fano',asym:false}],
+ response:(x,p)=>{const dk=p.beta*(x-p.T0),a=dk*p.L*1e-3/2,A=UCmul(sinc(a),C(Math.cos(a),Math.sin(a)));return {h:A,href:1,extras:{eta:UCabs(A)**2,dk}}}},
+
+raman_gain:{name:'Stimulated Raman gain spectrum',domain:'nonlinear optics',axis:'Stokes shift',axisUnit:'Hz',range:[1e12,3e13],map:'transfer',
+ equation:'H=exp(½g₀L·χ_R),  χ_R=Ω_R²/(Ω_R²−Ω²−jΩΓ_R)',
+ assumptions:'Single Lorentzian Raman resonance at Ω_R with linewidth Γ_R; undepleted pump gain-length g₀L.',
+ conservation:'Gain peaks at the Raman shift; Im χ_R sets amplification, Re χ_R the nonlinear phase.',solver:'closed form',
+ params:[P('OmR','Raman shift Ω_R','Hz',1.32e13,1e12,3e13,'log',.02),P('GR','Linewidth Γ_R','Hz',3e12,1e11,1e13,'log',.05),P('gL','Gain-length g₀L','1',6,0,20,'linear',.05,.05)],
+ expects:[{kind:'peak',near:'OmR'}],
+ response:(x,p)=>{const O=x,chi=UCdiv(p.OmR*p.OmR,C(p.OmR*p.OmR-O*O,-O*p.GR)),H=UCexp(UCmul(.5*p.gL,chi));return {h:rlim(H,1e6),href:1,extras:{chi,gain:UCabs(H)}}}},
+
+fwm_parametric:{name:'Four-wave-mixing / OPA parametric gain',domain:'nonlinear optics',axis:'Signal detuning',axisUnit:'Hz',range:[1e10,6e12],map:'transfer',
+ equation:'u=cosh(gL)−j(Δk/2g)sinh(gL),  g=√((γP)²−(Δk/2)²),  Δk=β₂Ω²',
+ assumptions:'Degenerate FWM with anomalous GVD β₂<0; undepleted pump nonlinear shift γP.',
+ conservation:'Exponential parametric gain inside the phase-matched band, oscillatory outside.',solver:'coupled-mode',
+ params:[P('gP','Nonlinear γP','1/m',2,.1,20,'log',.05),P('b2','|β₂|','s²/m',2e-26,1e-28,1e-24,'log',.05),P('L','Length','m',300,1,5000,'log',.03)],
+ expects:[{kind:'peak',near:'band'}],
+ response:(x,p)=>{const O=TAU2*x,dk=-p.b2*O*O,g2=p.gP*p.gP-(dk/2)*(dk/2);let u;
+  if(g2>=0){const g=Math.sqrt(g2),gl=clampf(g*p.L,0,20);u=UCsub(C(Math.cosh(gl),0),C(0,dk/2/Math.max(1e-30,g)*Math.sinh(gl)))}
+  else{const g=Math.sqrt(-g2),gl=g*p.L;u=UCsub(C(Math.cos(gl),0),C(0,dk/2/Math.max(1e-30,g)*Math.sin(gl)))}
+  return {h:rlim(u,1e6),href:1,extras:{gain:UCabs(u)**2,dk}}}},
+
+kerr_spm:{name:'Kerr self-phase modulation (intensity phase)',domain:'nonlinear optics',axis:'Peak intensity',axisUnit:'W/m²',range:[1e12,1e16],map:'transfer',
+ equation:'H(I)=e^{−αL/2}e^{jφ_NL},  φ_NL=(2π/λ)n₂IL',
+ assumptions:'Instantaneous Kerr nonlinearity n₂; nonlinear phase accumulates linearly with intensity.',
+ conservation:'|H|=e^{−αL/2} constant; phase winds ∝ I (self-phase modulation).',solver:'closed form',
+ params:[P('n2','Nonlinear index n₂','m²/W',2.6e-20,1e-22,1e-17,'log',.05),P('lam','Wavelength λ','nm',1550,400,2000,'linear',.01,1),P('L','Length L','m',10,.01,1e4,'log',.03),P('alpha','Loss α','1/m',.02,0,10,'log',.1)],
+ expects:[{kind:'winding'}],
+ response:(x,p)=>{const phi=TAU2/(p.lam*1e-9)*p.n2*x*p.L,amp=Math.exp(-p.alpha*p.L/2);return {h:UCmul(amp,C(Math.cos(phi),Math.sin(phi))),href:1,extras:{phiNL:phi}}}},
+
+/* ---- QUANTUM HALL TRANSPORT -------------------------------------------- */
+quantum_hall_plateaus:{name:'Integer quantum-Hall plateaus (σ tensor)',domain:'quantum Hall transport',axis:'Magnetic field',axisUnit:'T',range:[1,15],map:'transfer',
+ equation:'σ_xy=(e²/h)·⌊ν⌋,  σ_xx peaks between plateaus,  ν=n_s h/eB',
+ assumptions:'2DEG in the integer QHE regime; quantized Hall conductance with Shubnikov–de Haas σ_xx peaks.',
+ conservation:'σ_xy locks to integer multiples of e²/h on plateaus (topological quantization).',solver:'edge-state model',
+ params:[P('ns','Sheet density n_s','1/m²',3e15,5e14,1e16,'log',.03),P('w','Transition width','1',.16,.03,.6,'linear',.03,.005),P('sxx','σ_xx amplitude','1',.5,0,3,'linear',.05,.02)],
+ expects:[{kind:'plateau',on:'re',count:3}],
+ response:(x,p)=>{const nu=p.ns*K.h/(K.e*x);let sxy=0,sxx=0;for(let n=1;n<=14;n++){sxy+=0.5*(1+Math.tanh((nu-n)/p.w));sxx+=Math.exp(-(((nu-(n+.5))/(p.w*1.6))**2))}
+  return {h:C(sxy,p.sxx*sxx),href:1,extras:{nu,sxy,sxx:p.sxx*sxx}}}},
+
+fractional_qhe:{name:'Fractional quantum-Hall plateaus',domain:'quantum Hall transport',axis:'Magnetic field',axisUnit:'T',range:[6,26],map:'transfer',
+ equation:'σ_xy=(e²/h)·f,  f∈{1/3,2/5,3/7,1/2,3/5,2/3,…}',
+ assumptions:'Fractional QHE from Laughlin/composite-fermion states; plateaus at rational fillings.',
+ conservation:'σ_xy quantized at fractional e²/h; incompressible correlated states.',solver:'composite-fermion sequence',
+ params:[P('ns','Sheet density n_s','1/m²',2.4e15,5e14,1e16,'log',.03),P('w','Transition width','1',.05,.01,.3,'linear',.03,.002),P('sxx','σ_xx amplitude','1',.35,0,2,'linear',.05,.02)],
+ expects:[{kind:'plateau',on:'re',count:3}],
+ response:(x,p)=>{const nu=p.ns*K.h/(K.e*x),fr=[1/3,2/5,3/7,4/9,1/2,4/7,3/5,2/3,3/4,1];let sxy=0,sxx=0,prev=0;
+  for(const f of fr){sxy+=(f-prev)*0.5*(1+Math.tanh((nu-f)/p.w));sxx+=Math.exp(-(((nu-f)/(p.w*1.4))**2));prev=f}
+  return {h:C(sxy,p.sxx*sxx),href:1,extras:{nu,sxy}}}},
+
+shubnikov_dehaas:{name:'Shubnikov–de Haas magnetoresistance',domain:'quantum Hall transport',axis:'Magnetic field',axisUnit:'T',range:[.5,12],map:'transfer',
+ equation:'ρ_xx=ρ₀[1+A·D(B)cos(2πF/B)],  D=e^{−α/B}',
+ assumptions:'Landau quantization gives magnetoresistance oscillations periodic in 1/B; Dingle damping D(B).',
+ conservation:'Oscillation frequency F fixes the Fermi-surface cross-section (Onsager relation).',solver:'Lifshitz–Kosevich',
+ params:[P('F','SdH frequency F','T',30,2,300,'log',.02),P('A','Amplitude A','1',.6,.02,.98,'linear',.03,.01),P('aD','Dingle α','T',2,0,20,'linear',.05,.05),P('rho0','ρ₀','Ω',100,1,1e4,'log',.03)],
+ expects:[{kind:'oscillation',in:'invB'}],
+ response:(x,p)=>{const B=x,osc=p.A*Math.exp(-p.aD/B)*Math.cos(TAU2*p.F/B),rho=p.rho0*(1+osc),ph=TAU2*p.F/B;return {h:UCmul(rho/p.rho0,C(Math.cos(ph),Math.sin(ph))),href:1,extras:{rho,osc}}}},
+
+landau_dos:{name:'Landau-level density of states',domain:'quantum Hall transport',axis:'Energy',axisUnit:'meV',range:[.1,60],map:'transfer',
+ equation:'g(E)=Σₙ Γ/[(E−Eₙ)²+Γ²],  Eₙ=(n+½)ħω_c,  ω_c=eB/m*',
+ assumptions:'Broadened Landau levels equally spaced by the cyclotron energy ħω_c; effective mass m*.',
+ conservation:'Peaks form an arithmetic ladder with spacing ħω_c (magnetic quantization).',solver:'broadened DOS',
+ params:[P('B','Magnetic field B','T',5,.5,20,'log',.02),P('mstar','Effective mass m*/mₑ','1',.067,.01,1,'log',.03),P('G','Broadening Γ','meV',.6,.05,5,'log',.05)],
+ expects:[{kind:'ladder',type:'arithmetic'}],
+ response:(x,p)=>{const E=x,hwc=K.hbar*K.e*p.B/(p.mstar*K.me)/K.e*1e3,G=p.G;let g=C(0,0);const N=Math.min(60,Math.ceil(60/Math.max(1e-3,hwc))+2);
+  for(let n=0;n<N;n++){const En=(n+.5)*hwc;g=UCadd(g,UCdiv(1,C(E-En,G)))}return {h:rlim(UCmul(g,G),1e6),href:1,extras:{hwc}}}},
+
+/* ---- TURBULENT SPECTRA (fractional-order spectral filters) -------------- */
+kolmogorov_inertial:{name:'Kolmogorov inertial-range spectrum (−5/3)',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[1,1e5],map:'transfer',
+ equation:'H(k)=C(jk/k₀)^{−5/6}  ⇒  E(k)=|H|²∝k^{−5/3}',
+ assumptions:'Homogeneous isotropic turbulence, inertial subrange; Kolmogorov 1941 self-similarity.',
+ conservation:'Energy spectrum follows the universal k^{−5/3} law; constant fractional phase −5π/12.',solver:'fractional spectral operator',
+ params:[P('C','Spectral amplitude C','1',1.5,.1,10,'log',.05),P('k0','Reference k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-5/6,tol:.08}],
+ response:(x,p)=>{const H=UCmul(p.C,jpow(x/p.k0,-5/6));return {h:rlim(H,1e9),href:1,extras:{E:UCabs(H)**2}}}},
+
+von_karman_pao:{name:'Von Kármán–Pao energy spectrum',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[.1,1e6],map:'transfer',
+ equation:'H=A(jk/k₀)²/(1+jkL)^{17/6}·e^{−(k/2k_η)²}',
+ assumptions:'Full spectrum: energy-containing range (∝k⁴), inertial −5/3, viscous dissipation cutoff k_η.',
+ conservation:'|H|²∝k⁴/(1+(kL)²)^{17/6}·e^{−(k/2k_η)²} reproduces von Kármán–Pao E(k).',solver:'fractional spectral operator',
+ params:[P('A','Amplitude A','1',1,.05,20,'log',.05),P('L','Integral scale L','m',1,1e-3,1e3,'log',.03),P('keta','Dissipation k_η','1/m',5e4,1e2,1e7,'log',.05),P('k0','Reference k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-5/6,tol:.15,window:'inertial'}],
+ response:(x,p)=>{const num=UCmul(p.A,UCpow(jpow(x/p.k0,1),2)),den=UCpow(C(1,x*p.L),17/6),cut=Math.exp(-((x/(2*p.keta))**2)),H=UCmul(cut,UCdiv(num,den));return {h:rlim(H,1e12),href:1,extras:{E:UCabs(H)**2}}}},
+
+kraichnan_2d:{name:'2D enstrophy cascade (−3 spectrum)',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[1,1e5],map:'transfer',
+ equation:'H(k)=C(jk/k₀)^{−3/2}  ⇒  E(k)∝k^{−3}',
+ assumptions:'Two-dimensional turbulence enstrophy cascade (Kraichnan 1967) above the forcing scale.',
+ conservation:'Enstrophy-conserving cascade gives the steeper k^{−3} spectrum.',solver:'fractional spectral operator',
+ params:[P('C','Amplitude C','1',1,.1,10,'log',.05),P('k0','Forcing k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-3/2,tol:.08}],
+ response:(x,p)=>{const H=UCmul(p.C,jpow(x/p.k0,-3/2));return {h:rlim(H,1e9),href:1,extras:{E:UCabs(H)**2}}}},
+
+batchelor_scalar:{name:'Batchelor passive-scalar spectrum (−1)',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[1,1e6],map:'transfer',
+ equation:'H(k)=C(jk/k₀)^{−1/2}·e^{−(k/2k_B)²}  ⇒  E_θ(k)∝k^{−1}',
+ assumptions:'Viscous-convective range of a passive scalar at high Schmidt number (Batchelor 1959).',
+ conservation:'Scalar variance spectrum follows k^{−1} up to the Batchelor scale k_B.',solver:'fractional spectral operator',
+ params:[P('C','Amplitude C','1',1,.1,10,'log',.05),P('kB','Batchelor scale k_B','1/m',1e5,1e2,1e7,'log',.05),P('k0','Reference k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-1/2,tol:.08,window:'inertial'}],
+ response:(x,p)=>{const H=UCmul(p.C*Math.exp(-((x/(2*p.kB))**2)),jpow(x/p.k0,-1/2));return {h:rlim(H,1e9),href:1,extras:{E:UCabs(H)**2}}}}
+};
+
+/* ------------------------------------------------------------------ i18n */
+const NAMES={
+ shg_phase_matching:['ГВГ — температурная подстройка фазового синхронизма','SHG — Phasenanpassungs-Temperaturkurve'],
+ raman_gain:['Спектр вынужденного комбинационного усиления','Stimuliertes Raman-Verstärkungsspektrum'],
+ fwm_parametric:['Четырёхволновое смешение / параметрическое усиление','Vierwellenmischung / parametrische Verstärkung'],
+ kerr_spm:['Керровская фазовая самомодуляция','Kerr-Selbstphasenmodulation'],
+ quantum_hall_plateaus:['Целочисленные плато квантового эффекта Холла','Ganzzahlige Quanten-Hall-Plateaus'],
+ fractional_qhe:['Дробный квантовый эффект Холла','Fraktionaler Quanten-Hall-Effekt'],
+ shubnikov_dehaas:['Осцилляции Шубникова–де Гааза','Shubnikov–de-Haas-Oszillationen'],
+ landau_dos:['Плотность состояний уровней Ландау','Zustandsdichte der Landau-Niveaus'],
+ kolmogorov_inertial:['Инерционный спектр Колмогорова (−5/3)','Kolmogorov-Trägheitsspektrum (−5/3)'],
+ von_karman_pao:['Энергетический спектр Кармана–Пао','Von-Kármán–Pao-Energiespektrum'],
+ kraichnan_2d:['2D-каскад энстрофии Крейчнана (−3)','2D-Enstrophie-Kaskade (Kraichnan, −3)'],
+ batchelor_scalar:['Спектр пассивного скаляра Бэтчелора (−1)','Batchelor-Skalarspektrum (−1)']
+};
+const PHEN=[
+ ['nonlinear','SHG phase-matching sinc² tuning','A=sinc(ΔkL/2)','shg_phase_matching'],
+ ['nonlinear','Stimulated Raman gain','χ_R Lorentzian','raman_gain'],
+ ['nonlinear','FWM / OPA parametric gain band','g=√((γP)²−(Δk/2)²)','fwm_parametric'],
+ ['nonlinear','Kerr self-phase modulation','φ∝I','kerr_spm'],
+ ['materials','Integer quantum-Hall plateaus','σ_xy=νe²/h','quantum_hall_plateaus'],
+ ['materials','Fractional quantum-Hall plateaus','σ_xy=fe²/h','fractional_qhe'],
+ ['nonlinear','Shubnikov–de Haas oscillations','periodic in 1/B','shubnikov_dehaas'],
+ ['geometry','Landau-level ladder','Eₙ=(n+½)ħω_c','landau_dos'],
+ ['geometry','Kolmogorov −5/3 inertial spectrum','E(k)∝k^{−5/3}','kolmogorov_inertial'],
+ ['geometry','Von Kármán–Pao spectrum','energy+inertial+dissipation','von_karman_pao'],
+ ['geometry','Kraichnan 2D −3 enstrophy cascade','E(k)∝k^{−3}','kraichnan_2d'],
+ ['materials','Batchelor −1 scalar spectrum','E_θ(k)∝k^{−1}','batchelor_scalar']
+];
+
+/* ============================================================ DEEP DETECTORS */
+const znOf=s=>{try{if(s.zn&&Number.isFinite(s.zn.re)&&Number.isFinite(s.zn.im))return s.zn;if(s.gamma)return UCInvCayley(s.gamma)}catch(_){}return C(NaN,NaN)};
+function seriesFromSweep(sw){const xs=[],mag=[],re=[],im=[];for(const s of (sw||[])){if(!s||!Number.isFinite(s.x))continue;const z=znOf(s);if(!Number.isFinite(z.re)||!Number.isFinite(z.im))continue;xs.push(s.x);mag.push(Math.hypot(z.re,z.im));re.push(z.re);im.push(z.im)}return {xs,mag,re,im}}
+function linreg(X,Y){const n=X.length;if(n<4)return null;let sx=0,sy=0,sxx=0,sxy=0;for(let i=0;i<n;i++){sx+=X[i];sy+=Y[i];sxx+=X[i]*X[i];sxy+=X[i]*Y[i]}const den=n*sxx-sx*sx;if(Math.abs(den)<1e-18)return null;const m=(n*sxy-sx*sy)/den,b=(sy-m*sx)/n;let ss=0,st=0;const ym=sy/n;for(let i=0;i<n;i++){const e=Y[i]-(b+m*X[i]);ss+=e*e;st+=(Y[i]-ym)**2}return {slope:m,intercept:b,r2:st>1e-18?1-ss/st:0,n}}
+/* --- detector 1: spectral power-law (log-log slope of |zn| vs axis) --- */
+function detectPowerLaw(xs,mag,frac){const X=[],Y=[];for(let i=0;i<xs.length;i++){if(xs[i]>0&&mag[i]>0){X.push(Math.log(xs[i]));Y.push(Math.log(mag[i]))}}
+ if(X.length<6)return null;let lo=0,hi=X.length;if(frac&&frac>0&&frac<.5){const cut=Math.floor(X.length*frac);lo=cut;hi=X.length-cut}
+ const r=linreg(X.slice(lo,hi),Y.slice(lo,hi));if(!r)return null;return {kind:'powerlaw',slope:r.slope,r2:r.r2,spectralSlope:2*r.slope,confidence:clampf((r.r2-.8)*5,0,.99),n:r.n}}
+/* --- detector 2: plateau / staircase (value-band clustering) --- */
+function detectPlateaus(xs,vs){const n=xs.length;if(n<12)return null;
+ const mn=Math.min(...vs),mx=Math.max(...vs),range=mx-mn;if(range<1e-9)return null;
+ const band=range*0.03,minSpan=Math.max(5,Math.floor(n*0.03));const plateaus=[];
+ let i=0;while(i<n){let j=i+1,lo=vs[i],hi=vs[i];while(j<n){const nlo=Math.min(lo,vs[j]),nhi=Math.max(hi,vs[j]);if(nhi-nlo>band)break;lo=nlo;hi=nhi;j++}
+  const span=j-i;if(span>=minSpan){let acc=0;for(let k=i;k<j;k++)acc+=vs[k];plateaus.push({level:acc/span,span})}i=j}
+ const uniq=[];for(const pl of plateaus){if(!uniq.some(u=>Math.abs(u.level-pl.level)<range*0.05))uniq.push(pl)}
+ return {kind:'plateau',count:uniq.length,levels:uniq.map(u=>u.level),confidence:clampf(uniq.length>=2?0.4+0.1*uniq.length:0,0,.95)}}
+/* --- detector 3: Fano asymmetry (one-sided adjacent transmission zero) --- */
+function median430(a){if(!a.length)return 0;const s=[...a].sort((p,q)=>p-q),h=s.length>>1;return s.length%2?s[h]:(s[h-1]+s[h])/2}
+function detectFano(xs,mag){const n=mag.length;if(n<9)return null;let pi=0;for(let i=1;i<n-1;i++)if(mag[i]>mag[pi])pi=i;
+ if(pi<2||pi>n-3)return null;const peak=mag[pi],med=median430(mag);if(peak<med*1.5)return null;
+ const W=Math.max(4,Math.floor(n*0.42)),thr=0.2*peak;
+ const left=(()=>{for(let i=pi-1;i>=Math.max(1,pi-W);i--)if(mag[i]<thr&&mag[i]<mag[i-1]&&mag[i]<=mag[i+1])return {i,v:mag[i]};return null})();
+ const right=(()=>{for(let i=pi+1;i<=Math.min(n-2,pi+W);i++)if(mag[i]<thr&&mag[i]<mag[i+1]&&mag[i]<=mag[i-1])return {i,v:mag[i]};return null})();
+ const asymmetric=!!left!==!!right,zero=left||right,deep=zero?zero.v/(peak+1e-30):1;
+ const asymmetry=asymmetric?1-Math.min((left?left.v:peak),(right?right.v:peak))/(peak+1e-30):0;
+ return {kind:'fano',asymmetric,asymmetry,depth:deep,q:deep<1e-3?Infinity:1/Math.max(1e-3,deep),confidence:clampf(asymmetry,0,.95)}}
+/* --- detector 4: oscillation periodic in 1/x (SdH-type) --- */
+function detectInvOsc(xs,mag){const pts=[];for(let i=0;i<xs.length;i++)if(xs[i]>0)pts.push([1/xs[i],mag[i]]);if(pts.length<12)return null;
+ pts.sort((a,b)=>a[0]-b[0]);const y=pts.map(p=>p[1]),ym=y.reduce((a,b)=>a+b,0)/y.length;let cross=0;for(let i=1;i<y.length;i++)if((y[i-1]-ym)*(y[i]-ym)<0)cross++;
+ return {kind:'oscillation',in:'invB',halfPeriods:cross,confidence:clampf((cross-2)/12,0,.9)}}
+
+/* ------------------------------------------------- theory ↔ detection check */
+function modelSeries430(id,n=241){const m=UPRSO_MODELS[id]||M[id];if(!m)return null;const lo=m.range[0],hi=m.range[1],log=lo>0&&hi>0&&hi/lo>50,p=Object.fromEntries(m.params.map(d=>[d.key,d.value]));const sw=[];
+ for(let i=0;i<n;i++){const t=i/(n-1),x=log?lo*Math.pow(hi/lo,t):lo+(hi-lo)*t;let r;try{r=mapResponse(m,m.response(x,p))}catch(_){continue}if(r&&r.gamma)sw.push({x,gamma:r.gamma,zn:r.zn})}
+ return seriesFromSweep(sw)}
+function validate430(id){const m=M[id]||UPRSO_MODELS[id];if(!m||!m.expects)return {id,checks:[]};const S=modelSeries430(id);if(!S||S.xs.length<8)return {id,checks:[{ok:false,why:'no series'}]};const out=[];
+ for(const ex of m.expects){
+  if(ex.kind==='powerlaw'){const w=ex.window==='inertial'?.18:0,d=detectPowerLaw(S.xs,S.mag,w);const ok=!!d&&Math.abs(d.slope-ex.slope)<=(ex.tol||.1);out.push({kind:'powerlaw',ok,measured:d?d.slope:null,expected:ex.slope})}
+  else if(ex.kind==='plateau'){const vs=ex.on==='re'?S.re:S.mag,d=detectPlateaus(S.xs,vs);const ok=!!d&&d.count>=(ex.count||2);out.push({kind:'plateau',ok,measured:d?d.count:0,expected:ex.count||2})}
+  else if(ex.kind==='fano'){const d=detectFano(S.xs,S.mag);const ok=!!d&&(!!d.asymmetric===(ex.asym!==false));out.push({kind:'fano',ok,measured:d?+d.asymmetry.toFixed(2):null,expected:ex.asym!==false})}
+  else if(ex.kind==='oscillation'){const d=detectInvOsc(S.xs,S.mag);const ok=!!d&&d.halfPeriods>=4;out.push({kind:'oscillation',ok,measured:d?d.halfPeriods:0})}
+  else if(ex.kind==='winding'){let w=0,prev=Math.atan2(S.im[0],S.re[0]);for(let i=1;i<S.re.length;i++){let a=Math.atan2(S.im[i],S.re[i]);let dth=a-prev;while(dth>Math.PI)dth-=TAU2;while(dth<-Math.PI)dth+=TAU2;w+=dth;prev=a}const turns=Math.abs(w)/TAU2;out.push({kind:'winding',ok:turns>=1,measured:+turns.toFixed(2)})}
+  else if(ex.kind==='peak'){let pi=0;for(let i=1;i<S.mag.length-1;i++)if(S.mag[i]>S.mag[pi])pi=i;const interior=pi>1&&pi<S.mag.length-2;out.push({kind:'peak',ok:interior,measured:interior?+S.xs[pi].toPrecision(4):null})}
+  else if(ex.kind==='ladder'){const pk=[];for(let i=2;i<S.mag.length-2;i++)if(S.mag[i]>S.mag[i-1]&&S.mag[i]>=S.mag[i+1]&&S.mag[i]>0.3*Math.max(...S.mag))pk.push(S.xs[i]);
+   let ok=false,sp=null;if(pk.length>=3){const dl=[];for(let i=1;i<pk.length;i++)dl.push(pk[i]-pk[i-1]);const md=dl.reduce((a,b)=>a+b,0)/dl.length,cv=Math.sqrt(dl.reduce((a,b)=>a+(b-md)**2,0)/dl.length)/Math.max(1e-12,Math.abs(md));ok=cv<.25;sp=md}out.push({kind:'ladder',ok,measured:pk.length,spacing:sp})}
+ }
+ return {id,checks:out,agree:out.filter(c=>c.ok).length,total:out.length}}
+
+/* --------------------------------------------- live readout in Observatory */
+const lang430=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
+const TX={title:['ГЛУБОКИЕ СИГНАТУРЫ','DEEP SIGNATURES','TIEFE SIGNATUREN'],
+ none:['Явных спектральных сигнатур не обнаружено.','No pronounced spectral signatures.','Keine ausgeprägten spektralen Signaturen.'],
+ slope:['Спектральный наклон','Spectral slope','Spektrale Steigung'],plateaus:['Плато / лестница','Plateaus / staircase','Plateaus / Treppe'],
+ fano:['Асимметрия Фано','Fano asymmetry','Fano-Asymmetrie'],osc:['Осцилляции 1/B','1/B oscillations','1/B-Oszillationen'],
+ theory:['теория ↔ детекция','theory ↔ detection','Theorie ↔ Detektion'],levels:['уровней','levels','Ebenen'],
+ asym:['асимметрично','asymmetric','asymmetrisch'],sym:['симметрично','symmetric','symmetrisch'],half:['полупериодов','half-cycles','Halbzyklen']};
+const t430=k=>TX[k][lang430()];
+const esc430=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let container=null,refreshScheduled=false;
+function ensureContainer(){const panel=document.getElementById('obsPanel398'),list=document.getElementById('obsList398');if(!panel||!list)return null;
+ if(container&&container.isConnected)return container;
+ container=document.createElement('div');container.id='deep430';
+ const footer=panel.querySelector('footer');if(footer)panel.insertBefore(container,footer);else panel.appendChild(container);return container}
+function fmt430(v,n=3){try{return fmt(v,n)}catch(_){return (+v).toPrecision(3)}}
+function renderDeep430(){const c=ensureContainer();if(!c)return;let sw=[];try{sw=state.sweep||[]}catch(_){}
+ const S=seriesFromSweep(sw);const chips=[];let activeId='';try{activeId=state.model}catch(_){}
+ const active=M[activeId];
+ if(S.xs.length>=8){
+  const pl=detectPowerLaw(S.xs,S.mag,0);
+  if(pl&&pl.r2>0.9)chips.push(`<div class="d430-chip" data-t="powerlaw"><label>${esc430(t430('slope'))}</label><b>|·|∝x^${fmt430(pl.slope,3)} · E∝x^${fmt430(pl.spectralSlope,3)}</b><small>R²=${fmt430(pl.r2,4)}</small></div>`);
+  const pv=detectPlateaus(S.xs,S.re);
+  if(pv&&pv.count>=2)chips.push(`<div class="d430-chip" data-t="plateau"><label>${esc430(t430('plateaus'))}</label><b>${pv.count} ${esc430(t430('levels'))}</b><small>${pv.levels.slice(0,6).map(v=>fmt430(v,2)).join(' · ')}</small></div>`);
+  const fa=detectFano(S.xs,S.mag);
+  if(fa&&fa.asymmetric)chips.push(`<div class="d430-chip" data-t="fano"><label>${esc430(t430('fano'))}</label><b>${esc430(t430('asym'))} · q≈${isFinite(fa.q)?fmt430(fa.q,2):'∞'}</b><small>A=${fmt430(fa.asymmetry,2)} · depth=${fmt430(fa.depth,3)}</small></div>`);
+  const io=detectInvOsc(S.xs,S.mag);
+  if(io&&io.halfPeriods>=4)chips.push(`<div class="d430-chip"><label>${esc430(t430('osc'))}</label><b>${io.halfPeriods} ${esc430(t430('half'))}</b><small>SdH-type</small></div>`);
+ }
+ let badge='';
+ if(active&&active.expects){const v=validate430(activeId);if(v.total){const ok=v.agree===v.total;badge=`<span class="d430-badge ${ok?'ok':'no'}">${esc430(t430('theory'))} ${v.agree}/${v.total}</span>`}}
+ c.innerHTML=`<div class="d430-h"><b>${esc430(t430('title'))}</b>${badge}</div>`+(chips.length?`<div class="d430-row">${chips.join('')}</div>`:`<div class="d430-empty">${esc430(t430('none'))}</div>`)}
+function scheduleDeep(){if(refreshScheduled)return;refreshScheduled=true;requestAnimationFrame(()=>{refreshScheduled=false;try{renderDeep430()}catch(e){console.warn('UPRS430 render',e)}})}
+function hookObservatory(){const list=document.getElementById('obsList398');if(!list)return false;if(list.dataset.deep430)return true;list.dataset.deep430='1';
+ new MutationObserver(scheduleDeep).observe(list,{childList:true,subtree:true});scheduleDeep();return true}
+
+/* ------------------------------------------------------------- registration */
+let registered=false;
+function register430(){try{
+ for(const [id,m] of Object.entries(M)){if(!UPRSO_MODELS[id]){m.id=id;UPRSO_MODELS[id]=m}
+  try{if(typeof MODEL_RU!=='undefined'&&NAMES[id])MODEL_RU[id]=NAMES[id][0]}catch(_){}
+  try{if(typeof MODEL_DE!=='undefined'&&NAMES[id])MODEL_DE[id]=NAMES[id][1]}catch(_){}}
+ try{const have=new Set(PHENOMENA.map(p=>p[3]+'|'+p[1]));for(const e of PHEN)if(!have.has(e[3]+'|'+e[1]))PHENOMENA.push(e)}catch(_){}
+ try{if(typeof rebuildModelOptions==='function')rebuildModelOptions()}catch(_){}
+ try{if(typeof renderPhenomena==='function')renderPhenomena(document.getElementById('phenSearch')?.value||'')}catch(_){}
+ registered=true}catch(e){console.warn('UPRS430 register',e)}}
+
+/* --------------------------------------------------------------- self-tests */
+function sweepFinite430(id){const m=M[id],lo=m.range[0],hi=m.range[1],log=lo>0&&hi>0&&hi/lo>50;let n=0,ok=0;
+ for(let i=0;i<=170;i++){const t=i/170,x=log?lo*Math.pow(hi/lo,t):lo+(hi-lo)*t,p=Object.fromEntries(m.params.map(d=>[d.key,d.value]));let r;try{r=m.response(x,p)}catch(e){return {ok:false,detail:'throw@'+x.toExponential(2)}}const g=r.h||r.gamma||r.z;n++;if(g&&Number.isFinite(g.re)&&Number.isFinite(g.im))ok++;else return {ok:false,detail:'nonfinite@'+x.toExponential(3)}}return {ok:ok===n,detail:ok+'/'+n}}
+function checks430(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
+ ok('v4.3.0 deep-phenomenology registered',()=>({ok:Object.keys(M).every(id=>!!UPRSO_MODELS[id]),detail:Object.keys(M).length+' models'}));
+ ok('v4.3.0 all responses finite over range',()=>{const bad=Object.keys(M).map(id=>[id,sweepFinite430(id)]).filter(([,r])=>!r.ok);return {ok:bad.length===0,detail:bad.length?bad.map(([id,r])=>id+'('+r.detail+')').join(', '):Object.keys(M).length+' clean'}});
+ ok('v4.3.0 power-law detector recovers −5/3 slope',()=>{const S=modelSeries430('kolmogorov_inertial'),d=detectPowerLaw(S.xs,S.mag,0);return {ok:d&&Math.abs(d.spectralSlope+5/3)<.05,detail:'E∝k^'+d.spectralSlope.toFixed(3)}});
+ ok('v4.3.0 power-law detector recovers −3 (Kraichnan)',()=>{const S=modelSeries430('kraichnan_2d'),d=detectPowerLaw(S.xs,S.mag,0);return {ok:d&&Math.abs(d.spectralSlope+3)<.06,detail:'E∝k^'+d.spectralSlope.toFixed(3)}});
+ ok('v4.3.0 plateau detector finds QHE staircase',()=>{const S=modelSeries430('quantum_hall_plateaus'),d=detectPlateaus(S.xs,S.re);return {ok:d&&d.count>=3,detail:(d?d.count:0)+' plateaus'}});
+ ok('v4.3.0 SHG conversion sinc² null spacing',()=>{const m=M.shg_phase_matching,p={T0:60,L:20,beta:380},dT=TAU2/(p.beta*p.L*1e-3),eta=UCabs(m.response(60+dT,p).h)**2;return {ok:eta<1e-3,detail:'η(null)='+eta.toExponential(2)}});
+ ok('v4.3.0 Raman gain peaks at the Stokes shift',()=>{const m=M.raman_gain,p={OmR:1.32e13,GR:3e12,gL:6},gP=UCabs(m.response(p.OmR,p).h),gO=UCabs(m.response(p.OmR*2.2,p).h);return {ok:gP>gO,detail:'peak/off='+(gP/gO).toFixed(2)}});
+ ok('v4.3.0 Landau DOS forms an arithmetic ladder',()=>{const v=validate430('landau_dos');return {ok:v.agree===v.total&&v.total>0,detail:JSON.stringify(v.checks.map(c=>c.kind+':'+c.ok))}});
+ ok('v4.3.0 theory↔detection cross-check (all models)',()=>{const res=Object.keys(M).map(id=>validate430(id)).filter(v=>v.total);const bad=res.filter(v=>v.agree<v.total);return {ok:bad.length===0,detail:bad.length?bad.map(v=>v.id+' '+v.agree+'/'+v.total).join(', '):res.length+' models: theory matches detection'}});
+ ok('v4.3.0 Fano detector flags asymmetric lineshape',()=>{const xs=[],mag=[];for(let i=0;i<121;i++){const e=(i-60)/10,t=(e+3)/(e*e+1);xs.push(i);mag.push(Math.abs(t))}const d=detectFano(xs,mag);return {ok:d&&d.asymmetric,detail:d?'A='+d.asymmetry.toFixed(2):'none'}});
+ ok('v4.3.0 SdH oscillation detector (periodic in 1/B)',()=>{const v=validate430('shubnikov_dehaas');return {ok:v.agree===v.total&&v.total>0,detail:JSON.stringify(v.checks.map(c=>c.kind+':'+c.measured))}});
+ return out}
+function wrapTests430(){try{if(typeof runTests!=='function'||runTests.__uprs430)return;const base=runTests;
+ const w=function(show=true){const r=base(false),T=r.tests.filter(c=>!String(c.name||'').startsWith('v4.3.0'));for(const c of checks430())T.push(c);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs430=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+
+/* --------------------------------------------------------------- install */
+let tries=0;
+function install430(){if(typeof document==='undefined')return;
+ if(typeof UPRSO_MODELS==='undefined'||typeof state==='undefined'){if(tries++<80)return setTimeout(install430,200);return}
+ register430();wrapTests430();hookObservatory();
+ for(const ms of [400,1500,3400,6200,10500,16000])setTimeout(()=>{register430();wrapTests430();hookObservatory()},ms);
+ try{const oldI=window.applyI18n;if(typeof oldI==='function'&&!oldI.__uprs430){const f=function(...a){const r=oldI.apply(this,a);try{for(const [id,nm] of Object.entries(NAMES)){if(typeof MODEL_RU!=='undefined')MODEL_RU[id]=nm[0];if(typeof MODEL_DE!=='undefined')MODEL_DE[id]=nm[1]}}catch(_){}scheduleDeep();return r};f.__uprs430=true;window.applyI18n=f;try{applyI18n=f;globalThis.applyI18n=f}catch(_){}}}catch(_){}}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install430,140),{once:true});else setTimeout(install430,140)}}catch(_){}
+
+globalThis.__UPRS430__={version:V430,models:M,names:NAMES,phenomena:PHEN,register:register430,checks:checks430,validate:validate430,
+ detectors:{powerLaw:detectPowerLaw,plateaus:detectPlateaus,fano:detectFano,invOsc:detectInvOsc,series:modelSeries430,seriesFromSweep},
+ audit:()=>({version:V430,added:Object.keys(M).length,registered,present:Object.keys(M).filter(id=>{try{return !!UPRSO_MODELS[id]}catch(_){return false}}).length,
+  validation:Object.keys(M).map(id=>{const v=validate430(id);return {id,agree:v.agree,total:v.total}})})};
+})();
+</script>
 </body></html>
