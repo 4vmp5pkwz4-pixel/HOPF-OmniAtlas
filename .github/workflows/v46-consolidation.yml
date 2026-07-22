@@ -22,7 +22,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   consolidate:
@@ -35,7 +35,13 @@ jobs:
           fetch-depth: 0
 
       - name: Build deterministic single-file v4.6 release
-        run: node tools/consolidate-v46.mjs
+        shell: bash
+        run: |
+          set +e
+          node tools/consolidate-v46.mjs > build-v46.log 2>&1
+          code=$?
+          cat build-v46.log
+          exit $code
 
       - name: Verify generated artifact
         run: |
@@ -47,7 +53,32 @@ jobs:
           grep -q '__UPRS450__' build/index.html
           grep -q 'asml_euv_lpp' build/index.html
 
+      - name: Publish generated index into consolidation branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/v4.6-core-consolidation'
+        run: |
+          cp build/index.html index.html
+          cp build/UPRS_v4.6.0_consolidation_report.json UPRS_v4.6.0_consolidation_report.json
+          if git diff --quiet -- index.html UPRS_v4.6.0_consolidation_report.json; then
+            echo 'Generated production files are current.'
+            exit 0
+          fi
+          git config user.name 'UPRS Consolidation Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html UPRS_v4.6.0_consolidation_report.json
+          git commit -m 'v4.6.0: publish verified standalone index'
+          git push origin HEAD:codex/v4.6-core-consolidation
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: UPRS-v4.6.0-build-diagnostics
+          path: build-v46.log
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload standalone release candidate
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: UPRS-v4.6.0-release-candidate
