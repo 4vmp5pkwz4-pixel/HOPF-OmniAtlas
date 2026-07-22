@@ -8819,4 +8819,645 @@ globalThis.__UPRS420__={version:V420,models:M,names:NAMES,phenomena:PHEN,registe
  audit:()=>({version:V420,added:Object.keys(M).length,registered,present:Object.keys(M).filter(id=>{try{return !!UPRSO_MODELS[id]}catch(_){return false}}).length})};
 })();
 </script>
+
+<style id="uprs430DeepStyle">
+/* v4.3.0 deep-signature readout inside the Predictive Observatory */
+#deep430{border-top:1px solid rgba(195,173,255,.22);padding:8px 12px 4px;display:flex;flex-direction:column;gap:6px}
+#deep430 .d430-h{display:flex;align-items:center;gap:7px;color:var(--violet,#c3adff);font-size:8.4px;letter-spacing:.14em;text-transform:uppercase}
+#deep430 .d430-h b{flex:1}
+#deep430 .d430-h .d430-badge{font-size:7.4px;letter-spacing:.06em;padding:2px 6px;border:1px solid rgba(195,173,255,.4);border-radius:999px;white-space:nowrap}
+#deep430 .d430-badge.ok{color:var(--green,#8ce9bd);border-color:rgba(140,233,189,.45)}
+#deep430 .d430-badge.no{color:var(--red,#ff9d9d);border-color:rgba(255,157,157,.45)}
+#deep430 .d430-row{display:flex;gap:6px;flex-wrap:wrap}
+#deep430 .d430-chip{border:1px solid rgba(255,255,255,.09);border-left:2px solid rgba(152,232,255,.5);border-radius:0 8px 8px 0;background:rgba(152,232,255,.04);padding:5px 8px;min-width:0;flex:1 1 46%}
+#deep430 .d430-chip[data-t="powerlaw"]{border-left-color:rgba(215,183,110,.7);background:rgba(215,183,110,.045)}
+#deep430 .d430-chip[data-t="plateau"]{border-left-color:rgba(140,233,189,.7);background:rgba(140,233,189,.05)}
+#deep430 .d430-chip[data-t="fano"]{border-left-color:rgba(195,173,255,.7);background:rgba(195,173,255,.05)}
+#deep430 .d430-chip label{display:block;color:var(--muted,#96a2b5);font-size:6.6px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#deep430 .d430-chip b{display:block;margin-top:2px;font:10px/1.3 ui-monospace,SFMono-Regular,monospace;color:var(--ice,#98e8ff)}
+#deep430 .d430-chip small{display:block;margin-top:2px;color:var(--muted,#96a2b5);font-size:7.4px}
+#deep430 .d430-empty{color:var(--muted,#96a2b5);font-size:8.4px;padding:2px}
+body.paper #deep430,body.paper328 #deep430{border-top-color:rgba(29,121,151,.2)}
+</style>
+<script id="uprs430DeepPhenomenology">(()=>{
+'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.3.0 · DEEP PHENOMENOLOGY
+   + Nonlinear optics, Quantum-Hall transport, Turbulent spectra (12 models)
+   + Deepened Observatory: spectral power-law, plateau/staircase and Fano-
+     asymmetry detectors with a live theory↔detection cross-check driven by
+     per-model declared signatures (`expects`), surfaced inside the Observatory.
+   ========================================================================== */
+const V430='4.3.0';
+const K=UPRSO_CONST, TAU2=2*Math.PI, PI2=Math.PI, P=uprsoParam;
+const rlim=(z,cap=1e12)=>{const a=UCabs(z);return a>cap?C(z.re*cap/a,z.im*cap/a):z};
+const jpow=(x,p)=>UCpow(C(0,Math.max(1e-300,x)),p);           // (jx)^p : |·|=x^p, arg=pπ/2
+const sinc=x=>Math.abs(x)<1e-9?1:Math.sin(x)/x;
+const clampf=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* --------------------------------------------------------------- 12 models */
+const M={
+/* ---- NONLINEAR OPTICS -------------------------------------------------- */
+shg_phase_matching:{name:'Second-harmonic generation — phase-matching tuning',domain:'nonlinear optics',axis:'Crystal temperature',axisUnit:'°C',range:[20,120],map:'transfer',
+ equation:'A(Δk)=sinc(ΔkL/2)e^{jΔkL/2},  Δk=β(T−T₀)',
+ assumptions:'Undepleted SHG in a quasi-phase-matched crystal; temperature tunes the phase mismatch Δk.',
+ conservation:'Conversion η=|A|²=sinc²(ΔkL/2); central lobe at T₀ with symmetric side-lobes.',solver:'closed form',
+ params:[P('T0','Phase-match T₀','°C',60,20,120,'linear',.01,.1),P('L','Crystal length','mm',20,1,80,'linear',.02,.1),P('beta','dΔk/dT','1/(m·°C)',380,20,3000,'log',.05)],
+ expects:[{kind:'peak',near:'T0'},{kind:'fano',asym:false}],
+ response:(x,p)=>{const dk=p.beta*(x-p.T0),a=dk*p.L*1e-3/2,A=UCmul(sinc(a),C(Math.cos(a),Math.sin(a)));return {h:A,href:1,extras:{eta:UCabs(A)**2,dk}}}},
+
+raman_gain:{name:'Stimulated Raman gain spectrum',domain:'nonlinear optics',axis:'Stokes shift',axisUnit:'Hz',range:[1e12,3e13],map:'transfer',
+ equation:'H=exp(½g₀L·χ_R),  χ_R=Ω_R²/(Ω_R²−Ω²−jΩΓ_R)',
+ assumptions:'Single Lorentzian Raman resonance at Ω_R with linewidth Γ_R; undepleted pump gain-length g₀L.',
+ conservation:'Gain peaks at the Raman shift; Im χ_R sets amplification, Re χ_R the nonlinear phase.',solver:'closed form',
+ params:[P('OmR','Raman shift Ω_R','Hz',1.32e13,1e12,3e13,'log',.02),P('GR','Linewidth Γ_R','Hz',3e12,1e11,1e13,'log',.05),P('gL','Gain-length g₀L','1',6,0,20,'linear',.05,.05)],
+ expects:[{kind:'peak',near:'OmR'}],
+ response:(x,p)=>{const O=x,chi=UCdiv(p.OmR*p.OmR,C(p.OmR*p.OmR-O*O,-O*p.GR)),H=UCexp(UCmul(.5*p.gL,chi));return {h:rlim(H,1e6),href:1,extras:{chi,gain:UCabs(H)}}}},
+
+fwm_parametric:{name:'Four-wave-mixing / OPA parametric gain',domain:'nonlinear optics',axis:'Signal detuning',axisUnit:'Hz',range:[1e10,6e12],map:'transfer',
+ equation:'u=cosh(gL)−j(Δk/2g)sinh(gL),  g=√((γP)²−(Δk/2)²),  Δk=β₂Ω²',
+ assumptions:'Degenerate FWM with anomalous GVD β₂<0; undepleted pump nonlinear shift γP.',
+ conservation:'Exponential parametric gain inside the phase-matched band, oscillatory outside.',solver:'coupled-mode',
+ params:[P('gP','Nonlinear γP','1/m',2,.1,20,'log',.05),P('b2','|β₂|','s²/m',2e-26,1e-28,1e-24,'log',.05),P('L','Length','m',300,1,5000,'log',.03)],
+ expects:[{kind:'peak',near:'band'}],
+ response:(x,p)=>{const O=TAU2*x,dk=-p.b2*O*O,g2=p.gP*p.gP-(dk/2)*(dk/2);let u;
+  if(g2>=0){const g=Math.sqrt(g2),gl=clampf(g*p.L,0,20);u=UCsub(C(Math.cosh(gl),0),C(0,dk/2/Math.max(1e-30,g)*Math.sinh(gl)))}
+  else{const g=Math.sqrt(-g2),gl=g*p.L;u=UCsub(C(Math.cos(gl),0),C(0,dk/2/Math.max(1e-30,g)*Math.sin(gl)))}
+  return {h:rlim(u,1e6),href:1,extras:{gain:UCabs(u)**2,dk}}}},
+
+kerr_spm:{name:'Kerr self-phase modulation (intensity phase)',domain:'nonlinear optics',axis:'Peak intensity',axisUnit:'W/m²',range:[1e12,1e16],map:'transfer',
+ equation:'H(I)=e^{−αL/2}e^{jφ_NL},  φ_NL=(2π/λ)n₂IL',
+ assumptions:'Instantaneous Kerr nonlinearity n₂; nonlinear phase accumulates linearly with intensity.',
+ conservation:'|H|=e^{−αL/2} constant; phase winds ∝ I (self-phase modulation).',solver:'closed form',
+ params:[P('n2','Nonlinear index n₂','m²/W',2.6e-20,1e-22,1e-17,'log',.05),P('lam','Wavelength λ','nm',1550,400,2000,'linear',.01,1),P('L','Length L','m',10,.01,1e4,'log',.03),P('alpha','Loss α','1/m',.02,0,10,'log',.1)],
+ expects:[{kind:'winding'}],
+ response:(x,p)=>{const phi=TAU2/(p.lam*1e-9)*p.n2*x*p.L,amp=Math.exp(-p.alpha*p.L/2);return {h:UCmul(amp,C(Math.cos(phi),Math.sin(phi))),href:1,extras:{phiNL:phi}}}},
+
+/* ---- QUANTUM HALL TRANSPORT -------------------------------------------- */
+quantum_hall_plateaus:{name:'Integer quantum-Hall plateaus (σ tensor)',domain:'quantum Hall transport',axis:'Magnetic field',axisUnit:'T',range:[1,15],map:'transfer',
+ equation:'σ_xy=(e²/h)·⌊ν⌋,  σ_xx peaks between plateaus,  ν=n_s h/eB',
+ assumptions:'2DEG in the integer QHE regime; quantized Hall conductance with Shubnikov–de Haas σ_xx peaks.',
+ conservation:'σ_xy locks to integer multiples of e²/h on plateaus (topological quantization).',solver:'edge-state model',
+ params:[P('ns','Sheet density n_s','1/m²',3e15,5e14,1e16,'log',.03),P('w','Transition width','1',.16,.03,.6,'linear',.03,.005),P('sxx','σ_xx amplitude','1',.5,0,3,'linear',.05,.02)],
+ expects:[{kind:'plateau',on:'re',count:3}],
+ response:(x,p)=>{const nu=p.ns*K.h/(K.e*x);let sxy=0,sxx=0;for(let n=1;n<=14;n++){sxy+=0.5*(1+Math.tanh((nu-n)/p.w));sxx+=Math.exp(-(((nu-(n+.5))/(p.w*1.6))**2))}
+  return {h:C(sxy,p.sxx*sxx),href:1,extras:{nu,sxy,sxx:p.sxx*sxx}}}},
+
+fractional_qhe:{name:'Fractional quantum-Hall plateaus',domain:'quantum Hall transport',axis:'Magnetic field',axisUnit:'T',range:[6,26],map:'transfer',
+ equation:'σ_xy=(e²/h)·f,  f∈{1/3,2/5,3/7,1/2,3/5,2/3,…}',
+ assumptions:'Fractional QHE from Laughlin/composite-fermion states; plateaus at rational fillings.',
+ conservation:'σ_xy quantized at fractional e²/h; incompressible correlated states.',solver:'composite-fermion sequence',
+ params:[P('ns','Sheet density n_s','1/m²',2.4e15,5e14,1e16,'log',.03),P('w','Transition width','1',.05,.01,.3,'linear',.03,.002),P('sxx','σ_xx amplitude','1',.35,0,2,'linear',.05,.02)],
+ expects:[{kind:'plateau',on:'re',count:3}],
+ response:(x,p)=>{const nu=p.ns*K.h/(K.e*x),fr=[1/3,2/5,3/7,4/9,1/2,4/7,3/5,2/3,3/4,1];let sxy=0,sxx=0,prev=0;
+  for(const f of fr){sxy+=(f-prev)*0.5*(1+Math.tanh((nu-f)/p.w));sxx+=Math.exp(-(((nu-f)/(p.w*1.4))**2));prev=f}
+  return {h:C(sxy,p.sxx*sxx),href:1,extras:{nu,sxy}}}},
+
+shubnikov_dehaas:{name:'Shubnikov–de Haas magnetoresistance',domain:'quantum Hall transport',axis:'Magnetic field',axisUnit:'T',range:[.5,12],map:'transfer',
+ equation:'ρ_xx=ρ₀[1+A·D(B)cos(2πF/B)],  D=e^{−α/B}',
+ assumptions:'Landau quantization gives magnetoresistance oscillations periodic in 1/B; Dingle damping D(B).',
+ conservation:'Oscillation frequency F fixes the Fermi-surface cross-section (Onsager relation).',solver:'Lifshitz–Kosevich',
+ params:[P('F','SdH frequency F','T',30,2,300,'log',.02),P('A','Amplitude A','1',.6,.02,.98,'linear',.03,.01),P('aD','Dingle α','T',2,0,20,'linear',.05,.05),P('rho0','ρ₀','Ω',100,1,1e4,'log',.03)],
+ expects:[{kind:'oscillation',in:'invB'}],
+ response:(x,p)=>{const B=x,osc=p.A*Math.exp(-p.aD/B)*Math.cos(TAU2*p.F/B),rho=p.rho0*(1+osc),ph=TAU2*p.F/B;return {h:UCmul(rho/p.rho0,C(Math.cos(ph),Math.sin(ph))),href:1,extras:{rho,osc}}}},
+
+landau_dos:{name:'Landau-level density of states',domain:'quantum Hall transport',axis:'Energy',axisUnit:'meV',range:[.1,60],map:'transfer',
+ equation:'g(E)=Σₙ Γ/[(E−Eₙ)²+Γ²],  Eₙ=(n+½)ħω_c,  ω_c=eB/m*',
+ assumptions:'Broadened Landau levels equally spaced by the cyclotron energy ħω_c; effective mass m*.',
+ conservation:'Peaks form an arithmetic ladder with spacing ħω_c (magnetic quantization).',solver:'broadened DOS',
+ params:[P('B','Magnetic field B','T',5,.5,20,'log',.02),P('mstar','Effective mass m*/mₑ','1',.067,.01,1,'log',.03),P('G','Broadening Γ','meV',.6,.05,5,'log',.05)],
+ expects:[{kind:'ladder',type:'arithmetic'}],
+ response:(x,p)=>{const E=x,hwc=K.hbar*K.e*p.B/(p.mstar*K.me)/K.e*1e3,G=p.G;let g=C(0,0);const N=Math.min(60,Math.ceil(60/Math.max(1e-3,hwc))+2);
+  for(let n=0;n<N;n++){const En=(n+.5)*hwc;g=UCadd(g,UCdiv(1,C(E-En,G)))}return {h:rlim(UCmul(g,G),1e6),href:1,extras:{hwc}}}},
+
+/* ---- TURBULENT SPECTRA (fractional-order spectral filters) -------------- */
+kolmogorov_inertial:{name:'Kolmogorov inertial-range spectrum (−5/3)',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[1,1e5],map:'transfer',
+ equation:'H(k)=C(jk/k₀)^{−5/6}  ⇒  E(k)=|H|²∝k^{−5/3}',
+ assumptions:'Homogeneous isotropic turbulence, inertial subrange; Kolmogorov 1941 self-similarity.',
+ conservation:'Energy spectrum follows the universal k^{−5/3} law; constant fractional phase −5π/12.',solver:'fractional spectral operator',
+ params:[P('C','Spectral amplitude C','1',1.5,.1,10,'log',.05),P('k0','Reference k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-5/6,tol:.08}],
+ response:(x,p)=>{const H=UCmul(p.C,jpow(x/p.k0,-5/6));return {h:rlim(H,1e9),href:1,extras:{E:UCabs(H)**2}}}},
+
+von_karman_pao:{name:'Von Kármán–Pao energy spectrum',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[.1,1e6],map:'transfer',
+ equation:'H=A(jk/k₀)²/(1+jkL)^{17/6}·e^{−(k/2k_η)²}',
+ assumptions:'Full spectrum: energy-containing range (∝k⁴), inertial −5/3, viscous dissipation cutoff k_η.',
+ conservation:'|H|²∝k⁴/(1+(kL)²)^{17/6}·e^{−(k/2k_η)²} reproduces von Kármán–Pao E(k).',solver:'fractional spectral operator',
+ params:[P('A','Amplitude A','1',1,.05,20,'log',.05),P('L','Integral scale L','m',1,1e-3,1e3,'log',.03),P('keta','Dissipation k_η','1/m',5e4,1e2,1e7,'log',.05),P('k0','Reference k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-5/6,tol:.15,window:'inertial'}],
+ response:(x,p)=>{const num=UCmul(p.A,UCpow(jpow(x/p.k0,1),2)),den=UCpow(C(1,x*p.L),17/6),cut=Math.exp(-((x/(2*p.keta))**2)),H=UCmul(cut,UCdiv(num,den));return {h:rlim(H,1e12),href:1,extras:{E:UCabs(H)**2}}}},
+
+kraichnan_2d:{name:'2D enstrophy cascade (−3 spectrum)',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[1,1e5],map:'transfer',
+ equation:'H(k)=C(jk/k₀)^{−3/2}  ⇒  E(k)∝k^{−3}',
+ assumptions:'Two-dimensional turbulence enstrophy cascade (Kraichnan 1967) above the forcing scale.',
+ conservation:'Enstrophy-conserving cascade gives the steeper k^{−3} spectrum.',solver:'fractional spectral operator',
+ params:[P('C','Amplitude C','1',1,.1,10,'log',.05),P('k0','Forcing k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-3/2,tol:.08}],
+ response:(x,p)=>{const H=UCmul(p.C,jpow(x/p.k0,-3/2));return {h:rlim(H,1e9),href:1,extras:{E:UCabs(H)**2}}}},
+
+batchelor_scalar:{name:'Batchelor passive-scalar spectrum (−1)',domain:'turbulence',axis:'Wavenumber',axisUnit:'1/m',range:[1,1e6],map:'transfer',
+ equation:'H(k)=C(jk/k₀)^{−1/2}·e^{−(k/2k_B)²}  ⇒  E_θ(k)∝k^{−1}',
+ assumptions:'Viscous-convective range of a passive scalar at high Schmidt number (Batchelor 1959).',
+ conservation:'Scalar variance spectrum follows k^{−1} up to the Batchelor scale k_B.',solver:'fractional spectral operator',
+ params:[P('C','Amplitude C','1',1,.1,10,'log',.05),P('kB','Batchelor scale k_B','1/m',1e5,1e2,1e7,'log',.05),P('k0','Reference k₀','1/m',1,.01,1e3,'log',.03)],
+ expects:[{kind:'powerlaw',slope:-1/2,tol:.08,window:'inertial'}],
+ response:(x,p)=>{const H=UCmul(p.C*Math.exp(-((x/(2*p.kB))**2)),jpow(x/p.k0,-1/2));return {h:rlim(H,1e9),href:1,extras:{E:UCabs(H)**2}}}}
+};
+
+/* ------------------------------------------------------------------ i18n */
+const NAMES={
+ shg_phase_matching:['ГВГ — температурная подстройка фазового синхронизма','SHG — Phasenanpassungs-Temperaturkurve'],
+ raman_gain:['Спектр вынужденного комбинационного усиления','Stimuliertes Raman-Verstärkungsspektrum'],
+ fwm_parametric:['Четырёхволновое смешение / параметрическое усиление','Vierwellenmischung / parametrische Verstärkung'],
+ kerr_spm:['Керровская фазовая самомодуляция','Kerr-Selbstphasenmodulation'],
+ quantum_hall_plateaus:['Целочисленные плато квантового эффекта Холла','Ganzzahlige Quanten-Hall-Plateaus'],
+ fractional_qhe:['Дробный квантовый эффект Холла','Fraktionaler Quanten-Hall-Effekt'],
+ shubnikov_dehaas:['Осцилляции Шубникова–де Гааза','Shubnikov–de-Haas-Oszillationen'],
+ landau_dos:['Плотность состояний уровней Ландау','Zustandsdichte der Landau-Niveaus'],
+ kolmogorov_inertial:['Инерционный спектр Колмогорова (−5/3)','Kolmogorov-Trägheitsspektrum (−5/3)'],
+ von_karman_pao:['Энергетический спектр Кармана–Пао','Von-Kármán–Pao-Energiespektrum'],
+ kraichnan_2d:['2D-каскад энстрофии Крейчнана (−3)','2D-Enstrophie-Kaskade (Kraichnan, −3)'],
+ batchelor_scalar:['Спектр пассивного скаляра Бэтчелора (−1)','Batchelor-Skalarspektrum (−1)']
+};
+const PHEN=[
+ ['nonlinear','SHG phase-matching sinc² tuning','A=sinc(ΔkL/2)','shg_phase_matching'],
+ ['nonlinear','Stimulated Raman gain','χ_R Lorentzian','raman_gain'],
+ ['nonlinear','FWM / OPA parametric gain band','g=√((γP)²−(Δk/2)²)','fwm_parametric'],
+ ['nonlinear','Kerr self-phase modulation','φ∝I','kerr_spm'],
+ ['materials','Integer quantum-Hall plateaus','σ_xy=νe²/h','quantum_hall_plateaus'],
+ ['materials','Fractional quantum-Hall plateaus','σ_xy=fe²/h','fractional_qhe'],
+ ['nonlinear','Shubnikov–de Haas oscillations','periodic in 1/B','shubnikov_dehaas'],
+ ['geometry','Landau-level ladder','Eₙ=(n+½)ħω_c','landau_dos'],
+ ['geometry','Kolmogorov −5/3 inertial spectrum','E(k)∝k^{−5/3}','kolmogorov_inertial'],
+ ['geometry','Von Kármán–Pao spectrum','energy+inertial+dissipation','von_karman_pao'],
+ ['geometry','Kraichnan 2D −3 enstrophy cascade','E(k)∝k^{−3}','kraichnan_2d'],
+ ['materials','Batchelor −1 scalar spectrum','E_θ(k)∝k^{−1}','batchelor_scalar']
+];
+
+/* ============================================================ DEEP DETECTORS */
+const znOf=s=>{try{if(s.zn&&Number.isFinite(s.zn.re)&&Number.isFinite(s.zn.im))return s.zn;if(s.gamma)return UCInvCayley(s.gamma)}catch(_){}return C(NaN,NaN)};
+function seriesFromSweep(sw){const xs=[],mag=[],re=[],im=[];for(const s of (sw||[])){if(!s||!Number.isFinite(s.x))continue;const z=znOf(s);if(!Number.isFinite(z.re)||!Number.isFinite(z.im))continue;xs.push(s.x);mag.push(Math.hypot(z.re,z.im));re.push(z.re);im.push(z.im)}return {xs,mag,re,im}}
+function linreg(X,Y){const n=X.length;if(n<4)return null;let sx=0,sy=0,sxx=0,sxy=0;for(let i=0;i<n;i++){sx+=X[i];sy+=Y[i];sxx+=X[i]*X[i];sxy+=X[i]*Y[i]}const den=n*sxx-sx*sx;if(Math.abs(den)<1e-18)return null;const m=(n*sxy-sx*sy)/den,b=(sy-m*sx)/n;let ss=0,st=0;const ym=sy/n;for(let i=0;i<n;i++){const e=Y[i]-(b+m*X[i]);ss+=e*e;st+=(Y[i]-ym)**2}return {slope:m,intercept:b,r2:st>1e-18?1-ss/st:0,n}}
+/* --- detector 1: spectral power-law (log-log slope of |zn| vs axis) --- */
+function detectPowerLaw(xs,mag,frac){const X=[],Y=[];for(let i=0;i<xs.length;i++){if(xs[i]>0&&mag[i]>0){X.push(Math.log(xs[i]));Y.push(Math.log(mag[i]))}}
+ if(X.length<6)return null;let lo=0,hi=X.length;if(frac&&frac>0&&frac<.5){const cut=Math.floor(X.length*frac);lo=cut;hi=X.length-cut}
+ const r=linreg(X.slice(lo,hi),Y.slice(lo,hi));if(!r)return null;return {kind:'powerlaw',slope:r.slope,r2:r.r2,spectralSlope:2*r.slope,confidence:clampf((r.r2-.8)*5,0,.99),n:r.n}}
+/* --- detector 2: plateau / staircase (value-band clustering) --- */
+function detectPlateaus(xs,vs){const n=xs.length;if(n<12)return null;
+ const mn=Math.min(...vs),mx=Math.max(...vs),range=mx-mn;if(range<1e-9)return null;
+ const band=range*0.03,minSpan=Math.max(5,Math.floor(n*0.03));const plateaus=[];
+ let i=0;while(i<n){let j=i+1,lo=vs[i],hi=vs[i];while(j<n){const nlo=Math.min(lo,vs[j]),nhi=Math.max(hi,vs[j]);if(nhi-nlo>band)break;lo=nlo;hi=nhi;j++}
+  const span=j-i;if(span>=minSpan){let acc=0;for(let k=i;k<j;k++)acc+=vs[k];plateaus.push({level:acc/span,span})}i=j}
+ const uniq=[];for(const pl of plateaus){if(!uniq.some(u=>Math.abs(u.level-pl.level)<range*0.05))uniq.push(pl)}
+ return {kind:'plateau',count:uniq.length,levels:uniq.map(u=>u.level),confidence:clampf(uniq.length>=2?0.4+0.1*uniq.length:0,0,.95)}}
+/* --- detector 3: Fano asymmetry (one-sided adjacent transmission zero) --- */
+function median430(a){if(!a.length)return 0;const s=[...a].sort((p,q)=>p-q),h=s.length>>1;return s.length%2?s[h]:(s[h-1]+s[h])/2}
+function detectFano(xs,mag){const n=mag.length;if(n<9)return null;let pi=0;for(let i=1;i<n-1;i++)if(mag[i]>mag[pi])pi=i;
+ if(pi<2||pi>n-3)return null;const peak=mag[pi],med=median430(mag);if(peak<med*1.5)return null;
+ const W=Math.max(4,Math.floor(n*0.42)),thr=0.2*peak;
+ const left=(()=>{for(let i=pi-1;i>=Math.max(1,pi-W);i--)if(mag[i]<thr&&mag[i]<mag[i-1]&&mag[i]<=mag[i+1])return {i,v:mag[i]};return null})();
+ const right=(()=>{for(let i=pi+1;i<=Math.min(n-2,pi+W);i++)if(mag[i]<thr&&mag[i]<mag[i+1]&&mag[i]<=mag[i-1])return {i,v:mag[i]};return null})();
+ const asymmetric=!!left!==!!right,zero=left||right,deep=zero?zero.v/(peak+1e-30):1;
+ const asymmetry=asymmetric?1-Math.min((left?left.v:peak),(right?right.v:peak))/(peak+1e-30):0;
+ return {kind:'fano',asymmetric,asymmetry,depth:deep,q:deep<1e-3?Infinity:1/Math.max(1e-3,deep),confidence:clampf(asymmetry,0,.95)}}
+/* --- detector 4: oscillation periodic in 1/x (SdH-type) --- */
+function detectInvOsc(xs,mag){const pts=[];for(let i=0;i<xs.length;i++)if(xs[i]>0)pts.push([1/xs[i],mag[i]]);if(pts.length<12)return null;
+ pts.sort((a,b)=>a[0]-b[0]);const y=pts.map(p=>p[1]),ym=y.reduce((a,b)=>a+b,0)/y.length;let cross=0;for(let i=1;i<y.length;i++)if((y[i-1]-ym)*(y[i]-ym)<0)cross++;
+ return {kind:'oscillation',in:'invB',halfPeriods:cross,confidence:clampf((cross-2)/12,0,.9)}}
+
+/* ------------------------------------------------- theory ↔ detection check */
+function modelSeries430(id,n=241){const m=UPRSO_MODELS[id]||M[id];if(!m)return null;const lo=m.range[0],hi=m.range[1],log=lo>0&&hi>0&&hi/lo>50,p=Object.fromEntries(m.params.map(d=>[d.key,d.value]));const sw=[];
+ for(let i=0;i<n;i++){const t=i/(n-1),x=log?lo*Math.pow(hi/lo,t):lo+(hi-lo)*t;let r;try{r=mapResponse(m,m.response(x,p))}catch(_){continue}if(r&&r.gamma)sw.push({x,gamma:r.gamma,zn:r.zn})}
+ return seriesFromSweep(sw)}
+function validate430(id){const m=M[id]||UPRSO_MODELS[id];if(!m||!m.expects)return {id,checks:[]};const S=modelSeries430(id);if(!S||S.xs.length<8)return {id,checks:[{ok:false,why:'no series'}]};const out=[];
+ for(const ex of m.expects){
+  if(ex.kind==='powerlaw'){const w=ex.window==='inertial'?.18:0,d=detectPowerLaw(S.xs,S.mag,w);const ok=!!d&&Math.abs(d.slope-ex.slope)<=(ex.tol||.1);out.push({kind:'powerlaw',ok,measured:d?d.slope:null,expected:ex.slope})}
+  else if(ex.kind==='plateau'){const vs=ex.on==='re'?S.re:S.mag,d=detectPlateaus(S.xs,vs);const ok=!!d&&d.count>=(ex.count||2);out.push({kind:'plateau',ok,measured:d?d.count:0,expected:ex.count||2})}
+  else if(ex.kind==='fano'){const d=detectFano(S.xs,S.mag);const ok=!!d&&(!!d.asymmetric===(ex.asym!==false));out.push({kind:'fano',ok,measured:d?+d.asymmetry.toFixed(2):null,expected:ex.asym!==false})}
+  else if(ex.kind==='oscillation'){const d=detectInvOsc(S.xs,S.mag);const ok=!!d&&d.halfPeriods>=4;out.push({kind:'oscillation',ok,measured:d?d.halfPeriods:0})}
+  else if(ex.kind==='winding'){let w=0,prev=Math.atan2(S.im[0],S.re[0]);for(let i=1;i<S.re.length;i++){let a=Math.atan2(S.im[i],S.re[i]);let dth=a-prev;while(dth>Math.PI)dth-=TAU2;while(dth<-Math.PI)dth+=TAU2;w+=dth;prev=a}const turns=Math.abs(w)/TAU2;out.push({kind:'winding',ok:turns>=1,measured:+turns.toFixed(2)})}
+  else if(ex.kind==='peak'){let pi=0;for(let i=1;i<S.mag.length-1;i++)if(S.mag[i]>S.mag[pi])pi=i;const interior=pi>1&&pi<S.mag.length-2;out.push({kind:'peak',ok:interior,measured:interior?+S.xs[pi].toPrecision(4):null})}
+  else if(ex.kind==='ladder'){const pk=[];for(let i=2;i<S.mag.length-2;i++)if(S.mag[i]>S.mag[i-1]&&S.mag[i]>=S.mag[i+1]&&S.mag[i]>0.3*Math.max(...S.mag))pk.push(S.xs[i]);
+   let ok=false,sp=null;if(pk.length>=3){const dl=[];for(let i=1;i<pk.length;i++)dl.push(pk[i]-pk[i-1]);const md=dl.reduce((a,b)=>a+b,0)/dl.length,cv=Math.sqrt(dl.reduce((a,b)=>a+(b-md)**2,0)/dl.length)/Math.max(1e-12,Math.abs(md));ok=cv<.25;sp=md}out.push({kind:'ladder',ok,measured:pk.length,spacing:sp})}
+ }
+ return {id,checks:out,agree:out.filter(c=>c.ok).length,total:out.length}}
+
+/* --------------------------------------------- live readout in Observatory */
+const lang430=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
+const TX={title:['ГЛУБОКИЕ СИГНАТУРЫ','DEEP SIGNATURES','TIEFE SIGNATUREN'],
+ none:['Явных спектральных сигнатур не обнаружено.','No pronounced spectral signatures.','Keine ausgeprägten spektralen Signaturen.'],
+ slope:['Спектральный наклон','Spectral slope','Spektrale Steigung'],plateaus:['Плато / лестница','Plateaus / staircase','Plateaus / Treppe'],
+ fano:['Асимметрия Фано','Fano asymmetry','Fano-Asymmetrie'],osc:['Осцилляции 1/B','1/B oscillations','1/B-Oszillationen'],
+ theory:['теория ↔ детекция','theory ↔ detection','Theorie ↔ Detektion'],levels:['уровней','levels','Ebenen'],
+ asym:['асимметрично','asymmetric','asymmetrisch'],sym:['симметрично','symmetric','symmetrisch'],half:['полупериодов','half-cycles','Halbzyklen']};
+const t430=k=>TX[k][lang430()];
+const esc430=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let container=null,refreshScheduled=false;
+function ensureContainer(){const panel=document.getElementById('obsPanel398'),list=document.getElementById('obsList398');if(!panel||!list)return null;
+ if(container&&container.isConnected)return container;
+ container=document.createElement('div');container.id='deep430';
+ const footer=panel.querySelector('footer');if(footer)panel.insertBefore(container,footer);else panel.appendChild(container);return container}
+function fmt430(v,n=3){try{return fmt(v,n)}catch(_){return (+v).toPrecision(3)}}
+function renderDeep430(){const c=ensureContainer();if(!c)return;let sw=[];try{sw=state.sweep||[]}catch(_){}
+ const S=seriesFromSweep(sw);const chips=[];let activeId='';try{activeId=state.model}catch(_){}
+ const active=M[activeId];
+ if(S.xs.length>=8){
+  const pl=detectPowerLaw(S.xs,S.mag,0);
+  if(pl&&pl.r2>0.9)chips.push(`<div class="d430-chip" data-t="powerlaw"><label>${esc430(t430('slope'))}</label><b>|·|∝x^${fmt430(pl.slope,3)} · E∝x^${fmt430(pl.spectralSlope,3)}</b><small>R²=${fmt430(pl.r2,4)}</small></div>`);
+  const pv=detectPlateaus(S.xs,S.re);
+  if(pv&&pv.count>=2)chips.push(`<div class="d430-chip" data-t="plateau"><label>${esc430(t430('plateaus'))}</label><b>${pv.count} ${esc430(t430('levels'))}</b><small>${pv.levels.slice(0,6).map(v=>fmt430(v,2)).join(' · ')}</small></div>`);
+  const fa=detectFano(S.xs,S.mag);
+  if(fa&&fa.asymmetric)chips.push(`<div class="d430-chip" data-t="fano"><label>${esc430(t430('fano'))}</label><b>${esc430(t430('asym'))} · q≈${isFinite(fa.q)?fmt430(fa.q,2):'∞'}</b><small>A=${fmt430(fa.asymmetry,2)} · depth=${fmt430(fa.depth,3)}</small></div>`);
+  const io=detectInvOsc(S.xs,S.mag);
+  if(io&&io.halfPeriods>=4)chips.push(`<div class="d430-chip"><label>${esc430(t430('osc'))}</label><b>${io.halfPeriods} ${esc430(t430('half'))}</b><small>SdH-type</small></div>`);
+ }
+ let badge='';
+ if(active&&active.expects){const v=validate430(activeId);if(v.total){const ok=v.agree===v.total;badge=`<span class="d430-badge ${ok?'ok':'no'}">${esc430(t430('theory'))} ${v.agree}/${v.total}</span>`}}
+ c.innerHTML=`<div class="d430-h"><b>${esc430(t430('title'))}</b>${badge}</div>`+(chips.length?`<div class="d430-row">${chips.join('')}</div>`:`<div class="d430-empty">${esc430(t430('none'))}</div>`)}
+function scheduleDeep(){if(refreshScheduled)return;refreshScheduled=true;requestAnimationFrame(()=>{refreshScheduled=false;try{renderDeep430()}catch(e){console.warn('UPRS430 render',e)}})}
+function hookObservatory(){const list=document.getElementById('obsList398');if(!list)return false;if(list.dataset.deep430)return true;list.dataset.deep430='1';
+ new MutationObserver(scheduleDeep).observe(list,{childList:true,subtree:true});scheduleDeep();return true}
+
+/* ------------------------------------------------------------- registration */
+let registered=false;
+function register430(){try{
+ for(const [id,m] of Object.entries(M)){if(!UPRSO_MODELS[id]){m.id=id;UPRSO_MODELS[id]=m}
+  try{if(typeof MODEL_RU!=='undefined'&&NAMES[id])MODEL_RU[id]=NAMES[id][0]}catch(_){}
+  try{if(typeof MODEL_DE!=='undefined'&&NAMES[id])MODEL_DE[id]=NAMES[id][1]}catch(_){}}
+ try{const have=new Set(PHENOMENA.map(p=>p[3]+'|'+p[1]));for(const e of PHEN)if(!have.has(e[3]+'|'+e[1]))PHENOMENA.push(e)}catch(_){}
+ try{if(typeof rebuildModelOptions==='function')rebuildModelOptions()}catch(_){}
+ try{if(typeof renderPhenomena==='function')renderPhenomena(document.getElementById('phenSearch')?.value||'')}catch(_){}
+ registered=true}catch(e){console.warn('UPRS430 register',e)}}
+
+/* --------------------------------------------------------------- self-tests */
+function sweepFinite430(id){const m=M[id],lo=m.range[0],hi=m.range[1],log=lo>0&&hi>0&&hi/lo>50;let n=0,ok=0;
+ for(let i=0;i<=170;i++){const t=i/170,x=log?lo*Math.pow(hi/lo,t):lo+(hi-lo)*t,p=Object.fromEntries(m.params.map(d=>[d.key,d.value]));let r;try{r=m.response(x,p)}catch(e){return {ok:false,detail:'throw@'+x.toExponential(2)}}const g=r.h||r.gamma||r.z;n++;if(g&&Number.isFinite(g.re)&&Number.isFinite(g.im))ok++;else return {ok:false,detail:'nonfinite@'+x.toExponential(3)}}return {ok:ok===n,detail:ok+'/'+n}}
+function checks430(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
+ ok('v4.3.0 deep-phenomenology registered',()=>({ok:Object.keys(M).every(id=>!!UPRSO_MODELS[id]),detail:Object.keys(M).length+' models'}));
+ ok('v4.3.0 all responses finite over range',()=>{const bad=Object.keys(M).map(id=>[id,sweepFinite430(id)]).filter(([,r])=>!r.ok);return {ok:bad.length===0,detail:bad.length?bad.map(([id,r])=>id+'('+r.detail+')').join(', '):Object.keys(M).length+' clean'}});
+ ok('v4.3.0 power-law detector recovers −5/3 slope',()=>{const S=modelSeries430('kolmogorov_inertial'),d=detectPowerLaw(S.xs,S.mag,0);return {ok:d&&Math.abs(d.spectralSlope+5/3)<.05,detail:'E∝k^'+d.spectralSlope.toFixed(3)}});
+ ok('v4.3.0 power-law detector recovers −3 (Kraichnan)',()=>{const S=modelSeries430('kraichnan_2d'),d=detectPowerLaw(S.xs,S.mag,0);return {ok:d&&Math.abs(d.spectralSlope+3)<.06,detail:'E∝k^'+d.spectralSlope.toFixed(3)}});
+ ok('v4.3.0 plateau detector finds QHE staircase',()=>{const S=modelSeries430('quantum_hall_plateaus'),d=detectPlateaus(S.xs,S.re);return {ok:d&&d.count>=3,detail:(d?d.count:0)+' plateaus'}});
+ ok('v4.3.0 SHG conversion sinc² null spacing',()=>{const m=M.shg_phase_matching,p={T0:60,L:20,beta:380},dT=TAU2/(p.beta*p.L*1e-3),eta=UCabs(m.response(60+dT,p).h)**2;return {ok:eta<1e-3,detail:'η(null)='+eta.toExponential(2)}});
+ ok('v4.3.0 Raman gain peaks at the Stokes shift',()=>{const m=M.raman_gain,p={OmR:1.32e13,GR:3e12,gL:6},gP=UCabs(m.response(p.OmR,p).h),gO=UCabs(m.response(p.OmR*2.2,p).h);return {ok:gP>gO,detail:'peak/off='+(gP/gO).toFixed(2)}});
+ ok('v4.3.0 Landau DOS forms an arithmetic ladder',()=>{const v=validate430('landau_dos');return {ok:v.agree===v.total&&v.total>0,detail:JSON.stringify(v.checks.map(c=>c.kind+':'+c.ok))}});
+ ok('v4.3.0 theory↔detection cross-check (all models)',()=>{const res=Object.keys(M).map(id=>validate430(id)).filter(v=>v.total);const bad=res.filter(v=>v.agree<v.total);return {ok:bad.length===0,detail:bad.length?bad.map(v=>v.id+' '+v.agree+'/'+v.total).join(', '):res.length+' models: theory matches detection'}});
+ ok('v4.3.0 Fano detector flags asymmetric lineshape',()=>{const xs=[],mag=[];for(let i=0;i<121;i++){const e=(i-60)/10,t=(e+3)/(e*e+1);xs.push(i);mag.push(Math.abs(t))}const d=detectFano(xs,mag);return {ok:d&&d.asymmetric,detail:d?'A='+d.asymmetry.toFixed(2):'none'}});
+ ok('v4.3.0 SdH oscillation detector (periodic in 1/B)',()=>{const v=validate430('shubnikov_dehaas');return {ok:v.agree===v.total&&v.total>0,detail:JSON.stringify(v.checks.map(c=>c.kind+':'+c.measured))}});
+ return out}
+function wrapTests430(){try{if(typeof runTests!=='function'||runTests.__uprs430)return;const base=runTests;
+ const w=function(show=true){const r=base(false),T=r.tests.filter(c=>!String(c.name||'').startsWith('v4.3.0'));for(const c of checks430())T.push(c);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs430=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+
+/* --------------------------------------------------------------- install */
+let tries=0;
+function install430(){if(typeof document==='undefined')return;
+ if(typeof UPRSO_MODELS==='undefined'||typeof state==='undefined'){if(tries++<80)return setTimeout(install430,200);return}
+ register430();wrapTests430();hookObservatory();
+ for(const ms of [400,1500,3400,6200,10500,16000])setTimeout(()=>{register430();wrapTests430();hookObservatory()},ms);
+ try{const oldI=window.applyI18n;if(typeof oldI==='function'&&!oldI.__uprs430){const f=function(...a){const r=oldI.apply(this,a);try{for(const [id,nm] of Object.entries(NAMES)){if(typeof MODEL_RU!=='undefined')MODEL_RU[id]=nm[0];if(typeof MODEL_DE!=='undefined')MODEL_DE[id]=nm[1]}}catch(_){}scheduleDeep();return r};f.__uprs430=true;window.applyI18n=f;try{applyI18n=f;globalThis.applyI18n=f}catch(_){}}}catch(_){}}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install430,140),{once:true});else setTimeout(install430,140)}}catch(_){}
+
+globalThis.__UPRS430__={version:V430,models:M,names:NAMES,phenomena:PHEN,register:register430,checks:checks430,validate:validate430,
+ detectors:{powerLaw:detectPowerLaw,plateaus:detectPlateaus,fano:detectFano,invOsc:detectInvOsc,series:modelSeries430,seriesFromSweep},
+ audit:()=>({version:V430,added:Object.keys(M).length,registered,present:Object.keys(M).filter(id=>{try{return !!UPRSO_MODELS[id]}catch(_){return false}}).length,
+  validation:Object.keys(M).map(id=>{const v=validate430(id);return {id,agree:v.agree,total:v.total}})})};
+})();
+</script>
+
+<script id="uprs440ImmersiveObservatory">(()=>{
+'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.4.0 · IMMERSIVE OBSERVATORY (Meta Quest 3)
+   A complete raw-WebXR engine replacing the static XR viewer:
+   · immersive-ar passthrough (Quest 3) with automatic immersive-vr fallback
+   · hand-tracking: pinch select, pinch-grab, two-hand grab/rotate/scale
+   · controllers: trigger pick → selects the live sweep point in the whole app,
+     grip grab (one- and two-handed), thumbstick scrub/scale/rotate, A/B/X/Y
+     shortcuts (panel, re-place, projection mode, Observatory deep scan)
+   · hit-test reticle + XRAnchor placement of the hologram on real surfaces
+   · floating instrument panel (canvas→texture) with live metrics and the
+     Predictive Observatory state, yaw-billboarded to the viewer
+   · haptic feedback, 90 Hz target frame rate, fixed foveation, zero
+     per-frame allocation hot path; graceful degradation at every step
+   · pure, unit-tested math core exposed at __UPRS440__.core
+   ========================================================================== */
+const V440='4.4.0';
+/* ------------------------------------------------------------- math core */
+const M4=()=>new Float32Array(16);
+function m4Mul(o,a,b){for(let c=0;c<4;c++){const b0=b[c*4],b1=b[c*4+1],b2=b[c*4+2],b3=b[c*4+3];o[c*4]=a[0]*b0+a[4]*b1+a[8]*b2+a[12]*b3;o[c*4+1]=a[1]*b0+a[5]*b1+a[9]*b2+a[13]*b3;o[c*4+2]=a[2]*b0+a[6]*b1+a[10]*b2+a[14]*b3;o[c*4+3]=a[3]*b0+a[7]*b1+a[11]*b2+a[15]*b3}return o}
+function qMul(a,b){return [a[3]*b[0]+a[0]*b[3]+a[1]*b[2]-a[2]*b[1],a[3]*b[1]-a[0]*b[2]+a[1]*b[3]+a[2]*b[0],a[3]*b[2]+a[0]*b[1]-a[1]*b[0]+a[2]*b[3],a[3]*b[3]-a[0]*b[0]-a[1]*b[1]-a[2]*b[2]]}
+function qAxis(ax,ay,az,ang){const s=Math.sin(ang/2),l=Math.hypot(ax,ay,az)||1;return [ax/l*s,ay/l*s,az/l*s,Math.cos(ang/2)]}
+function qNorm(q){const l=Math.hypot(q[0],q[1],q[2],q[3])||1;return [q[0]/l,q[1]/l,q[2]/l,q[3]/l]}
+function qRotV(q,v){const [x,y,z,w]=q,[vx,vy,vz]=v;const tx=2*(y*vz-z*vy),ty=2*(z*vx-x*vz),tz=2*(x*vy-y*vx);return [vx+w*tx+y*tz-z*ty,vy+w*ty+z*tx-x*tz,vz+w*tz+x*ty-y*tx]}
+function composeTRS(o,p,q,s){const [x,y,z,w]=q,x2=x+x,y2=y+y,z2=z+z,xx=x*x2,xy=x*y2,xz=x*z2,yy=y*y2,yz=y*z2,zz=z*z2,wx=w*x2,wy=w*y2,wz=w*z2;
+ o[0]=(1-(yy+zz))*s;o[1]=(xy+wz)*s;o[2]=(xz-wy)*s;o[3]=0;o[4]=(xy-wz)*s;o[5]=(1-(xx+zz))*s;o[6]=(yz+wx)*s;o[7]=0;o[8]=(xz+wy)*s;o[9]=(yz-wx)*s;o[10]=(1-(xx+yy))*s;o[11]=0;o[12]=p[0];o[13]=p[1];o[14]=p[2];o[15]=1;return o}
+function invTRS(p,q,s){const qi=[-q[0],-q[1],-q[2],q[3]],si=1/s,pi=qRotV(qi,[-p[0]*si,-p[1]*si,-p[2]*si]);return {p:pi,q:qi,s:si}}
+/* ray picking in model space: angular metric, returns best index or -1 */
+function pick440(o,d,pts,maxAng=.07,minT=.03){let best=-1,bs=maxAng;const n=pts.length/3;
+ for(let i=0;i<n;i++){const px=pts[i*3]-o[0],py=pts[i*3+1]-o[1],pz=pts[i*3+2]-o[2];const t=px*d[0]+py*d[1]+pz*d[2];if(t<minT)continue;
+  const qx=px-t*d[0],qy=py-t*d[1],qz=pz-t*d[2];const ang=Math.hypot(qx,qy,qz)/t;if(ang<bs){bs=ang;best=i}}
+ return {index:best,score:bs}}
+/* two-hand transform: from start pair (a0,b0,world0) and current pair (a1,b1) */
+function twoHand440(a0,b0,a1,b1,w0){const d0=Math.hypot(a0[0]-b0[0],a0[1]-b0[1],a0[2]-b0[2])||1e-6,d1=Math.hypot(a1[0]-b1[0],a1[1]-b1[1],a1[2]-b1[2]);
+ const ratio=Math.min(8,Math.max(.125,d1/d0));
+ const y0=Math.atan2(b0[0]-a0[0],b0[2]-a0[2]),y1=Math.atan2(b1[0]-a1[0],b1[2]-a1[2]);let dy=y1-y0;while(dy>Math.PI)dy-=2*Math.PI;while(dy<-Math.PI)dy+=2*Math.PI;
+ const m0=[(a0[0]+b0[0])/2,(a0[1]+b0[1])/2,(a0[2]+b0[2])/2],m1=[(a1[0]+b1[0])/2,(a1[1]+b1[1])/2,(a1[2]+b1[2])/2];
+ const rel=[w0.pos[0]-m0[0],w0.pos[1]-m0[1],w0.pos[2]-m0[2]],rq=qAxis(0,1,0,dy),rot=qRotV(rq,rel);
+ return {pos:[m1[0]+rot[0]*ratio,m1[1]+rot[1]*ratio,m1[2]+rot[2]*ratio],quat:qNorm(qMul(rq,w0.quat)),scale:Math.min(20,Math.max(.04,w0.scale*ratio)),dyaw:dy,ratio}}
+function oneHand440(g0,g1,w0){const d=[g1[0]-g0[0],g1[1]-g0[1],g1[2]-g0[2]];return {pos:[w0.pos[0]+d[0],w0.pos[1]+d[1],w0.pos[2]+d[2]],quat:w0.quat,scale:w0.scale}}
+/* scene packer: keeps meta index map point→sweep sample */
+function packScene440(scene){const lp=[],lc=[],pp=[],pc=[],pi=[];const rgba=s=>{const m=String(s||'').match(/[\d.]+/g)||[];if(String(s||'').startsWith('rgba'))return [+m[0]/255,+m[1]/255,+m[2]/255,+m[3]];return [1,.8,.4,1]};
+ for(const l of scene?.lines||[]){const c=rgba(l.color);for(let i=0;i<l.pts.length-1;i++){lp.push(l.pts[i][0],l.pts[i][1],l.pts[i][2],l.pts[i+1][0],l.pts[i+1][1],l.pts[i+1][2]);lc.push(c[0],c[1],c[2],c[3],c[0],c[1],c[2],c[3])}}
+ for(const p of scene?.points||[]){pp.push(p.p[0],p.p[1],p.p[2]);const c=rgba(p.color);pc.push(c[0],c[1],c[2],c[3]);pi.push(Number.isFinite(p?.meta?.index)?p.meta.index:-1)}
+ return {lp:new Float32Array(lp),lc:new Float32Array(lc),pp:new Float32Array(pp),pc:new Float32Array(pc),pi}}
+/* ------------------------------------------------------------ GL helpers */
+const VS='attribute vec3 aP;attribute vec4 aC;uniform mat4 uM;uniform float uS;varying vec4 vC;void main(){gl_Position=uM*vec4(aP,1.);gl_PointSize=uS/max(.25,gl_Position.w);vC=aC;}';
+const FS='precision mediump float;varying vec4 vC;uniform float uPt;void main(){vec4 c=vC;if(uPt>0.5){vec2 d=gl_PointCoord-vec2(.5);float r=length(d);if(r>.5)discard;c.a*=smoothstep(.5,.32,r);}gl_FragColor=c;}';
+const VSQ='attribute vec3 aP;attribute vec2 aT;uniform mat4 uM;varying vec2 vT;void main(){gl_Position=uM*vec4(aP,1.);vT=aT;}';
+const FSQ='precision mediump float;varying vec2 vT;uniform sampler2D uTex;void main(){vec4 c=texture2D(uTex,vT);if(c.a<0.02)discard;gl_FragColor=c;}';
+function mkProg(gl,vs,fs){const c=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh)||'shader');return sh};
+ const p=gl.createProgram();gl.attachShader(p,c(gl.VERTEX_SHADER,vs));gl.attachShader(p,c(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p)||'link');return p}
+/* ----------------------------------------------------------- module state */
+const S={sess:null,gl:null,ref:null,mode:'',prog:null,progQ:null,loc:{},locQ:{},buf:{},counts:{ln:0,pn:0},pi:[],
+ world:{pos:[0,1.15,-.75],quat:[0,0,0,1],scale:.55},grabs:new Map(),twoStart:null,
+ panel:{cv:null,cx:null,tex:null,dirty:true,last:0,mode:0},sceneKey:'',lastIndex:-1,
+ hit:{source:null,visible:false,mat:M4(),placing:false},anchor:null,anchorSpace:null,
+ hands:new Map(),beams:{pos:new Float32Array(0),col:new Float32Array(0)},support:{ar:false,vr:false,hands:false,hitTest:false,anchors:false,rate:0},
+ tmpA:M4(),tmpB:M4(),tmpC:M4(),worldMat:M4(),ended:false};
+const lang440=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
+const TT={enterAR:['Погружение AR (Quest 3)','Enter AR (Quest 3)','AR starten (Quest 3)'],enterVR:['Погружение VR','Enter VR','VR starten'],
+ noXR:['WebXR недоступен в этом браузере','WebXR is not available in this browser','WebXR ist hier nicht verfügbar'],
+ started:['Иммерсивная обсерватория запущена','Immersive Observatory started','Immersives Observatorium gestartet'],
+ ended:['Иммерсивная сессия завершена','Immersive session ended','Immersive Sitzung beendet'],
+ placed:['Голограмма закреплена на поверхности','Hologram anchored to the surface','Hologramm an der Oberfläche verankert'],
+ scan:['Глубокий скан Обсерватории…','Observatory deep scan…','Observatorium-Tiefenscan…']};
+const t440=k=>TT[k][lang440()];
+function toast440(s){try{toast(s)}catch(_){console.log('UPRS440:',s)}}
+/* ------------------------------------------------------------- panel */
+function panelData440(){const d={title:'UPRS OMNIATLAS · XR',model:'',axis:'',gamma:'',phase:'',vswr:'',mode:'',obs:'',pred:'',deep:''};
+ try{const m=UPRSO_MODELS[state.model];d.model=(typeof modelDisplayName==='function'?modelDisplayName(state.model):m?.name)||state.model;d.mode=state.mode;
+  const s=state.sweep&&state.sweep[state.index];if(s){const g=Math.hypot(s.gamma.re,s.gamma.im),ph=Math.atan2(s.gamma.im,s.gamma.re)*180/Math.PI;
+   d.axis=`${fmt(s.x,6)} ${m?.axisUnit||''}`;d.gamma=`|Γ| ${fmt(g,4)}`;d.phase=`∠ ${fmt(ph,1)}°`;d.vswr=g<1?`VSWR ${fmt((1+g)/(1-g),3)}`:'активный режим'}}catch(_){}
+ try{const a=window.__UPRS398__?.audit();if(a){d.obs=`Обсерватория: ${a.features} явл. · ${a.predictions} прогн.`;const st=a.ledger;if(st&&st.resolved)d.pred=`точность ${Math.round((st.hitRate||0)*100)}% · Brier ${(st.brier||0).toFixed(3)}`}}catch(_){}
+ try{const v=window.__UPRS430__?.models?.[state.model]?window.__UPRS430__.validate(state.model):null;if(v&&v.total)d.deep=`теория↔детекция ${v.agree}/${v.total}`}catch(_){}
+ return d}
+function drawPanel440(cx,W,H,d){cx.clearRect(0,0,W,H);
+ const rr=(x,y,w,h,r)=>{cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()};
+ rr(4,4,W-8,H-8,Math.min(26,W/6,H/6));const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(14,19,29,.94)');g.addColorStop(1,'rgba(6,10,17,.96)');cx.fillStyle=g;cx.fill();
+ cx.strokeStyle='rgba(215,183,110,.55)';cx.lineWidth=2.5;cx.stroke();
+ cx.fillStyle='#fff0bd';cx.font='600 26px system-ui';cx.fillText(d.title,30,52);
+ cx.fillStyle='rgba(215,183,110,.85)';cx.fillRect(30,68,W-60,2);
+ cx.fillStyle='#98e8ff';cx.font='500 30px system-ui';cx.fillText((d.model||'').slice(0,30),30,116);
+ cx.fillStyle='#edf1f6';cx.font='400 34px ui-monospace,monospace';cx.fillText(d.axis,30,172);
+ cx.font='400 30px ui-monospace,monospace';cx.fillText(`${d.gamma}   ${d.phase}`,30,218);
+ cx.fillStyle='#8ce9bd';cx.fillText(d.vswr,30,262);
+ cx.fillStyle='rgba(255,255,255,.14)';cx.fillRect(30,286,W-60,1.5);
+ cx.fillStyle='#c3adff';cx.font='500 26px system-ui';cx.fillText(d.obs,30,330);
+ if(d.pred){cx.fillStyle='#d7b76e';cx.fillText(d.pred,30,368)}
+ if(d.deep){cx.fillStyle='#8ce9bd';cx.fillText(d.deep,30,406)}
+ cx.fillStyle='rgba(150,162,181,.9)';cx.font='400 21px system-ui';
+ const hints=lang440()===0?['курок — выбор точки · хват — перенос','два хвата — масштаб и поворот','A — панель · B — переставить · X — режим · Y — скан']:
+  lang440()===2?['Trigger—Punkt · Griff—Greifen','Beide Griffe—Skalieren/Drehen','A Panel · B Platzieren · X Modus · Y Scan']:
+  ['trigger—pick · grip—grab','both grips—scale & rotate','A panel · B re-place · X mode · Y scan'];
+ hints.forEach((h,i)=>cx.fillText(h,30,H-96+i*30));
+ return true}
+function ensurePanel440(){if(S.panel.cv)return;const cv=document.createElement('canvas');cv.width=640;cv.height=560;S.panel.cv=cv;S.panel.cx=cv.getContext('2d')}
+function refreshPanel440(now){if(!S.panel.dirty&&now-S.panel.last<400&&S.lastIndex===((()=>{try{return state.index}catch(_){return -1}})()))return;
+ try{S.lastIndex=state.index}catch(_){}
+ ensurePanel440();drawPanel440(S.panel.cx,640,560,panelData440());S.panel.last=now;S.panel.dirty=false;
+ const gl=S.gl;if(!gl)return;if(!S.panel.tex)S.panel.tex=gl.createTexture();
+ gl.bindTexture(gl.TEXTURE_2D,S.panel.tex);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,S.panel.cv);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
+/* --------------------------------------------------------- scene buffers */
+function sceneKey440(){try{return state.mode+'|'+((state.scene?.points||[]).length)+'|'+((state.scene?.lines||[]).length)+'|'+state.model}catch(_){return ''}}
+function refreshScene440(force){const key=sceneKey440();if(!force&&key===S.sceneKey)return;S.sceneKey=key;
+ let packed;try{packed=packScene440(state.scene)}catch(_){packed=packScene440(null)}
+ const gl=S.gl;S.pi=packed.pi;S.counts={ln:packed.lp.length/3,pn:packed.pp.length/3};
+ const up=(k,d)=>{gl.bindBuffer(gl.ARRAY_BUFFER,S.buf[k]);gl.bufferData(gl.ARRAY_BUFFER,d,gl.DYNAMIC_DRAW)};
+ up('lp',packed.lp);up('lc',packed.lc);up('pp',packed.pp);up('pc',packed.pc);S.ppData=packed.pp}
+/* grid: radial floor (VR only) */
+function buildGrid440(){const v=[],c=[],col=[.35,.55,.7,.10];const R=1.6;
+ for(let r=1;r<=4;r++){const rad=R*r/4,seg=48;for(let i=0;i<seg;i++){const a0=i/seg*2*Math.PI,a1=(i+1)/seg*2*Math.PI;v.push(Math.cos(a0)*rad,0,Math.sin(a0)*rad,Math.cos(a1)*rad,0,Math.sin(a1)*rad);c.push(...col,...col)}}
+ for(let i=0;i<12;i++){const a=i/12*2*Math.PI;v.push(0,0,0,Math.cos(a)*R,0,Math.sin(a)*R);c.push(...col,...col)}
+ return {v:new Float32Array(v),c:new Float32Array(c),n:v.length/3}}
+function buildRing440(){const v=[],c=[],col=[1,.94,.74,.9],seg=36,r=.07;for(let i=0;i<seg;i++){const a0=i/seg*2*Math.PI,a1=(i+1)/seg*2*Math.PI;v.push(Math.cos(a0)*r,0,Math.sin(a0)*r,Math.cos(a1)*r,0,Math.sin(a1)*r);c.push(...col,...col)}return {v:new Float32Array(v),c:new Float32Array(c),n:v.length/3}}
+/* ------------------------------------------------------------- input */
+function gripPos440(frame,src){const sp=src.gripSpace||src.targetRaySpace;if(!sp)return null;const p=frame.getPose(sp,S.ref);if(!p)return null;const m=p.transform.position;return [m.x,m.y,m.z]}
+function handPinch440(frame,src){if(!src.hand)return null;try{const th=src.hand.get('thumb-tip'),ix=src.hand.get('index-finger-tip');if(!th||!ix)return null;
+ const a=frame.getJointPose(th,S.ref),b=frame.getJointPose(ix,S.ref);if(!a||!b)return null;
+ const d=Math.hypot(a.transform.position.x-b.transform.position.x,a.transform.position.y-b.transform.position.y,a.transform.position.z-b.transform.position.z);
+ return {dist:d,pos:[(a.transform.position.x+b.transform.position.x)/2,(a.transform.position.y+b.transform.position.y)/2,(a.transform.position.z+b.transform.position.z)/2]}}catch(_){return null}}
+function haptic440(src,val=.5,ms=40){try{src.gamepad?.hapticActuators?.[0]?.pulse(val,ms)}catch(_){}}
+function doPick440(frame,src){const rp=frame.getPose(src.targetRaySpace,S.ref);if(!rp)return;
+ const o=[rp.transform.position.x,rp.transform.position.y,rp.transform.position.z];
+ const dq=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];
+ const d=qRotV(dq,[0,0,-1]);
+ const inv=invTRS(S.world.pos,S.world.quat,S.world.scale);
+ const om=qRotV(inv.q,[o[0]*inv.s,o[1]*inv.s,o[2]*inv.s]);om[0]+=inv.p[0];om[1]+=inv.p[1];om[2]+=inv.p[2];
+ const dm=qRotV(inv.q,d);const dl=Math.hypot(dm[0],dm[1],dm[2])||1;dm[0]/=dl;dm[1]/=dl;dm[2]/=dl;
+ if(!S.ppData||!S.ppData.length)return;
+ const r=pick440(om,dm,S.ppData,.08,.02);
+ if(r.index>=0){const sw=S.pi[r.index];haptic440(src,.65,50);S.panel.dirty=true;
+  if(Number.isFinite(sw)&&sw>=0){try{selectSweepIndex(sw,false)}catch(_){}}
+ }}
+function startGrab440(frame,src){const g=gripPos440(frame,src);if(!g)return;S.grabs.set(src,{start:g,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}});
+ if(S.grabs.size===2){const [a,b]=[...S.grabs.keys()];const ga=gripPos440(frame,a),gb=gripPos440(frame,b);if(ga&&gb)S.twoStart={a:ga,b:gb,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}}}
+ haptic440(src,.35,25)}
+function endGrab440(src){S.grabs.delete(src);S.twoStart=null;if(S.grabs.size===1){const [s]=[...S.grabs.keys()];S.grabs.set(s,{start:S.grabs.get(s).cur||S.grabs.get(s).start,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}})}}
+function grabPos440(frame,src){const st=S.grabs.get(src);if(st&&st.isHand)return st.handPos||st.start;return gripPos440(frame,src)}
+function applyGrabs440(frame){if(S.grabs.size===0)return;
+ if(S.grabs.size>=2&&S.twoStart){const [a,b]=[...S.grabs.keys()];const ga=grabPos440(frame,a),gb=grabPos440(frame,b);if(!ga||!gb)return;
+  const r=twoHand440(S.twoStart.a,S.twoStart.b,ga,gb,{pos:S.twoStart.world.pos,quat:S.twoStart.world.quat,scale:S.twoStart.world.scale});
+  S.world.pos=r.pos;S.world.quat=r.quat;S.world.scale=r.scale;return}
+ const [src]=[...S.grabs.keys()],st=S.grabs.get(src),g=grabPos440(frame,src);if(!g)return;st.cur=g;
+ const r=oneHand440(st.start,g,st.world);S.world.pos=r.pos;S.world.quat=r.quat;S.world.scale=r.scale}
+/* buttons: per-source edge detection */
+const btnPrev=new Map();
+function pollButtons440(frame,src){const gp=src.gamepad;if(!gp)return;const prev=btnPrev.get(src)||{};const b=gp.buttons;
+ const edge=i=>b[i]&&b[i].pressed&&!prev[i];
+ const hand=src.handedness;
+ if(hand==='right'){
+  if(b.length>4&&edge(4)){S.panel.mode=(S.panel.mode+1)%2;S.panel.dirty=true;haptic440(src,.3,20)}            /* A: panel refresh/cycle */
+  if(b.length>5&&edge(5)){S.hit.placing=!S.hit.placing;haptic440(src,.3,20)}                                    /* B: re-place */
+  const ax=gp.axes.length>=4?gp.axes[2]:0;                                                                       /* stick X: scrub */
+  if(Math.abs(ax)>.25){try{const n=state.sweep.length;if(n){const step=Math.max(1,Math.round(n*.004*Math.abs(ax)));selectSweepIndex(state.index+Math.sign(ax)*step,false);S.panel.dirty=true}}catch(_){}}
+  const ay=gp.axes.length>=4?gp.axes[3]:0;                                                                       /* stick Y: scale */
+  if(Math.abs(ay)>.25)S.world.scale=Math.min(20,Math.max(.04,S.world.scale*(1-ay*.02)));
+ }else if(hand==='left'){
+  if(b.length>4&&edge(4)){try{const modes=[...document.querySelectorAll('[data-mode]')].map(e=>e.dataset.mode);const i=modes.indexOf(state.mode);if(modes.length){setMode(modes[(i+1)%modes.length]);S.panel.dirty=true;S.sceneKey=''}}catch(_){}haptic440(src,.3,20)} /* X: cycle mode */
+  if(b.length>5&&edge(5)){toast440(t440('scan'));try{window.__UPRS398__?.scanDeep(()=>{S.panel.dirty=true})}catch(_){}haptic440(src,.5,30)}  /* Y: deep scan */
+  const ax=gp.axes.length>=4?gp.axes[2]:0;                                                                       /* stick X: yaw */
+  if(Math.abs(ax)>.25)S.world.quat=qNorm(qMul(qAxis(0,1,0,-ax*.03),S.world.quat));
+  const ay=gp.axes.length>=4?gp.axes[3]:0;                                                                       /* stick Y: push/pull */
+  if(Math.abs(ay)>.25){const fwd=qRotV(S.world.quat,[0,0,-1]);S.world.pos=[S.world.pos[0],S.world.pos[1],S.world.pos[2]+ay*.012]}
+ }
+ const np={};for(let i=0;i<b.length;i++)np[i]=b[i].pressed;btnPrev.set(src,np)}
+/* hand pinch-grab (hysteresis) */
+function pollHands440(frame){if(!S.sess)return;for(const src of S.sess.inputSources){if(!src.hand)continue;
+ const st=S.hands.get(src)||{pinch:false};const p=handPinch440(frame,src);if(!p){S.hands.set(src,st);continue}
+ if(!st.pinch&&p.dist<.018){st.pinch=true;startGrabHand440(frame,src,p)}
+ else if(st.pinch&&p.dist>.03){st.pinch=false;endGrab440(src)}
+ else if(st.pinch){const g=S.grabs.get(src);if(g)g.handPos=p.pos}
+ S.hands.set(src,st)}}
+function startGrabHand440(frame,src,p){S.grabs.set(src,{start:p.pos,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale},isHand:true});
+ if(S.grabs.size===2){const ks=[...S.grabs.keys()],pa=S.grabs.get(ks[0]),pb=S.grabs.get(ks[1]);
+  S.twoStart={a:pa.handPos||pa.start,b:pb.handPos||pb.start,world:{pos:[...S.world.pos],quat:[...S.world.quat],scale:S.world.scale}}}}
+/* hand-grab position update path inside applyGrabs: gripPos falls back for hands */
+/* ------------------------------------------------------------- render */
+function drawGeom440(gl,mvp,bufP,bufC,n,mode,ptSize){const L=S.loc;gl.uniformMatrix4fv(L.uM,false,mvp);
+ gl.bindBuffer(gl.ARRAY_BUFFER,bufP);gl.vertexAttribPointer(L.aP,3,gl.FLOAT,false,0,0);
+ gl.bindBuffer(gl.ARRAY_BUFFER,bufC);gl.vertexAttribPointer(L.aC,4,gl.FLOAT,false,0,0);
+ gl.uniform1f(L.uPt,mode===gl.POINTS?1:0);gl.uniform1f(L.uS,ptSize||60);gl.drawArrays(mode,0,n)}
+function frame440(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimationFrame(frame440);
+ const gl=S.gl,pose=frame.getViewerPose(S.ref);const layer=sess.renderState.baseLayer;
+ gl.bindFramebuffer(gl.FRAMEBUFFER,layer.framebuffer);
+ if(S.mode==='immersive-ar')gl.clearColor(0,0,0,0);else gl.clearColor(.012,.018,.03,1);
+ gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+ if(!pose)return;
+ /* inputs */
+ pollHands440(frame);
+ for(const src of sess.inputSources)pollButtons440(frame,src);
+ applyGrabs440(frame);
+ /* hit test + anchor */
+ if(S.hit.source&&(S.hit.placing||!S.placedOnce)){const hits=frame.getHitTestResults(S.hit.source);S.hit.visible=false;
+  if(hits.length){const hp=hits[0].getPose(S.ref);if(hp){S.hit.visible=true;composeTRS(S.hit.mat,[hp.transform.position.x,hp.transform.position.y,hp.transform.position.z],[0,0,0,1],1);S.lastHit=hits[0]}}}
+ if(S.anchorSpace){const ap=frame.getPose(S.anchorSpace,S.ref);if(ap)S.world.pos=[ap.transform.position.x,S.world.pos[1],ap.transform.position.z]}
+ /* scene + panel upkeep */
+ refreshScene440(false);refreshPanel440(t);
+ composeTRS(S.worldMat,S.world.pos,S.world.quat,S.world.scale);
+ /* beams */
+ const bp=[],bc=[];for(const src of sess.inputSources){if(src.hand)continue;const rp=frame.getPose(src.targetRaySpace,S.ref);if(!rp)continue;
+  const o=rp.transform.position,q=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];
+  const d=qRotV(q,[0,0,-1]);const c=src.handedness==='left'?[.6,.68,1,.5]:[1,.94,.74,.5];
+  bp.push(o.x,o.y,o.z,o.x+d[0]*1.6,o.y+d[1]*1.6,o.z+d[2]*1.6);bc.push(...c,...[c[0],c[1],c[2],0])}
+ /* render views */
+ gl.useProgram(S.prog);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);
+ gl.enableVertexAttribArray(S.loc.aP);gl.enableVertexAttribArray(S.loc.aC);
+ for(const view of pose.views){const vp=layer.getViewport(view);gl.viewport(vp.x,vp.y,vp.width,vp.height);
+  m4Mul(S.tmpA,view.projectionMatrix,view.transform.inverse.matrix);         /* VP */
+  m4Mul(S.tmpB,S.tmpA,S.worldMat);                                            /* VP·model */
+  drawGeom440(gl,S.tmpB,S.buf.lp,S.buf.lc,S.counts.ln,gl.LINES);
+  drawGeom440(gl,S.tmpB,S.buf.pp,S.buf.pc,S.counts.pn,gl.POINTS,64);
+  if(S.mode!=='immersive-ar'){m4Mul(S.tmpC,S.tmpA,S.gridMat);drawGeom440(gl,S.tmpC,S.buf.gv,S.buf.gc,S.gridN,gl.LINES)}
+  if(bp.length){gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.bv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(bp),gl.DYNAMIC_DRAW);
+   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.bc);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(bc),gl.DYNAMIC_DRAW);
+   drawGeom440(gl,S.tmpA,S.buf.bv,S.buf.bc,bp.length/3,gl.LINES)}
+  if(S.hit.visible&&(S.hit.placing||!S.placedOnce)){m4Mul(S.tmpC,S.tmpA,S.hit.mat);drawGeom440(gl,S.tmpC,S.buf.rv,S.buf.rc,S.ringN,gl.LINES)}
+  /* panel: yaw-billboard left of hologram */
+  if(S.panel.tex){const vpos=pose.transform.position;const px=S.world.pos[0]-0.62*S.world.scale-0.18,py=S.world.pos[1]+0.12,pz=S.world.pos[2];
+   const yaw=Math.atan2(vpos.x-px,vpos.z-pz);
+   composeTRS(S.tmpC,[px,py,pz],qAxis(0,1,0,yaw),1);m4Mul(S.tmpC,S.tmpA,S.tmpC);
+   gl.useProgram(S.progQ);gl.uniformMatrix4fv(S.locQ.uM,false,S.tmpC);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,S.panel.tex);gl.uniform1i(S.locQ.uTex,0);
+   gl.enableVertexAttribArray(S.locQ.aP);gl.enableVertexAttribArray(S.locQ.aT);
+   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qv);gl.vertexAttribPointer(S.locQ.aP,3,gl.FLOAT,false,0,0);
+   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.vertexAttribPointer(S.locQ.aT,2,gl.FLOAT,false,0,0);
+   gl.depthMask(false);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.depthMask(true);
+   gl.useProgram(S.prog)}
+ }}
+/* ------------------------------------------------------------- session */
+async function enterImmersive440(){
+ if(S.sess){try{await S.sess.end()}catch(_){}return}
+ if(!navigator.xr){toast440(t440('noXR'));try{if(typeof window.__UPRS440_LEGACY_XR__==='function')window.__UPRS440_LEGACY_XR__()}catch(_){}return}
+ let mode=null;
+ try{if(await navigator.xr.isSessionSupported('immersive-ar'))mode='immersive-ar'}catch(_){}
+ if(!mode){try{if(await navigator.xr.isSessionSupported('immersive-vr'))mode='immersive-vr'}catch(_){}}
+ if(!mode){toast440(t440('noXR'));return}
+ try{
+  const opts={requiredFeatures:['local'],optionalFeatures:['local-floor','bounded-floor','hand-tracking','hit-test','anchors']};
+  const sess=await navigator.xr.requestSession(mode,opts);
+  S.sess=sess;S.mode=mode;S.ended=false;try{state.xrSession=sess}catch(_){}
+  /* target 90 Hz where offered */
+  try{if(sess.supportedFrameRates&&sess.updateTargetFrameRate){const rates=[...sess.supportedFrameRates];const want=rates.includes(90)?90:Math.max(...rates);await sess.updateTargetFrameRate(want);S.support.rate=want}}catch(_){}
+  /* GL */
+  let cv=document.getElementById('xr440Canvas');
+  if(!cv){cv=document.createElement('canvas');cv.id='xr440Canvas';cv.style.display='none';document.body.appendChild(cv)}
+  const gl=cv.getContext('webgl2',{xrCompatible:true,antialias:true,alpha:true,depth:true})||cv.getContext('webgl',{xrCompatible:true,antialias:true,alpha:true,depth:true});
+  if(!gl)throw Error('WebGL unavailable');
+  S.gl=gl;await gl.makeXRCompatible();
+  const layer=new XRWebGLLayer(sess,gl,{alpha:true,antialias:true,framebufferScaleFactor:1});
+  try{layer.fixedFoveation=.35}catch(_){}
+  sess.updateRenderState({baseLayer:layer});
+  S.ref=await sess.requestReferenceSpace('local-floor').catch(()=>sess.requestReferenceSpace('local'));
+  /* programs & buffers */
+  S.prog=mkProg(gl,VS,FS);S.progQ=mkProg(gl,VSQ,FSQ);
+  S.loc={aP:gl.getAttribLocation(S.prog,'aP'),aC:gl.getAttribLocation(S.prog,'aC'),uM:gl.getUniformLocation(S.prog,'uM'),uS:gl.getUniformLocation(S.prog,'uS'),uPt:gl.getUniformLocation(S.prog,'uPt')};
+  S.locQ={aP:gl.getAttribLocation(S.progQ,'aP'),aT:gl.getAttribLocation(S.progQ,'aT'),uM:gl.getUniformLocation(S.progQ,'uM'),uTex:gl.getUniformLocation(S.progQ,'uTex')};
+  for(const k of ['lp','lc','pp','pc','gv','gc','bv','bc','qv','qt','rv','rc'])S.buf[k]=gl.createBuffer();
+  const grid=buildGrid440();S.gridN=grid.n;gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.gv);gl.bufferData(gl.ARRAY_BUFFER,grid.v,gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.gc);gl.bufferData(gl.ARRAY_BUFFER,grid.c,gl.STATIC_DRAW);
+  S.gridMat=tr?tr(0,0,0,1):composeTRS(M4(),[0,0,0],[0,0,0,1],1);
+  const ring=buildRing440();S.ringN=ring.n;gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.rv);gl.bufferData(gl.ARRAY_BUFFER,ring.v,gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.rc);gl.bufferData(gl.ARRAY_BUFFER,ring.c,gl.STATIC_DRAW);
+  const qw=.56,qh=.49;
+  gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-qw/2,-qh/2,0,qw/2,-qh/2,0,-qw/2,qh/2,0,qw/2,qh/2,0]),gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,1,1]),gl.STATIC_DRAW);
+  /* placement */
+  S.world.pos=[0,mode==='immersive-ar'?1.05:1.15,-.75];S.world.quat=[0,0,0,1];S.world.scale=.55;S.placedOnce=false;S.anchorSpace=null;
+  if(mode==='immersive-ar'){try{const vs=await sess.requestReferenceSpace('viewer');S.hit.source=await sess.requestHitTestSource({space:vs});S.support.hitTest=true}catch(_){S.hit.source=null}}
+  /* events */
+  sess.addEventListener('select',e=>{ /* place if reticle active, else pick */
+   if(S.hit.visible&&(S.hit.placing||!S.placedOnce)){const m=S.hit.mat;S.world.pos=[m[12],m[13]+.02,m[14]];S.placedOnce=true;S.hit.placing=false;
+    try{if(S.lastHit&&S.lastHit.createAnchor)S.lastHit.createAnchor().then(a=>{S.anchor=a;S.anchorSpace=a.anchorSpace;S.support.anchors=true}).catch(()=>{})}catch(_){}
+    toast440(t440('placed'));return}
+   doPick440(e.frame,e.inputSource)});
+  sess.addEventListener('squeezestart',e=>startGrab440(e.frame,e.inputSource));
+  sess.addEventListener('squeezeend',e=>endGrab440(e.inputSource));
+  sess.addEventListener('inputsourceschange',e=>{for(const s of e.removed){S.grabs.delete(s);btnPrev.delete(s);S.hands.delete(s)}S.support.hands=[...sess.inputSources].some(s=>!!s.hand)});
+  sess.addEventListener('end',()=>{S.sess=null;S.gl=null;S.sceneKey='';S.grabs.clear();btnPrev.clear();S.hands.clear();S.panel.tex=null;S.hit.source=null;S.anchorSpace=null;try{state.xrSession=null}catch(_){}toast440(t440('ended'))});
+  refreshScene440(true);S.panel.dirty=true;
+  sess.requestAnimationFrame(frame440);
+  toast440(t440('started')+(S.support.rate?` · ${S.support.rate} Hz`:'')+(mode==='immersive-ar'?' · AR':' · VR'));
+ }catch(e){console.warn('UPRS440 session',e);toast440('XR: '+e.message)}}
+/* --------------------------------------------------------------- install */
+let tries=0;
+function install440(){if(typeof document==='undefined')return;
+ if(!document.body||typeof state==='undefined'){if(tries++<80)return setTimeout(install440,220);return}
+ try{
+  if(typeof enterXR==='function'&&!window.__UPRS440_LEGACY_XR__)window.__UPRS440_LEGACY_XR__=enterXR;
+  try{enterXR=enterImmersive440;globalThis.enterXR=enterImmersive440;window.enterXR=enterImmersive440}catch(_){}
+  const btn=document.getElementById('xrBtn');if(btn){btn.onclick=()=>enterImmersive440();
+   (async()=>{try{if(navigator.xr&&await navigator.xr.isSessionSupported('immersive-ar')){S.support.ar=true;btn.textContent='🥽 '+t440('enterAR')}else if(navigator.xr&&await navigator.xr.isSessionSupported('immersive-vr')){S.support.vr=true;btn.textContent='🥽 '+t440('enterVR')}}catch(_){}})()}
+ }catch(e){console.warn('UPRS440 install',e)}}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install440,160),{once:true});else setTimeout(install440,160)}}catch(_){}
+for(const ms of [900,2600,7000])setTimeout(()=>{try{install440()}catch(_){}},ms);
+/* --------------------------------------------------------------- tests */
+function checks440(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
+ ok('v4.4.0 immersive module installed',()=>({ok:!!globalThis.__UPRS440__&&typeof enterImmersive440==='function',detail:'v'+V440}));
+ ok('v4.4.0 quaternion algebra identities',()=>{const q=qAxis(0,1,0,Math.PI/2),v=qRotV(q,[1,0,0]);const backOk=Math.abs(v[0])<1e-9&&Math.abs(v[2]+1)<1e-9;
+  const qq=qMul(q,qAxis(0,1,0,-Math.PI/2));return {ok:backOk&&Math.abs(qq[3]-1)<1e-9,detail:'rotY(90°)[1,0,0]→[0,0,−1]'}});
+ ok('v4.4.0 TRS inverse round-trip',()=>{const p=[.3,-.2,.7],q=qNorm([.1,.2,.3,.9]),s=1.7,inv=invTRS(p,q,s);
+  const pt=[.5,.6,-.4];const fw=qRotV(q,[pt[0]*s,pt[1]*s,pt[2]*s]);fw[0]+=p[0];fw[1]+=p[1];fw[2]+=p[2];
+  const bk=qRotV(inv.q,[fw[0]*inv.s,fw[1]*inv.s,fw[2]*inv.s]);bk[0]+=inv.p[0];bk[1]+=inv.p[1];bk[2]+=inv.p[2];
+  const err=Math.hypot(bk[0]-pt[0],bk[1]-pt[1],bk[2]-pt[2]);return {ok:err<1e-6,detail:'err='+err.toExponential(2)}});
+ ok('v4.4.0 ray picker selects the aimed point',()=>{const pts=new Float32Array([0,0,-1, .5,0,-1, 0,.5,-2]);
+  const r=pick440([0,0,0],[0,0,-1],pts);const r2=pick440([0,0,0],(()=>{const d=[.5,0,-1],l=Math.hypot(...d);return d.map(v=>v/l)})(),pts);
+  return {ok:r.index===0&&r2.index===1,detail:`aims→${r.index},${r2.index}`}});
+ ok('v4.4.0 two-hand transform recovers scale ×2 and yaw 90°',()=>{const w0={pos:[0,1,-1],quat:[0,0,0,1],scale:1};
+  const r=twoHand440([-.1,1,-1],[.1,1,-1],[0,1,-1.2],[0,1,-.8],w0);   /* separation ×2, rotated 90° about Y */
+  const scaleOk=Math.abs(r.ratio-2)<1e-9,yawOk=Math.abs(Math.abs(r.dyaw)-Math.PI/2)<1e-9;
+  return {ok:scaleOk&&yawOk,detail:`ratio=${r.ratio.toFixed(3)} dyaw=${(r.dyaw*180/Math.PI).toFixed(1)}°`}});
+ ok('v4.4.0 scene packer keeps sweep-index map',()=>{const sc={lines:[{color:'rgba(255,0,0,1)',pts:[[0,0,0],[1,0,0]]}],points:[{p:[0,0,0],color:'rgba(0,255,0,1)',meta:{index:7}},{p:[1,1,1],color:'x',meta:{}}]};
+  const g=packScene440(sc);return {ok:g.lp.length===6&&g.pp.length===6&&g.pi[0]===7&&g.pi[1]===-1,detail:JSON.stringify(g.pi)}});
+ ok('v4.4.0 XR shaders compile (WebGL)',()=>{const cv=document.createElement('canvas');const gl=cv.getContext('webgl2')||cv.getContext('webgl');if(!gl)return {ok:true,detail:'no GL in env — skipped'};
+  mkProg(gl,VS,FS);mkProg(gl,VSQ,FSQ);return {ok:true,detail:'both programs linked'}});
+ ok('v4.4.0 instrument panel renders',()=>{const cv=document.createElement('canvas');cv.width=64;cv.height=64;const cx=cv.getContext('2d');if(!cx)return {ok:true,detail:'no 2d — skipped'};
+  drawPanel440(cx,64,64,{title:'T',model:'M',axis:'1 Hz',gamma:'|Γ| 0.5',phase:'∠ 10°',vswr:'VSWR 3',mode:'smith',obs:'x',pred:'y',deep:'z'});
+  const px=cx.getImageData(32,32,1,1).data;return {ok:px[3]>0,detail:'alpha='+px[3]}});
+ ok('v4.4.0 legacy XR preserved as fallback',()=>({ok:typeof window.__UPRS440_LEGACY_XR__==='function'||typeof enterXR!=='function',detail:'fallback wired'}));
+ return out}
+function wrapTests440(){try{if(typeof runTests!=='function'||runTests.__uprs440)return;const base=runTests;
+ const w=function(show=true){const r=base(false),T=r.tests.filter(c=>!String(c.name||'').startsWith('v4.4.0'));for(const c of checks440())T.push(c);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs440=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+setTimeout(wrapTests440,300);for(const ms of [1600,4000,9000,16500])setTimeout(wrapTests440,ms);
+/* --------------------------------------------------------------- API */
+globalThis.__UPRS440__={version:V440,enter:enterImmersive440,exit:()=>{try{S.sess?.end()}catch(_){}},checks:checks440,
+ core:{m4Mul,qMul,qAxis,qNorm,qRotV,composeTRS,invTRS,pick:pick440,twoHand:twoHand440,oneHand:oneHand440,packScene:packScene440,drawPanel:drawPanel440,panelData:panelData440,shaders:{VS,FS,VSQ,FSQ}},
+ audit:()=>({version:V440,active:!!S.sess,mode:S.mode,support:{...S.support,xr:typeof navigator!=='undefined'&&!!navigator.xr},world:{...S.world},counts:S.counts,grabs:S.grabs.size,placed:!!S.placedOnce,anchored:!!S.anchorSpace})};
+})();
+</script>
 </body></html>
