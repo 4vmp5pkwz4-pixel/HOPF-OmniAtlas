@@ -1,12 +1,13 @@
 import fs from 'node:fs';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 
 const INDEX='build/index.html';
 const REPORT='build/UPRS_v4.6.1_consolidation_report.json';
-const MODULE='_includes/uprs461-quest-xr-recovery-v2.html';
+const MODULE='_includes/uprs461-quest-xr-recovery-v2.html.gz.b64';
 let html=fs.readFileSync(INDEX,'utf8');
-const module=fs.readFileSync(MODULE,'utf8').trim();
+const module=zlib.gunzipSync(Buffer.from(fs.readFileSync(MODULE,'utf8').trim(),'base64')).toString('utf8').trim();
 if(html.includes('uprs461QuestXRRecovery'))throw new Error('Quest XR recovery v2 already present');
 const oldCheck="{name:'v4.6.1 v4.5 owns XR renderer',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},";
 const newCheck="{name:'v4.6.1 Quest-safe XR entry',pass:A.xrOwner==='461'&&typeof globalThis.__UPRS461__?.enter==='function'&&globalThis.__UPRS450__?.enter===globalThis.__UPRS461__?.enter},";
