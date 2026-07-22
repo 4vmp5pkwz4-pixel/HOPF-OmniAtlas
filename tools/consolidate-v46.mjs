@@ -25,7 +25,7 @@ function replaceExact(label, needle, replacement, expected = 1) {
   if (count !== expected) {
     throw new Error(`${label}: expected ${expected} occurrence(s), found ${count}`);
   }
-  html = html.replace(needle, replacement);
+  html = html.replaceAll(needle, replacement);
   changes.push({ label, count });
 }
 
@@ -49,9 +49,10 @@ replaceExact(
   "if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';"
 );
 replaceExact(
-  'v4.1 integration authority',
+  'v4.1 integration authorities',
   "const VERSION='4.1.0';\nconst TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';\nconst BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';",
-  "const VERSION='4.6.0';\nconst TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';\nconst BRAND='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';"
+  "const VERSION='4.6.0';\nconst TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';\nconst BRAND='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';",
+  2
 );
 replaceExact('early core authority', '<head>', `<head>${core}`);
 replaceExact(
