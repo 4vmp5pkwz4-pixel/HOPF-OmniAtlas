@@ -16,9 +16,12 @@ on:
     paths:
       - index.html
       - app-v4.5.0.html
+      - UPRS_v4.6.0_consolidation_report.json
+      - docs/v4.6-core-consolidation.md
       - tools/consolidate-v46.mjs
       - _includes/uprs460-core-authority.html
       - _includes/uprs460-consolidation.html
+      - .github/workflows/v46-consolidation.yml
   workflow_dispatch:
 
 permissions:
@@ -52,6 +55,8 @@ jobs:
           grep -q 'v4.6.0' build/index.html
           grep -q '__UPRS450__' build/index.html
           grep -q 'asml_euv_lpp' build/index.html
+          grep -q '"sourceSha256"' build/UPRS_v4.6.0_consolidation_report.json
+          grep -q '"outputSha256"' build/UPRS_v4.6.0_consolidation_report.json
 
       - name: Publish generated index into consolidation branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/codex/v4.6-core-consolidation'
