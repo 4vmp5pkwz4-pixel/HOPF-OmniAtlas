@@ -1,4 +1,4 @@
-name: v4.6 Core Consolidation
+name: v4.6.1 Quest 3 XR Hotfix
 
 on:
   push:
@@ -6,11 +6,14 @@ on:
       - main
       - codex/v4.6-core-consolidation
       - codex/v4.6.1-quest-xr-startup-recovery
+      - codex/v4.6.1-quest3-xr-hotfix
     paths:
       - tools/consolidate-v46.mjs
+      - tools/apply-v461-quest-xr-hotfix.mjs
       - _includes/uprs460-core-authority.html
       - _includes/uprs460-consolidation.html
       - _includes/uprs461-xr-startup-recovery.js
+      - _includes/uprs461-quest-xr-recovery-v2.html.gz.b64
       - .github/workflows/v46-consolidation.yml
   pull_request:
     branches:
@@ -20,10 +23,13 @@ on:
       - app-v4.5.0.html
       - UPRS_v4.6.*_consolidation_report.json
       - docs/v4.6-core-consolidation.md
+      - docs/v4.6.1-quest3-xr-hotfix-v2.md
       - tools/consolidate-v46.mjs
+      - tools/apply-v461-quest-xr-hotfix.mjs
       - _includes/uprs460-core-authority.html
       - _includes/uprs460-consolidation.html
       - _includes/uprs461-xr-startup-recovery.js
+      - _includes/uprs461-quest-xr-recovery-v2.html.gz.b64
       - .github/workflows/v46-consolidation.yml
   workflow_dispatch:
 
@@ -40,7 +46,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build deterministic single-file release
+      - name: Build deterministic v4.6.1 baseline
         shell: bash
         run: |
           set +e
@@ -49,26 +55,37 @@ jobs:
           cat build-v46.log
           exit $code
 
+      - name: Apply Quest 3 continuous-bootstrap XR hotfix
+        shell: bash
+        run: |
+          set +e
+          node tools/apply-v461-quest-xr-hotfix.mjs > build-v461-hotfix.log 2>&1
+          code=$?
+          cat build-v461-hotfix.log
+          exit $code
+
       - name: Verify generated artifact
         shell: bash
         run: |
           set -euo pipefail
-          report="$(find build -maxdepth 1 -name 'UPRS_v4.6.*_consolidation_report.json' -print -quit)"
+          report="$(find build -maxdepth 1 -name 'UPRS_v4.6.1_consolidation_report.json' -print -quit)"
           test -s build/index.html
           test -n "$report"
           test -s "$report"
           grep -q 'uprs460CoreAuthority' build/index.html
           grep -q 'uprs460Consolidation' build/index.html
-          grep -Eq 'v4\.6\.[0-9]+' build/index.html
+          grep -q 'uprs461QuestXRRecovery' build/index.html
+          grep -q '__UPRS461__' build/index.html
+          grep -q 'continuous-bootstrap+watchdog+capture-authority' build/index.html
           grep -q '__UPRS450__' build/index.html
           grep -q 'asml_euv_lpp' build/index.html
-          grep -q 'quest-safe-v461' build/index.html || true
           grep -q '"sourceSha256"' "$report"
           grep -q '"outputSha256"' "$report"
+          grep -q '"continuousBootstrapFrames": true' "$report"
           echo "REPORT=$report" >> "$GITHUB_ENV"
 
-      - name: Publish generated index into recovery branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/v4.6.1-quest-xr-startup-recovery'
+      - name: Publish verified index into Quest hotfix branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/v4.6.1-quest3-xr-hotfix'
         shell: bash
         run: |
           set -euo pipefail
@@ -79,18 +96,20 @@ jobs:
             echo 'Generated production files are current.'
             exit 0
           fi
-          git config user.name 'UPRS Consolidation Bot'
+          git config user.name 'UPRS Quest XR Hotfix Bot'
           git config user.email 'actions@users.noreply.github.com'
           git add index.html "$report_name"
-          git commit -m 'v4.6.1: publish verified Quest XR recovery index'
-          git push origin HEAD:codex/v4.6.1-quest-xr-startup-recovery
+          git commit -m 'v4.6.1: publish verified Quest 3 XR hotfix'
+          git push origin HEAD:codex/v4.6.1-quest3-xr-hotfix
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: UPRS-v4.6-build-diagnostics
-          path: build-v46.log
+          name: UPRS-v4.6.1-quest-xr-build-diagnostics
+          path: |
+            build-v46.log
+            build-v461-hotfix.log
           if-no-files-found: error
           retention-days: 14
 
@@ -98,9 +117,9 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: UPRS-v4.6-release-candidate
+          name: UPRS-v4.6.1-quest3-xr-hotfix
           path: |
             build/index.html
-            build/UPRS_v4.6.*_consolidation_report.json
+            build/UPRS_v4.6.1_consolidation_report.json
           if-no-files-found: error
           retention-days: 14
