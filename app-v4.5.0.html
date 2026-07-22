@@ -1,43 +1,12 @@
 <!doctype html>
 <html lang="ru">
-<head><script id="uprs460CoreAuthority">(()=>{'use strict';
-const VERSION='4.6.0';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
-const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
-A.version=VERSION;
-A.release='core-consolidation';
-A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6-transforms';
-A.reproducibleReport=true;
-A.xrOwner='450';
-A.sceneRevision=Number.isFinite(A.sceneRevision)?A.sceneRevision:0;
-A.bumpSceneRevision=reason=>{
-  A.sceneRevision=(A.sceneRevision+1)>>>0;
-  A.lastSceneReason=reason||'unspecified';
-  return A.sceneRevision;
-};
-A.sceneStamp=scene=>{
-  let h=2166136261>>>0;
-  const mix=v=>{let n=Number(v);if(!Number.isFinite(n))n=0;n=Math.round(n*1e5);h^=n;h=Math.imul(h,16777619)>>>0};
-  const pts=scene?.points||[],lns=scene?.lines||[];
-  mix(pts.length);mix(lns.length);
-  const sample=(arr,read)=>{const n=arr.length;if(!n)return;read(arr[0]);if(n>2)read(arr[n>>1]);if(n>1)read(arr[n-1])};
-  sample(pts,p=>{const q=p?.p||[];mix(q[0]);mix(q[1]);mix(q[2]);mix(p?.meta?.index)});
-  sample(lns,l=>{const p=l?.pts||[];mix(p.length);if(p.length){mix(p[0]?.[0]);mix(p[0]?.[1]);mix(p[0]?.[2]);const z=p[p.length-1];mix(z?.[0]);mix(z?.[1]);mix(z?.[2])}});
-  return h>>>0;
-};
-A.claimVersion=()=>{
-  const old=document.querySelector('title');
-  const t=document.createElement('title');t.textContent=TITLE;
-  if(old)old.replaceWith(t);else document.head.appendChild(t);
-  document.documentElement.dataset.uprsVersion=VERSION;
-};
-})();</script><script id="uprs342EarlyDiagnostics">(()=>{const a=[];window.__UPRS_EARLY_ERRORS__=a;addEventListener('error',e=>a.push({message:e.message,source:e.filename,line:e.lineno,column:e.colno}),true);addEventListener('unhandledrejection',e=>a.push({message:String(e.reason?.stack||e.reason),type:'unhandledrejection'}),true)})();</script>
+<head><script id="uprs342EarlyDiagnostics">(()=>{const a=[];window.__UPRS_EARLY_ERRORS__=a;addEventListener('error',e=>a.push({message:e.message,source:e.filename,line:e.lineno,column:e.colno}),true);addEventListener('unhandledrejection',e=>a.push({message:String(e.reason?.stack||e.reason),type:'unhandledrejection'}),true)})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05070b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory</title>
+<title>UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP</title>
 <style>
 :root{--bg:#030507;--panel:rgba(10,14,21,.88);--panel2:rgba(16,21,31,.82);--gold:#d7b76e;--gold2:#fff0bd;--ice:#98e8ff;--violet:#c3adff;--green:#8ce9bd;--red:#ff9d9d;--text:#edf1f6;--muted:#96a2b5;--line:rgba(215,183,110,.24);--shadow:0 24px 80px rgba(0,0,0,.5)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 54% 18%,#141c2d 0,#070b12 36%,#020305 78%);color:var(--text);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}button,input,select{font:inherit}button{color:inherit}.app{height:100%;display:grid;grid-template-rows:auto 1fr;position:relative}.top{min-height:68px;display:flex;align-items:center;gap:12px;padding:9px 14px calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(3,5,8,.96),rgba(3,5,8,.78));backdrop-filter:blur(20px);z-index:20}.brand{display:flex;align-items:center;gap:10px;min-width:262px}.seal{width:40px;height:40px;border:1px solid rgba(255,240,189,.65);border-radius:50%;position:relative;box-shadow:0 0 26px rgba(215,183,110,.18),inset 0 0 18px rgba(152,232,255,.08)}.seal:before,.seal:after{content:"";position:absolute;border-radius:50%;border:1px solid}.seal:before{inset:7px;border-color:rgba(152,232,255,.72);transform:rotate(58deg)}.seal:after{inset:13px;border-color:rgba(195,173,255,.9)}.brand b{display:block;font-size:13px;letter-spacing:.2em;color:var(--gold2)}.brand small{display:block;margin-top:3px;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}.modes{display:flex;gap:6px;flex:1;overflow:auto;scrollbar-width:none}.modes::-webkit-scrollbar{display:none}.mode,.btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);padding:8px 11px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.18s}.mode:hover,.btn:hover{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.08)}.mode.on{color:#080a0d;background:linear-gradient(135deg,var(--gold2),var(--gold));border-color:transparent;box-shadow:0 8px 24px rgba(215,183,110,.18)}.top-actions{display:flex;gap:6px}.layout{min-height:0;display:grid;grid-template-columns:310px 1fr 330px;gap:11px;padding:11px}.panel{min-height:0;overflow:auto;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:var(--shadow);backdrop-filter:blur(20px)}.panel::-webkit-scrollbar{width:7px}.panel::-webkit-scrollbar-thumb{background:rgba(215,183,110,.2);border-radius:9px}.left,.right{padding:14px}.section{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.065)}.section:last-child{border-bottom:0}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--gold);font-size:9px;letter-spacing:.17em;text-transform:uppercase;margin-bottom:9px}.badge{font-size:8px;letter-spacing:.09em;padding:3px 7px;border:1px solid;border-radius:999px}.tierA{color:var(--green);border-color:rgba(140,233,189,.35)}.tierB{color:var(--gold2);border-color:rgba(215,183,110,.42)}.tierC{color:var(--violet);border-color:rgba(195,173,255,.38)}.field{margin:8px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10.5px;margin-bottom:5px}.field label span:last-child{color:var(--gold2)}input,select{width:100%;min-width:0;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.25);color:var(--text);padding:8px 9px;border-radius:9px;outline:none}input:focus,select:focus{border-color:rgba(152,232,255,.45);box-shadow:0 0 0 3px rgba(152,232,255,.05)}input[type=range]{padding:0;accent-color:var(--gold)}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.toggle{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 0;color:var(--muted);font-size:10.5px}.switch{width:38px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:#1a2230;position:relative;cursor:pointer}.switch:after{content:"";position:absolute;left:3px;top:2px;width:16px;height:16px;border-radius:50%;background:#748196;transition:.18s}.switch.on{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.23)}.switch.on:after{left:18px;background:var(--gold2)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.grid2 .btn{border-radius:10px;padding:8px 8px}.viewport{min-width:0;min-height:0;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 50% 44%,rgba(22,30,44,.85),rgba(4,6,10,.98) 70%);box-shadow:var(--shadow)}#fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.72;transition:opacity .35s;pointer-events:none}body.ready #fallback{opacity:.06}#view,#xrCanvas,#camera{position:absolute;inset:0;width:100%;height:100%}#view{touch-action:none}#xrCanvas{display:none}#camera{display:none;object-fit:cover;filter:saturate(.7) contrast(1.1) brightness(.45)}.vignette{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 110px rgba(0,0,0,.68)}.viewtop{position:absolute;left:14px;right:14px;top:13px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.titlecard,.statecard{padding:9px 11px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(4,7,11,.65);backdrop-filter:blur(12px)}.titlecard b{display:block;color:var(--gold2);font-size:11px;letter-spacing:.13em;text-transform:uppercase}.titlecard span{display:block;color:var(--muted);font-size:9.5px;margin-top:3px}.statecard{align-self:flex-start;color:var(--green);font-size:9px;letter-spacing:.08em;border-color:rgba(140,233,189,.25)}.metrics{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:repeat(6,minmax(80px,1fr));gap:6px;pointer-events:none}.metric{padding:8px 9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(4,7,11,.68);backdrop-filter:blur(12px);min-width:0}.metric label{display:block;color:var(--muted);font-size:8px;letter-spacing:.09em;text-transform:uppercase}.metric b{display:block;margin-top:3px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric:nth-child(2n) b{color:var(--ice)}.metric:nth-child(3n) b{color:var(--gold2)}.card{border:1px solid rgba(255,255,255,.08);border-radius:13px;background:rgba(0,0,0,.15);padding:10px;margin:8px 0}.card h3{margin:0 0 7px;color:var(--gold2);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:10.5px}.kv div:nth-child(odd){color:var(--muted)}.kv div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;max-width:190px;overflow-wrap:anywhere}.formula{font:10px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#dce8f2;white-space:pre-wrap;overflow-wrap:anywhere}.note{color:var(--muted);font-size:10.5px;line-height:1.55}.note strong{color:var(--text)}details{border-top:1px solid rgba(255,255,255,.06);padding:7px 0}summary{cursor:pointer;color:var(--gold);font-size:10px}.search{margin-bottom:8px}.list{display:flex;flex-direction:column;gap:5px}.item{padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(0,0,0,.12);cursor:pointer}.item:hover{border-color:rgba(215,183,110,.35)}.item b{font-size:10.5px}.item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}.boot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 13px;border:1px solid rgba(215,183,110,.35);border-radius:999px;background:rgba(4,7,11,.82);color:var(--gold2);font-size:10px;letter-spacing:.1em;z-index:3;transition:.35s}body.ready .boot{opacity:0;pointer-events:none}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);opacity:0;z-index:100;padding:10px 14px;max-width:88vw;border:1px solid rgba(215,183,110,.36);border-radius:12px;background:rgba(4,7,11,.95);box-shadow:var(--shadow);transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}.fatal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);padding:20px}.fatal.show{display:flex}.fatal>div{max-width:720px;border:1px solid rgba(255,157,157,.45);border-radius:16px;background:#130a0c;padding:18px}.fatal h2{color:var(--red);margin:0 0 8px}.fatal pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#ffd8d8;font-size:11px}.mobileTabs{display:none}
@@ -7039,9 +7008,9 @@ for(const ms of[2600,4800,8000,13000])setTimeout(()=>{registerModel380();registe
 <script id="uprs381MergeIntegration">
 (()=>{
 'use strict';
-const VERSION='4.6.0';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
-const BRAND='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';
+const VERSION='4.1.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
+const BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
 const ASML_ID='asml_euv_lpp';
 const CLAUDE_IDS=['lorentz_dielectric','cole_cole','havriliak_negami','skin_effect_line','superconductor_surface','ferro_kittel','fabry_perot','quantum_rtd','qnm_ringdown','magnetoplasma_cyclotron','piezo_bvd','thermal_semiinfinite'];
 const finite=Number.isFinite;
@@ -7951,7 +7920,7 @@ function ensureTestChain398(){try{
 }catch(_){}}
 ensureTestChain398();
 /* ---------- install ---------- */
-const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
+const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
 function claimTitle398(){try{
  const te=document.querySelector('title');
  if(te&&!te.dataset.uprs398){const nt=document.createElement('title');nt.dataset.uprs398='1';nt.dataset.uprs370='1';nt.textContent=TITLE398;te.remove();document.head.appendChild(nt);
@@ -7966,7 +7935,7 @@ function install398(){if(typeof document==='undefined')return;
   setInterval(()=>{if(autoOn&&document.visibilityState==='visible')tick398()},2500);
   if(openState&&env.sweep().length>=12){scanLight398();render398()}
   claimTitle398();
-  const s=document.querySelector('.brand small');if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';
+  const s=document.querySelector('.brand small');if(s)s.textContent='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
  }catch(e){console.warn('UPRS398 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install398,140),{once:true});else setTimeout(install398,140)}}catch(_){}
 /* ---------- public API ---------- */
@@ -8370,9 +8339,9 @@ body.uprs400 #obsFab398,body.uprs400 #obsBtn398{display:none!important}
 <script id="uprs410UnifiedIntegrationScript">
 (()=>{
 'use strict';
-const VERSION='4.6.0';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
-const BRAND='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';
+const VERSION='4.1.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
+const BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
 const $=id=>document.getElementById(id);
 const obs=()=>$('obsPanel398');
 const manager=()=>globalThis.__UPRS375__;
@@ -9265,7 +9234,7 @@ function refreshPanel440(now){if(!S.panel.dirty&&now-S.panel.last<400&&S.lastInd
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
 /* --------------------------------------------------------- scene buffers */
-function sceneKey440(){try{const a=globalThis.__UPRS_APP__;return state.mode+'|'+state.model+'|'+state.index+'|'+(a?.sceneRevision||0)+'|'+(a?.sceneStamp?.(state.scene)||0)}catch(_){return ''}}
+function sceneKey440(){try{return state.mode+'|'+((state.scene?.points||[]).length)+'|'+((state.scene?.lines||[]).length)+'|'+state.model}catch(_){return ''}}
 function refreshScene440(force){const key=sceneKey440();if(!force&&key===S.sceneKey)return;S.sceneKey=key;
  let packed;try{packed=packScene440(state.scene)}catch(_){packed=packScene440(null)}
  const gl=S.gl;S.pi=packed.pi;S.counts={ln:packed.lp.length/3,pn:packed.pp.length/3};
@@ -9448,13 +9417,12 @@ function install440(){if(typeof document==='undefined')return;
  if(!document.body||typeof state==='undefined'){if(tries++<80)return setTimeout(install440,220);return}
  try{
   if(typeof enterXR==='function'&&!window.__UPRS440_LEGACY_XR__)window.__UPRS440_LEGACY_XR__=enterXR;
-  if(globalThis.__UPRS_APP__?.xrOwner==='450')return;
   try{enterXR=enterImmersive440;globalThis.enterXR=enterImmersive440;window.enterXR=enterImmersive440}catch(_){}
   const btn=document.getElementById('xrBtn');if(btn){btn.onclick=()=>enterImmersive440();
    (async()=>{try{if(navigator.xr&&await navigator.xr.isSessionSupported('immersive-ar')){S.support.ar=true;btn.textContent='🥽 '+t440('enterAR')}else if(navigator.xr&&await navigator.xr.isSessionSupported('immersive-vr')){S.support.vr=true;btn.textContent='🥽 '+t440('enterVR')}}catch(_){}})()}
  }catch(e){console.warn('UPRS440 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install440,160),{once:true});else setTimeout(install440,160)}}catch(_){}
-
+for(const ms of [900,2600,7000])setTimeout(()=>{try{install440()}catch(_){}},ms);
 /* --------------------------------------------------------------- tests */
 function checks440(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
  ok('v4.4.0 immersive module installed',()=>({ok:!!globalThis.__UPRS440__&&typeof enterImmersive440==='function',detail:'v'+V440}));
@@ -9627,7 +9595,7 @@ function refreshPanel450(now){const c=CORE();if(!c)return;const idx=(()=>{try{re
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
 /* --------------------------------------------------------- scene buffers */
-function sceneKey450(){try{const a=globalThis.__UPRS_APP__;return state.mode+'|'+state.model+'|'+state.index+'|'+(a?.sceneRevision||0)+'|'+(a?.sceneStamp?.(state.scene)||0)}catch(_){return ''}}
+function sceneKey450(){try{return state.mode+'|'+((state.scene?.points||[]).length)+'|'+((state.scene?.lines||[]).length)+'|'+state.model}catch(_){return ''}}
 function refreshScene450(force){const key=sceneKey450();if(!force&&key===S.sceneKey)return;S.sceneKey=key;const c=CORE();if(!c)return;
  let g;try{g=c.packScene(state.scene)}catch(_){g=c.packScene(null)}
  const gl=S.gl;S.pi=g.pi;S.counts={ln:g.lp.length/3,pn:g.pp.length/3};S.ppData=g.pp;
@@ -9826,16 +9794,15 @@ async function enterImmersive450(){
 let deskTimer=0;
 function desktopAudioTick450(){if(!AU.enabled||S.sess)return;const idx=(()=>{try{return state.index}catch(_){return -1}})();
  if(idx!==AU.lastIdx){AU.lastIdx=idx;const sel=currentSel450();if(sel){AU.apply(sel);AU.place(0,0,-1)}}}
-function toggleSound450(){const on=!AU.enabled;if(!on&&deskTimer){clearInterval(deskTimer);deskTimer=0}if(!AU.setEnabled(on)){toast450('Audio: '+(AU.err||'unavailable'));return}
+function toggleSound450(){const on=!AU.enabled;if(!AU.setEnabled(on)){toast450('Audio: '+(AU.err||'unavailable'));return}
  toast450(on?t450('sndOn'):t450('sndOff'));
  const btn=document.getElementById('sndBtn450');if(btn)btn.classList.toggle('on',on);
  if(on){const sel=currentSel450();if(sel){AU.apply(sel);AU.place(0,0,-1)}
   if(!deskTimer)deskTimer=setInterval(desktopAudioTick450,140)}}
 /* --------------------------------------------------------------- install */
-let tries=0,installed450=false;
+let tries=0;
 function install450(){if(typeof document==='undefined')return;
  if(!document.body||typeof state==='undefined'||!CORE()){if(tries++<90)return setTimeout(install450,220);return}
- if(installed450)return;installed450=true;
  try{
   const btn=document.getElementById('xrBtn');if(btn)btn.onclick=()=>enterImmersive450();
   try{enterXR=enterImmersive450;globalThis.enterXR=enterImmersive450;window.enterXR=enterImmersive450}catch(_){}
@@ -9843,7 +9810,7 @@ function install450(){if(typeof document==='undefined')return;
   if(acts&&!document.getElementById('sndBtn450')){const sb=document.createElement('button');sb.className='btn';sb.id='sndBtn450';sb.textContent='🔊';sb.title=lang450()===0?'Соникация резонансов':'Resonance sonification';sb.onclick=toggleSound450;acts.insertBefore(sb,acts.firstChild)}
  }catch(e){console.warn('UPRS450 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install450,200),{once:true});else setTimeout(install450,200)}}catch(_){}
-
+for(const ms of [1100,3000,8000])setTimeout(()=>{try{install450()}catch(_){}},ms);
 /* async audio probe for the self-test (OfflineAudioContext render) */
 const audioProbe={done:false,ok:false,rms:0};
 setTimeout(()=>{try{
@@ -9884,110 +9851,4 @@ globalThis.__UPRS450__={version:V450,enter:enterImmersive450,exit:()=>{try{S.ses
   audio:{enabled:AU.enabled,ctx:!!AU.ctx,err:AU.err,probe:audioProbe},world:{...S.world},rate:S.support.rate})};
 })();
 </script>
-<script id="uprs460Consolidation">(()=>{'use strict';
-const V='4.6.0',A=globalThis.__UPRS_APP__;
-function inferSemantics(m){
-  if(m.responseSemantics)return m.responseSemantics;
-  const map=String(m.map||'').toLowerCase();
-  if(map.includes('reflect'))return 'reflection-coefficient';
-  if(map.includes('impedance'))return 'impedance';
-  if(map.includes('admittance'))return 'admittance';
-  if(map.includes('transfer'))return 'transfer-function';
-  return 'derived-complex-response';
-}
-function applicability(s){return {
-  resonance:true,phase:true,powerLaw:true,plateau:true,fano:true,
-  directGamma:s==='reflection-coefficient',
-  directPassivity:s==='reflection-coefficient',
-  cayleyPassivity:s==='impedance'||s==='admittance',
-  groupDelay:s==='transfer-function'||s==='reflection-coefficient'
-}}
-function annotateModels(){
-  let inferred=0,explicit=0,total=0;
-  try{for(const m of Object.values(UPRSO_MODELS||{})){
-    total++;
-    if(m.semanticsSource==='inferred-v4.6')inferred++;
-    else if(m.responseSemantics)explicit++;
-    else{
-      m.responseSemantics=inferSemantics(m);
-      m.semanticsSource='inferred-v4.6';
-      inferred++;
-    }
-    if(!m.detectorApplicability){
-      m.detectorApplicability=applicability(m.responseSemantics);
-      m.detectorApplicabilitySource='inferred-v4.6';
-    }
-  }}catch(_){}
-  return {total,explicit,inferred};
-}
-function claimXR(){
-  if(globalThis.__UPRS450__?.enter){
-    globalThis.enterXR=globalThis.__UPRS450__.enter;
-    window.enterXR=globalThis.__UPRS450__.enter;
-    const b=document.getElementById('xrBtn');if(b)b.onclick=()=>globalThis.__UPRS450__.enter();
-    A.xrOwner='450';return true;
-  }
-  return false;
-}
-function hookSceneRevision(){
-  /* Revision tracks state/geometry mutations, never render frames. */
-  const names=['recalc','setMode'];
-  for(const n of names){try{
-    const f=globalThis[n];if(typeof f!=='function'||f.__uprs460)continue;
-    const w=function(...args){A.bumpSceneRevision(n);return f.apply(this,args)};
-    w.__uprs460=true;globalThis[n]=w;try{window[n]=w}catch(_){}
-  }catch(_){}}
-  document.addEventListener('input',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('input')},{passive:true});
-  document.addEventListener('change',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('change')},{passive:true});
-}
-function claimVersion(){A.claimVersion();}
-function audit(){
-  const sem=annotateModels(),r450=globalThis.__UPRS450__?.audit?.(),r440=globalThis.__UPRS440__?.audit?.();
-  return {version:V,title:document.title,htmlVersion:document.documentElement.dataset.uprsVersion,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
-}
-function checks(){
-  const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
-  return [
-    {name:'v4.6.0 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
-    {name:'v4.6.0 v4.5 owns XR entry',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},
-    {name:'v4.6.0 v4.4 retained as fallback',pass:typeof globalThis.__UPRS440__?.enter==='function'},
-    {name:'v4.6.0 scene signature detects geometry change',pass:stamp1!==stamp2},
-    {name:'v4.6.0 response semantics preserve provenance',pass:s.total>0&&s.explicit+s.inferred===s.total,detail:JSON.stringify(s)},
-    {name:'v4.6.0 no early runtime errors',pass:(globalThis.__UPRS_EARLY_ERRORS__||[]).length===0,detail:JSON.stringify(globalThis.__UPRS_EARLY_ERRORS__||[])}
-  ];
-}
-function supersedeLegacyVersionTests(tests){
-  const exact=new Set(['v2.7 version truth','v3.8.1 unified version','v3.8.1 merged-runtime truth','v4.1.0 unified version truth']);
-  for(const x of tests){
-    const name=String(x.name||'');
-    if(!x.pass&&(exact.has(name)||/document title|version truth|unified version|merged-runtime truth/i.test(name))){
-      x.pass=true;
-      x.detail='superseded by v4.6.0 central version authority';
-      x.supersededBy='v4.6.0';
-    }
-  }
-}
-function wrapTests(){try{
-  if(typeof runTests!=='function'||runTests.__uprs460)return;
-  const base=runTests;
-  const w=function(show=true){
-    const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.6.0'));
-    supersedeLegacyVersionTests(T);
-    for(const x of checks())T.push(x);
-    const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
-    globalThis.__UPRS_SELF_TEST__=rep;
-    if(show)try{toast(rep.failed.length?'Self-test: '+rep.failed.length+' failed':'Self-test: '+rep.passed+'/'+rep.total)}catch(_){}
-    return rep;
-  };
-  w.__uprs460=true;globalThis.runTests=w;window.runTests=w;
-}catch(_){}}
-function install(){
-  claimVersion();annotateModels();claimXR();hookSceneRevision();wrapTests();
-  /* Known legacy test wrappers finish by 17 s. Two finite reclaims keep v4.6 outermost without polling. */
-  setTimeout(()=>{claimVersion();claimXR();wrapTests()},18500);
-  setTimeout(()=>{claimVersion();claimXR();wrapTests()},24000);
-  document.dispatchEvent(new CustomEvent('uprs:ready',{detail:audit()}));
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-globalThis.__UPRS460__={version:V,audit,checks,annotateModels,claimXR,bumpSceneRevision:A.bumpSceneRevision};
-})();</script></body></html>
+</body></html>
