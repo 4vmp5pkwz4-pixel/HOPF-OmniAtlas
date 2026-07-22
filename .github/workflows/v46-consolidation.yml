@@ -3,6 +3,7 @@ name: v4.6 Core Consolidation
 on:
   push:
     branches:
+      - main
       - codex/v4.6-core-consolidation
     paths:
       - tools/consolidate-v46.mjs
@@ -45,5 +46,3 @@ jobs:
           git add index.html UPRS_v4.6.0_consolidation_report.json
           git commit -m 'v4.6.0: consolidate version, XR ownership, scene cache and lifecycle [skip ci]'
           git push origin HEAD:codex/v4.6-core-consolidation
-
-# Registered on main; this branch update triggers the production transformation.
