@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
+import crypto from 'node:crypto';
 
 const VERSION = '4.6.0';
 const SOURCE = 'app-v4.5.0.html';
@@ -10,6 +11,7 @@ const REPORT = path.join(OUT_DIR, 'UPRS_v4.6.0_consolidation_report.json');
 
 let html = fs.readFileSync(SOURCE, 'utf8');
 const sourceBytes = Buffer.byteLength(html);
+const sourceSha256 = crypto.createHash('sha256').update(html).digest('hex');
 const changes = [];
 
 function countOf(needle) {
@@ -130,18 +132,21 @@ const required = [
 const missing = required.filter(token => !html.includes(token));
 if (missing.length) throw new Error(`Required capabilities missing: ${missing.join(', ')}`);
 
+const outputBytes = Buffer.byteLength(html);
+const outputSha256 = crypto.createHash('sha256').update(html).digest('hex');
 fs.mkdirSync(OUT_DIR, { recursive: true });
 fs.writeFileSync(OUT, html);
 const report = {
   version: VERSION,
   source: SOURCE,
   sourceBytes,
-  outputBytes: Buffer.byteLength(html),
+  sourceSha256,
+  outputBytes,
+  outputSha256,
   inlineScripts: scripts.length,
   syntaxFailures,
   changes,
-  requiredCapabilities: required,
-  generatedAt: new Date().toISOString()
+  requiredCapabilities: required
 };
 fs.writeFileSync(REPORT, JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report, null, 2));
