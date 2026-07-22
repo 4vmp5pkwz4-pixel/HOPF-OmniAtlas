@@ -17,6 +17,14 @@ layout: null
 {% capture new_brand398 %}if(s)s.textContent='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';{% endcapture %}
 {% assign app = app | replace: old_brand398, new_brand398 %}
 
+{% capture integration410_old %}const VERSION='4.1.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
+const BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';{% endcapture %}
+{% capture integration410_new %}const VERSION='4.6.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.0 · Unified Scientific & Immersive Observatory';
+const BRAND='UNIFIED S³ · PREDICTIVE OBSERVATORY · IMMERSIVE LAB · v4.6.0';{% endcapture %}
+{% assign app = app | replace: integration410_old, integration410_new %}
+
 {% capture head_open %}<head>{% endcapture %}
 {% capture head_with_core %}<head>{{ core460 }}{% endcapture %}
 {% assign app = app | replace_first: head_open, head_with_core %}
