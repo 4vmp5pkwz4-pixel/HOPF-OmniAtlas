@@ -28,6 +28,22 @@ report.outputSha256=crypto.createHash('sha256').update(html).digest('hex');
 report.inlineScripts=scripts.length;
 report.syntaxFailures=failures;
 report.requiredCapabilities=[...new Set([...(report.requiredCapabilities||[]),'uprs461QuestXRRecovery','__UPRS461__'])];
-report.questXrHotfix={version:'4.6.1-v2',defaultMode:'immersive-vr',requestSessionFirst:true,continuousBootstrapFrames:true,firstFrameTimeoutMs:8000,frameWatchdogMs:6500,cleanupOnSetupFailure:true,capturePhaseAuthority:true,separateSafeMrButton:true,depthExcludedFromDefaultStart:true,webgl1Preferred:true,framebufferScaleFactorQuest:.70};
+report.questXrHotfix={
+ version:'4.6.1-v3',
+ defaultMode:'immersive-vr',
+ requestSessionFirst:true,
+ requestSessionTimeoutMs:0,
+ permissionReminderMs:8000,
+ firstFrameBeforeHeavySetup:true,
+ firstFrameTimeoutMs:8000,
+ frameWatchdogMs:6500,
+ cleanupOnSetupFailure:true,
+ separateSafeMrButton:true,
+ depthExcludedFromDefaultStart:true,
+ webgl1RequiredForGLSL100:true,
+ framebufferScaleFactorQuest:.72,
+ directHttpsRequired:true,
+ legacyAutomaticFallback:false
+};
 fs.writeFileSync(REPORT,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({outputBytes:report.outputBytes,outputSha256:report.outputSha256,inlineScripts:report.inlineScripts,questXrHotfix:report.questXrHotfix},null,2));
