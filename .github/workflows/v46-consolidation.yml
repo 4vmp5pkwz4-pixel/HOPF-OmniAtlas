@@ -55,7 +55,7 @@ jobs:
           cat build-v46.log
           exit $code
 
-      - name: Apply Quest 3 continuous-bootstrap XR hotfix
+      - name: Apply Quest 3 requestSession-first XR hotfix
         shell: bash
         run: |
           set +e
@@ -76,12 +76,15 @@ jobs:
           grep -q 'uprs460Consolidation' build/index.html
           grep -q 'uprs461QuestXRRecovery' build/index.html
           grep -q '__UPRS461__' build/index.html
-          grep -q 'continuous-bootstrap+watchdog+capture-authority' build/index.html
+          grep -q 'requestSession-first+first-frame-watchdog' build/index.html
           grep -q '__UPRS450__' build/index.html
           grep -q 'asml_euv_lpp' build/index.html
+          grep -q 'webgl1' build/index.html
+          grep -q 'requestSessionTimeoutMs": 0' "$report"
+          grep -q 'firstFrameBeforeHeavySetup": true' "$report"
+          grep -q 'webgl1RequiredForGLSL100": true' "$report"
           grep -q '"sourceSha256"' "$report"
           grep -q '"outputSha256"' "$report"
-          grep -q '"continuousBootstrapFrames": true' "$report"
           echo "REPORT=$report" >> "$GITHUB_ENV"
 
       - name: Publish verified index into Quest hotfix branch
