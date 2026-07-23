@@ -12,10 +12,12 @@ const XRSTART450={
   depthOnStartup:false,
   autoLegacyFallback:false,
   automaticPreflight:false,
-  requestTimeoutMs:30000,
+  requestTimeoutMs:0,
+  permissionReminderMs:8000,
   glTimeoutMs:8000,
   referenceSpaceTimeoutMs:5000,
-  firstFrameTimeoutMs:8000
+  firstFrameTimeoutMs:8000,
+  forceWebGL1ForGLSL100:true
  })
 };
 function xrNow450(){try{return performance.now()}catch(_){return Date.now()}}
@@ -27,6 +29,16 @@ function xrStage450(stage,detail){
  try{const b=document.getElementById('xrBtn');if(b){b.dataset.xrStage=stage;b.title='XR · '+stage+(detail?' · '+detail:'')}}catch(_){}
 }
 function xrWait450(promise,ms,stage,onLateResolve){
+ /* requestSession cannot be cancelled safely. Rejecting on a timer can leave Quest with a late zombie immersive session. */
+ if(stage==='request-session'){
+  const reminder=setTimeout(()=>{
+   if(XRSTART450.pending&&XRSTART450.stage==='request-session'){
+    xrStage450('waiting-user-permission','confirm inside headset');
+    try{toast450('WebXR: подтвердите запуск внутри шлема')}catch(_){}
+   }
+  },xrScale450(XRSTART450.policy.permissionReminderMs));
+  return Promise.resolve(promise).finally(()=>clearTimeout(reminder));
+ }
  return new Promise((resolve,reject)=>{
   let done=false;
   const timer=setTimeout(()=>{if(done)return;done=true;const e=new Error('Timeout: '+stage);e.name='TimeoutError';reject(e)},xrScale450(ms));
@@ -36,13 +48,25 @@ function xrWait450(promise,ms,stage,onLateResolve){
   },e=>{if(done)return;done=true;clearTimeout(timer);reject(e)});
  });
 }
+/* v4.5 shaders use GLSL ES 1.00 attribute/varying syntax. Quest WebGL2 rejects them, so only this XR canvas falls back to WebGL1. */
+try{
+ const proto=globalThis.HTMLCanvasElement?.prototype;
+ if(proto&&!proto.__uprs461XRContextGuard){
+  const nativeGetContext=proto.getContext;
+  Object.defineProperty(proto,'__uprs461XRContextGuard',{value:true});
+  proto.getContext=function(type,attrs){
+   if(this?.id==='xr450Canvas'&&type==='webgl2')return null;
+   return nativeGetContext.call(this,type,attrs);
+  };
+ }
+}catch(_){}
 function xrExplain450(error,stage){
  const name=String(error?.name||'Error'),msg=String(error?.message||error||'unknown');
  if(stage==='webxr-api')return 'WebXR API отсутствует. Откройте опубликованный HTTPS-адрес непосредственно в Meta Quest Browser; локальный file://, предпросмотр файла и встроенный iframe не запускают immersive WebXR.';
  if(name==='SecurityError')return 'WebXR SecurityError: откройте страницу напрямую в Meta Quest Browser по HTTPS, убедитесь, что вкладка активна, и нажмите XR ещё раз. Встроенный iframe или потерянная активация пользователя запрещают запуск.';
  if(name==='NotSupportedError')return 'WebXR NotSupportedError: immersive-vr или запрошенная конфигурация недоступна в этом браузере.';
  if(name==='InvalidStateError')return 'WebXR InvalidStateError: другая immersive-сессия уже активна или ещё создаётся. Закройте её либо перезагрузите страницу.';
- if(name==='TimeoutError')return 'WebXR завис на этапе «'+stage+'». Ожидание остановлено; поздно созданная сессия будет автоматически закрыта.';
+ if(name==='TimeoutError')return 'WebXR завис на этапе «'+stage+'». Сессия безопасно завершена.';
  return 'WebXR '+name+' на этапе «'+stage+'»: '+msg;
 }
 function xrReport450(){
