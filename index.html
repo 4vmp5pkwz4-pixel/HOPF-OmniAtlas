@@ -9685,7 +9685,7 @@ function pollHands450(frame){if(!S.sess)return;for(const src of S.sess.inputSour
  else if(st.pinch&&p.dist>.03){st.pinch=false;endGrab450(src)}
  else if(st.pinch){const g=S.grabs.get(src);if(g)g.handPos=p.pos}
  S.hands.set(src,st)}}
-function pollButtons450(frame,src){const gp=src.gamepad;if(!gp)return;const prev=btnPrev.get(src)||{};const b=gp.buttons;
+function pollButtons450(frame,src){const gp=src.gamepad;if(!gp)return;if(window.__UPRS470__&&window.__UPRS470__.input(frame,src,S,CORE()))return;const prev=btnPrev.get(src)||{};const b=gp.buttons;
  const edge=i=>b[i]&&b[i].pressed&&!prev[i];const hand=src.handedness;const c=CORE();
  if(hand==='right'){
   if(b.length>4&&edge(4)){S.panel.dirty=true;haptic450(src,.3,20)}
@@ -9765,6 +9765,7 @@ function frame450Core(t,frame){const sess=S.sess;if(!sess)return;sess.requestAni
   const dOn=setDepthUniforms450(gl,S.loc,view,frame);
   const proj=view.projectionMatrix,vinv=view.transform.inverse.matrix;
   try{if(window.__UPRS460__)window.__UPRS460__.occlude(gl,proj,vinv,frame,view,S,c)}catch(_){}
+  try{if(window.__UPRS470__)window.__UPRS470__.render(gl,proj,vinv,frame,view,S,c)}catch(_){}
   c.m4Mul(S.tmpA,vinv,S.worldMat);                       /* MV = view⁻¹·model */
   drawGeom450(gl,proj,S.tmpA,S.buf.lp,S.buf.lc,S.counts.ln,gl.LINES);
   drawGeom450(gl,proj,S.tmpA,S.buf.pp,S.buf.pc,S.counts.pn,gl.POINTS,64);
@@ -10365,6 +10366,294 @@ globalThis.__UPRS460__={version:V460,occlude:occlude460,onSession:_onSessionWrap
  saveScene:()=>{G.wantSave=true},clearScene:()=>{clearScene();toast460(t460('cleared'))},toggleHands:toggleHands460,checks:checks460,
  core:{sceneToAnchorOffset,anchorOffsetToScene,serializeScene,deserializeScene,buildSphere:buildSphere460,loadScene,storeScene,clearScene,shaders:{OCC_VS,OCC_FS}},
  audit:()=>({version:V460,handsEnabled:G.enabled,glReady:G.ready,lastJoints:G.lastJoints,persistActive:!!G.persist,supportPersist:G.supportPersist,saved:!!loadScene()})};
+})();
+</script>
+
+<script id="uprs470SpatialControlDeck">(()=>{
+'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.7.0 · SPATIAL CONTROL DECK
+   Best-practice in-VR control layer, hooked into the v4.5.x/v4.6.x loop:
+   · Laser-pointer interactive UI — a floating, yaw-billboarded panel with
+     tabs (SCENE / PARAMS / MOVE), buttons, toggles and sliders. Controller
+     rays are ray-cast against the panel plane; the widget under the cursor
+     highlights, a haptic tick fires on hover-enter, the trigger clicks/holds,
+     and sliders drag continuously. This exposes model & projection switching,
+     Observatory actions, live parameter editing and sweep scrubbing — no
+     memorised button shortcuts required.
+   · Comfort locomotion — smooth head-relative movement (left stick) with a
+     motion vignette, and snap-turn about the head (right stick), applied via
+     XRReferenceSpace.getOffsetReferenceSpace (the canonical WebXR technique).
+     A Navigate/Manipulate toggle hands the sticks between locomotion and the
+     legacy direct-manipulation behaviour.
+   All geometry, hit-testing, value mapping and locomotion math is pure and
+   unit-tested (__UPRS470__.core).
+   ========================================================================== */
+const V470='4.7.0';
+const CORE=()=>globalThis.__UPRS440__?.core;
+/* ------------------------------------------------------ pure: value maps */
+function uToVal470(d,u){u=Math.max(0,Math.min(1,u));if(d.scale==='log'&&d.min>0&&d.max>0)return d.min*Math.pow(d.max/d.min,u);return d.min+(d.max-d.min)*u}
+function valToU470(d,v){if(d.scale==='log'&&d.min>0&&d.max>0){const lu=Math.log(Math.max(d.min,Math.min(d.max,v))/d.min)/Math.log(d.max/d.min);return Math.max(0,Math.min(1,lu))}return Math.max(0,Math.min(1,(v-d.min)/((d.max-d.min)||1)))}
+/* ------------------------------------------------------ pure: ray → panel UV
+   panel centred at pos, oriented by quat; local axes X=right,Y=up,Z=normal;
+   size w×h metres. Returns {hit,u,v,px,py,t} with u,v in [0,1] across the face. */
+function rayPanelUV470(o,dir,pos,quat,w,h,W,H,c){c=c||CORE();
+ const right=c.qRotV(quat,[1,0,0]),up=c.qRotV(quat,[0,1,0]),nrm=c.qRotV(quat,[0,0,1]);
+ const denom=dir[0]*nrm[0]+dir[1]*nrm[1]+dir[2]*nrm[2];if(Math.abs(denom)<1e-7)return {hit:false};
+ const rel=[pos[0]-o[0],pos[1]-o[1],pos[2]-o[2]],t=(rel[0]*nrm[0]+rel[1]*nrm[1]+rel[2]*nrm[2])/denom;
+ if(t<=0)return {hit:false,t};
+ const p=[o[0]+dir[0]*t,o[1]+dir[1]*t,o[2]+dir[2]*t],dp=[p[0]-pos[0],p[1]-pos[1],p[2]-pos[2]];
+ const lx=dp[0]*right[0]+dp[1]*right[1]+dp[2]*right[2],ly=dp[0]*up[0]+dp[1]*up[1]+dp[2]*up[2];
+ const u=lx/w+.5,v=.5-ly/h;const hit=u>=0&&u<=1&&v>=0&&v<=1;
+ return {hit,u,v,px:u*(W||1),py:v*(H||1),t,point:p}}
+function widgetAt470(widgets,px,py){for(const wg of widgets){if(wg.type==='label')continue;if(px>=wg.x&&px<=wg.x+wg.w&&py>=wg.y&&py<=wg.y+wg.h)return wg}return null}
+/* ------------------------------------------------------ pure: locomotion */
+function moveVector470(sx,sy,headYaw,speed,dt){/* left-stick → world-plane delta, head-relative (−sy = forward) */
+ const fx=-Math.sin(headYaw),fz=-Math.cos(headYaw),rx=Math.cos(headYaw),rz=-Math.sin(headYaw);
+ const dz=-sy,dxr=sx,k=speed*dt;return [(rx*dxr+fx*dz)*k,0,(rz*dxr+fz*dz)*k]}
+function snapTurnAboutHead470(navPos,navYaw,headWorld,dYaw){/* rotate the rig by dYaw about the head world pos, keeping head fixed.
+   Uses the same qRotV operator as the rig mapping world=qRotV(q(yaw),local)+pos, so the head is invariant by construction. */
+ const c=CORE();const rel=[navPos[0]-headWorld[0],navPos[1]-headWorld[1],navPos[2]-headWorld[2]];
+ const rot=c?c.qRotV(c.qAxis(0,1,0,dYaw),rel):rel;
+ return {pos:[headWorld[0]+rot[0],headWorld[1]+rot[1],headWorld[2]+rot[2]],yaw:navYaw+dYaw}}
+function navOffset470(navPos,navYaw){/* offset transform for getOffsetReferenceSpace (base→player); inverse of rig */
+ const q=[0,Math.sin(-navYaw/2),0,Math.cos(-navYaw/2)];const c=CORE();
+ const ip=c?c.qRotV(q,[-navPos[0],-navPos[1],-navPos[2]]):[-navPos[0],-navPos[1],-navPos[2]];
+ return {position:{x:ip[0],y:ip[1],z:ip[2]},orientation:{x:q[0],y:q[1],z:q[2],w:q[3]}}}
+/* ------------------------------------------------------------- state */
+const DECK={ready:false,visible:true,tab:'scene',dirty:true,cv:null,cx:null,tex:null,W:512,H:660,w:.52,h:.67,
+ pos:[-.62,1.2,-.7],quat:[0,0,0,1],widgets:[],hover:new Map(),grab:null,tabKey:'',
+ navMode:false,moving:false,speed:1.4,snapDeg:30,vignette:true,snapArmed:true,
+ prog:null,progC:null,loc:{},locC:{},buf:{},nCursor:0,vigTex:null,
+ baseRef:null,sess:null,nav:{pos:[0,0,0],yaw:0},navDirty:false,btnPrev:new Map(),lastFrame:null};
+const lang470=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
+const L={scene:['СЦЕНА','SCENE','SZENE'],params:['ПАРАМЕТРЫ','PARAMS','PARAM.'],move:['ДВИЖЕНИЕ','MOVE','BEWEGEN'],
+ model:['Модель','Model','Modell'],prev:['‹ Пред','‹ Prev','‹ Zurück'],next:['След ›','Next ›','Weiter ›'],
+ scan:['Скан Обсерватории','Observatory scan','Observatorium-Scan'],save:['Сохранить сцену','Save scene','Szene speichern'],
+ recenter:['Центрировать','Recenter','Zentrieren'],cursor:['Курсор развёртки','Sweep cursor','Sweep-Cursor'],
+ scale:['Масштаб','Scale','Skalierung'],navigate:['Навигация','Navigate','Navigieren'],manipulate:['Манипуляция','Manipulate','Manipulieren'],
+ speed:['Скорость','Speed','Tempo'],snap:['Поворот','Snap turn','Drehung'],vignette:['Виньетка','Vignette','Vignette'],
+ reset:['Сброс вида','Reset view','Ansicht zurück'],mode:['Проекция','Projection','Projektion'],
+ deckReady:['Панель управления готова','Control deck ready','Bedienpult bereit'],off:['выкл','off','aus']};
+const tr=k=>L[k][lang470()];
+function toast470(s){try{toast(s)}catch(_){}}
+function haptic470(src,v,ms){try{src.gamepad?.hapticActuators?.[0]?.pulse(v,ms)}catch(_){}}
+const MODE_LABEL={smith:'Smith',sphere:'Riemann S²',hopf:'Trisphere S³',hopfion:'Hopfion',spatial:'Spatial',spectral:'Spectral 4D',multiport:'Multiport',bridges:'Couplings'};
+/* ------------------------------------------------------------- layout */
+function modeList470(){try{const ms=[...document.querySelectorAll('[data-mode]')].map(e=>e.dataset.mode);return [...new Set(ms)].filter(Boolean).slice(0,8)}catch(_){return ['smith','sphere','hopf','hopfion','spectral','multiport']}}
+function paramDescs470(){try{const m=UPRSO_MODELS[state.model];return (m&&m.params||[]).slice(0,6)}catch(_){return []}}
+function ensureParamStore470(){try{const m=UPRSO_MODELS[state.model];if(!state.params[state.model])state.params[state.model]=Object.fromEntries(m.params.map(p=>[p.key,p.value]));return state.params[state.model]}catch(_){return {}}}
+function layoutDeck470(){const W=DECK.W,H=DECK.H,wg=[];const pad=16,tabH=54,rowH=58;
+ const tabs=[['scene',tr('scene')],['params',tr('params')],['move',tr('move')]];
+ tabs.forEach((tb,i)=>wg.push({id:'tab:'+tb[0],type:'tab',x:pad+i*((W-2*pad)/3),y:pad,w:(W-2*pad)/3-6,h:tabH,label:tb[1],active:DECK.tab===tb[0]}));
+ let y=pad+tabH+16;
+ if(DECK.tab==='scene'){
+  const modes=modeList470(),cols=2,bw=(W-2*pad-10)/cols;
+  modes.forEach((m,i)=>{const cx=pad+(i%cols)*(bw+10),cy=y+Math.floor(i/cols)*(48+8);
+   wg.push({id:'mode:'+m,type:'button',x:cx,y:cy,w:bw,h:48,label:MODE_LABEL[m]||m,active:(()=>{try{return state.mode===m}catch(_){return false}})()})});
+  y+=Math.ceil(modes.length/cols)*(48+8)+10;
+  wg.push({id:'model:prev',type:'button',x:pad,y:y,w:(W-2*pad-10)/2,h:48,label:tr('prev')});
+  wg.push({id:'model:next',type:'button',x:pad+(W-2*pad-10)/2+10,y:y,w:(W-2*pad-10)/2,h:48,label:tr('next')});y+=48+8;
+  wg.push({id:'label:model',type:'label',x:pad,y:y,w:W-2*pad,h:34,label:(()=>{try{return (typeof modelDisplayName==='function'?modelDisplayName(state.model):state.model)}catch(_){return''}})()});y+=40;
+  wg.push({id:'act:scan',type:'button',x:pad,y:y,w:W-2*pad,h:48,label:tr('scan')});y+=48+8;
+  wg.push({id:'act:save',type:'button',x:pad,y:y,w:(W-2*pad-10)/2,h:48,label:tr('save')});
+  wg.push({id:'act:recenter',type:'button',x:pad+(W-2*pad-10)/2+10,y:y,w:(W-2*pad-10)/2,h:48,label:tr('recenter')});
+ }else if(DECK.tab==='params'){
+  const store=ensureParamStore470();
+  for(const d of paramDescs470()){const u=valToU470(d,store[d.key]??d.value);
+   wg.push({id:'param:'+d.key,type:'slider',x:pad,y:y,w:W-2*pad,h:44,u,label:(d.label||d.key)+' · '+fmtVal470(store[d.key]??d.value)+' '+(d.unit||''),desc:d});y+=rowH}
+  wg.push({id:'cursor',type:'slider',x:pad,y:y,w:W-2*pad,h:44,u:sweepU470(),label:tr('cursor')});y+=rowH;
+  wg.push({id:'scale',type:'slider',x:pad,y:y,w:W-2*pad,h:44,u:scaleU470(),label:tr('scale')});y+=rowH;
+ }else{
+  wg.push({id:'toggle:nav',type:'toggle',x:pad,y:y,w:W-2*pad,h:50,label:(DECK.navMode?tr('navigate'):tr('manipulate')),on:DECK.navMode});y+=rowH;
+  wg.push({id:'speed',type:'slider',x:pad,y:y,w:W-2*pad,h:44,u:(DECK.speed-.4)/2.6,label:tr('speed')+' · '+DECK.speed.toFixed(1)+' m/s'});y+=rowH;
+  const snaps=[['30','30°'],['45','45°'],['off',tr('off')]],sbw=(W-2*pad-20)/3;
+  snaps.forEach((s,i)=>wg.push({id:'snap:'+s[0],type:'button',x:pad+i*(sbw+10),y:y,w:sbw,h:48,label:s[1],active:String(DECK.snapDeg)===s[0]||(s[0]==='off'&&DECK.snapDeg===0)}));y+=rowH;
+  wg.push({id:'toggle:vig',type:'toggle',x:pad,y:y,w:W-2*pad,h:50,label:tr('vignette'),on:DECK.vignette});y+=rowH;
+  wg.push({id:'act:reset',type:'button',x:pad,y:y,w:W-2*pad,h:48,label:tr('reset')});y+=rowH;
+ }
+ DECK.widgets=wg;DECK.tabKey=DECK.tab+'|'+state.model+'|'+(()=>{try{return state.mode}catch(_){return''}})()}
+function fmtVal470(v){try{return fmt(v,4)}catch(_){const a=Math.abs(v);return a&&(a>=1e5||a<1e-3)?v.toExponential(2):String(+(+v).toFixed(4))}}
+function sweepU470(){try{const n=state.sweep.length;return n>1?state.index/(n-1):0}catch(_){return 0}}
+function scaleU470(){try{const S=window.__UPRS450STATE__;return 0}catch(_){return 0}}
+/* ------------------------------------------------------------- canvas draw */
+function ensureCanvas470(){if(DECK.cv)return;const cv=document.createElement('canvas');cv.width=DECK.W;cv.height=DECK.H;DECK.cv=cv;DECK.cx=cv.getContext('2d')}
+function rr470(cx,x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
+function drawDeck470(hoverIds){ensureCanvas470();const cx=DECK.cx,W=DECK.W,H=DECK.H;cx.clearRect(0,0,W,H);
+ rr470(cx,3,3,W-6,H-6,26);const g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(13,18,28,.95)');g.addColorStop(1,'rgba(6,10,17,.97)');cx.fillStyle=g;cx.fill();
+ cx.strokeStyle='rgba(215,183,110,.5)';cx.lineWidth=2.5;cx.stroke();
+ for(const wg of DECK.widgets){const hov=hoverIds&&hoverIds.has(wg.id);
+  if(wg.type==='tab'){rr470(cx,wg.x,wg.y,wg.w,wg.h,12);cx.fillStyle=wg.active?'rgba(215,183,110,.9)':hov?'rgba(215,183,110,.28)':'rgba(255,255,255,.06)';cx.fill();
+   cx.fillStyle=wg.active?'#0a0a0a':'#e7edf4';cx.font='600 24px system-ui';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(wg.label,wg.x+wg.w/2,wg.y+wg.h/2)}
+  else if(wg.type==='button'){rr470(cx,wg.x,wg.y,wg.w,wg.h,11);cx.fillStyle=wg.active?'rgba(152,232,255,.26)':hov?'rgba(215,183,110,.22)':'rgba(255,255,255,.05)';cx.fill();
+   cx.strokeStyle=hov?'rgba(255,240,189,.9)':wg.active?'rgba(152,232,255,.6)':'rgba(255,255,255,.12)';cx.lineWidth=hov?2.5:1.4;cx.stroke();
+   cx.fillStyle='#eef3f8';cx.font='500 21px system-ui';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(wg.label,wg.x+wg.w/2,wg.y+wg.h/2)}
+  else if(wg.type==='toggle'){rr470(cx,wg.x,wg.y,wg.w,wg.h,11);cx.fillStyle=hov?'rgba(215,183,110,.2)':'rgba(255,255,255,.05)';cx.fill();cx.strokeStyle=hov?'rgba(255,240,189,.9)':'rgba(255,255,255,.12)';cx.lineWidth=hov?2.5:1.4;cx.stroke();
+   cx.fillStyle='#eef3f8';cx.font='500 22px system-ui';cx.textAlign='left';cx.textBaseline='middle';cx.fillText(wg.label,wg.x+18,wg.y+wg.h/2);
+   const sw=64,sh=30,sx=wg.x+wg.w-sw-16,syb=wg.y+wg.h/2-sh/2;rr470(cx,sx,syb,sw,sh,15);cx.fillStyle=wg.on?'rgba(140,233,189,.85)':'rgba(255,255,255,.14)';cx.fill();
+   cx.beginPath();cx.arc(wg.on?sx+sw-15:sx+15,syb+sh/2,12,0,7);cx.fillStyle='#0a0a0a';cx.fill()}
+  else if(wg.type==='slider'){cx.fillStyle='#c9d4e0';cx.font='500 19px system-ui';cx.textAlign='left';cx.textBaseline='alphabetic';cx.fillText(wg.label,wg.x,wg.y+16);
+   const tx=wg.x,ty=wg.y+30,tw=wg.w,th=8;rr470(cx,tx,ty,tw,th,4);cx.fillStyle='rgba(255,255,255,.1)';cx.fill();
+   rr470(cx,tx,ty,tw*Math.max(0,Math.min(1,wg.u)),th,4);cx.fillStyle=hov?'rgba(255,240,189,.95)':'rgba(215,183,110,.85)';cx.fill();
+   cx.beginPath();cx.arc(tx+tw*Math.max(0,Math.min(1,wg.u)),ty+th/2,hov?13:10,0,7);cx.fillStyle=hov?'#fff0bd':'#d7b76e';cx.fill()}
+  else if(wg.type==='label'){cx.fillStyle='#98e8ff';cx.font='500 22px system-ui';cx.textAlign='left';cx.textBaseline='middle';cx.fillText((wg.label||'').slice(0,34),wg.x,wg.y+wg.h/2)}
+ }
+ DECK.dirty=false;const gl=DECK.gl;if(!gl)return;if(!DECK.tex)DECK.tex=gl.createTexture();
+ gl.bindTexture(gl.TEXTURE_2D,DECK.tex);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+ gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,DECK.cv);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
+function buildVignette470(gl){const cv=document.createElement('canvas');cv.width=256;cv.height=256;const cx=cv.getContext('2d');
+ const g=cx.createRadialGradient(128,128,70,128,128,150);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.85)');cx.fillStyle=g;cx.fillRect(0,0,256,256);
+ const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,cv);
+ gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);return tex}
+/* ------------------------------------------------------------- GL */
+const T_VS='attribute vec3 aP;attribute vec2 aT;uniform mat4 uP;uniform mat4 uMV;varying vec2 vT;void main(){gl_Position=uP*uMV*vec4(aP,1.);vT=aT;}';
+const T_FS='precision mediump float;varying vec2 vT;uniform sampler2D uTex;uniform float uAlpha;void main(){vec4 c=texture2D(uTex,vT);c.a*=uAlpha;if(c.a<0.01)discard;gl_FragColor=c;}';
+const C_VS='attribute vec3 aP;attribute vec4 aC;uniform mat4 uP;uniform mat4 uMV;varying vec4 vC;void main(){gl_Position=uP*uMV*vec4(aP,1.);vC=aC;}';
+const C_FS='precision mediump float;varying vec4 vC;void main(){gl_FragColor=vC;}';
+function mkProg470(gl,vs,fs){const c=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh)||'sh');return sh};
+ const p=gl.createProgram();gl.attachShader(p,c(gl.VERTEX_SHADER,vs));gl.attachShader(p,c(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p)||'lnk');return p}
+function ensureGL470(gl){if(DECK.ready&&DECK.gl===gl)return true;try{
+ DECK.gl=gl;DECK.prog=mkProg470(gl,T_VS,T_FS);DECK.progC=mkProg470(gl,C_VS,C_FS);
+ DECK.loc={aP:gl.getAttribLocation(DECK.prog,'aP'),aT:gl.getAttribLocation(DECK.prog,'aT'),uP:gl.getUniformLocation(DECK.prog,'uP'),uMV:gl.getUniformLocation(DECK.prog,'uMV'),uTex:gl.getUniformLocation(DECK.prog,'uTex'),uAlpha:gl.getUniformLocation(DECK.prog,'uAlpha')};
+ DECK.locC={aP:gl.getAttribLocation(DECK.progC,'aP'),aC:gl.getAttribLocation(DECK.progC,'aC'),uP:gl.getUniformLocation(DECK.progC,'uP'),uMV:gl.getUniformLocation(DECK.progC,'uMV')};
+ const hw=DECK.w/2,hh=DECK.h/2;
+ DECK.buf.qv=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.qv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-hw,-hh,0,hw,-hh,0,-hw,hh,0,hw,hh,0]),gl.STATIC_DRAW);
+ DECK.buf.qt=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.qt);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,1,1]),gl.STATIC_DRAW);
+ DECK.buf.fs=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.fs);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,0,1,-1,0,-1,1,0,1,1,0]),gl.STATIC_DRAW);
+ const cv=[],seg=16,r=.012;cv.push(0,0,0);for(let i=0;i<=seg;i++){const a=i/seg*Math.PI*2;cv.push(Math.cos(a)*r,Math.sin(a)*r,0)}DECK.nCursor=cv.length/3;
+ DECK.buf.cur=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.cur);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(cv),gl.STATIC_DRAW);
+ DECK.vigTex=buildVignette470(gl);DECK.ready=true;return true}catch(e){console.warn('UPRS470 gl',e);return false}}
+/* ------------------------------------------------------------- interaction */
+function activateWidget470(wg,S,src){const id=wg.id;let dirty=true;
+ try{
+  if(id.startsWith('tab:')){DECK.tab=id.slice(4);DECK.grab=null}
+  else if(id.startsWith('mode:')){if(typeof setMode==='function')setMode(id.slice(5));S.sceneKey='';}
+  else if(id==='model:prev'||id==='model:next'){const ids=Object.keys(UPRSO_MODELS),i=ids.indexOf(state.model),n=ids.length;const j=(i+(id==='model:next'?1:-1)+n)%n;if(typeof setModel==='function')setModel(ids[j],true);S.sceneKey='';}
+  else if(id==='act:scan'){toast470(tr('scan'));try{window.__UPRS398__?.scanDeep(()=>{})}catch(_){}}
+  else if(id==='act:save'){try{window.__UPRS460__?.saveScene?.()}catch(_){}}
+  else if(id==='act:recenter'){DECK.nav={pos:[0,0,0],yaw:0};DECK.navDirty=true;try{S.world.pos=[0,S.world.pos[1],-.75];S.world.quat=[0,0,0,1]}catch(_){}}
+  else if(id==='toggle:nav'){DECK.navMode=!DECK.navMode}
+  else if(id==='toggle:vig'){DECK.vignette=!DECK.vignette}
+  else if(id.startsWith('snap:')){const s=id.slice(5);DECK.snapDeg=s==='off'?0:+s}
+  else if(id==='act:reset'){DECK.nav={pos:[0,0,0],yaw:0};DECK.navDirty=true}
+  else dirty=true;
+ }catch(_){}
+ haptic470(src,.5,25);DECK.dirty=true;layoutDeck470()}
+function applySlider470(wg,u,S){u=Math.max(0,Math.min(1,u));wg.u=u;
+ try{
+  if(wg.id.startsWith('param:')){const d=wg.desc;const store=ensureParamStore470();store[d.key]=uToVal470(d,u);if(typeof recalc==='function')recalc()}
+  else if(wg.id==='cursor'){const n=state.sweep.length;if(n>1&&typeof selectSweepIndex==='function')selectSweepIndex(Math.round(u*(n-1)),false)}
+  else if(wg.id==='scale'){S.world.scale=.05*Math.pow(6/.05,u)}
+  else if(wg.id==='speed'){DECK.speed=.4+u*2.6}
+ }catch(_){}
+ DECK.dirty=true}
+/* per-source input; returns true to take over the sticks (Navigate mode) */
+function input470(frame,src,S,c){c=c||CORE();if(!c||!DECK.visible)return false;
+ if(!S.gl)return false;ensureGL470(S.gl);
+ if(DECK.sess!==S.sess){DECK.sess=S.sess;DECK.baseRef=S.ref;DECK.nav={pos:[0,0,0],yaw:0};DECK.navDirty=false;DECK.dirty=true;layoutDeck470();
+  DECK.pos=[S.world.pos[0]-.72,S.world.pos[1]+.05,S.world.pos[2]+.15]}
+ /* ray from this controller */
+ let ray=null;try{const rp=frame.getPose(src.targetRaySpace,S.ref);if(rp){const o=[rp.transform.position.x,rp.transform.position.y,rp.transform.position.z],
+  q=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];ray={o,d:c.qRotV(q,[0,0,-1])}}}catch(_){}
+ /* billboard the deck toward the head each input tick */
+ try{const vp=frame.getViewerPose(S.ref);if(vp){const h=vp.transform.position,yaw=Math.atan2(h.x-DECK.pos[0],h.z-DECK.pos[2]);DECK.quat=c.qAxis(0,1,0,yaw)}}catch(_){}
+ const hoverSet=DECK.hover;let hit=null,wg=null;
+ if(ray){hit=rayPanelUV470(ray.o,ray.d,DECK.pos,DECK.quat,DECK.w,DECK.h,DECK.W,DECK.H,c);if(hit.hit)wg=widgetAt470(DECK.widgets,hit.px,hit.py)}
+ const prevHover=hoverSet.get(src);const nowHover=wg?wg.id:null;
+ if(nowHover!==prevHover){hoverSet.set(src,nowHover);DECK.dirty=true;if(nowHover)haptic470(src,.18,10)}
+ /* trigger (button 0) edge + hold for click / slider-drag */
+ const gp=src.gamepad,bp=DECK.btnPrev.get(src)||{},pressed=!!(gp&&gp.buttons[0]&&gp.buttons[0].pressed),wasP=!!bp[0];
+ if(pressed&&!wasP){if(wg){if(wg.type==='slider'){DECK.grab={src,wg};applySlider470(wg,hit.u,S)}else activateWidget470(wg,S,src)}}
+ else if(pressed&&DECK.grab&&DECK.grab.src===src){if(hit&&hit.hit)applySlider470(DECK.grab.wg,hit.u,S)}
+ else if(!pressed&&wasP&&DECK.grab&&DECK.grab.src===src){DECK.grab=null;layoutDeck470()}
+ bp[0]=pressed;DECK.btnPrev.set(src,bp);
+ /* locomotion (Navigate mode owns the sticks) */
+ if(DECK.navMode&&gp&&gp.axes.length>=4){const hand=src.handedness,ax=gp.axes[2],ay=gp.axes[3];
+  let headYaw=0;try{const vp=frame.getViewerPose(S.ref);if(vp){const q=vp.transform.orientation;headYaw=Math.atan2(2*(q.w*q.y+q.x*q.z),1-2*(q.y*q.y+q.x*q.x))}}catch(_){}
+  if(hand==='left'){if(Math.hypot(ax,ay)>.15){const dt=1/72,mv=moveVector470(ax,ay,headYaw,DECK.speed,dt);DECK.nav.pos=[DECK.nav.pos[0]+mv[0],0,DECK.nav.pos[2]+mv[2]];DECK.navDirty=true;DECK.moving=true}else DECK.moving=false}
+  else if(hand==='right'){if(Math.abs(ax)>.6){if(DECK.snapArmed&&DECK.snapDeg>0){let hp=[DECK.nav.pos[0],0,DECK.nav.pos[2]];try{const vp=frame.getViewerPose(S.ref);if(vp)hp=[vp.transform.position.x,0,vp.transform.position.z]}catch(_){}
+    const r=snapTurnAboutHead470(DECK.nav.pos,DECK.nav.yaw,hp,(ax>0?-1:1)*DECK.snapDeg*Math.PI/180);DECK.nav.pos=r.pos;DECK.nav.yaw=r.yaw;DECK.navDirty=true;DECK.snapArmed=false;haptic470(src,.4,25)}}else DECK.snapArmed=true}}
+ if(DECK.navDirty){applyNav470(S);DECK.navDirty=false}
+ return DECK.navMode}
+function applyNav470(S){try{if(!DECK.baseRef||!DECK.baseRef.getOffsetReferenceSpace||typeof XRRigidTransform==='undefined')return;
+ const o=navOffset470(DECK.nav.pos,DECK.nav.yaw),xf=new XRRigidTransform(o.position,o.orientation);S.ref=DECK.baseRef.getOffsetReferenceSpace(xf)}catch(_){}}
+/* per-view render */
+function render470(gl,proj,vinv,frame,view,S,c){c=c||CORE();if(!c||!DECK.visible||!DECK.ready)return;
+ if(DECK.tabKey!==(DECK.tab+'|'+state.model+'|'+((()=>{try{return state.mode}catch(_){return''}})())))layoutDeck470();
+ if(DECK.dirty){const ids=new Set();for(const v of DECK.hover.values())if(v)ids.add(v);drawDeck470(ids)}
+ if(!DECK.tex)return;
+ gl.useProgram(DECK.prog);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+ const mv=new Float32Array(16),model=new Float32Array(16);c.composeTRS(model,DECK.pos,DECK.quat,1);c.m4Mul(mv,vinv,model);
+ gl.uniformMatrix4fv(DECK.loc.uP,false,proj);gl.uniformMatrix4fv(DECK.loc.uMV,false,mv);gl.uniform1f(DECK.loc.uAlpha,1);
+ gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,DECK.tex);gl.uniform1i(DECK.loc.uTex,0);
+ gl.enableVertexAttribArray(DECK.loc.aP);gl.enableVertexAttribArray(DECK.loc.aT);
+ gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.qv);gl.vertexAttribPointer(DECK.loc.aP,3,gl.FLOAT,false,0,0);
+ gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.qt);gl.vertexAttribPointer(DECK.loc.aT,2,gl.FLOAT,false,0,0);
+ gl.depthMask(false);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+ /* cursors where rays hit the deck */
+ gl.useProgram(DECK.progC);gl.uniformMatrix4fv(DECK.locC.uP,false,proj);gl.enableVertexAttribArray(DECK.locC.aP);
+ try{for(const src of S.sess.inputSources){if(src.hand)continue;const rp=frame.getPose(src.targetRaySpace,S.ref);if(!rp)continue;
+  const o=[rp.transform.position.x,rp.transform.position.y,rp.transform.position.z],q=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];
+  const hit=rayPanelUV470(o,c.qRotV(q,[0,0,-1]),DECK.pos,DECK.quat,DECK.w,DECK.h,DECK.W,DECK.H,c);if(!hit.hit)continue;
+  const cm=new Float32Array(16),cmv=new Float32Array(16);c.composeTRS(cm,hit.point,DECK.quat,1);c.m4Mul(cmv,vinv,cm);gl.uniformMatrix4fv(DECK.locC.uMV,false,cmv);
+  const col=new Float32Array((DECK.nCursor)*4);for(let i=0;i<DECK.nCursor;i++){col[i*4]=1;col[i*4+1]=.94;col[i*4+2]=.74;col[i*4+3]=i===0?.95:.5}
+  if(!DECK.buf.curc)DECK.buf.curc=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.curc);gl.bufferData(gl.ARRAY_BUFFER,col,gl.DYNAMIC_DRAW);gl.vertexAttribPointer(DECK.locC.aC,4,gl.FLOAT,false,0,0);gl.enableVertexAttribArray(DECK.locC.aC);
+  gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.cur);gl.vertexAttribPointer(DECK.locC.aP,3,gl.FLOAT,false,0,0);gl.drawArrays(gl.TRIANGLE_FAN,0,DECK.nCursor)}}catch(_){}
+ /* comfort vignette while moving */
+ if(DECK.vignette&&DECK.moving&&DECK.navMode){gl.useProgram(DECK.prog);const I=new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+  gl.uniformMatrix4fv(DECK.loc.uP,false,I);gl.uniformMatrix4fv(DECK.loc.uMV,false,I);gl.uniform1f(DECK.loc.uAlpha,1);
+  gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,DECK.vigTex);gl.uniform1i(DECK.loc.uTex,0);
+  gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.fs);gl.vertexAttribPointer(DECK.loc.aP,3,gl.FLOAT,false,0,0);
+  gl.bindBuffer(gl.ARRAY_BUFFER,DECK.buf.qt);gl.vertexAttribPointer(DECK.loc.aT,2,gl.FLOAT,false,0,0);
+  gl.disable(gl.DEPTH_TEST);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.enable(gl.DEPTH_TEST)}
+ gl.depthMask(true);
+ try{gl.useProgram(S.prog);gl.enableVertexAttribArray(S.loc.aP);gl.enableVertexAttribArray(S.loc.aC)}catch(_){}}
+/* ------------------------------------------------------------- install */
+function addDeckButton470(){try{const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('deckBtn470')){const b=document.createElement('button');b.className='btn on';b.id='deckBtn470';b.textContent='🎛';b.title=lang470()===0?'Панель управления в VR':'VR control deck';b.onclick=()=>{DECK.visible=!DECK.visible;DECK.dirty=true;b.classList.toggle('on',DECK.visible)};acts.insertBefore(b,acts.firstChild)}}catch(_){}}
+let tries=0;function install470(){if(typeof document==='undefined')return;if(!document.body||typeof state==='undefined'||!CORE()){if(tries++<90)return setTimeout(install470,220);return}try{addDeckButton470()}catch(e){console.warn('UPRS470 install',e)}}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install470,260),{once:true});else setTimeout(install470,260)}}catch(_){}
+for(const ms of [1300,3400,8000])setTimeout(()=>{try{install470()}catch(_){}},ms);
+/* ------------------------------------------------------------- tests */
+function checks470(){const out=[],ok=(n,fn)=>{let p=false,d='';try{const r=fn();if(r&&typeof r==='object'){p=!!r.ok;d=r.detail||''}else p=!!r}catch(e){d=e.message}out.push({name:n,pass:p,detail:d})};
+ const c=CORE();
+ ok('v4.7.0 spatial control deck installed',()=>({ok:!!globalThis.__UPRS470__&&typeof input470==='function'&&typeof render470==='function',detail:'v'+V470}));
+ ok('v4.7.0 ray hits panel centre → u,v≈0.5',()=>{if(!c)return {ok:false,detail:'no core'};const r=rayPanelUV470([0,1.2,0],[0,0,-1],[0,1.2,-1],[0,0,0,1],.52,.67,512,660,c);
+  return {ok:r.hit&&Math.abs(r.u-.5)<1e-9&&Math.abs(r.v-.5)<1e-9,detail:`u=${r.u.toFixed(3)} v=${r.v.toFixed(3)} t=${r.t.toFixed(2)}`}});
+ ok('v4.7.0 ray offset maps to correct UV quadrant',()=>{if(!c)return{ok:false};const r=rayPanelUV470([.1,1.3,0],[0,0,-1],[0,1.2,-1],[0,0,0,1],.52,.67,512,660,c);
+  return {ok:r.hit&&r.u>.5&&r.v<.5,detail:`u=${r.u.toFixed(3)} v=${r.v.toFixed(3)} (right/upper)`}});
+ ok('v4.7.0 ray parallel/behind → no hit',()=>{if(!c)return{ok:false};const a=rayPanelUV470([0,1.2,0],[1,0,0],[0,1.2,-1],[0,0,0,1],.52,.67,512,660,c),b=rayPanelUV470([0,1.2,-2],[0,0,-1],[0,1.2,-1],[0,0,0,1],.52,.67,512,660,c);
+  return {ok:!a.hit&&!b.hit,detail:'parallel & behind rejected'}});
+ ok('v4.7.0 widget hit-test finds the button under the cursor',()=>{const wgs=[{id:'a',type:'button',x:10,y:10,w:100,h:40},{id:'b',type:'button',x:10,y:60,w:100,h:40}];
+  return {ok:widgetAt470(wgs,50,75).id==='b'&&widgetAt470(wgs,50,30).id==='a'&&widgetAt470(wgs,500,500)===null,detail:'a/b/none'}});
+ ok('v4.7.0 slider value map (log) round-trips',()=>{const d={min:1e-12,max:10,scale:'log'};const v=uToVal470(d,.37),u=valToU470(d,v);
+  return {ok:Math.abs(u-.37)<1e-9&&v>d.min&&v<d.max,detail:`u=.37→v=${v.toExponential(2)}→u=${u.toFixed(4)}`}});
+ ok('v4.7.0 slider value map (linear) endpoints',()=>{const d={min:-4,max:8,scale:'linear'};return {ok:Math.abs(uToVal470(d,0)+4)<1e-12&&Math.abs(uToVal470(d,1)-8)<1e-12&&Math.abs(valToU470(d,2)-.5)<1e-12,detail:'−4..8'}});
+ ok('v4.7.0 smooth-move is head-relative (forward = −z at yaw 0)',()=>{const f=moveVector470(0,-1,0,1,1);const rr=moveVector470(1,0,0,1,1);
+  return {ok:Math.abs(f[2]+1)<1e-9&&Math.abs(f[0])<1e-9&&Math.abs(rr[0]-1)<1e-9&&Math.abs(rr[2])<1e-9,detail:`fwd=[${f.map(x=>x.toFixed(2))}] right=[${rr.map(x=>x.toFixed(2))}]`}});
+ ok('v4.7.0 smooth-move respects head yaw (90° → forward = −x)',()=>{const f=moveVector470(0,-1,Math.PI/2,1,1);return {ok:Math.abs(f[0]+1)<1e-9&&Math.abs(f[2])<1e-9,detail:`fwd@90°=[${f.map(x=>x.toFixed(2))}]`}});
+ ok('v4.7.0 snap-turn keeps the head world position fixed',()=>{if(!c)return{ok:false};const head=[0.3,0,-1.1],dY=Math.PI/6,r=snapTurnAboutHead470([0,0,0],0,head,dY);
+  /* rig maps world = qRotV(q(yaw'),localHead)+pos'; with yaw=0,pos=0 localHead=head */
+  const wh=c.qRotV(c.qAxis(0,1,0,r.yaw),head),back=[wh[0]+r.pos[0],wh[1]+r.pos[1],wh[2]+r.pos[2]];
+  return {ok:Math.abs(back[0]-head[0])<1e-9&&Math.abs(back[2]-head[2])<1e-9,detail:'head world position invariant'}});
+ ok('v4.7.0 nav offset negates the rig translation (canonical WebXR)',()=>{if(!c)return{ok:false};const o=navOffset470([0.5,0,0.7],0);
+  return {ok:Math.abs(o.position.x+0.5)<1e-9&&Math.abs(o.position.z+0.7)<1e-9&&Math.abs(o.orientation.w-1)<1e-9,detail:`offset=(${o.position.x},${o.position.z}), yaw 0`}});
+ ok('v4.7.0 UI shaders compile (WebGL)',()=>{const cv=document.createElement('canvas');const gl=cv.getContext('webgl2')||cv.getContext('webgl');if(!gl)return {ok:true,detail:'no GL — skipped'};
+  mkProg470(gl,T_VS,T_FS);mkProg470(gl,C_VS,C_FS);return {ok:true,detail:'textured + colored programs linked'}});
+ ok('v4.7.0 deck lays out tabs and widgets',()=>{layoutDeck470();const hasTabs=DECK.widgets.filter(w=>w.type==='tab').length===3;return {ok:hasTabs&&DECK.widgets.length>3,detail:DECK.widgets.length+' widgets'}});
+ return out}
+function wrapTests470(){try{if(typeof runTests!=='function'||runTests.__uprs470)return;const base=runTests;
+ const w=function(show=true){const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.7.0'));for(const x of checks470())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs470=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+setTimeout(wrapTests470,600);for(const ms of [2200,5200,11500,18500])setTimeout(wrapTests470,ms);
+/* ------------------------------------------------------------- API */
+globalThis.__UPRS470__={version:V470,input:input470,render:render470,
+ toggleDeck:()=>{DECK.visible=!DECK.visible;DECK.dirty=true},setNav:v=>{DECK.navMode=!!v},checks:checks470,
+ core:{uToVal:uToVal470,valToU:valToU470,rayPanelUV:rayPanelUV470,widgetAt:widgetAt470,moveVector:moveVector470,snapTurnAboutHead:snapTurnAboutHead470,navOffset:navOffset470,layout:layoutDeck470,shaders:{T_VS,T_FS,C_VS,C_FS}},
+ audit:()=>({version:V470,ready:DECK.ready,visible:DECK.visible,tab:DECK.tab,widgets:DECK.widgets.length,navMode:DECK.navMode,snapDeg:DECK.snapDeg,speed:DECK.speed,nav:{...DECK.nav}})};
 })();
 </script>
 </body></html>
