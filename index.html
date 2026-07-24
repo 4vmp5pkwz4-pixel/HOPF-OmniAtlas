@@ -10420,16 +10420,10 @@ function navOffset470(navPos,navYaw){/* offset transform for getOffsetReferenceS
  const q=[0,Math.sin(-navYaw/2),0,Math.cos(-navYaw/2)];const c=CORE();
  const ip=c?c.qRotV(q,[-navPos[0],-navPos[1],-navPos[2]]):[-navPos[0],-navPos[1],-navPos[2]];
  return {position:{x:ip[0],y:ip[1],z:ip[2]},orientation:{x:q[0],y:q[1],z:q[2],w:q[3]}}}
-const qConj470=q=>[-q[0],-q[1],-q[2],q[3]];
-function rigidAttach470(ctrlPos,ctrlQuat,objPos,objQuat,c){c=c||CORE();const qi=qConj470(ctrlQuat),d=[objPos[0]-ctrlPos[0],objPos[1]-ctrlPos[1],objPos[2]-ctrlPos[2]];return {offPos:c.qRotV(qi,d),offQuat:c.qMul(qi,objQuat)}}
-function rigidApply470(ctrlPos,ctrlQuat,off,c){c=c||CORE();const r=c.qRotV(ctrlQuat,off.offPos);return {pos:[ctrlPos[0]+r[0],ctrlPos[1]+r[1],ctrlPos[2]+r[2]],quat:c.qMul(ctrlQuat,off.offQuat)}}
-/* palm normal from wrist(W), index-metacarpal(I), pinky-metacarpal(P); points out of the palm */
-function palmNormal470(W,I,P){const a=[I[0]-W[0],I[1]-W[1],I[2]-W[2]],b=[P[0]-W[0],P[1]-W[1],P[2]-W[2]];
- const n=[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],L=Math.hypot(n[0],n[1],n[2])||1;return [n[0]/L,n[1]/L,n[2]/L]}
 /* ------------------------------------------------------------- state */
 const DECK={ready:false,visible:true,tab:'scene',dirty:true,cv:null,cx:null,tex:null,W:512,H:660,w:.52,h:.67,
  pos:[-.62,1.2,-.7],quat:[0,0,0,1],widgets:[],hover:new Map(),grab:null,tabKey:'',
- navMode:false,moving:false,speed:1.4,snapDeg:30,vignette:true,snapArmed:true,grabDeck:null,palm:new Map(),summonCd:0,lastFrameId:null,anchored:false,
+ navMode:false,moving:false,speed:1.4,snapDeg:30,vignette:true,snapArmed:true,
  prog:null,progC:null,loc:{},locC:{},buf:{},nCursor:0,vigTex:null,
  baseRef:null,sess:null,nav:{pos:[0,0,0],yaw:0},navDirty:false,btnPrev:new Map(),lastFrame:null};
 const lang470=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
@@ -10563,15 +10557,8 @@ function input470(frame,src,S,c){c=c||CORE();if(!c||!DECK.visible)return false;
  /* ray from this controller */
  let ray=null;try{const rp=frame.getPose(src.targetRaySpace,S.ref);if(rp){const o=[rp.transform.position.x,rp.transform.position.y,rp.transform.position.z],
   q=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];ray={o,d:c.qRotV(q,[0,0,-1])}}}catch(_){}
- /* grab-move: grip (button 1) while the ray is over the panel rigidly attaches it to the controller */
- try{const gpG=src.gamepad,gripNow=!!(gpG&&gpG.buttons[1]&&gpG.buttons[1].pressed);
-  const rp=frame.getPose(src.targetRaySpace,S.ref);
-  if(rp){const cpos=[rp.transform.position.x,rp.transform.position.y,rp.transform.position.z],cq=[rp.transform.orientation.x,rp.transform.orientation.y,rp.transform.orientation.z,rp.transform.orientation.w];
-   const over=ray&&rayPanelUV470(ray.o,ray.d,DECK.pos,DECK.quat,DECK.w,DECK.h,DECK.W,DECK.H,c).hit;
-   if(gripNow&&!DECK.grabDeck&&over){DECK.grabDeck={src,off:rigidAttach470(cpos,cq,DECK.pos,DECK.quat,c)};haptic470(src,.4,25)}
-   else if(DECK.grabDeck&&DECK.grabDeck.src===src){if(gripNow){const r=rigidApply470(cpos,cq,DECK.grabDeck.off,c);DECK.pos=r.pos;DECK.quat=r.quat;DECK.anchored=true}else{DECK.grabDeck=null;haptic470(src,.25,15)}}}}catch(_){}
- /* billboard the deck toward the head (unless grabbed or hand-anchored) */
- if(!DECK.grabDeck&&!DECK.anchored){try{const vp=frame.getViewerPose(S.ref);if(vp){const h=vp.transform.position,yaw=Math.atan2(h.x-DECK.pos[0],h.z-DECK.pos[2]);DECK.quat=c.qAxis(0,1,0,yaw)}}catch(_){}}
+ /* billboard the deck toward the head each input tick */
+ try{const vp=frame.getViewerPose(S.ref);if(vp){const h=vp.transform.position,yaw=Math.atan2(h.x-DECK.pos[0],h.z-DECK.pos[2]);DECK.quat=c.qAxis(0,1,0,yaw)}}catch(_){}
  const hoverSet=DECK.hover;let hit=null,wg=null;
  if(ray){hit=rayPanelUV470(ray.o,ray.d,DECK.pos,DECK.quat,DECK.w,DECK.h,DECK.W,DECK.H,c);if(hit.hit)wg=widgetAt470(DECK.widgets,hit.px,hit.py)}
  const prevHover=hoverSet.get(src);const nowHover=wg?wg.id:null;
@@ -10593,18 +10580,7 @@ function input470(frame,src,S,c){c=c||CORE();if(!c||!DECK.visible)return false;
 function applyNav470(S){try{if(!DECK.baseRef||!DECK.baseRef.getOffsetReferenceSpace||typeof XRRigidTransform==='undefined')return;
  const o=navOffset470(DECK.nav.pos,DECK.nav.yaw),xf=new XRRigidTransform(o.position,o.orientation);S.ref=DECK.baseRef.getOffsetReferenceSpace(xf)}catch(_){}}
 /* per-view render */
-function palmScan470(frame,S,c){c=c||CORE();if(!c||!S.sess)return;const id=frame;if(DECK.lastFrameId===id)return;DECK.lastFrameId=id;
- if(DECK.summonCd>0)DECK.summonCd--;
- for(const src of S.sess.inputSources){if(!src.hand)continue;
-  let W=null,I=null,P=null,mid=null;try{const gj=n=>{const j=src.hand.get&&src.hand.get(n);if(!j)return null;const p=frame.getJointPose&&frame.getJointPose(j,S.ref);return p&&p.transform?[p.transform.position.x,p.transform.position.y,p.transform.position.z]:null};
-   W=gj('wrist');I=gj('index-finger-metacarpal');P=gj('pinky-finger-metacarpal');mid=gj('middle-finger-metacarpal')}catch(_){}
-  if(!W||!I||!P)continue;const n=palmNormal470(W,I,P);const up=Math.abs(n[1]);
-  const st=DECK.palm.get(src)||{t:0};
-  if(up>0.72){st.t++;if(st.t===8&&DECK.summonCd===0){/* sustained ~0.4s → summon the deck above the palm */
-    const anchor=mid||W;DECK.pos=[anchor[0],anchor[1]+.16,anchor[2]];DECK.visible=true;DECK.anchored=false;DECK.grabDeck=null;DECK.dirty=true;DECK.summonCd=90;try{haptic470(src,.5,30)}catch(_){}
-    try{const btn=document.getElementById('deckBtn470');if(btn)btn.classList.add('on')}catch(_){}}}
-  else st.t=0;DECK.palm.set(src,st)}}
-function render470(gl,proj,vinv,frame,view,S,c){c=c||CORE();try{palmScan470(frame,S,c)}catch(_){}if(!c||!DECK.visible||!DECK.ready)return;
+function render470(gl,proj,vinv,frame,view,S,c){c=c||CORE();if(!c||!DECK.visible||!DECK.ready)return;
  if(DECK.tabKey!==(DECK.tab+'|'+state.model+'|'+((()=>{try{return state.mode}catch(_){return''}})())))layoutDeck470();
  if(DECK.dirty){const ids=new Set();for(const v of DECK.hover.values())if(v)ids.add(v);drawDeck470(ids)}
  if(!DECK.tex)return;
@@ -10666,13 +10642,6 @@ function checks470(){const out=[],ok=(n,fn)=>{let p=false,d='';try{const r=fn();
  ok('v4.7.0 UI shaders compile (WebGL)',()=>{const cv=document.createElement('canvas');const gl=cv.getContext('webgl2')||cv.getContext('webgl');if(!gl)return {ok:true,detail:'no GL — skipped'};
   mkProg470(gl,T_VS,T_FS);mkProg470(gl,C_VS,C_FS);return {ok:true,detail:'textured + colored programs linked'}});
  ok('v4.7.0 deck lays out tabs and widgets',()=>{layoutDeck470();const hasTabs=DECK.widgets.filter(w=>w.type==='tab').length===3;return {ok:hasTabs&&DECK.widgets.length>3,detail:DECK.widgets.length+' widgets'}});
- ok('v4.7.0 grab-move rigid attach round-trips',()=>{if(!c)return{ok:false};const cpos=[.3,1.1,-.6],cq=c.qNorm([.1,.2,-.1,.95]),op=[.5,1.3,-1.1],oq=c.qNorm([-.05,.15,.1,.98]);
-  const off=rigidAttach470(cpos,cq,op,oq,c),back=rigidApply470(cpos,cq,off,c);const ep=Math.hypot(back.pos[0]-op[0],back.pos[1]-op[1],back.pos[2]-op[2]);let eq=0;for(let i=0;i<4;i++)eq=Math.max(eq,Math.abs(back.quat[i]-oq[i]));
-  return {ok:ep<1e-9&&eq<1e-9,detail:'εpos='+ep.toExponential(1)}});
- ok('v4.7.0 grab-move follows the controller (translation)',()=>{if(!c)return{ok:false};const off=rigidAttach470([0,1,-1],[0,0,0,1],[0,1.2,-1.3],[0,0,0,1],c);
-  const r=rigidApply470([.4,1,-1],[0,0,0,1],off,c);return {ok:Math.abs(r.pos[0]-.4)<1e-9&&Math.abs(r.pos[2]+1.3)<1e-9,detail:'panel tracks controller'}});
- ok('v4.7.0 palm normal points up for a level palm',()=>{/* wrist at origin, index +x, pinky +z → cross points -y or +y; level palm ⇒ |n_y|=1 */
-  const n=palmNormal470([0,1,0],[0.08,1,0],[0,1,0.06]);return {ok:Math.abs(Math.abs(n[1])-1)<1e-6,detail:'n=['+n.map(v=>v.toFixed(2))+']'}});
  return out}
 function wrapTests470(){try{if(typeof runTests!=='function'||runTests.__uprs470)return;const base=runTests;
  const w=function(show=true){const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.7.0'));for(const x of checks470())T.push(x);
@@ -10683,200 +10652,8 @@ setTimeout(wrapTests470,600);for(const ms of [2200,5200,11500,18500])setTimeout(
 /* ------------------------------------------------------------- API */
 globalThis.__UPRS470__={version:V470,input:input470,render:render470,
  toggleDeck:()=>{DECK.visible=!DECK.visible;DECK.dirty=true},setNav:v=>{DECK.navMode=!!v},checks:checks470,
- core:{uToVal:uToVal470,valToU:valToU470,rayPanelUV:rayPanelUV470,widgetAt:widgetAt470,moveVector:moveVector470,snapTurnAboutHead:snapTurnAboutHead470,navOffset:navOffset470,rigidAttach:rigidAttach470,rigidApply:rigidApply470,palmNormal:palmNormal470,layout:layoutDeck470,shaders:{T_VS,T_FS,C_VS,C_FS}},
+ core:{uToVal:uToVal470,valToU:valToU470,rayPanelUV:rayPanelUV470,widgetAt:widgetAt470,moveVector:moveVector470,snapTurnAboutHead:snapTurnAboutHead470,navOffset:navOffset470,layout:layoutDeck470,shaders:{T_VS,T_FS,C_VS,C_FS}},
  audit:()=>({version:V470,ready:DECK.ready,visible:DECK.visible,tab:DECK.tab,widgets:DECK.widgets.length,navMode:DECK.navMode,snapDeg:DECK.snapDeg,speed:DECK.speed,nav:{...DECK.nav}})};
-})();
-</script>
-
-<style id="uprs480LauncherStyle">
-/* v4.8.0 — always-visible, viewport-independent XR launcher + diagnostics.
-   Fixes the real "can't even enter XR" bug: #xrBtn lives in .top-actions and is
-   hidden by `display:none!important` on narrow/compact viewports (Quest browser). */
-#xrLauncher480{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 6px);transform:translateX(-50%);z-index:2147483000;
- display:flex;gap:8px;align-items:center;pointer-events:auto;font:600 13px/1.2 -apple-system,system-ui,sans-serif}
-#xrLauncher480 button{border:1px solid rgba(255,240,189,.75);border-radius:999px;padding:10px 18px;cursor:pointer;color:#0a0a0a;
- background:linear-gradient(135deg,#fff0bd,#d7b76e);box-shadow:0 8px 26px rgba(0,0,0,.45),0 0 22px rgba(215,183,110,.35);
- font:700 14px/1 system-ui;letter-spacing:.02em;transition:.15s;white-space:nowrap}
-#xrLauncher480 button:hover{filter:brightness(1.08)}
-#xrLauncher480 button.sec{background:linear-gradient(135deg,#bfe9ff,#7fb8d8);border-color:rgba(152,232,255,.7)}
-#xrLauncher480 button:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(.5)}
-#xrLauncher480 .x480-status{max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
- padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(6,10,17,.82);color:#c9d4e0;
- font:600 11px/1.2 ui-monospace,SFMono-Regular,monospace;backdrop-filter:blur(8px)}
-#xrLauncher480 .x480-status.ok{color:#8ce9bd;border-color:rgba(140,233,189,.4)}
-#xrLauncher480 .x480-status.warn{color:#ffcf8e;border-color:rgba(255,207,142,.45)}
-#xrLauncher480 .x480-status.err{color:#ff9d9d;border-color:rgba(255,157,157,.45)}
-#xrLauncher480.hide-when-xr{}
-body.uprs480-inxr #xrLauncher480{display:none}
-#xrBanner480{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 56px);transform:translateX(-50%);z-index:2147483000;
- max-width:92vw;display:none;padding:12px 18px;border-radius:14px;border:1px solid rgba(215,183,110,.5);
- background:rgba(6,10,17,.94);color:#edf1f6;box-shadow:0 18px 60px rgba(0,0,0,.6);backdrop-filter:blur(14px);
- font:600 13px/1.5 system-ui;text-align:center;white-space:pre-line}
-#xrBanner480.show{display:block}
-#xrBanner480 b{color:#fff0bd}
-#xrBanner480 code{font:600 11px/1.4 ui-monospace,monospace;color:#98e8ff}
-#xrBanner480 .x480-close{display:inline-block;margin-top:8px;font:600 11px/1 system-ui;color:#96a2b5;cursor:pointer;border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:5px 10px}
-@media(max-width:520px){#xrLauncher480 .x480-status{display:none}#xrLauncher480 button{padding:12px 20px;font-size:15px}}
-</style>
-<script id="uprs480UnifiedXRLauncher">(()=>{
-'use strict';
-/* ============================================================================
-   UPRS Möbius–Hopf OmniAtlas · v4.8.0 · UNIFIED XR LAUNCHER + DIAGNOSTICS
-   Root-cause fix for "can't even enter XR": the #xrBtn is a .top-actions .btn
-   that responsive CSS hides (display:none!important) on the narrow/compact
-   viewports the Quest browser reports — so the button is simply invisible and
-   unclickable. This module adds an ALWAYS-VISIBLE, viewport-independent
-   launcher with live capability diagnostics, and routes entry to the complete
-   full-feature engine (deck + occlusion + hands + sonification), surfacing the
-   exact failure stage/error so any residual device issue is legible.
-   ========================================================================== */
-const V480='4.8.0';
-const lang480=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
-const T={vr:['Войти в VR','Enter VR','VR öffnen'],ar:['AR (passthrough)','AR (passthrough)','AR (Passthrough)'],
- probing:['Проверка WebXR…','Checking WebXR…','WebXR-Prüfung…'],
- vrOk:['VR готов','VR ready','VR bereit'],arOk:['+ AR','+ AR','+ AR'],
- noXR:['WebXR API недоступен в этом браузере','WebXR API unavailable in this browser','WebXR-API nicht verfügbar'],
- notSecure:['Нужен HTTPS (защищённый контекст)','HTTPS (secure context) required','HTTPS (sicherer Kontext) nötig'],
- noVR:['immersive-vr не поддерживается','immersive-vr not supported','immersive-vr nicht unterstützt'],
- starting:['Запуск VR…','Starting VR…','VR startet…'],
- hint:['Нажмите, чтобы войти в VR. Если сессия не открывается — здесь появится точная причина.','Tap to enter VR. If the session does not open, the exact reason appears here.','Zum VR-Start tippen. Öffnet die Sitzung nicht, erscheint hier der Grund.'],
- failed:['Не удалось запустить XR','XR failed to start','XR-Start fehlgeschlagen'],
- tapAgain:['XR требует прямого нажатия — нажмите ещё раз','XR needs a direct tap — press again','XR braucht direkten Tipp — nochmal drücken'],
- close:['закрыть','close','schließen']};
-const t=k=>T[k][lang480()];
-const $mk=(tag,attrs)=>{const e=document.createElement(tag);if(attrs)for(const k in attrs)e[k]=attrs[k];return e};
-/* -------------------------------------------------- capability probe (pure) */
-function summarizeSupport480(s){/* s:{xr,secure,vr,ar} → {level,text} */
- if(!s.secure)return {level:'err',key:'notSecure'};
- if(!s.xr)return {level:'err',key:'noXR'};
- if(!s.vr&&!s.ar)return {level:'err',key:'noVR'};
- if(s.vr)return {level:'ok',key:s.ar?'both':'vrOk'};
- return {level:'warn',key:'arOnly'}}
-let SUP={xr:false,secure:false,vr:false,ar:false,probed:false};
-async function probe480(){
- SUP.xr=(typeof navigator!=='undefined'&&!!navigator.xr);
- SUP.secure=(typeof isSecureContext==='undefined')?true:isSecureContext;
- if(SUP.xr){try{SUP.vr=await navigator.xr.isSessionSupported('immersive-vr').catch(()=>false)}catch(_){SUP.vr=false}
-  try{SUP.ar=await navigator.xr.isSessionSupported('immersive-ar').catch(()=>false)}catch(_){SUP.ar=false}}
- SUP.probed=true;renderLauncher480();return SUP}
-/* -------------------------------------------------- banner */
-let bannerTimer=0;
-function banner480(msg,cls){const b=document.getElementById('xrBanner480');if(!b)return;
- b.className='show';b.innerHTML=`<b>UPRS · XR</b><br>${msg}<br><span class="x480-close">${t('close')}</span>`;
- b.querySelector('.x480-close').onclick=()=>{b.className='';};
- clearTimeout(bannerTimer);bannerTimer=setTimeout(()=>{b.className='';},14000)}
-/* -------------------------------------------------- unified entry */
-let entering=false;
-async function enterUnified480(mode){
- if(entering)return;entering=true;
- banner480(t('starting'),'');
- /* mark in-XR state (hides launcher) optimistically; reverted if entry fails */
- let started=false;
- try{
-  const before=(()=>{try{return !!state.xrSession}catch(_){return false}})();
-  /* route to the COMPLETE engine first (full features), reached via __UPRS450__.legacyEnter;
-     fall back through the available entries. requestSession must be the first await inside them. */
-  const fn=pickEntry480(mode);
-  if(!fn){banner480(diagText480(),'err');entering=false;return}
-  const p=fn();                    /* do NOT await before this — preserves user activation inside fn */
-  document.body.classList.add('uprs480-inxr');
-  /* watch for actual session acquisition to confirm / diagnose */
-  watchEntry480(before);
-  if(p&&p.then)p.then(()=>{},err=>{onEntryError480(err)});
-  started=true;
- }catch(e){onEntryError480(e)}
- setTimeout(()=>{entering=false},1200);
- return started}
-function pickEntry480(mode){
- try{
-  if(mode==='immersive-ar'){
-   if(window.__UPRS461__&&window.__UPRS461__.enterAR)return ()=>window.__UPRS461__.enterAR();
-  }
-  /* VR: prefer the complete S-namespace engine (deck+occlusion+hands+sound) */
-  const g=window.__UPRS450__;
-  if(g&&typeof g.legacyEnter==='function')return ()=>g.legacyEnter();
-  if(g&&typeof g.enter==='function')return ()=>g.enter();
-  if(window.__UPRS461__&&window.__UPRS461__.enterVR)return ()=>window.__UPRS461__.enterVR();
-  if(typeof enterXR==='function')return ()=>enterXR();
- }catch(_){}
- return null}
-let watchN=0;
-function watchEntry480(before){const t0=performance.now();
- const tick=()=>{let live=false;try{live=!!state.xrSession}catch(_){}
-  if(live){document.body.classList.add('uprs480-inxr');return}                 /* success — session live */
-  if(performance.now()-t0>11000){                                              /* gave up */
-   document.body.classList.remove('uprs480-inxr');banner480(t('failed')+'\n'+diagText480(),'err');return}
-  setTimeout(tick,300)};
- setTimeout(tick,400)}
-function onEntryError480(err){document.body.classList.remove('uprs480-inxr');
- const name=(err&&err.name)||'',msg=(err&&err.message)||String(err||'');
- let extra='';if(name==='SecurityError')extra='\n'+t('tapAgain');
- banner480(`${t('failed')}: <code>${esc480(name||msg)}</code>${extra}\n${diagText480()}`,'err');}
-function esc480(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
-function diagText480(){const rows=[
- `secure: ${SUP.secure?'✓':'✗'}`,`navigator.xr: ${SUP.xr?'✓':'✗'}`,
- `immersive-vr: ${SUP.vr?'✓':'✗'}`,`immersive-ar: ${SUP.ar?'✓':'✗'}`];
- let owner='';try{owner=window.__UPRS461__?('461'):(window.__UPRS450__?'450':'')}catch(_){}
- return `<code>${rows.join(' · ')}</code>`+(owner?`\nengine: ${owner}`:'')}
-/* -------------------------------------------------- launcher UI */
-function renderLauncher480(){let el=document.getElementById('xrLauncher480');
- if(!el){el=$mk('div',{id:'xrLauncher480'});(document.body||document.documentElement).appendChild(el)}
- const sup=summarizeSupport480(SUP);
- let statusTxt,statusCls;
- if(!SUP.probed){statusTxt=t('probing');statusCls=''}
- else if(sup.level==='err'){statusTxt=t(sup.key);statusCls='err'}
- else{statusTxt=(SUP.vr?t('vrOk'):'')+(SUP.ar?' · '+t('arOk'):'');statusCls='ok'}
- const vrEnabled=SUP.probed&&SUP.secure&&SUP.xr&&SUP.vr;
- const arEnabled=SUP.probed&&SUP.secure&&SUP.xr&&SUP.ar;
- el.innerHTML='';
- const bVR=$mk('button',{textContent:'🥽 '+t('vr'),title:t('hint'),disabled:!vrEnabled&&SUP.probed});
- bVR.onclick=()=>enterUnified480('immersive-vr');el.appendChild(bVR);
- if(arEnabled){const bAR=$mk('button',{textContent:'◉ '+t('ar'),className:'sec'});bAR.onclick=()=>enterUnified480('immersive-ar');el.appendChild(bAR)}
- const st=$mk('span',{className:'x480-status '+statusCls,textContent:statusTxt});st.title=statusTxt;el.appendChild(st);
- if(!document.getElementById('xrBanner480')){const b=$mk('div',{id:'xrBanner480'});(document.body||document.documentElement).appendChild(b)}}
-/* NOTE: we intentionally do NOT mutate the 461 API — the always-visible launcher
-   already routes VR entry to the complete engine, and leaving 461 intact keeps it
-   as an untouched fallback and preserves its self-tests. */
-function reassert480(){}
-/* keep the launcher alive & on top even if the app re-renders the top bar */
-function ensureLive480(){if(!document.getElementById('xrLauncher480'))renderLauncher480();reassert480();
- /* if a session is active, hide the launcher; else show */
- try{document.body.classList.toggle('uprs480-inxr',!!state.xrSession)}catch(_){}}
-/* -------------------------------------------------- install */
-let tries=0;
-function install480(){if(typeof document==='undefined')return;
- if(!document.body){if(tries++<120)return setTimeout(install480,150);return}
- try{renderLauncher480();probe480();
-  for(const ms of [400,1200,3000,6000,12000])setTimeout(()=>{probe480()},ms);
-  setInterval(ensureLive480,1400);
-  try{navigator.xr&&navigator.xr.addEventListener&&navigator.xr.addEventListener('devicechange',()=>probe480())}catch(_){}
- }catch(e){console.warn('UPRS480 install',e)}}
-try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install480,120),{once:true});else setTimeout(install480,120)}}catch(_){}
-/* -------------------------------------------------- tests */
-function checks480(){const out=[],ok=(n,fn)=>{let p=false,d='';try{const r=fn();if(r&&typeof r==='object'){p=!!r.ok;d=r.detail||''}else p=!!r}catch(e){d=e.message}out.push({name:n,pass:p,detail:d})};
- ok('v4.8.0 unified launcher installed',()=>({ok:!!globalThis.__UPRS480__&&typeof enterUnified480==='function',detail:'v'+V480}));
- ok('v4.8.0 launcher DOM exists and is viewport-independent',()=>{const el=document.getElementById('xrLauncher480');if(!el)return {ok:false,detail:'no launcher'};
-  return {ok:el.querySelectorAll('button').length>=1,detail:el.querySelectorAll('button').length+' buttons'}});
- ok('v4.8.0 launcher is NOT a .top-actions .btn (not hidden by responsive CSS)',()=>{const el=document.getElementById('xrLauncher480');
-  return {ok:!!el&&!el.closest('.top-actions')&&!el.classList.contains('btn'),detail:'independent of top-actions'}});
- ok('v4.8.0 support summary: insecure → error',()=>{const s=summarizeSupport480({secure:false,xr:true,vr:true,ar:true});return {ok:s.level==='err'&&s.key==='notSecure',detail:s.key}});
- ok('v4.8.0 support summary: no navigator.xr → error',()=>{const s=summarizeSupport480({secure:true,xr:false,vr:false,ar:false});return {ok:s.level==='err'&&s.key==='noXR',detail:s.key}});
- ok('v4.8.0 support summary: vr supported → ok',()=>{const s=summarizeSupport480({secure:true,xr:true,vr:true,ar:false});return {ok:s.level==='ok',detail:s.key}});
- ok('v4.8.0 support summary: ar-only → warn',()=>{const s=summarizeSupport480({secure:true,xr:true,vr:false,ar:true});return {ok:s.level==='warn',detail:s.key}});
- ok('v4.8.0 pickEntry prefers the complete engine (legacyEnter)',()=>{const save=window.__UPRS450__;window.__UPRS450__={legacyEnter:function LE(){return Promise.resolve('complete')}};
-  const f=pickEntry480('immersive-vr');const isLE=!!f&&String(f).includes('legacyEnter');window.__UPRS450__=save;return {ok:isLE,detail:'routes to legacyEnter'}});
- ok('v4.8.0 diagnostics text reflects probe flags',()=>{const d=diagText480();return {ok:/immersive-vr/.test(d)&&/navigator\.xr/.test(d),detail:'diag legible'}});
- return out}
-function wrapTests480(){try{if(typeof runTests!=='function'||runTests.__uprs480)return;const base=runTests;
- const w=function(show=true){const r=base(false),T2=r.tests.filter(x=>!String(x.name||'').startsWith('v4.8.0'));for(const x of checks480())T2.push(x);
-  const rep={passed:T2.filter(x=>x.pass).length,total:T2.length,failed:T2.filter(x=>!x.pass),tests:T2};window.__UPRS_SELF_TEST__=rep;
-  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
- w.__uprs480=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
-setTimeout(wrapTests480,700);for(const ms of [2400,5400,11800,19000])setTimeout(wrapTests480,ms);
-/* -------------------------------------------------- API */
-globalThis.__UPRS480__={version:V480,enter:enterUnified480,probe:probe480,checks:checks480,
- core:{summarizeSupport:summarizeSupport480,diagText:diagText480,pickEntry:pickEntry480},
- audit:()=>({version:V480,support:{...SUP},launcher:!!document.getElementById('xrLauncher480'),inXR:(()=>{try{return !!state.xrSession}catch(_){return false}})()})};
 })();
 </script>
 </body></html>
