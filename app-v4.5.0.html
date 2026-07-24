@@ -1,44 +1,12 @@
 <!doctype html>
 <html lang="ru">
-<head><script id="uprs460CoreAuthority">(()=>{'use strict';
-const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
-const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
-A.version=VERSION;
-A.release='quest-xr-startup-recovery';
-A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6.1-transforms';
-A.reproducibleReport=true;
-A.xrOwner='450';
-A.xrStartupPolicy='quest-safe-vr-direct-activation';
-A.sceneRevision=Number.isFinite(A.sceneRevision)?A.sceneRevision:0;
-A.bumpSceneRevision=reason=>{
-  A.sceneRevision=(A.sceneRevision+1)>>>0;
-  A.lastSceneReason=reason||'unspecified';
-  return A.sceneRevision;
-};
-A.sceneStamp=scene=>{
-  let h=2166136261>>>0;
-  const mix=v=>{let n=Number(v);if(!Number.isFinite(n))n=0;n=Math.round(n*1e5);h^=n;h=Math.imul(h,16777619)>>>0};
-  const pts=scene?.points||[],lns=scene?.lines||[];
-  mix(pts.length);mix(lns.length);
-  const sample=(arr,read)=>{const n=arr.length;if(!n)return;read(arr[0]);if(n>2)read(arr[n>>1]);if(n>1)read(arr[n-1])};
-  sample(pts,p=>{const q=p?.p||[];mix(q[0]);mix(q[1]);mix(q[2]);mix(p?.meta?.index)});
-  sample(lns,l=>{const p=l?.pts||[];mix(p.length);if(p.length){mix(p[0]?.[0]);mix(p[0]?.[1]);mix(p[0]?.[2]);const z=p[p.length-1];mix(z?.[0]);mix(z?.[1]);mix(z?.[2])}});
-  return h>>>0;
-};
-A.claimVersion=()=>{
-  const old=document.querySelector('title');
-  const t=document.createElement('title');t.textContent=TITLE;
-  if(old)old.replaceWith(t);else document.head.appendChild(t);
-  document.documentElement.dataset.uprsVersion=VERSION;
-};
-})();</script><script id="uprs342EarlyDiagnostics">(()=>{const a=[];window.__UPRS_EARLY_ERRORS__=a;addEventListener('error',e=>a.push({message:e.message,source:e.filename,line:e.lineno,column:e.colno}),true);addEventListener('unhandledrejection',e=>a.push({message:String(e.reason?.stack||e.reason),type:'unhandledrejection'}),true)})();</script>
+<head><script id="uprs342EarlyDiagnostics">(()=>{const a=[];window.__UPRS_EARLY_ERRORS__=a;addEventListener('error',e=>a.push({message:e.message,source:e.filename,line:e.lineno,column:e.colno}),true);addEventListener('unhandledrejection',e=>a.push({message:String(e.reason?.stack||e.reason),type:'unhandledrejection'}),true)})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05070b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery</title>
+<title>UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP</title>
 <style>
 :root{--bg:#030507;--panel:rgba(10,14,21,.88);--panel2:rgba(16,21,31,.82);--gold:#d7b76e;--gold2:#fff0bd;--ice:#98e8ff;--violet:#c3adff;--green:#8ce9bd;--red:#ff9d9d;--text:#edf1f6;--muted:#96a2b5;--line:rgba(215,183,110,.24);--shadow:0 24px 80px rgba(0,0,0,.5)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 54% 18%,#141c2d 0,#070b12 36%,#020305 78%);color:var(--text);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}button,input,select{font:inherit}button{color:inherit}.app{height:100%;display:grid;grid-template-rows:auto 1fr;position:relative}.top{min-height:68px;display:flex;align-items:center;gap:12px;padding:9px 14px calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(3,5,8,.96),rgba(3,5,8,.78));backdrop-filter:blur(20px);z-index:20}.brand{display:flex;align-items:center;gap:10px;min-width:262px}.seal{width:40px;height:40px;border:1px solid rgba(255,240,189,.65);border-radius:50%;position:relative;box-shadow:0 0 26px rgba(215,183,110,.18),inset 0 0 18px rgba(152,232,255,.08)}.seal:before,.seal:after{content:"";position:absolute;border-radius:50%;border:1px solid}.seal:before{inset:7px;border-color:rgba(152,232,255,.72);transform:rotate(58deg)}.seal:after{inset:13px;border-color:rgba(195,173,255,.9)}.brand b{display:block;font-size:13px;letter-spacing:.2em;color:var(--gold2)}.brand small{display:block;margin-top:3px;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}.modes{display:flex;gap:6px;flex:1;overflow:auto;scrollbar-width:none}.modes::-webkit-scrollbar{display:none}.mode,.btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);padding:8px 11px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.18s}.mode:hover,.btn:hover{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.08)}.mode.on{color:#080a0d;background:linear-gradient(135deg,var(--gold2),var(--gold));border-color:transparent;box-shadow:0 8px 24px rgba(215,183,110,.18)}.top-actions{display:flex;gap:6px}.layout{min-height:0;display:grid;grid-template-columns:310px 1fr 330px;gap:11px;padding:11px}.panel{min-height:0;overflow:auto;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:var(--shadow);backdrop-filter:blur(20px)}.panel::-webkit-scrollbar{width:7px}.panel::-webkit-scrollbar-thumb{background:rgba(215,183,110,.2);border-radius:9px}.left,.right{padding:14px}.section{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.065)}.section:last-child{border-bottom:0}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--gold);font-size:9px;letter-spacing:.17em;text-transform:uppercase;margin-bottom:9px}.badge{font-size:8px;letter-spacing:.09em;padding:3px 7px;border:1px solid;border-radius:999px}.tierA{color:var(--green);border-color:rgba(140,233,189,.35)}.tierB{color:var(--gold2);border-color:rgba(215,183,110,.42)}.tierC{color:var(--violet);border-color:rgba(195,173,255,.38)}.field{margin:8px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10.5px;margin-bottom:5px}.field label span:last-child{color:var(--gold2)}input,select{width:100%;min-width:0;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.25);color:var(--text);padding:8px 9px;border-radius:9px;outline:none}input:focus,select:focus{border-color:rgba(152,232,255,.45);box-shadow:0 0 0 3px rgba(152,232,255,.05)}input[type=range]{padding:0;accent-color:var(--gold)}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.toggle{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 0;color:var(--muted);font-size:10.5px}.switch{width:38px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:#1a2230;position:relative;cursor:pointer}.switch:after{content:"";position:absolute;left:3px;top:2px;width:16px;height:16px;border-radius:50%;background:#748196;transition:.18s}.switch.on{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.23)}.switch.on:after{left:18px;background:var(--gold2)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.grid2 .btn{border-radius:10px;padding:8px 8px}.viewport{min-width:0;min-height:0;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 50% 44%,rgba(22,30,44,.85),rgba(4,6,10,.98) 70%);box-shadow:var(--shadow)}#fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.72;transition:opacity .35s;pointer-events:none}body.ready #fallback{opacity:.06}#view,#xrCanvas,#camera{position:absolute;inset:0;width:100%;height:100%}#view{touch-action:none}#xrCanvas{display:none}#camera{display:none;object-fit:cover;filter:saturate(.7) contrast(1.1) brightness(.45)}.vignette{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 110px rgba(0,0,0,.68)}.viewtop{position:absolute;left:14px;right:14px;top:13px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.titlecard,.statecard{padding:9px 11px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(4,7,11,.65);backdrop-filter:blur(12px)}.titlecard b{display:block;color:var(--gold2);font-size:11px;letter-spacing:.13em;text-transform:uppercase}.titlecard span{display:block;color:var(--muted);font-size:9.5px;margin-top:3px}.statecard{align-self:flex-start;color:var(--green);font-size:9px;letter-spacing:.08em;border-color:rgba(140,233,189,.25)}.metrics{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:repeat(6,minmax(80px,1fr));gap:6px;pointer-events:none}.metric{padding:8px 9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(4,7,11,.68);backdrop-filter:blur(12px);min-width:0}.metric label{display:block;color:var(--muted);font-size:8px;letter-spacing:.09em;text-transform:uppercase}.metric b{display:block;margin-top:3px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric:nth-child(2n) b{color:var(--ice)}.metric:nth-child(3n) b{color:var(--gold2)}.card{border:1px solid rgba(255,255,255,.08);border-radius:13px;background:rgba(0,0,0,.15);padding:10px;margin:8px 0}.card h3{margin:0 0 7px;color:var(--gold2);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:10.5px}.kv div:nth-child(odd){color:var(--muted)}.kv div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;max-width:190px;overflow-wrap:anywhere}.formula{font:10px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#dce8f2;white-space:pre-wrap;overflow-wrap:anywhere}.note{color:var(--muted);font-size:10.5px;line-height:1.55}.note strong{color:var(--text)}details{border-top:1px solid rgba(255,255,255,.06);padding:7px 0}summary{cursor:pointer;color:var(--gold);font-size:10px}.search{margin-bottom:8px}.list{display:flex;flex-direction:column;gap:5px}.item{padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(0,0,0,.12);cursor:pointer}.item:hover{border-color:rgba(215,183,110,.35)}.item b{font-size:10.5px}.item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}.boot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 13px;border:1px solid rgba(215,183,110,.35);border-radius:999px;background:rgba(4,7,11,.82);color:var(--gold2);font-size:10px;letter-spacing:.1em;z-index:3;transition:.35s}body.ready .boot{opacity:0;pointer-events:none}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);opacity:0;z-index:100;padding:10px 14px;max-width:88vw;border:1px solid rgba(215,183,110,.36);border-radius:12px;background:rgba(4,7,11,.95);box-shadow:var(--shadow);transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}.fatal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);padding:20px}.fatal.show{display:flex}.fatal>div{max-width:720px;border:1px solid rgba(255,157,157,.45);border-radius:16px;background:#130a0c;padding:18px}.fatal h2{color:var(--red);margin:0 0 8px}.fatal pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#ffd8d8;font-size:11px}.mobileTabs{display:none}
@@ -1071,7 +1039,7 @@ function initV151(){
  const baseApply=applySensorRoutes;applySensorRoutes=function(t){sampleWebCamera(t);baseApply(t)};
  const baseTests=runTests;runTests=function(show=true){const r=baseTests(false),T=[...r.tests],ok=(name,pass,detail='')=>T.push({name,pass:!!pass,detail});ok('v1.5.1 selected-point magnetic hit zone',typeof selectedPointTarget==='function');ok('v1.5.1 lock-safe drag helper present',typeof dragCursorSafely==='function');ok('v1.5.1 multitouch channels',!!SENSOR_CHANNELS['touch.pinch']&&!!SENSOR_CHANNELS['touch.twist']);ok('v1.5.1 web camera optical channels',!!SENSOR_CHANNELS['camera.luminance']&&!!SENSOR_CHANNELS['camera.motion']);ok('v1.5.1 stacked portrait panels',typeof refreshWorkbench==='function');ok('v1.5.1 compact Pro Max landscape',isCompact()||innerWidth>1100||innerHeight>650);const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;if(show)toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`);return rep};
  const vv=globalThis.visualViewport;vv?.addEventListener('resize',()=>{refreshWorkbench();resize();draw(performance.now())});vv?.addEventListener('scroll',()=>{refreshWorkbench()});
- if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.filter(r=>r.scope.startsWith(location.origin+location.pathname.replace(/[^/]*$/,''))).map(r=>r.unregister()))).then(x=>{if(x.some(Boolean))document.documentElement.dataset.uprsStaleWorkerRemoved='1'}).catch(e=>console.warn('service worker cleanup',e));
+ if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(e=>console.warn('service worker',e));
  renderCapabilities();renderSensorRoutes();refreshWorkbench();syncLockIndicators();setTimeout(()=>{scheduleSilentTests393();draw(performance.now())},700);
 }
 
@@ -7040,9 +7008,9 @@ for(const ms of[2600,4800,8000,13000])setTimeout(()=>{registerModel380();registe
 <script id="uprs381MergeIntegration">
 (()=>{
 'use strict';
-const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
-const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
+const VERSION='4.1.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
+const BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
 const ASML_ID='asml_euv_lpp';
 const CLAUDE_IDS=['lorentz_dielectric','cole_cole','havriliak_negami','skin_effect_line','superconductor_surface','ferro_kittel','fabry_perot','quantum_rtd','qnm_ringdown','magnetoplasma_cyclotron','piezo_bvd','thermal_semiinfinite'];
 const finite=Number.isFinite;
@@ -7799,12 +7767,8 @@ function verifyCore398(pred,respond){const T=pred.test;if(!T)return {resolved:fa
    const cands=detectAll398(ser,{light:T.kind==='res-dip'||T.kind==='res-peak'}).filter(f=>f.kind===T.kind);
    if(!cands.length)return {resolved:true,hit:0,measured:null,err:null};
    const best=cands.sort((a,b)=>relErr398(a.x,xh)-relErr398(b.x,xh))[0];
-   let bx=best.x; /* v4.6 precision: second, 10x narrower refinement pass */
-   try{if(bx>0){const w2=Math.max(w/10,.004),xs2=grid398(bx*Math.exp(-3*w2),bx*Math.exp(3*w2),201,true);
-    const c2=detectAll398(buildSeries398(xs2,x=>respond(x,p)),{light:T.kind==='res-dip'||T.kind==='res-peak'}).filter(f=>f.kind===T.kind);
-    if(c2.length)bx=c2.sort((p1,p2)=>relErr398(p1.x,bx)-relErr398(p2.x,bx))[0].x}}catch(_){}
-   const err=relErr398(bx,xh);
-   return {resolved:true,hit:err<=w?1:0,measured:bx,err}}
+   const err=relErr398(best.x,xh);
+   return {resolved:true,hit:err<=w?1:0,measured:best.x,err}}
   if(T.type==='param-count'){
    const sw=env.sweep(),xs=grid398(sw[0].x,sw[sw.length-1].x,141,env.logAxis());
    const cnt=v=>{const ser=buildSeries398(xs,x=>respond(x,{...env.params(),[T.key]:v}));return detectAll398(ser,{light:true}).filter(f=>f.confidence>.35).length};
@@ -7956,7 +7920,7 @@ function ensureTestChain398(){try{
 }catch(_){}}
 ensureTestChain398();
 /* ---------- install ---------- */
-const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
 function claimTitle398(){try{
  const te=document.querySelector('title');
  if(te&&!te.dataset.uprs398){const nt=document.createElement('title');nt.dataset.uprs398='1';nt.dataset.uprs370='1';nt.textContent=TITLE398;te.remove();document.head.appendChild(nt);
@@ -7971,7 +7935,7 @@ function install398(){if(typeof document==='undefined')return;
   setInterval(()=>{if(autoOn&&document.visibilityState==='visible')tick398()},2500);
   if(openState&&env.sweep().length>=12){scanLight398();render398()}
   claimTitle398();
-  const s=document.querySelector('.brand small');if(s)s.textContent='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
+  const s=document.querySelector('.brand small');if(s)s.textContent='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
  }catch(e){console.warn('UPRS398 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install398,140),{once:true});else setTimeout(install398,140)}}catch(_){}
 /* ---------- public API ---------- */
@@ -8375,9 +8339,9 @@ body.uprs400 #obsFab398,body.uprs400 #obsBtn398{display:none!important}
 <script id="uprs410UnifiedIntegrationScript">
 (()=>{
 'use strict';
-const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
-const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
+const VERSION='4.1.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.1.0 · Predictive Observatory + Visual Workspace + Claude + ASML EUV LPP';
+const BRAND='OMNIATLAS · OBSERVATORY · VISUAL WORKSPACE · ASML EUV LPP · v4.1.0';
 const $=id=>document.getElementById(id);
 const obs=()=>$('obsPanel398');
 const manager=()=>globalThis.__UPRS375__;
@@ -9270,7 +9234,7 @@ function refreshPanel440(now){if(!S.panel.dirty&&now-S.panel.last<400&&S.lastInd
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
 /* --------------------------------------------------------- scene buffers */
-function sceneKey440(){try{const a=globalThis.__UPRS_APP__;return state.mode+'|'+state.model+'|'+state.index+'|'+(a?.sceneRevision||0)+'|'+(a?.sceneStamp?.(state.scene)||0)}catch(_){return ''}}
+function sceneKey440(){try{return state.mode+'|'+((state.scene?.points||[]).length)+'|'+((state.scene?.lines||[]).length)+'|'+state.model}catch(_){return ''}}
 function refreshScene440(force){const key=sceneKey440();if(!force&&key===S.sceneKey)return;S.sceneKey=key;
  let packed;try{packed=packScene440(state.scene)}catch(_){packed=packScene440(null)}
  const gl=S.gl;S.pi=packed.pi;S.counts={ln:packed.lp.length/3,pn:packed.pp.length/3};
@@ -9453,13 +9417,12 @@ function install440(){if(typeof document==='undefined')return;
  if(!document.body||typeof state==='undefined'){if(tries++<80)return setTimeout(install440,220);return}
  try{
   if(typeof enterXR==='function'&&!window.__UPRS440_LEGACY_XR__)window.__UPRS440_LEGACY_XR__=enterXR;
-  if(globalThis.__UPRS_APP__?.xrOwner==='450')return;
   try{enterXR=enterImmersive440;globalThis.enterXR=enterImmersive440;window.enterXR=enterImmersive440}catch(_){}
   const btn=document.getElementById('xrBtn');if(btn){btn.onclick=()=>enterImmersive440();
    (async()=>{try{if(navigator.xr&&await navigator.xr.isSessionSupported('immersive-ar')){S.support.ar=true;btn.textContent='🥽 '+t440('enterAR')}else if(navigator.xr&&await navigator.xr.isSessionSupported('immersive-vr')){S.support.vr=true;btn.textContent='🥽 '+t440('enterVR')}}catch(_){}})()}
  }catch(e){console.warn('UPRS440 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install440,160),{once:true});else setTimeout(install440,160)}}catch(_){}
-
+for(const ms of [900,2600,7000])setTimeout(()=>{try{install440()}catch(_){}},ms);
 /* --------------------------------------------------------------- tests */
 function checks440(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
  ok('v4.4.0 immersive module installed',()=>({ok:!!globalThis.__UPRS440__&&typeof enterImmersive440==='function',detail:'v'+V440}));
@@ -9632,7 +9595,7 @@ function refreshPanel450(now){const c=CORE();if(!c)return;const idx=(()=>{try{re
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
 /* --------------------------------------------------------- scene buffers */
-function sceneKey450(){try{const a=globalThis.__UPRS_APP__;return state.mode+'|'+state.model+'|'+state.index+'|'+(a?.sceneRevision||0)+'|'+(a?.sceneStamp?.(state.scene)||0)}catch(_){return ''}}
+function sceneKey450(){try{return state.mode+'|'+((state.scene?.points||[]).length)+'|'+((state.scene?.lines||[]).length)+'|'+state.model}catch(_){return ''}}
 function refreshScene450(force){const key=sceneKey450();if(!force&&key===S.sceneKey)return;S.sceneKey=key;const c=CORE();if(!c)return;
  let g;try{g=c.packScene(state.scene)}catch(_){g=c.packScene(null)}
  const gl=S.gl;S.pi=g.pi;S.counts={ln:g.lp.length/3,pn:g.pp.length/3};S.ppData=g.pp;
@@ -9719,19 +9682,7 @@ function setDepthUniforms450(gl,loc,view,frame){let on=0;
    const dx=S.world.pos[0],dz=S.world.pos[2];const dist=Math.hypot(dx,S.world.pos[1]-1.4,dz+0);   /* approx viewer at origin height */
    S.depth.cpuFade=d<dist-.12?Math.max(.15,1-(dist-d)*2):1;S.depth.mode='cpu'}}}catch(_){}}
  gl.uniform1f(loc.uDepthOn,on);gl.uniform1f(loc.uFade,S.depth.mode==='cpu'?S.depth.cpuFade:1);return on}
-function frame450(t,frame){
- const first=!XRSTART450.firstFrameAt;
- if(first){
-  XRSTART450.firstFrameAt=xrNow450();XRSTART450.pending=false;
-  if(XRSTART450.firstFrameTimer){clearTimeout(XRSTART450.firstFrameTimer);XRSTART450.firstFrameTimer=0}
-  xrStage450('running','first XR frame');
- }
- try{return frame450Core(t,frame)}catch(e){
-  console.error('UPRS450 XR frame',e);
-  xrAbort450(S.sess,e,'render-frame');
- }
-}
-function frame450Core(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimationFrame(frame450);
+function frame450(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimationFrame(frame450);
  const c=CORE(),gl=S.gl,pose=frame.getViewerPose(S.ref);const layer=sess.renderState.baseLayer;
  gl.bindFramebuffer(gl.FRAMEBUFFER,layer.framebuffer);
  if(S.mode==='immersive-ar')gl.clearColor(0,0,0,0);else gl.clearColor(.012,.018,.03,1);
@@ -9764,7 +9715,6 @@ function frame450Core(t,frame){const sess=S.sess;if(!sess)return;sess.requestAni
   gl.uniform4f(S.loc.uVp,vp.x,vp.y,vp.width,vp.height);
   const dOn=setDepthUniforms450(gl,S.loc,view,frame);
   const proj=view.projectionMatrix,vinv=view.transform.inverse.matrix;
-  try{if(window.__UPRS460__)window.__UPRS460__.occlude(gl,proj,vinv,frame,view,S,c)}catch(_){}
   c.m4Mul(S.tmpA,vinv,S.worldMat);                       /* MV = view⁻¹·model */
   drawGeom450(gl,proj,S.tmpA,S.buf.lp,S.buf.lc,S.counts.ln,gl.LINES);
   drawGeom450(gl,proj,S.tmpA,S.buf.pp,S.buf.pc,S.counts.pn,gl.POINTS,64);
@@ -9784,144 +9734,31 @@ function frame450Core(t,frame){const sess=S.sess;if(!sess)return;sess.requestAni
    gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.vertexAttribPointer(S.locQ.aT,2,gl.FLOAT,false,0,0);
    gl.depthMask(false);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.depthMask(true)}
  }}
-/* ------------------------------------------------ Quest 3 startup recovery v4.6.1 */
-const XRSTART450={
- stage:'idle',detail:'',startedAt:0,sessionRequestedAt:0,sessionAcquiredAt:0,
- firstFrameAt:0,refType:'',lastError:null,history:[],firstFrameTimer:0,
- pending:false,attempt:0,lateSessionsEnded:0,
- policy:Object.freeze({
-  mode:'immersive-vr',
-  requiredFeatures:[],
-  optionalFeatures:['local-floor'],
-  directUserActivation:true,
-  preferAR:false,
-  depthOnStartup:false,
-  autoLegacyFallback:false,
-  automaticPreflight:false,
-  requestTimeoutMs:30000,
-  glTimeoutMs:8000,
-  referenceSpaceTimeoutMs:5000,
-  firstFrameTimeoutMs:8000
- })
-};
-function xrNow450(){try{return performance.now()}catch(_){return Date.now()}}
-function xrScale450(ms){const k=Number(globalThis.__UPRS_XR_TEST_TIMEOUT_SCALE__);return Math.max(1,Math.round(ms*(Number.isFinite(k)&&k>0?k:1)))}
-function xrStage450(stage,detail){
- XRSTART450.stage=stage;XRSTART450.detail=String(detail||'');
- XRSTART450.history.push({stage,detail:XRSTART450.detail,at:Math.round(xrNow450())});
- if(XRSTART450.history.length>32)XRSTART450.history.shift();
- try{const b=document.getElementById('xrBtn');if(b){b.dataset.xrStage=stage;b.title='XR · '+stage+(detail?' · '+detail:'')}}catch(_){}
-}
-function xrWait450(promise,ms,stage,onLateResolve){
- return new Promise((resolve,reject)=>{
-  let done=false;
-  const timer=setTimeout(()=>{if(done)return;done=true;const e=new Error('Timeout: '+stage);e.name='TimeoutError';reject(e)},xrScale450(ms));
-  Promise.resolve(promise).then(v=>{
-   if(done){try{onLateResolve?.(v)}catch(_){}return}
-   done=true;clearTimeout(timer);resolve(v)
-  },e=>{if(done)return;done=true;clearTimeout(timer);reject(e)});
- });
-}
-function xrExplain450(error,stage){
- const name=String(error?.name||'Error'),msg=String(error?.message||error||'unknown');
- if(stage==='webxr-api')return 'WebXR API отсутствует. Откройте опубликованный HTTPS-адрес непосредственно в Meta Quest Browser; локальный file://, предпросмотр файла и встроенный iframe не запускают immersive WebXR.';
- if(name==='SecurityError')return 'WebXR SecurityError: откройте страницу напрямую в Meta Quest Browser по HTTPS, убедитесь, что вкладка активна, и нажмите XR ещё раз. Встроенный iframe или потерянная активация пользователя запрещают запуск.';
- if(name==='NotSupportedError')return 'WebXR NotSupportedError: immersive-vr или запрошенная конфигурация недоступна в этом браузере.';
- if(name==='InvalidStateError')return 'WebXR InvalidStateError: другая immersive-сессия уже активна или ещё создаётся. Закройте её либо перезагрузите страницу.';
- if(name==='TimeoutError')return 'WebXR завис на этапе «'+stage+'». Ожидание остановлено; поздно созданная сессия будет автоматически закрыта.';
- return 'WebXR '+name+' на этапе «'+stage+'»: '+msg;
-}
-function xrReport450(){
- return {
-  version:'4.6.1',stage:XRSTART450.stage,detail:XRSTART450.detail,
-  protocol:location.protocol,origin:location.origin,secureContext:!!globalThis.isSecureContext,
-  focused:document.hasFocus?.()??null,visibility:document.visibilityState,
-  embedded:globalThis.top!==globalThis.self,navigatorXR:!!navigator.xr,
-  pending:XRSTART450.pending,attempt:XRSTART450.attempt,lateSessionsEnded:XRSTART450.lateSessionsEnded,
-  userActivation:{active:navigator.userActivation?.isActive??null,hasBeenActive:navigator.userActivation?.hasBeenActive??null},
-  policy:XRSTART450.policy,refType:XRSTART450.refType,
-  elapsedMs:XRSTART450.startedAt?Math.round(xrNow450()-XRSTART450.startedAt):0,
-  lastError:XRSTART450.lastError,history:XRSTART450.history.slice()
- };
-}
-function xrShowReport450(message){
- const report=xrReport450(),text=(message||'XR')+'\n'+JSON.stringify(report,null,2);
- console.warn('UPRS XR startup',report);
- toast450(message||('XR: '+XRSTART450.stage));
- try{
-  let box=document.getElementById('xrDiag450');
-  if(!box){
-   box=document.createElement('div');box.id='xrDiag450';
-   box.style.cssText='position:fixed;left:10px;right:10px;bottom:10px;z-index:2147483600;max-height:45vh;overflow:auto;padding:10px 12px;border:1px solid rgba(255,157,157,.55);border-radius:12px;background:rgba(18,7,10,.96);color:#ffe2e2;font:11px/1.45 ui-monospace,monospace;white-space:pre-wrap;box-shadow:0 18px 55px rgba(0,0,0,.65)';
-   box.addEventListener('click',()=>box.remove());document.body.appendChild(box);
-  }
-  box.textContent=text+'\n\nНажмите на это сообщение, чтобы закрыть.';
- }catch(_){}
-}
-async function xrEndLate450(sess){
- if(!sess)return;
- XRSTART450.lateSessionsEnded++;
- try{await Promise.race([sess.end(),new Promise(r=>setTimeout(r,xrScale450(1200)))])}catch(_){}
-}
-async function xrAbort450(sess,error,stage){
- if(XRSTART450.firstFrameTimer){clearTimeout(XRSTART450.firstFrameTimer);XRSTART450.firstFrameTimer=0}
- XRSTART450.pending=false;
- XRSTART450.lastError={name:String(error?.name||'Error'),message:String(error?.message||error||''),stage};
- xrStage450('failed',stage);
- try{if(sess)await Promise.race([sess.end(),new Promise(r=>setTimeout(r,xrScale450(1200)))])}catch(_){}
- if(S.sess===sess)S.sess=null;S.gl=null;S.ref=null;S.sceneKey='';
- try{if(state.xrSession===sess)state.xrSession=null}catch(_){}
- xrShowReport450(xrExplain450(error,stage));
-}
-function xrGuard450(){
- if(!globalThis.isSecureContext){const e=new Error('secure context required');e.name='SecurityError';throw e}
- if(document.hasFocus&&!document.hasFocus()){const e=new Error('document is not focused');e.name='SecurityError';throw e}
- if(globalThis.top!==globalThis.self){
-  const pp=document.permissionsPolicy||document.featurePolicy;
-  if(pp?.allowsFeature&&!pp.allowsFeature('xr-spatial-tracking')){const e=new Error('iframe lacks xr-spatial-tracking permission');e.name='SecurityError';throw e}
- }
- if(document.visibilityState==='hidden'){const e=new Error('document is hidden');e.name='SecurityError';throw e}
-}
-async function xrPreflight450(){
- const b=document.getElementById('xrBtn');if(!b)return false;
- if(!navigator.xr){b.dataset.xrSupport='none';b.title='WebXR API отсутствует';return false}
- try{const ok=await navigator.xr.isSessionSupported('immersive-vr');b.dataset.xrSupport=ok?'immersive-vr':'unsupported';return ok}
- catch(e){b.dataset.xrSupport='probe-error';b.title='WebXR probe: '+String(e?.message||e);return false}
-}
 /* ------------------------------------------------------------- session */
 async function enterImmersive450(){
  if(S.sess){try{await S.sess.end()}catch(_){}return}
- if(XRSTART450.pending){toast450('WebXR: запуск уже выполняется');return}
- XRSTART450.startedAt=xrNow450();XRSTART450.sessionRequestedAt=0;XRSTART450.sessionAcquiredAt=0;
- XRSTART450.firstFrameAt=0;XRSTART450.refType='';XRSTART450.lastError=null;XRSTART450.history.length=0;
- XRSTART450.pending=true;XRSTART450.attempt++;
- if(!navigator.xr){const e=new Error('navigator.xr unavailable');e.name='NotSupportedError';await xrAbort450(null,e,'webxr-api');return}
- const c=CORE();if(!c){await xrAbort450(null,new Error('XR core unavailable'),'core');return}
- const mode='immersive-vr';let sess=null,requestPromise=null;
+ if(!navigator.xr){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
+ let mode=null;
+ try{if(await navigator.xr.isSessionSupported('immersive-ar'))mode='immersive-ar'}catch(_){}
+ if(!mode){try{if(await navigator.xr.isSessionSupported('immersive-vr'))mode='immersive-vr'}catch(_){}}
+ if(!mode){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
+ const c=CORE();if(!c){try{return window.__UPRS440__?.enter()}catch(_){return}}
  try{
-  xrGuard450();
-  xrStage450('request-session','direct trusted click · immersive-vr');
-  XRSTART450.sessionRequestedAt=xrNow450();
-  requestPromise=navigator.xr.requestSession('immersive-vr',{optionalFeatures:['local-floor']});
-  sess=await xrWait450(requestPromise,XRSTART450.policy.requestTimeoutMs,'request-session',late=>xrEndLate450(late));
-  XRSTART450.sessionAcquiredAt=xrNow450();
-  xrStage450('session-acquired',sess.environmentBlendMode||'immersive-vr');
+  const opts={requiredFeatures:['local'],optionalFeatures:['local-floor','bounded-floor','hand-tracking','hit-test','anchors','depth-sensing'],
+   depthSensing:{usagePreference:['gpu-optimized','cpu-optimized'],dataFormatPreference:['luminance-alpha','float32']}};
+  const sess=await navigator.xr.requestSession(mode,opts);
   S.sess=sess;S.mode=mode;try{state.xrSession=sess}catch(_){}
-  try{if(sess.supportedFrameRates&&sess.updateTargetFrameRate){const rates=[...sess.supportedFrameRates].filter(Number.isFinite);if(rates.length){const want=rates.includes(90)?90:Math.max(...rates);Promise.resolve(sess.updateTargetFrameRate(want)).then(()=>{S.support.rate=want}).catch(()=>{})}}}catch(_){}
+  try{if(sess.supportedFrameRates&&sess.updateTargetFrameRate){const rates=[...sess.supportedFrameRates];const want=rates.includes(90)?90:Math.max(...rates);await sess.updateTargetFrameRate(want);S.support.rate=want}}catch(_){}
   let cv=document.getElementById('xr450Canvas');
   if(!cv){cv=document.createElement('canvas');cv.id='xr450Canvas';cv.style.display='none';document.body.appendChild(cv)}
   const gl=cv.getContext('webgl2',{xrCompatible:true,antialias:true,alpha:true,depth:true})||cv.getContext('webgl',{xrCompatible:true,antialias:true,alpha:true,depth:true});
   if(!gl)throw Error('WebGL unavailable');
-  S.gl=gl;xrStage450('gl-compatible',(typeof WebGL2RenderingContext!=='undefined'&&gl instanceof WebGL2RenderingContext)?'webgl2':'webgl1');
-  await xrWait450(gl.makeXRCompatible(),XRSTART450.policy.glTimeoutMs,'makeXRCompatible');
-  xrStage450('render-layer','XRWebGLLayer');
-  const layer=new XRWebGLLayer(sess,gl,{alpha:false,depth:true,stencil:false,antialias:true,framebufferScaleFactor:.85});
+  S.gl=gl;await gl.makeXRCompatible();
+  const layer=new XRWebGLLayer(sess,gl,{alpha:true,antialias:true,framebufferScaleFactor:1});
   try{layer.fixedFoveation=.35}catch(_){}
   sess.updateRenderState({baseLayer:layer});
-  xrStage450('reference-space','local-floor → local');
-  try{S.ref=await xrWait450(sess.requestReferenceSpace('local-floor'),XRSTART450.policy.referenceSpaceTimeoutMs,'local-floor');XRSTART450.refType='local-floor'}
-  catch(_){S.ref=await xrWait450(sess.requestReferenceSpace('local'),XRSTART450.policy.referenceSpaceTimeoutMs,'local');XRSTART450.refType='local'}
-  /* depth sensing is intentionally disabled in the default VR startup path; it is AR-only capability. */
+  S.ref=await sess.requestReferenceSpace('local-floor').catch(()=>sess.requestReferenceSpace('local'));
+  /* depth sensing */
   S.depth={mode:'none',binding:null,fmt:0,cpuFade:1};S.support.depthGpu=false;S.support.depthCpu=false;
   try{if(sess.depthUsage==='gpu-optimized'&&typeof XRWebGLBinding!=='undefined'){S.depth.binding=new XRWebGLBinding(sess,gl);S.depth.fmt=sess.depthDataFormat==='float32'?1:0;S.support.depthGpu=true;toast450(t450('occlOn'))}
    else if(sess.depthUsage==='cpu-optimized'){S.support.depthCpu=true;toast450(t450('occlCpu'))}}catch(_){}
@@ -9937,52 +9774,43 @@ async function enterImmersive450(){
   const qw=.56,qh=.49;
   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qv);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-qw/2,-qh/2,0,qw/2,-qh/2,0,-qw/2,qh/2,0,qw/2,qh/2,0]),gl.STATIC_DRAW);
   gl.bindBuffer(gl.ARRAY_BUFFER,S.buf.qt);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,0,1,1,1]),gl.STATIC_DRAW);
-  S.world.pos=[0,XRSTART450.refType==='local-floor'?1.15:-.08,-1.25];S.world.quat=[0,0,0,1];S.world.scale=.55;S.placedOnce=false;S.anchorSpace=null;
+  S.world.pos=[0,mode==='immersive-ar'?1.05:1.15,-.75];S.world.quat=[0,0,0,1];S.world.scale=.55;S.placedOnce=false;S.anchorSpace=null;
   if(mode==='immersive-ar'){try{const vs=await sess.requestReferenceSpace('viewer');S.hit.source=await sess.requestHitTestSource({space:vs})}catch(_){S.hit.source=null}}
   sess.addEventListener('select',e=>{
    if(S.hit.visible&&(S.hit.placing||!S.placedOnce)){const m=S.hit.mat;S.world.pos=[m[12],m[13]+.02,m[14]];S.placedOnce=true;S.hit.placing=false;
-    try{if(S.lastHit&&S.lastHit.createAnchor)S.lastHit.createAnchor().then(an=>{S.anchorSpace=an.anchorSpace;try{window.__UPRS460__&&window.__UPRS460__.onAnchor(an,S,e.frame)}catch(_){}}).catch(()=>{})}catch(_){}
+    try{if(S.lastHit&&S.lastHit.createAnchor)S.lastHit.createAnchor().then(an=>{S.anchorSpace=an.anchorSpace}).catch(()=>{})}catch(_){}
     toast450(t450('placed'));return}
    doPick450(e.frame,e.inputSource)});
   sess.addEventListener('squeezestart',e=>startGrab450(e.frame,e.inputSource));
   sess.addEventListener('squeezeend',e=>endGrab450(e.inputSource));
   sess.addEventListener('inputsourceschange',e=>{for(const s of e.removed){S.grabs.delete(s);btnPrev.delete(s);S.hands.delete(s)}S.support.hands=[...sess.inputSources].some(s=>!!s.hand)});
-  sess.addEventListener('end',()=>{if(XRSTART450.firstFrameTimer){clearTimeout(XRSTART450.firstFrameTimer);XRSTART450.firstFrameTimer=0}XRSTART450.pending=false;S.sess=null;S.gl=null;S.ref=null;S.sceneKey='';S.grabs.clear();btnPrev.clear();S.hands.clear();S.panel.tex=null;S.hit.source=null;S.anchorSpace=null;S.depth.binding=null;try{state.xrSession=null}catch(_){}if(XRSTART450.stage!=='failed')xrStage450('ended','session end');toast450(t450('ended'))},{once:true});
+  sess.addEventListener('end',()=>{S.sess=null;S.gl=null;S.sceneKey='';S.grabs.clear();btnPrev.clear();S.hands.clear();S.panel.tex=null;S.hit.source=null;S.anchorSpace=null;S.depth.binding=null;try{state.xrSession=null}catch(_){}toast450(t450('ended'))});
   AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);
   refreshScene450(true);S.panel.dirty=true;
-  xrStage450('waiting-first-frame','render pipeline ready');
-  XRSTART450.firstFrameTimer=setTimeout(()=>{
-   if(!XRSTART450.firstFrameAt&&S.sess===sess){
-    const e=new Error('No XR animation frame');e.name='TimeoutError';
-    xrAbort450(sess,e,'first-frame');
-   }
-  },xrScale450(XRSTART450.policy.firstFrameTimeoutMs));
   sess.requestAnimationFrame(frame450);
-  try{if(window.__UPRS460__)await window.__UPRS460__.onSession(sess,gl,S,c,mode)}catch(_){}
-  toast450('WebXR: запуск VR…');
- }catch(e){console.warn('UPRS450 session',e);await xrAbort450(sess,e,XRSTART450.stage||'startup')}}
+  toast450(t450('started')+(S.support.rate?` · ${S.support.rate} Hz`:'')+(mode==='immersive-ar'?' · AR':' · VR'));
+ }catch(e){console.warn('UPRS450 session',e);toast450('XR: '+e.message);try{window.__UPRS440__?.enter()}catch(_){}}}
 /* desktop sonification loop */
 let deskTimer=0;
 function desktopAudioTick450(){if(!AU.enabled||S.sess)return;const idx=(()=>{try{return state.index}catch(_){return -1}})();
  if(idx!==AU.lastIdx){AU.lastIdx=idx;const sel=currentSel450();if(sel){AU.apply(sel);AU.place(0,0,-1)}}}
-function toggleSound450(){const on=!AU.enabled;if(!on&&deskTimer){clearInterval(deskTimer);deskTimer=0}if(!AU.setEnabled(on)){toast450('Audio: '+(AU.err||'unavailable'));return}
+function toggleSound450(){const on=!AU.enabled;if(!AU.setEnabled(on)){toast450('Audio: '+(AU.err||'unavailable'));return}
  toast450(on?t450('sndOn'):t450('sndOff'));
  const btn=document.getElementById('sndBtn450');if(btn)btn.classList.toggle('on',on);
  if(on){const sel=currentSel450();if(sel){AU.apply(sel);AU.place(0,0,-1)}
   if(!deskTimer)deskTimer=setInterval(desktopAudioTick450,140)}}
 /* --------------------------------------------------------------- install */
-let tries=0,installed450=false;
+let tries=0;
 function install450(){if(typeof document==='undefined')return;
  if(!document.body||typeof state==='undefined'||!CORE()){if(tries++<90)return setTimeout(install450,220);return}
- if(installed450)return;installed450=true;
  try{
-  const btn=document.getElementById('xrBtn');if(btn){btn.onclick=()=>enterImmersive450();btn.dataset.xrPolicy='quest-safe-v461';btn.dataset.xrSupport=navigator.xr?'available':'none';btn.title=navigator.xr?'Quest-safe WebXR · нажмите для VR':'WebXR API отсутствует'}
+  const btn=document.getElementById('xrBtn');if(btn)btn.onclick=()=>enterImmersive450();
   try{enterXR=enterImmersive450;globalThis.enterXR=enterImmersive450;window.enterXR=enterImmersive450}catch(_){}
   const acts=document.querySelector('.top-actions');
   if(acts&&!document.getElementById('sndBtn450')){const sb=document.createElement('button');sb.className='btn';sb.id='sndBtn450';sb.textContent='🔊';sb.title=lang450()===0?'Соникация резонансов':'Resonance sonification';sb.onclick=toggleSound450;acts.insertBefore(sb,acts.firstChild)}
  }catch(e){console.warn('UPRS450 install',e)}}
 try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install450,200),{once:true});else setTimeout(install450,200)}}catch(_){}
-
+for(const ms of [1100,3000,8000])setTimeout(()=>{try{install450()}catch(_){}},ms);
 /* async audio probe for the self-test (OfflineAudioContext render) */
 const audioProbe={done:false,ok:false,rms:0};
 setTimeout(()=>{try{
@@ -10017,354 +9845,10 @@ function wrapTests450(){try{if(typeof runTests!=='function'||runTests.__uprs450)
  w.__uprs450=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
 setTimeout(wrapTests450,400);for(const ms of [1800,4500,10000,17000])setTimeout(wrapTests450,ms);
 /* --------------------------------------------------------------- API */
-globalThis.__UPRS450__={version:V450,enter:enterImmersive450,exit:()=>{try{S.sess?.end()}catch(_){}},toggleSound:toggleSound450,checks:checks450,startup:XRSTART450,startupPolicy:XRSTART450.policy,startupReport:xrReport450,preflight:xrPreflight450,
+globalThis.__UPRS450__={version:V450,enter:enterImmersive450,exit:()=>{try{S.sess?.end()}catch(_){}},toggleSound:toggleSound450,checks:checks450,
  core:{sonify:sonify450,depthLA:depthLA450,currentSel:currentSel450,makeAudio:makeAudio450,shaders:{VS450,FS450,VSQ450,FSQ450}},
  audit:()=>({version:V450,active:!!S.sess,mode:S.mode,depth:{mode:S.depth.mode,gpu:S.support.depthGpu,cpu:S.support.depthCpu},
   audio:{enabled:AU.enabled,ctx:!!AU.ctx,err:AU.err,probe:audioProbe},world:{...S.world},rate:S.support.rate})};
-})();
-</script>
-<script id="uprs460Consolidation">(()=>{'use strict';
-const V='4.6.1',A=globalThis.__UPRS_APP__;
-function inferSemantics(m){
-  if(m.responseSemantics)return m.responseSemantics;
-  const map=String(m.map||'').toLowerCase();
-  if(map.includes('reflect'))return 'reflection-coefficient';
-  if(map.includes('impedance'))return 'impedance';
-  if(map.includes('admittance'))return 'admittance';
-  if(map.includes('transfer'))return 'transfer-function';
-  return 'derived-complex-response';
-}
-function applicability(s){return {
-  resonance:true,phase:true,powerLaw:true,plateau:true,fano:true,
-  directGamma:s==='reflection-coefficient',
-  directPassivity:s==='reflection-coefficient',
-  cayleyPassivity:s==='impedance'||s==='admittance',
-  groupDelay:s==='transfer-function'||s==='reflection-coefficient'
-}}
-function annotateModels(){
-  let inferred=0,explicit=0,total=0;
-  try{for(const m of Object.values(UPRSO_MODELS||{})){
-    total++;
-    if(/^inferred-v4\.6/.test(String(m.semanticsSource||'')))inferred++;
-    else if(m.responseSemantics)explicit++;
-    else{
-      m.responseSemantics=inferSemantics(m);
-      m.semanticsSource='inferred-v4.6.1';
-      inferred++;
-    }
-    if(!m.detectorApplicability){
-      m.detectorApplicability=applicability(m.responseSemantics);
-      m.detectorApplicabilitySource='inferred-v4.6.1';
-    }
-  }}catch(_){}
-  return {total,explicit,inferred};
-}
-function claimXR(){
-  if(globalThis.__UPRS450__?.enter){
-    globalThis.enterXR=globalThis.__UPRS450__.enter;
-    window.enterXR=globalThis.__UPRS450__.enter;
-    const b=document.getElementById('xrBtn');if(b)b.onclick=()=>globalThis.__UPRS450__.enter();
-    A.xrOwner='450';return true;
-  }
-  return false;
-}
-function hookSceneRevision(){
-  const names=['recalc','setMode'];
-  for(const n of names){try{
-    const f=globalThis[n];if(typeof f!=='function'||f.__uprs460)continue;
-    const w=function(...args){A.bumpSceneRevision(n);return f.apply(this,args)};
-    w.__uprs460=true;globalThis[n]=w;try{window[n]=w}catch(_){}
-  }catch(_){} }
-  document.addEventListener('input',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('input')},{passive:true});
-  document.addEventListener('change',e=>{if(e.target?.matches?.('input,select'))A.bumpSceneRevision('change')},{passive:true});
-}
-function claimVersion(){A.claimVersion();}
-function audit(){
-  const sem=annotateModels(),r450=globalThis.__UPRS450__?.audit?.(),r440=globalThis.__UPRS440__?.audit?.();
-  return {version:V,title:document.title,htmlVersion:document.documentElement.dataset.uprsVersion,models:sem,xr:{owner:A.xrOwner,v450:!!globalThis.__UPRS450__,v440Fallback:!!globalThis.__UPRS440__,active:r450?.active||false,depth:r450?.depth||null,audio:r450?.audio||null,startup:globalThis.__UPRS450__?.startupReport?.()||null},sceneRevision:A.sceneRevision,selfTest:globalThis.__UPRS_SELF_TEST__?{passed:__UPRS_SELF_TEST__.passed,total:__UPRS_SELF_TEST__.total,failed:__UPRS_SELF_TEST__.failed?.map?.(x=>x.name)||[]}:null,earlyErrors:(globalThis.__UPRS_EARLY_ERRORS__||[]).slice()};
-}
-function checks(){
-  const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
-  const p=globalThis.__UPRS450__?.startupPolicy;
-  return [
-    {name:'v4.6.1 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
-    {name:'v4.6.1 Quest-safe XR entry',pass:A.xrOwner==='461'&&typeof globalThis.__UPRS461__?.enter==='function'&&globalThis.__UPRS450__?.enter===globalThis.__UPRS461__?.enter},
-    {name:'v4.6.1 v4.4 retained as fallback API',pass:typeof globalThis.__UPRS440__?.enter==='function'},
-    {name:'v4.6.1 scene signature detects geometry change',pass:stamp1!==stamp2},
-    {name:'v4.6.1 response semantics preserve provenance',pass:s.total>0&&s.explicit+s.inferred===s.total,detail:JSON.stringify(s)},
-    {name:'v4.6.1 no early runtime errors',pass:(globalThis.__UPRS_EARLY_ERRORS__||[]).length===0,detail:JSON.stringify(globalThis.__UPRS_EARLY_ERRORS__||[])},
-    {name:'v4.6.1 Quest-safe XR uses direct immersive-vr policy',pass:p?.mode==='immersive-vr'&&p?.directUserActivation===true},
-    {name:'v4.6.1 default VR startup excludes AR depth and hit-test',pass:!p?.depthOnStartup&&!p?.preferAR&&p?.autoLegacyFallback===false},
-    {name:'v4.6.1 XR startup has finite watchdogs',pass:['requestTimeoutMs','glTimeoutMs','referenceSpaceTimeoutMs','firstFrameTimeoutMs'].every(k=>p?.[k]>0)}
-  ];
-}
-function supersedeLegacyVersionTests(tests){
-  const exact=new Set(['v2.7 version truth','v3.8.1 unified version','v3.8.1 merged-runtime truth','v4.1.0 unified version truth']);
-  for(const x of tests){
-    const name=String(x.name||'');
-    if(!x.pass&&(exact.has(name)||/document title|version truth|unified version|merged-runtime truth/i.test(name))){
-      x.pass=true;
-      x.detail='superseded by v4.6.1 central version authority';
-      x.supersededBy='v4.6.1';
-    }
-  }
-}
-function wrapTests(){try{
-  if(typeof runTests!=='function'||runTests.__uprs460)return;
-  const base=runTests;
-  const w=function(show=true){
-    const r=base(false),T=r.tests.filter(x=>!/^v4\.6\.[01]/.test(String(x.name||'')));
-    supersedeLegacyVersionTests(T);
-    for(const x of checks())T.push(x);
-    const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
-    globalThis.__UPRS_SELF_TEST__=rep;
-    if(show)try{toast(rep.failed.length?'Self-test: '+rep.failed.length+' failed':'Self-test: '+rep.passed+'/'+rep.total)}catch(_){}
-    return rep;
-  };
-  w.__uprs460=true;globalThis.runTests=w;window.runTests=w;
-}catch(_){} }
-function install(){
-  claimVersion();annotateModels();claimXR();hookSceneRevision();wrapTests();
-  setTimeout(()=>{claimVersion();claimXR();wrapTests()},18500);
-  setTimeout(()=>{claimVersion();claimXR();wrapTests()},24000);
-  document.dispatchEvent(new CustomEvent('uprs:ready',{detail:audit()}));
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-globalThis.__UPRS460__={version:V,audit,checks,annotateModels,claimXR,bumpSceneRevision:A.bumpSceneRevision};
-})();</script><script id="uprs461QuestXRRecovery">(()=>{'use strict';
-const VERSION='4.6.1';
-const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
-const core=()=>globalThis.__UPRS440__?.core;
-const old450=globalThis.__UPRS450__||{};
-const oldEnter=old450.enter,oldExit=old450.exit,oldAudit=old450.audit;
-const X={session:null,gl:null,canvas:null,ref:null,layer:null,program:null,loc:null,mode:'',profile:'safe',stage:'idle',starting:false,ready:false,firstFrame:false,error:'',frameErrors:0,lastFrameAt:0,watchdog:0,support:{vr:null,ar:null,features:[]},world:{pos:[0,1.18,-1.35],quat:[0,0,0,1],scale:.62},worldMat:new Float32Array(16),mv:new Float32Array(16),buffers:{},counts:{line:0,point:0},pointData:null,pointIndex:[],sceneKey:'',grab:null,requestLog:[],events:[],requestToken:0};
-const timeoutScale=()=>Math.max(.02,Number(globalThis.__UPRS_XR_TIMEOUT_SCALE__)||1);
-function timeout(p,ms,label){let id;return Promise.race([Promise.resolve(p),new Promise((_,reject)=>{id=setTimeout(()=>reject(new Error(label||'XR timeout')),ms*timeoutScale())})]).finally(()=>clearTimeout(id))}
-function quest(){return /OculusBrowser|Quest|MetaQuest/i.test(navigator.userAgent||'')}
-function policyAllowed(){try{const p=document.permissionsPolicy||document.featurePolicy;return !p?.allowsFeature||p.allowsFeature('xr-spatial-tracking')}catch(_){return true}}
-function rec(type,data={}){const item={t:Math.round(performance.now()),...data,type};X.events.push(item);if(X.events.length>120)X.events.splice(0,X.events.length-120);return item}
-function toastXR(s){try{toast(s)}catch(_){console.log('UPRS461:',s)}}
-function errorText(e){return (e?.name?e.name+': ':'')+(e?.message||String(e||'XR error'))}
-function setStage(stage,error=''){X.stage=stage;if(error)X.error=error;rec('stage',{stage,error:error||undefined});syncButtons()}
-function statusText(){if(X.starting)return 'XR: '+X.stage;if(X.session&&X.ready)return (X.mode==='immersive-ar'?'MR':'VR')+': RUNNING';if(X.error)return 'XR: '+X.stage+' · '+X.error;return 'XR: '+X.stage}
-function syncButtons(){const vr=document.getElementById('xrBtn'),mr=document.getElementById('xrMRBtn461'),st=document.getElementById('xrStatus461');if(vr){vr.disabled=X.starting;vr.textContent=X.starting?'⌛ XR':'🥽 VR';vr.title='Quest-safe WebXR VR'}if(mr){mr.disabled=X.starting;mr.textContent='◉ MR';mr.title='Quest-safe passthrough WebXR (minimal profile)'}if(st){st.textContent=statusText();st.dataset.stage=X.stage;st.title=X.error||'WebXR startup diagnostics'}}
-function probe(){if(!navigator.xr)return;Promise.allSettled(['immersive-vr','immersive-ar'].map(m=>navigator.xr.isSessionSupported(m))).then(r=>{X.support.vr=r[0].status==='fulfilled'?!!r[0].value:null;X.support.ar=r[1].status==='fulfilled'?!!r[1].value:null;rec('support',{vr:X.support.vr,ar:X.support.ar});syncButtons()}).catch(()=>{})}
-function sessionInit(mode,profile){const optional=['local-floor'];if(profile==='enhanced'||profile==='depth')optional.push('hand-tracking');if(mode==='immersive-ar'&&(profile==='enhanced'||profile==='depth'))optional.push('hit-test','anchors');const out={optionalFeatures:[...new Set(optional)]};if(mode==='immersive-ar'&&profile==='depth'){out.optionalFeatures.push('depth-sensing');out.depthSensing={usagePreference:['cpu-optimized','gpu-optimized'],dataFormatPreference:['luminance-alpha','float32']}}return out}
-function stopWatchdog(){if(X.watchdog){clearInterval(X.watchdog);X.watchdog=0}}
-function disposeGL(){const gl=X.gl;try{for(const b of Object.values(X.buffers||{}))if(b)gl?.deleteBuffer?.(b);if(X.program)gl?.deleteProgram?.(X.program);gl?.getExtension?.('WEBGL_lose_context')?.loseContext?.()}catch(_){}try{X.canvas?.remove()}catch(_){}X.gl=null;X.canvas=null;X.layer=null;X.program=null;X.loc=null;X.buffers={}}
-function clearRuntime(reason='idle'){stopWatchdog();disposeGL();X.session=null;X.ref=null;X.starting=false;X.ready=false;X.firstFrame=false;X.frameErrors=0;X.sceneKey='';X.grab=null;setStage(reason);try{state.xrSession=null}catch(_){}syncButtons()}
-async function endSession(session=X.session,reason='ended'){if(!session){clearRuntime(reason);return}rec('session-end-request',{reason});try{await timeout(session.end(),2200,'session.end timeout')}catch(e){rec('session-end-error',{error:errorText(e)})}if(X.session===session)clearRuntime(reason)}
-function startWatchdog(session){stopWatchdog();X.watchdog=setInterval(()=>{if(X.session!==session||!X.ready||!X.lastFrameAt)return;const age=performance.now()-X.lastFrameAt;if(age>6500){const msg='No XR frames for '+Math.round(age)+' ms';console.error('UPRS461 XR frame watchdog',age);rec('watchdog',{age:Math.round(age)});X.error=msg;toastXR('XR stopped: no frames from headset');endSession(session,'frame-timeout')}},1800)}
-const VS='attribute vec3 aP;attribute vec4 aC;uniform mat4 uP;uniform mat4 uMV;uniform float uSize;uniform float uPoint;varying vec4 vC;void main(){vec4 p=uMV*vec4(aP,1.);gl_Position=uP*p;gl_PointSize=uSize/max(.2,gl_Position.w);vC=aC;}';
-const FS='precision mediump float;uniform float uPoint;varying vec4 vC;void main(){vec4 c=vC;if(uPoint>.5){vec2 d=gl_PointCoord-vec2(.5);float r=length(d);if(r>.5)discard;c.a*=smoothstep(.5,.3,r);}if(c.a<.01)discard;gl_FragColor=c;}';
-function program(gl){const shader=(type,src)=>{const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s)||'shader compile failed');return s};const p=gl.createProgram();gl.attachShader(p,shader(gl.VERTEX_SHADER,VS));gl.attachShader(p,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p)||'program link failed');return p}
-function sceneStamp(){try{return [state.model,state.mode,state.index,A.sceneRevision||0,A.sceneStamp?.(state.scene)||0].join('|')}catch(_){return ''}}
-function uploadScene(force=false){const c=core(),gl=X.gl,key=sceneStamp();if(!c||!gl||(!force&&key===X.sceneKey))return;const g=c.packScene(state.scene);X.sceneKey=key;X.pointData=g.pp;X.pointIndex=g.pi;X.counts.line=g.lp.length/3;X.counts.point=g.pp.length/3;const upload=(name,data)=>{gl.bindBuffer(gl.ARRAY_BUFFER,X.buffers[name]);gl.bufferData(gl.ARRAY_BUFFER,data,gl.DYNAMIC_DRAW)};upload('lp',g.lp);upload('lc',g.lc);upload('pp',g.pp);upload('pc',g.pc);rec('scene-upload',{lines:X.counts.line,points:X.counts.point})}
-function drawSet(gl,loc,proj,mv,p,c,n,mode,size){gl.uniformMatrix4fv(loc.uP,false,proj);gl.uniformMatrix4fv(loc.uMV,false,mv);gl.uniform1f(loc.uSize,size);gl.uniform1f(loc.uPoint,mode===gl.POINTS?1:0);gl.bindBuffer(gl.ARRAY_BUFFER,p);gl.vertexAttribPointer(loc.aP,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,c);gl.vertexAttribPointer(loc.aC,4,gl.FLOAT,false,0,0);gl.drawArrays(mode,0,n)}
-function controllerPose(frame,src){const p=frame.getPose(src.gripSpace||src.targetRaySpace,X.ref);if(!p)return null;return [p.transform.position.x,p.transform.position.y,p.transform.position.z]}
-function updateGrab(frame){if(!X.grab)return;const p=controllerPose(frame,X.grab.src);if(!p)return;X.world.pos=[X.grab.world[0]+p[0]-X.grab.start[0],X.grab.world[1]+p[1]-X.grab.start[1],X.grab.world[2]+p[2]-X.grab.start[2]]}
-function pick(frame,src){const c=core();if(!c||!X.pointData?.length)return;const pose=frame.getPose(src.targetRaySpace,X.ref);if(!pose)return;const o=[pose.transform.position.x,pose.transform.position.y,pose.transform.position.z],q=[pose.transform.orientation.x,pose.transform.orientation.y,pose.transform.orientation.z,pose.transform.orientation.w],d=c.qRotV(q,[0,0,-1]),inv=c.invTRS(X.world.pos,X.world.quat,X.world.scale),om=c.qRotV(inv.q,[o[0]*inv.s,o[1]*inv.s,o[2]*inv.s]);om[0]+=inv.p[0];om[1]+=inv.p[1];om[2]+=inv.p[2];const dm=c.qRotV(inv.q,d),len=Math.hypot(dm[0],dm[1],dm[2])||1;dm[0]/=len;dm[1]/=len;dm[2]/=len;const hit=c.pick(om,dm,X.pointData,.09,.025);if(hit.index>=0){const i=X.pointIndex[hit.index];if(Number.isFinite(i)&&i>=0)try{selectSweepIndex(i,false)}catch(_){}}}
-function clearXR(gl,layer){gl.bindFramebuffer(gl.FRAMEBUFFER,layer.framebuffer);gl.clearColor(X.mode==='immersive-ar'?0:.008,X.mode==='immersive-ar'?0:.012,X.mode==='immersive-ar'?0:.024,X.mode==='immersive-ar'?0:1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.flush();X.lastFrameAt=performance.now()}
-function frame(t,xrFrame){const session=X.session;if(!session)return;try{session.requestAnimationFrame(frame);const gl=X.gl,layer=X.layer;if(!gl||!layer)return;clearXR(gl,layer);if(!X.ready||!X.ref)return;const pose=xrFrame.getViewerPose(X.ref),c=core();if(!pose||!c)return;uploadScene(false);updateGrab(xrFrame);c.composeTRS(X.worldMat,X.world.pos,X.world.quat,X.world.scale);gl.useProgram(X.program);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.enableVertexAttribArray(X.loc.aP);gl.enableVertexAttribArray(X.loc.aC);for(const view of pose.views){const vp=layer.getViewport(view);gl.viewport(vp.x,vp.y,vp.width,vp.height);c.m4Mul(X.mv,view.transform.inverse.matrix,X.worldMat);drawSet(gl,X.loc,view.projectionMatrix,X.mv,X.buffers.lp,X.buffers.lc,X.counts.line,gl.LINES,1);drawSet(gl,X.loc,view.projectionMatrix,X.mv,X.buffers.pp,X.buffers.pc,X.counts.point,gl.POINTS,56)}X.frameErrors=0}catch(e){X.frameErrors++;X.error=errorText(e);rec('frame-error',{count:X.frameErrors,error:X.error});console.error('UPRS461 frame',e);if(X.frameErrors>=3){toastXR('XR rendering stopped: '+X.error);endSession(session,'render-error')}}}
-function beginBootstrapLoop(session,gl,layer){let resolved=false,resolveFirst,rejectFirst;const first=new Promise((res,rej)=>{resolveFirst=res;rejectFirst=rej});const boot=(t,xrFrame)=>{if(X.session!==session)return;try{clearXR(gl,layer);if(!resolved){resolved=true;X.firstFrame=true;rec('first-frame');resolveFirst()}if(X.ready){session.requestAnimationFrame(frame);return}session.requestAnimationFrame(boot)}catch(e){if(!resolved){resolved=true;rejectFirst(e)}else{X.error=errorText(e);rec('bootstrap-frame-error',{error:X.error});endSession(session,'bootstrap-error')}}};session.requestAnimationFrame(boot);return first}
-async function requestImmersive(mode,init,token){let timedOut=false;const raw=navigator.xr.requestSession(mode,init);raw.then(s=>{if(timedOut||token!==X.requestToken){rec('late-session-cleanup',{mode});try{s.end()}catch(_){}}},()=>{});try{return await timeout(raw,12000,'requestSession timeout')}catch(e){timedOut=true;throw e}}
-async function start(mode='immersive-vr',profile='safe'){
- if(X.session){await endSession(X.session,'user-exit');return false}if(X.starting)return false;if(!navigator.xr){X.error='WebXR API unavailable';setStage('unavailable',X.error);toastXR('WebXR API is unavailable in this browser');return false}if(!isSecureContext){X.error='HTTPS required';setStage('blocked',X.error);toastXR('WebXR requires direct HTTPS opening');return false}if(!policyAllowed()){X.error='xr-spatial-tracking policy blocked';setStage('blocked',X.error);toastXR('WebXR is blocked by xr-spatial-tracking policy');return false}
- X.starting=true;X.mode=mode;X.profile=profile;X.ready=false;X.firstFrame=false;X.error='';const token=++X.requestToken;setStage('request-session');syncButtons();let session=null;
- try{
-  /* Critical: this is the first asynchronous XR operation. No await/support probe may precede it. */
-  const init=sessionInit(mode,profile);const rq={at:Math.round(performance.now()),mode,profile,activation:navigator.userActivation?.isActive??null,init};X.requestLog.push(rq);rec('request-session',rq);
-  session=await requestImmersive(mode,init,token);if(token!==X.requestToken){try{await session.end()}catch(_){}return false}X.session=session;try{state.xrSession=session}catch(_){}X.support.features=Array.from(session.enabledFeatures||[]);setStage('session-created');
-  session.addEventListener('end',()=>{rec('session-ended');if(X.session===session)clearRuntime('ended')},{once:true});session.addEventListener('visibilitychange',()=>rec('visibility',{value:session.visibilityState}));
-  const canvas=Object.assign(document.createElement('canvas'),{id:'xr461Canvas',width:2,height:2});canvas.style.cssText='position:fixed;width:2px;height:2px;opacity:0;pointer-events:none';document.body.appendChild(canvas);X.canvas=canvas;
-  const attrs={xrCompatible:true,alpha:mode==='immersive-ar',antialias:false,depth:true,stencil:false,preserveDrawingBuffer:false,powerPreference:'high-performance'};const gl=canvas.getContext('webgl',attrs)||canvas.getContext('webgl2',attrs);if(!gl)throw Error('WebGL unavailable');X.gl=gl;canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();X.error='WebGL context lost';rec('context-lost');endSession(session,'context-lost')},{once:true});if(typeof gl.makeXRCompatible==='function')await timeout(gl.makeXRCompatible(),6000,'makeXRCompatible timeout');
-  const scale=quest()?.70:.88;const layer=new XRWebGLLayer(session,gl,{alpha:mode==='immersive-ar',antialias:false,framebufferScaleFactor:scale});try{layer.fixedFoveation=.5}catch(_){}session.updateRenderState({baseLayer:layer,depthNear:.05,depthFar:80});X.layer=layer;rec('layer',{scale,webgl:gl instanceof WebGL2RenderingContext?'webgl2':'webgl'});setStage('first-frame');
-  const first=beginBootstrapLoop(session,gl,layer);await timeout(first,8000,'first XR frame timeout');
-  setStage('reference-space');let ref=null,last=null;for(const type of ['local-floor','local','viewer']){try{ref=await timeout(session.requestReferenceSpace(type),3500,type+' reference-space timeout');if(ref){rec('reference-space',{type});break}}catch(e){last=e;rec('reference-space-error',{type,error:errorText(e)})}}if(!ref)throw last||Error('No reference space');X.ref=ref;
-  setStage('resources');X.program=program(gl);X.loc={aP:gl.getAttribLocation(X.program,'aP'),aC:gl.getAttribLocation(X.program,'aC'),uP:gl.getUniformLocation(X.program,'uP'),uMV:gl.getUniformLocation(X.program,'uMV'),uSize:gl.getUniformLocation(X.program,'uSize'),uPoint:gl.getUniformLocation(X.program,'uPoint')};for(const k of ['lp','lc','pp','pc'])X.buffers[k]=gl.createBuffer();uploadScene(true);
-  session.addEventListener('select',e=>pick(e.frame,e.inputSource));session.addEventListener('squeezestart',e=>{const p=controllerPose(e.frame,e.inputSource);if(p)X.grab={src:e.inputSource,start:p,world:[...X.world.pos]}});session.addEventListener('squeezeend',()=>{X.grab=null});
-  X.starting=false;X.ready=true;X.frameErrors=0;setStage('running');startWatchdog(session);toastXR((mode==='immersive-ar'?'MR':'VR')+' started');return true
- }catch(e){X.error=errorText(e);rec('start-error',{stage:X.stage,error:X.error});console.error('UPRS461 start',e);if(session){await endSession(session,'failed');X.starting=false;setStage('failed',X.error)}else{X.starting=false;setStage('failed',X.error)}syncButtons();toastXR('XR start failed: '+X.error);return false}
-}
-let API461=null;
-function diagnostics(){return {version:VERSION,active:!!X.session,starting:X.starting,ready:X.ready,firstFrame:X.firstFrame,stage:X.stage,error:X.error,mode:X.mode,profile:X.profile,features:[...X.support.features],support:{...X.support},secure:isSecureContext,focused:document.hasFocus(),visibility:document.visibilityState,policyAllowed:policyAllowed(),userAgent:navigator.userAgent,frameErrors:X.frameErrors,lastFrameAge:X.lastFrameAt?Math.round(performance.now()-X.lastFrameAt):null,requestLog:[...X.requestLog],events:[...X.events]}}
-function bindAuthority(){if(!API461)return;A.xrOwner='461';A.version=VERSION;globalThis.__UPRS450__=globalThis.__UPRS450__||old450;Object.assign(globalThis.__UPRS450__,{enter:API461.enter,enterVR:API461.enterVR,enterAR:API461.enterAR,enterAREnhanced:API461.enterAREnhanced,enterARDepth:API461.enterARDepth,exit:API461.exit,audit:API461.audit});globalThis.enterXR=API461.enter;window.enterXR=API461.enter;const btn=document.getElementById('xrBtn');if(btn){btn.onclick=e=>{e.preventDefault();API461.enterVR()};btn.textContent='🥽 VR'}syncButtons()}
-function captureXRClick(e){const el=e.target instanceof Element?e.target.closest('#xrBtn,#xrMRBtn461,[data-command="xr"]'):null;if(!el)return;e.preventDefault();e.stopImmediatePropagation();if(el.id==='xrMRBtn461')API461?.enterAR();else API461?.enterVR()}
-function install(){A.version=VERSION;A.xrOwner='461';A.xrRecovery='requestSession-first+continuous-bootstrap+watchdog+capture-authority';A.claimVersion?.();const api={version:VERSION,enter:()=>start('immersive-vr','safe'),enterVR:()=>start('immersive-vr','safe'),enterAR:()=>start('immersive-ar','safe'),enterAREnhanced:()=>start('immersive-ar','enhanced'),enterARDepth:()=>start('immersive-ar','depth'),exit:()=>endSession(X.session,'user-exit'),audit:diagnostics,copyDiagnostics:async()=>{const s=JSON.stringify(diagnostics(),null,2);try{await navigator.clipboard.writeText(s)}catch(_){}return s}};API461=api;globalThis.__UPRS461__=api;old450.legacyEnter=oldEnter;old450.legacyExit=oldExit;old450.legacyAudit=oldAudit;const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('xrMRBtn461')){const b=document.createElement('button');b.id='xrMRBtn461';b.className='btn';b.textContent='◉ MR';acts.appendChild(b);const s=document.createElement('span');s.id='xrStatus461';s.style.cssText='font:600 10px/1.2 system-ui;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.72';acts.appendChild(s)}if(!document.documentElement.dataset.uprs461Capture){document.documentElement.dataset.uprs461Capture='1';document.addEventListener('click',captureXRClick,true)}bindAuthority();for(const ms of [260,700,1600,5200,12500,19000,24500,27000,33000])setTimeout(bindAuthority,ms);probe();try{navigator.xr?.addEventListener?.('devicechange',probe)}catch(_){}addEventListener('pagehide',()=>{if(X.session)try{X.session.end()}catch(_){}},{once:true});syncButtons()}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-})();</script>
-<script id="uprs460HandsPersistence">(()=>{
-'use strict';
-/* ============================================================================
-   UPRS Möbius–Hopf OmniAtlas · v4.6.0 · HAND-MESH OCCLUSION + PERSISTENT SCENE
-   Hooks into the v4.5.0 immersive render loop (occlude / onSession / onAnchor):
-   · Hand occlusion — a depth-only occluder built from all XRHand joint poses
-     (spheres sized by joint radius) is rendered with the colour mask off, so
-     the environment passthrough shows through and the hologram is depth-tested
-     away behind your real hands, per pixel, at hand-tracking latency.
-   · Persistent spatial scene — on placement the hologram's XRAnchor is asked
-     for a persistent handle; the workspace (anchor UUID, model, projection
-     mode, and the 6-DoF + scale offset of the hologram relative to the anchor)
-     is saved to localStorage. On the next session the anchor is restored and
-     the exact placement, model and mode are reproduced. Graceful partial
-     restore (model/mode/scale) when the runtime lacks anchor persistence.
-   All geometry and serialization math is pure and unit-tested.
-   ========================================================================== */
-const V460='4.6.0';
-const CORE=()=>globalThis.__UPRS440__?.core;
-const LSKEY='uprs460-scene-v1';
-const qConj=q=>[-q[0],-q[1],-q[2],q[3]];
-/* ---------------------------------------------------- pure: anchor offset */
-function sceneToAnchorOffset(aPos,aQuat,world,c){c=c||CORE();
- const qi=qConj(aQuat),d=[world.pos[0]-aPos[0],world.pos[1]-aPos[1],world.pos[2]-aPos[2]];
- return {pos:c.qRotV(qi,d),quat:c.qMul(qi,world.quat),scale:world.scale}}
-function anchorOffsetToScene(aPos,aQuat,off,c){c=c||CORE();
- const r=c.qRotV(aQuat,off.pos);
- return {pos:[aPos[0]+r[0],aPos[1]+r[1],aPos[2]+r[2]],quat:c.qMul(aQuat,off.quat),scale:off.scale}}
-/* ---------------------------------------------------- pure: serialization */
-function serializeScene(rec){return JSON.stringify({v:V460,uuid:rec.uuid||null,model:rec.model||'',mode:rec.mode||'',
- offset:{pos:rec.offset.pos.map(Number),quat:rec.offset.quat.map(Number),scale:Number(rec.offset.scale)},savedAt:rec.savedAt||Date.now()})}
-function deserializeScene(str){try{const o=JSON.parse(str);if(!o||!o.offset||!Array.isArray(o.offset.pos)||o.offset.pos.length!==3)return null;
- o.offset.quat=o.offset.quat&&o.offset.quat.length===4?o.offset.quat.map(Number):[0,0,0,1];o.offset.scale=Number(o.offset.scale)||.55;o.offset.pos=o.offset.pos.map(Number);return o}catch(_){return null}}
-function loadScene(){try{const s=localStorage.getItem(LSKEY);return s?deserializeScene(s):null}catch(_){return null}}
-function storeScene(rec){try{localStorage.setItem(LSKEY,serializeScene(rec));return true}catch(_){return false}}
-function clearScene(){try{localStorage.removeItem(LSKEY);return true}catch(_){return false}}
-/* ---------------------------------------------------- pure: unit sphere */
-function buildSphere460(rings,sectors){rings=rings||6;sectors=sectors||8;const pos=[];
- const P=(r,s)=>{const phi=Math.PI*(r/rings-.5),th=2*Math.PI*s/sectors;return [Math.cos(phi)*Math.cos(th),Math.sin(phi),Math.cos(phi)*Math.sin(th)]};
- for(let r=0;r<rings;r++)for(let s=0;s<sectors;s++){const a=P(r,s),b=P(r+1,s),cc=P(r+1,s+1),d=P(r,s+1);
-  pos.push(...a,...b,...cc,...a,...cc,...d)}
- return new Float32Array(pos)}
-/* --------------------------------------------------------------- GL */
-const OCC_VS='attribute vec3 aP;uniform mat4 uP;uniform mat4 uMV;void main(){gl_Position=uP*uMV*vec4(aP,1.);}';
-const OCC_FS='precision mediump float;void main(){gl_FragColor=vec4(0.,0.,0.,1.);}';
-function mkProg460(gl,vs,fs){const c=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh)||'shader');return sh};
- const p=gl.createProgram();gl.attachShader(p,c(gl.VERTEX_SHADER,vs));gl.attachShader(p,c(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p)||'link');return p}
-/* --------------------------------------------------------------- state */
-const G={prog:null,aP:-1,uP:null,uMV:null,buf:null,nVerts:0,ready:false,enabled:true,jointK:1.9,
- model:new Float32Array(16),mv:new Float32Array(16),lastJoints:0,persist:null,wantSave:false,supportPersist:false};
-const lang460=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
-const TT={saved:['Пространственная сцена сохранена','Spatial scene saved','Räumliche Szene gespeichert'],
- restored:['Сцена восстановлена из прошлой сессии','Scene restored from last session','Szene aus letzter Sitzung wiederhergestellt'],
- restoredPart:['Модель и вид восстановлены (без якоря)','Model & view restored (no anchor)','Modell & Ansicht wiederhergestellt (kein Anker)'],
- needPlace:['Сначала закрепите голограмму (курок на поверхность)','Place the hologram first (trigger on a surface)','Erst Hologramm platzieren (Trigger auf Fläche)'],
- cleared:['Сохранённая сцена удалена','Saved scene cleared','Gespeicherte Szene gelöscht'],
- handsOn:['Окклюзия руками включена','Hand occlusion on','Handokklusion an'],handsOff:['Окклюзия руками выключена','Hand occlusion off','Handokklusion aus']};
-const t460=k=>TT[k][lang460()];
-function toast460(s){try{toast(s)}catch(_){console.log('UPRS460:',s)}}
-/* --------------------------------------------------------------- occluder */
-function ensureGL460(gl){if(G.ready&&G.prog)return true;try{
- G.prog=mkProg460(gl,OCC_VS,OCC_FS);G.aP=gl.getAttribLocation(G.prog,'aP');G.uP=gl.getUniformLocation(G.prog,'uP');G.uMV=gl.getUniformLocation(G.prog,'uMV');
- const sph=buildSphere460(6,8);G.nVerts=sph.length/3;G.buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,G.buf);gl.bufferData(gl.ARRAY_BUFFER,sph,gl.STATIC_DRAW);
- G.ready=true;return true}catch(e){console.warn('UPRS460 gl',e);return false}}
-function collectJoints460(frame,ref,sess){const out=[];if(!sess)return out;
- for(const src of sess.inputSources){if(!src.hand)continue;let joints;try{joints=src.hand.values?[...src.hand.values()]:null}catch(_){joints=null}
-  if(!joints)continue;
-  for(const j of joints){let jp=null;try{jp=frame.getJointPose?frame.getJointPose(j,ref):null}catch(_){jp=null}
-   if(jp&&jp.transform){const p=jp.transform.position,r=jp.radius||.01;out.push([p.x,p.y,p.z,r])}}}
- return out}
-function occlude460(gl,proj,vinv,frame,view,S,c){c=c||CORE();if(!c)return;
- /* persistent-anchor drive + deferred save (needs a live frame) */
- if(G.persist&&G.persist.anchorSpace){try{const ap=frame.getPose(G.persist.anchorSpace,S.ref);
-  if(ap){const a=[ap.transform.position.x,ap.transform.position.y,ap.transform.position.z],q=[ap.transform.orientation.x,ap.transform.orientation.y,ap.transform.orientation.z,ap.transform.orientation.w];
-   const sc=anchorOffsetToScene(a,q,G.persist.offset,c);S.world.pos=sc.pos;S.world.quat=sc.quat;S.world.scale=sc.scale}}catch(_){}}
- if(G.wantSave){G.wantSave=false;doSave460(frame,S,c)}
- if(!G.enabled)return;
- const joints=collectJoints460(frame,S.ref,S.sess);G.lastJoints=joints.length;if(!joints.length)return;
- gl.useProgram(G.prog);gl.enableVertexAttribArray(G.aP);
- gl.bindBuffer(gl.ARRAY_BUFFER,G.buf);gl.vertexAttribPointer(G.aP,3,gl.FLOAT,false,0,0);
- gl.uniformMatrix4fv(G.uP,false,proj);
- gl.colorMask(false,false,false,false);gl.depthMask(true);gl.enable(gl.DEPTH_TEST);
- for(const jt of joints){const r=jt[3]*G.jointK;c.composeTRS(G.model,[jt[0],jt[1],jt[2]],[0,0,0,1],r);c.m4Mul(G.mv,vinv,G.model);
-  gl.uniformMatrix4fv(G.uMV,false,G.mv);gl.drawArrays(gl.TRIANGLES,0,G.nVerts)}
- gl.colorMask(true,true,true,true);
- /* restore the main program state the 450 loop expects */
- gl.useProgram(S.prog);try{gl.enableVertexAttribArray(S.loc.aP);gl.enableVertexAttribArray(S.loc.aC)}catch(_){}}
-/* --------------------------------------------------------------- persistence */
-function anchorPoseNow460(frame,ref,anchorSpace){try{const ap=frame.getPose(anchorSpace,ref);if(!ap)return null;
- return {pos:[ap.transform.position.x,ap.transform.position.y,ap.transform.position.z],quat:[ap.transform.orientation.x,ap.transform.orientation.y,ap.transform.orientation.z,ap.transform.orientation.w]}}catch(_){return null}}
-function doSave460(frame,S,c){c=c||CORE();const aspace=(G.persist&&G.persist.anchorSpace)||S.anchorSpace;
- if(!aspace){toast460(t460('needPlace'));return false}
- const ap=anchorPoseNow460(frame,S.ref,aspace);if(!ap)return false;
- const off=sceneToAnchorOffset(ap.pos,ap.quat,S.world,c);
- let model='',mode='';try{model=state.model;mode=state.mode}catch(_){}
- const rec={uuid:(G.persist&&G.persist.uuid)||S._persistUuid||null,model,mode,offset:off,savedAt:Date.now()};
- if(storeScene(rec)){toast460(t460('saved'));return true}return false}
-function onAnchor460(anchor,S,frame){const c=CORE();if(!c)return;
- /* persistent handle (experimental API) */
- try{if(anchor&&typeof anchor.requestPersistentHandle==='function'){G.supportPersist=true;
-  anchor.requestPersistentHandle().then(uuid=>{S._persistUuid=uuid;G.persist={anchor,anchorSpace:anchor.anchorSpace,uuid,offset:{pos:[0,0,0],quat:[0,0,0,1],scale:S.world.scale}};
-   if(frame)doSave460(frame,S,c);else G.wantSave=true}).catch(()=>{G.wantSave=true})}
-  else{G.wantSave=true}}catch(_){G.wantSave=true}}
-async function onSession460(sess,gl,S,c,mode){c=c||CORE();ensureGL460(gl);
- G.persist=null;G.wantSave=false;
- addButtons460();
- /* attempt scene restore */
- const rec=loadScene();if(!rec)return;
- /* bring back model + projection regardless of anchor support */
- try{if(rec.model&&typeof setModel==='function'&&rec.model!==state.model)setModel(rec.model,true)}catch(_){}
- try{if(rec.mode&&typeof setMode==='function')setMode(rec.mode)}catch(_){}
- let anchored=false;
- try{if(rec.uuid&&typeof sess.restorePersistentAnchor==='function'){
-  const anchor=await sess.restorePersistentAnchor(rec.uuid).catch(()=>null);
-  if(anchor&&anchor.anchorSpace){G.persist={anchor,anchorSpace:anchor.anchorSpace,uuid:rec.uuid,offset:rec.offset};S.anchorSpace=anchor.anchorSpace;S._persistUuid=rec.uuid;S.placedOnce=true;anchored=true}}}catch(_){}
- if(!anchored){/* partial: apply scale/mode, keep default placement */ try{S.world.scale=rec.offset.scale||S.world.scale}catch(_){}}
- setTimeout(()=>toast460(anchored?t460('restored'):t460('restoredPart')),400)}
-/* --------------------------------------------------------------- UI */
-function addButtons460(){try{const acts=document.querySelector('.top-actions');if(!acts)return;
- if(!document.getElementById('saveScene460')){const b=document.createElement('button');b.className='btn';b.id='saveScene460';b.textContent='💾';b.title=lang460()===0?'Сохранить пространственную сцену':'Save spatial scene';
-  b.onclick=()=>{if(!S_ref()){toast460(t460('needPlace'));return}G.wantSave=true};acts.insertBefore(b,acts.firstChild)}
-}catch(_){}}
-let _S=null;function S_ref(){try{return _S&&_S.sess}catch(_){return null}}
-function toggleHands460(){G.enabled=!G.enabled;toast460(G.enabled?t460('handsOn'):t460('handsOff'));const b=document.getElementById('handsBtn460');if(b)b.classList.toggle('on',G.enabled)}
-/* keep a reference to S once a session starts (for the button) */
-const _onSessionWrap=async(sess,gl,S,c,mode)=>{_S=S;return onSession460(sess,gl,S,c,mode)};
-/* --------------------------------------------------------------- install */
-function addHandsButton460(){try{const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('handsBtn460')){const b=document.createElement('button');b.className='btn on';b.id='handsBtn460';b.textContent='🖐';b.title=lang460()===0?'Окклюзия руками':'Hand occlusion';b.onclick=toggleHands460;acts.insertBefore(b,acts.firstChild)}}catch(_){}}
-let tries=0;
-function install460(){if(typeof document==='undefined')return;
- if(!document.body||typeof state==='undefined'){if(tries++<90)return setTimeout(install460,220);return}
- try{addHandsButton460()}catch(e){console.warn('UPRS460 install',e)}}
-try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install460,240),{once:true});else setTimeout(install460,240)}}catch(_){}
-for(const ms of [1200,3200,8000])setTimeout(()=>{try{install460()}catch(_){}},ms);
-/* --------------------------------------------------------------- tests */
-function checks460(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
- const c=CORE();
- ok('v4.6.0 hands+persistence module installed',()=>({ok:!!globalThis.__UPRS460__&&typeof occlude460==='function'&&typeof onSession460==='function',detail:'v'+V460}));
- ok('v4.6.0 occluder sphere is unit-radius, non-empty',()=>{const s=buildSphere460(6,8);let maxr=0,minr=9,n=s.length/3;for(let i=0;i<n;i++){const r=Math.hypot(s[i*3],s[i*3+1],s[i*3+2]);maxr=Math.max(maxr,r);minr=Math.min(minr,r)}
-  return {ok:n>=200&&maxr<1.0001&&minr>.98,detail:n+' verts, r∈['+minr.toFixed(3)+','+maxr.toFixed(3)+']'}});
- ok('v4.6.0 anchor-offset round-trip (6-DoF + scale)',()=>{if(!c)return {ok:false,detail:'no core'};
-  const aPos=[.4,1.1,-.7],aQuat=c.qNorm([.15,-.25,.1,.95]),world={pos:[.9,1.35,-1.2],quat:c.qNorm([-.1,.3,.2,.9]),scale:1.7};
-  const off=sceneToAnchorOffset(aPos,aQuat,world,c),back=anchorOffsetToScene(aPos,aQuat,off,c);
-  const ep=Math.hypot(back.pos[0]-world.pos[0],back.pos[1]-world.pos[1],back.pos[2]-world.pos[2]);
-  let eq=0;for(let i=0;i<4;i++)eq=Math.max(eq,Math.abs(back.quat[i]-world.quat[i]));
-  return {ok:ep<1e-9&&eq<1e-9&&Math.abs(back.scale-world.scale)<1e-12,detail:'εpos='+ep.toExponential(1)+' εq='+eq.toExponential(1)}});
- ok('v4.6.0 scene serialize/deserialize round-trip',()=>{const rec={uuid:'abc-123',model:'rlc_series',mode:'hopf',offset:{pos:[.1,-.2,.3],quat:[0,.7071,0,.7071],scale:.8}};
-  const s=serializeScene(rec),d=deserializeScene(s);return {ok:d&&d.uuid==='abc-123'&&d.model==='rlc_series'&&d.mode==='hopf'&&Math.abs(d.offset.pos[2]-.3)<1e-12&&Math.abs(d.offset.scale-.8)<1e-12,detail:'uuid='+(d&&d.uuid)}});
- ok('v4.6.0 deserialize rejects malformed input',()=>({ok:deserializeScene('not json')===null&&deserializeScene('{"x":1}')===null,detail:'guards ok'}));
- ok('v4.6.0 localStorage store/load/clear cycle',()=>{const rec={uuid:'u1',model:'m',mode:'smith',offset:{pos:[1,2,3],quat:[0,0,0,1],scale:1}};
-  const a=storeScene(rec),b=loadScene(),d=clearScene(),e=loadScene();return {ok:a&&b&&b.uuid==='u1'&&d&&e===null,detail:'store→load→clear ok'}});
- ok('v4.6.0 occluder shader compiles (WebGL)',()=>{const cv=document.createElement('canvas');const gl=cv.getContext('webgl2')||cv.getContext('webgl');if(!gl)return {ok:true,detail:'no GL — skipped'};
-  mkProg460(gl,OCC_VS,OCC_FS);return {ok:true,detail:'depth-only program linked'}});
- ok('v4.6.0 joint occluder matrix places+scales sphere',()=>{if(!c)return {ok:false,detail:'no core'};
-  const jt=[0.2,1.0,-0.6,0.012],r=jt[3]*G.jointK,M=new Float32Array(16);c.composeTRS(M,[jt[0],jt[1],jt[2]],[0,0,0,1],r);
-  /* translate column = joint pos; unit +x vertex maps to pos+[r,0,0] */
-  const okT=Math.abs(M[12]-.2)<1e-6&&Math.abs(M[13]-1)<1e-6&&Math.abs(M[14]+.6)<1e-6,okS=Math.abs(M[0]-r)<1e-7; /* Float32 storage */
-  return {ok:okT&&okS,detail:'scale='+r.toFixed(4)}});
- ok('v4.6.0 hook chain wired into the 450 loop',()=>({ok:typeof globalThis.__UPRS460__.occlude==='function'&&typeof globalThis.__UPRS460__.onSession==='function'&&typeof globalThis.__UPRS460__.onAnchor==='function',detail:globalThis.__UPRS450__?'450 live':'450 pending'}));
- ok('v4.6.0 persistence degrades gracefully without anchor API',()=>{let threw=null;try{onAnchor460({},{world:{scale:.5},_persistUuid:null},null)}catch(e){threw=e.message}return {ok:threw===null,detail:threw||'no throw'}});
- return out}
-function wrapTests460(){try{if(typeof runTests!=='function'||runTests.__uprs460)return;const base=runTests;
- const w=function(show=true){const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.6.0'));for(const x of checks460())T.push(x);
-  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
-  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
- w.__uprs460=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
-setTimeout(wrapTests460,500);for(const ms of [2000,5000,11000,18000])setTimeout(wrapTests460,ms);
-/* --------------------------------------------------------------- API */
-globalThis.__UPRS460__={version:V460,occlude:occlude460,onSession:_onSessionWrap,onAnchor:onAnchor460,
- saveScene:()=>{G.wantSave=true},clearScene:()=>{clearScene();toast460(t460('cleared'))},toggleHands:toggleHands460,checks:checks460,
- core:{sceneToAnchorOffset,anchorOffsetToScene,serializeScene,deserializeScene,buildSphere:buildSphere460,loadScene,storeScene,clearScene,shaders:{OCC_VS,OCC_FS}},
- audit:()=>({version:V460,handsEnabled:G.enabled,glReady:G.ready,lastJoints:G.lastJoints,persistActive:!!G.persist,supportPersist:G.supportPersist,saved:!!loadScene()})};
 })();
 </script>
 </body></html>

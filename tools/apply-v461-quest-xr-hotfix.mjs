@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import crypto from 'node:crypto';
+import zlib from 'node:zlib';
+
+const INDEX='build/index.html';
+const REPORT='build/UPRS_v4.6.1_consolidation_report.json';
+const MODULE='_includes/uprs461-quest-xr-recovery-v2.html.gz.b64';
+let html=fs.readFileSync(INDEX,'utf8');
+const module=zlib.gunzipSync(Buffer.from(fs.readFileSync(MODULE,'utf8').trim(),'base64')).toString('utf8').trim();
+if(html.includes('uprs461QuestXRRecovery'))throw new Error('Quest XR recovery v2 already present');
+const oldCheck="{name:'v4.6.1 v4.5 owns XR renderer',pass:A.xrOwner==='450'&&typeof globalThis.__UPRS450__?.enter==='function'},";
+const newCheck="{name:'v4.6.1 Quest-safe XR entry',pass:A.xrOwner==='461'&&typeof globalThis.__UPRS461__?.enter==='function'&&globalThis.__UPRS450__?.enter===globalThis.__UPRS461__?.enter},";
+const count=(html.split(oldCheck).length-1);
+if(count!==1)throw new Error(`XR ownership self-test: expected 1 occurrence, found ${count}`);
+html=html.replace(oldCheck,newCheck);
+const bodyCount=html.split('</body>').length-1;
+if(bodyCount!==1)throw new Error(`body close: expected 1 occurrence, found ${bodyCount}`);
+html=html.replace('</body>',module+'</body>');
+const scripts=[],failures=[];const rx=/<script([^>]*)>([\s\S]*?)<\/script>/gi;let m;
+while((m=rx.exec(html))){const attrs=m[1]||'';if(/\bsrc\s*=/.test(attrs)||/type\s*=\s*["']module["']/.test(attrs))continue;scripts.push(m[2]||'')}
+scripts.forEach((code,index)=>{try{new vm.Script(code,{filename:`inline-script-${index+1}.js`})}catch(error){failures.push({index:index+1,message:error.message})}});
+if(failures.length)throw new Error(`Inline script syntax failures: ${JSON.stringify(failures,null,2)}`);
+fs.writeFileSync(INDEX,html);
+const report=JSON.parse(fs.readFileSync(REPORT,'utf8'));
+report.outputBytes=Buffer.byteLength(html);
+report.outputSha256=crypto.createHash('sha256').update(html).digest('hex');
+report.inlineScripts=scripts.length;
+report.syntaxFailures=failures;
+report.requiredCapabilities=[...new Set([...(report.requiredCapabilities||[]),'uprs461QuestXRRecovery','__UPRS461__'])];
+report.questXrHotfix={version:'4.6.1-v2',defaultMode:'immersive-vr',requestSessionFirst:true,continuousBootstrapFrames:true,firstFrameTimeoutMs:8000,frameWatchdogMs:6500,cleanupOnSetupFailure:true,capturePhaseAuthority:true,separateSafeMrButton:true,depthExcludedFromDefaultStart:true,webgl1Preferred:true,framebufferScaleFactorQuest:.70};
+fs.writeFileSync(REPORT,JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({outputBytes:report.outputBytes,outputSha256:report.outputSha256,inlineScripts:report.inlineScripts,questXrHotfix:report.questXrHotfix},null,2));

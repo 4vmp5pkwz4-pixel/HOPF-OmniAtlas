@@ -1,0 +1,33 @@
+<script id="uprs460CoreAuthority">(()=>{'use strict';
+const VERSION='4.6.1';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
+A.version=VERSION;
+A.release='quest-xr-startup-recovery';
+A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6.1-transforms';
+A.reproducibleReport=true;
+A.xrOwner='450';
+A.xrStartupPolicy='quest-safe-vr-direct-activation';
+A.sceneRevision=Number.isFinite(A.sceneRevision)?A.sceneRevision:0;
+A.bumpSceneRevision=reason=>{
+  A.sceneRevision=(A.sceneRevision+1)>>>0;
+  A.lastSceneReason=reason||'unspecified';
+  return A.sceneRevision;
+};
+A.sceneStamp=scene=>{
+  let h=2166136261>>>0;
+  const mix=v=>{let n=Number(v);if(!Number.isFinite(n))n=0;n=Math.round(n*1e5);h^=n;h=Math.imul(h,16777619)>>>0};
+  const pts=scene?.points||[],lns=scene?.lines||[];
+  mix(pts.length);mix(lns.length);
+  const sample=(arr,read)=>{const n=arr.length;if(!n)return;read(arr[0]);if(n>2)read(arr[n>>1]);if(n>1)read(arr[n-1])};
+  sample(pts,p=>{const q=p?.p||[];mix(q[0]);mix(q[1]);mix(q[2]);mix(p?.meta?.index)});
+  sample(lns,l=>{const p=l?.pts||[];mix(p.length);if(p.length){mix(p[0]?.[0]);mix(p[0]?.[1]);mix(p[0]?.[2]);const z=p[p.length-1];mix(z?.[0]);mix(z?.[1]);mix(z?.[2])}});
+  return h>>>0;
+};
+A.claimVersion=()=>{
+  const old=document.querySelector('title');
+  const t=document.createElement('title');t.textContent=TITLE;
+  if(old)old.replaceWith(t);else document.head.appendChild(t);
+  document.documentElement.dataset.uprsVersion=VERSION;
+};
+})();</script>

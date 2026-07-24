@@ -1,0 +1,78 @@
+{
+  "version": "4.6.0",
+  "source": "app-v4.5.0.html",
+  "sourceBytes": 1665867,
+  "sourceSha256": "c4457a9023798c20e99a3c4a0ebbef2a2f0311dfa87600d4addd913dd5407926",
+  "outputBytes": 1673614,
+  "outputSha256": "420dbdaf626d19ce1f5c894cc2f2bd7693814184fb32ac2b90ae0ac90b197ee3",
+  "inlineScripts": 71,
+  "syntaxFailures": [],
+  "changes": [
+    {
+      "label": "source title",
+      "count": 1
+    },
+    {
+      "label": "Predictive Observatory title authority",
+      "count": 1
+    },
+    {
+      "label": "Predictive Observatory brand version",
+      "count": 1
+    },
+    {
+      "label": "v4.1 integration authorities",
+      "count": 2
+    },
+    {
+      "label": "early core authority",
+      "count": 1
+    },
+    {
+      "label": "v4.4 XR ownership deferral",
+      "count": 1
+    },
+    {
+      "label": "remove v4.4 repair installers",
+      "count": 1
+    },
+    {
+      "label": "idempotent v4.5 installer declaration",
+      "count": 1
+    },
+    {
+      "label": "idempotent v4.5 installer guard",
+      "count": 1
+    },
+    {
+      "label": "remove v4.5 repair installers",
+      "count": 1
+    },
+    {
+      "label": "audio polling lifecycle",
+      "count": 1
+    },
+    {
+      "label": "v4.4 scene signature",
+      "count": 1
+    },
+    {
+      "label": "v4.5 scene signature",
+      "count": 1
+    },
+    {
+      "label": "late consolidation module",
+      "count": 1
+    }
+  ],
+  "requiredCapabilities": [
+    "uprs460CoreAuthority",
+    "uprs460Consolidation",
+    "__UPRS420__",
+    "__UPRS430__",
+    "__UPRS440__",
+    "__UPRS450__",
+    "__UPRS398__",
+    "asml_euv_lpp"
+  ]
+}
