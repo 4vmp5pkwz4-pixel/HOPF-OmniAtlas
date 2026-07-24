@@ -10656,4 +10656,384 @@ globalThis.__UPRS470__={version:V470,input:input470,render:render470,
  audit:()=>({version:V470,ready:DECK.ready,visible:DECK.visible,tab:DECK.tab,widgets:DECK.widgets.length,navMode:DECK.navMode,snapDeg:DECK.snapDeg,speed:DECK.speed,nav:{...DECK.nav}})};
 })();
 </script>
+<script id="uprs490AbInitioDiscovery">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.9.0 · AB INITIO DISCOVERY ENGINE
+   ----------------------------------------------------------------------------
+   Predictive law induction and phenomenon discovery for ANY model in the atlas:
+    · symbolic-dictionary regression (power / exp / linear / Lorentzian / Fano /
+      logistic / stretched-exponential) with AICc model selection & Akaike
+      weights — the engine derives the governing law from the sweep itself;
+    · least-squares Prony linear prediction: resonance-mode extraction and
+      extrapolation of the NEXT resonance beyond the sampled range;
+    · automatic scaling-collapse search (Nelder–Mead over (a,b) in
+      y = s^b·g(x/s^a)) — detects hidden similarity laws across a parameter
+      family generated live from the model's own response function;
+    · universality-class matching of measured critical exponents
+      (mean-field, Ising 2D/3D, XY, Heisenberg, percolation, KPZ);
+    · novelty mapping: every catalogued model is featurised at its default
+      operating range; the current response is scored by robust z-distance to
+      its nearest catalogue neighbour — outliers are flagged as candidate new
+      phenomena;
+    · active discovery agenda (query-by-committee): the axis points where the
+      surviving laws disagree most are ranked as the next probes.
+   Output is attached to state.discovery300 (so the existing Discovery panel
+   export includes it) and rendered INSIDE the existing Discovery panel body.
+   No new buttons, panels or top-bar chrome. Pure-math core is unit-testable
+   headlessly via __UPRS490__.core / .checks().
+   ========================================================================== */
+const V490='4.9.0';
+const FIN=Number.isFinite;
+/* ------------------------------------------------------------ small algebra */
+function solve490(A,b){const n=A.length,M=A.map((r,i)=>[...r,b[i]]);
+ for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;if(Math.abs(M[p][c])<1e-300)return null;[M[c],M[p]]=[M[p],M[c]];
+  for(let r=0;r<n;r++){if(r===c)continue;const f=M[r][c]/M[c][c];for(let k=c;k<=n;k++)M[r][k]-=f*M[c][k]}}
+ return M.map((r,i)=>r[n]/r[i])}
+const mean490=a=>a.reduce((s,v)=>s+v,0)/(a.length||1);
+function median490(a){if(!a.length)return NaN;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2}
+function mad490(a){const m=median490(a);return median490(a.map(v=>Math.abs(v-m)))||1e-12}
+function rssOf490(xs,ys,f){let r=0;for(let i=0;i<xs.length;i++){const e=ys[i]-f(xs[i]);r+=e*e}return r}
+function r2Of490(ys,rss){const m=mean490(ys);let t=0;for(const y of ys)t+=(y-m)*(y-m);return t>0?1-rss/t:0}
+function linfit490(xs,ys){const n=xs.length;let sx=0,sy=0,sxx=0,sxy=0;for(let i=0;i<n;i++){sx+=xs[i];sy+=ys[i];sxx+=xs[i]*xs[i];sxy+=xs[i]*ys[i]}
+ const d=n*sxx-sx*sx;if(Math.abs(d)<1e-300)return null;const b=(n*sxy-sx*sy)/d,a=(sy-b*sx)/n;return {slope:b,intercept:a}}
+function aicc490(n,k,rss){const r=Math.max(rss,1e-300);const base=n*Math.log(r/n)+2*k;return n-k-1>0?base+2*k*(k+1)/(n-k-1):base+1e9}
+/* ------------------------------------------------------- law dictionary fits */
+function fitLinear490(xs,ys){const L=linfit490(xs,ys);if(!L)return null;const f=x=>L.intercept+L.slope*x,rss=rssOf490(xs,ys,f);
+ return {id:'linear',k:2,params:{a:L.intercept,b:L.slope},rss,r2:r2Of490(ys,rss),f}}
+function fitPower490(xs,ys){const X=[],Y=[];for(let i=0;i<xs.length;i++)if(xs[i]>0&&ys[i]>0){X.push(Math.log(xs[i]));Y.push(Math.log(ys[i]))}
+ if(X.length<Math.max(6,xs.length*.7))return null;const L=linfit490(X,Y);if(!L)return null;const A=Math.exp(L.intercept),p=L.slope,f=x=>x>0?A*Math.pow(x,p):NaN;
+ const rss=rssOf490(xs,ys,x=>{const v=f(x);return FIN(v)?v:0});return {id:'power',k:2,params:{A,p},rss,r2:r2Of490(ys,rss),f}}
+function fitExp490(xs,ys){const X=[],Y=[];for(let i=0;i<xs.length;i++)if(ys[i]>0){X.push(xs[i]);Y.push(Math.log(ys[i]))}
+ if(X.length<Math.max(6,xs.length*.7))return null;const L=linfit490(X,Y);if(!L)return null;const A=Math.exp(L.intercept),b=L.slope,f=x=>A*Math.exp(b*x);
+ const rss=rssOf490(xs,ys,f);return {id:'exp',k:2,params:{A,b},rss,r2:r2Of490(ys,rss),f}}
+function gridPeak490(xs,ys){let iM=0;for(let i=1;i<ys.length;i++)if(ys[i]>ys[iM])iM=i;return iM}
+function shapeFit490(xs,ys,basisOf,k,id,grid){let best=null;
+ for(const g of grid){const bas=basisOf(g);const n=xs.length;let s1=0,sb=0,sbb=0,sy=0,sby=0;
+  for(let i=0;i<n;i++){const b=bas(xs[i]);if(!FIN(b))return null;s1++;sb+=b;sbb+=b*b;sy+=ys[i];sby+=b*ys[i]}
+  const sol=solve490([[sbb,sb],[sb,s1]],[sby,sy]);if(!sol)continue;const [A,C]=sol,f=x=>A*bas(x)+C,rss=rssOf490(xs,ys,f);
+  if(!best||rss<best.rss)best={id,k,params:{...g,A,C},rss,f,g,bas}}
+ if(!best)return null;best.r2=r2Of490(ys,best.rss);return best}
+function fitLorentz490(xs,ys){const lo=xs[0],hi=xs[xs.length-1],span=hi-lo;if(!(span>0))return null;const iM=gridPeak490(xs,ys);
+ const x0s=[];for(let j=-4;j<=4;j++)x0s.push(xs[iM]+span*j/40);const ws=[];for(let j=0;j<14;j++)ws.push(span/90*Math.pow(45,j/13));
+ const grid=[];for(const x0 of x0s)for(const w of ws)grid.push({x0,w});
+ return shapeFit490(xs,ys,g=>x=>{const e=(x-g.x0)/g.w;return 1/(1+e*e)},4,'lorentz',grid)}
+function fitFano490(xs,ys){const lo=xs[0],hi=xs[xs.length-1],span=hi-lo;if(!(span>0))return null;const iM=gridPeak490(xs,ys);
+ const x0s=[];for(let j=-3;j<=3;j++)x0s.push(xs[iM]+span*j/30);const ws=[];for(let j=0;j<10;j++)ws.push(span/80*Math.pow(40,j/9));
+ const qs=[-3.2,-1.6,-.8,-.3,.3,.8,1.6,3.2];const grid=[];for(const x0 of x0s)for(const w of ws)for(const q of qs)grid.push({x0,w,q});
+ return shapeFit490(xs,ys,g=>x=>{const e=(x-g.x0)/g.w;return (g.q+e)*(g.q+e)/(1+e*e)},5,'fano',grid)}
+function fitLogistic490(xs,ys){const lo=xs[0],hi=xs[xs.length-1],span=hi-lo;if(!(span>0))return null;
+ const x0s=[];for(let j=1;j<=9;j++)x0s.push(lo+span*j/10);const ks=[];for(let j=0;j<10;j++){const k=2/span*Math.pow(60,j/9);ks.push(k,-k)}
+ const grid=[];for(const x0 of x0s)for(const k of ks)grid.push({x0,kk:k});
+ return shapeFit490(xs,ys,g=>x=>1/(1+Math.exp(-g.kk*(x-g.x0))),4,'logistic',grid)}
+function fitStretched490(xs,ys){const X=[],Y=[];for(let i=0;i<xs.length;i++)if(xs[i]>0&&ys[i]>0){X.push(xs[i]);Y.push(ys[i])}
+ if(X.length<Math.max(6,xs.length*.7))return null;const hi=X[X.length-1];let best=null;
+ for(let ib=0;ib<12;ib++){const beta=.25+2.75*ib/11;for(let it=0;it<14;it++){const tau=hi*Math.pow(3e3,it/13)/55;
+  let s=0;for(let i=0;i<X.length;i++)s+=Math.log(Y[i])+Math.pow(X[i]/tau,beta);const lnA=s/X.length,A=Math.exp(lnA);
+  const f=x=>x>0?A*Math.exp(-Math.pow(x/tau,beta)):NaN;const rss=rssOf490(X,Y,f);if(!best||rss<best.rss)best={id:'stretched',k:3,params:{A,tau,beta},rss,f}}}
+ if(!best)return null;best.r2=r2Of490(Y,best.rss);return best}
+const DICT490=[fitLinear490,fitPower490,fitExp490,fitLorentz490,fitFano490,fitLogistic490,fitStretched490];
+function induceLaw490(xs,ys){const n=xs.length;if(n<10)return null;const fits=[];
+ for(const F of DICT490){let r=null;try{r=F(xs,ys)}catch(_){}if(r&&FIN(r.rss))fits.push(r)}
+ if(!fits.length)return null;for(const f of fits)f.aicc=aicc490(n,f.k,f.rss);
+ fits.sort((a,b)=>a.aicc-b.aicc);const a0=fits[0].aicc;let wsum=0;for(const f of fits){f.delta=f.aicc-a0;f.w=Math.exp(-f.delta/2);wsum+=f.w}
+ for(const f of fits)f.w/=wsum||1;return {best:fits[0],ranking:fits,n}}
+/* ------------------------------------------------------------ complex utils */
+const cAdd=(a,b)=>({re:a.re+b.re,im:a.im+b.im}),cSub=(a,b)=>({re:a.re-b.re,im:a.im-b.im});
+const cMul=(a,b)=>({re:a.re*b.re-a.im*b.im,im:a.re*b.im+a.im*b.re});
+function cDiv(a,b){const d=b.re*b.re+b.im*b.im||1e-300;return {re:(a.re*b.re+a.im*b.im)/d,im:(a.im*b.re-a.re*b.im)/d}}
+const cAbs=a=>Math.hypot(a.re,a.im);
+function cPow490(z,n){let r={re:1,im:0};for(let i=0;i<n;i++)r=cMul(r,z);return r}
+function polyEval490(co,z){let r={re:0,im:0};for(const c of co)r=cAdd(cMul(r,z),{re:c,im:0});return r}
+function durandKerner490(co){const n=co.length-1;if(n<1)return [];const roots=[];
+ for(let i=0;i<n;i++){const a=2*Math.PI*i/n+.35;roots.push({re:.72*Math.cos(a),im:.72*Math.sin(a)})}
+ for(let it=0;it<220;it++){let move=0;
+  for(let i=0;i<n;i++){let d={re:co[0],im:0};for(let j=0;j<n;j++){if(j===i)continue;d=cMul(d,cSub(roots[i],roots[j]))}
+   const step=cDiv(polyEval490(co,roots[i]),d);roots[i]=cSub(roots[i],step);move=Math.max(move,cAbs(step))}
+  if(move<1e-13)break}
+ return roots}
+function csolve490(A,b){const n=A.length,M=A.map((r,i)=>[...r.map(z=>({...z})),{...b[i]}]);
+ for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(cAbs(M[r][c])>cAbs(M[p][c]))p=r;if(cAbs(M[p][c])<1e-280)return null;[M[c],M[p]]=[M[p],M[c]];
+  for(let r=0;r<n;r++){if(r===c)continue;const f=cDiv(M[r][c],M[c][c]);for(let k=c;k<=n;k++)M[r][k]=cSub(M[r][k],cMul(f,M[c][k]))}}
+ return M.map((r,i)=>cDiv(r[n],r[i]))}
+/* --------------------------------------------------- Prony linear prediction */
+function prony490(ys,dt,M){const p=Math.min(2*M,Math.floor(ys.length/3));if(p<2||ys.length<3*p)return {modes:[],order:0};
+ const rows=[],rhs=[];for(let n=p;n<ys.length;n++){const row=[];for(let j=1;j<=p;j++)row.push(ys[n-j]);rows.push(row);rhs.push(ys[n])}
+ const AtA=[],Atb=[];for(let i=0;i<p;i++){Atb.push(0);const r=[];for(let j=0;j<p;j++)r.push(0);AtA.push(r)}
+ for(let r=0;r<rows.length;r++){for(let i=0;i<p;i++){Atb[i]+=rows[r][i]*rhs[r];for(let j=0;j<p;j++)AtA[i][j]+=rows[r][i]*rows[r][j]}}
+ for(let i=0;i<p;i++)AtA[i][i]+=1e-10;const a=solve490(AtA,Atb);if(!a)return {modes:[],order:p};
+ const co=[1];for(const v of a)co.push(-v);
+ const roots=durandKerner490(co).filter(z=>cAbs(z)>1e-4&&cAbs(z)<1.6);
+ if(!roots.length)return {modes:[],order:p};
+ const N=Math.min(ys.length,140);const V=[],y=[];
+ for(let n=0;n<N;n++){const row=roots.map(z=>cPow490(z,n));V.push(row);y.push({re:ys[n],im:0})}
+ const m=roots.length,H=[],g=[];
+ for(let i=0;i<m;i++){g.push({re:0,im:0});const r=[];for(let j=0;j<m;j++)r.push({re:0,im:0});H.push(r)}
+ for(let n=0;n<N;n++)for(let i=0;i<m;i++){const vi={re:V[n][i].re,im:-V[n][i].im};g[i]=cAdd(g[i],cMul(vi,y[n]));for(let j=0;j<m;j++)H[i][j]=cAdd(H[i][j],cMul(vi,V[n][j]))}
+ for(let i=0;i<m;i++)H[i][i]=cAdd(H[i][i],{re:1e-9,im:0});
+ const c=csolve490(H,g)||roots.map(()=>({re:0,im:0}));
+ const modes=[];for(let i=0;i<m;i++){const z=roots[i],f=Math.abs(Math.atan2(z.im,z.re))/(2*Math.PI*dt),damp=Math.log(cAbs(z))/dt,amp=cAbs(c[i]);
+  if(FIN(f)&&FIN(damp)&&FIN(amp))modes.push({freq:f,damp,amp,phase:Math.atan2(c[i].im,c[i].re)})}
+ modes.sort((a,b)=>b.amp-a.amp);
+ const seen=[],out=[];for(const md of modes){if(seen.some(f=>Math.abs(f-md.freq)<1e-9))continue;seen.push(md.freq);out.push(md)}
+ return {modes:out,order:p}}
+/* -------------------------------------------------------------- Nelder–Mead */
+function nm490(f,x0,scale,iters=180){let simplex=[x0,[x0[0]+scale,x0[1]],[x0[0],x0[1]+scale]].map(p=>({p,v:f(p)}));
+ for(let it=0;it<iters;it++){simplex.sort((a,b)=>a.v-b.v);const [b,g,w]=simplex;
+  const c=[(b.p[0]+g.p[0])/2,(b.p[1]+g.p[1])/2];
+  const refl=[2*c[0]-w.p[0],2*c[1]-w.p[1]],vr=f(refl);
+  if(vr<b.v){const ex=[3*c[0]-2*w.p[0],3*c[1]-2*w.p[1]],ve=f(ex);simplex[2]=ve<vr?{p:ex,v:ve}:{p:refl,v:vr}}
+  else if(vr<g.v)simplex[2]={p:refl,v:vr};
+  else{const ct=[(c[0]+w.p[0])/2,(c[1]+w.p[1])/2],vc=f(ct);
+   if(vc<w.v)simplex[2]={p:ct,v:vc};
+   else for(let i=1;i<3;i++){simplex[i].p=[(simplex[i].p[0]+b.p[0])/2,(simplex[i].p[1]+b.p[1])/2];simplex[i].v=f(simplex[i].p)}}
+  if(Math.abs(simplex[0].v-simplex[2].v)<1e-14)break}
+ simplex.sort((a,b)=>a.v-b.v);return simplex[0]}
+/* --------------------------------------------------------- scaling collapse */
+function collapse490(fams){if(!fams||fams.length<3)return null;
+ const obj=([a,b])=>{if(Math.abs(a)>6||Math.abs(b)>6)return 1e9;const R=[];let lo=-Infinity,hi=Infinity;
+  for(const F of fams){const sa=Math.pow(F.s,a),sb=Math.pow(F.s,b);if(!FIN(sa)||!FIN(sb)||sa<=0||sb<=0)return 1e9;
+   const X=F.xs.map(x=>x/sa),Y=F.ys.map(y=>y/sb);R.push({X,Y});lo=Math.max(lo,X[0]);hi=Math.min(hi,X[X.length-1])}
+  if(!(hi>lo))return 1e9;const G=24,cols=[];
+  for(let g=0;g<G;g++){const x=lo+(hi-lo)*(g+.5)/G;const col=[];
+   for(const {X,Y} of R){let i=1;while(i<X.length-1&&X[i]<x)i++;const t=(x-X[i-1])/((X[i]-X[i-1])||1);const v=Y[i-1]+t*(Y[i]-Y[i-1]);if(FIN(v))col.push(v)}
+   if(col.length===R.length)cols.push(col)}
+  if(cols.length<G/2)return 1e9;let spread=0,scale=0;
+  for(const col of cols){const m=mean490(col);let v=0;for(const y of col)v+=(y-m)*(y-m);spread+=v/col.length;scale+=m*m}
+  return spread/((scale/cols.length)||1e-12)}
+ let best=null;for(const s0 of [[0,0],[.5,1],[1,.5],[-.5,-1],[1,2]]){const r=nm490(obj,s0,.55);if(!best||r.v<best.v)best=r}
+ if(!best||best.v>=1e8)return null;return {a:best.p[0],b:best.p[1],residual:best.v,quality:1/(1+30*best.v)}}
+/* --------------------------------------------------- universality classifier */
+const UCLASSES490=[
+ {id:'mean-field',label:'Mean-field (Landau)',beta:.5,gamma:1,nu:.5},
+ {id:'ising-2d',label:'Ising 2D (Onsager)',beta:.125,gamma:1.75,nu:1},
+ {id:'ising-3d',label:'Ising 3D',beta:.3265,gamma:1.237,nu:.63},
+ {id:'xy-3d',label:'XY 3D (λ-transition)',beta:.3485,gamma:1.3177,nu:.6717},
+ {id:'heisenberg-3d',label:'Heisenberg 3D',beta:.3689,gamma:1.3960,nu:.7112},
+ {id:'percolation-2d',label:'Percolation 2D',beta:5/36,gamma:43/18,nu:4/3},
+ {id:'percolation-3d',label:'Percolation 3D',beta:.4181,gamma:1.793,nu:.8765},
+ {id:'kpz-1d',label:'KPZ 1D growth',beta:1/3,gamma:NaN,nu:1.5}];
+function classifyUniversality490(exp){const dims=['beta','gamma','nu'].filter(k=>FIN(exp[k]));if(!dims.length)return null;
+ const scored=[];for(const c of UCLASSES490){let d=0,n=0;for(const k of dims){if(!FIN(c[k]))continue;const sp=Math.max(.06,Math.abs(c[k])*.12);d+=((exp[k]-c[k])/sp)**2;n++}
+  if(n)scored.push({id:c.id,label:c.label,dist:Math.sqrt(d/n),matched:n})}
+ if(!scored.length)return null;scored.sort((a,b)=>a.dist-b.dist);
+ const best=scored[0],margin=scored.length>1?scored[1].dist-best.dist:best.dist;
+ return {best:best.id,label:best.label,dist:best.dist,margin,confidence:Math.exp(-best.dist/2),ranking:scored.slice(0,3)}}
+/* --------------------------------------------------- features & novelty map */
+function peaks490(xs,ys){const out=[];for(let i=2;i<ys.length-2;i++){if(ys[i]>ys[i-1]&&ys[i]>=ys[i+1]&&ys[i]>ys[i-2]&&ys[i]>=ys[i+2]){
+  const half=ys[i]-(ys[i]-Math.min(ys[i-2],ys[i+2]))/2;let l=i,r=i;while(l>0&&ys[l]>half)l--;while(r<ys.length-1&&ys[r]>half)r++;
+  const w=Math.abs(xs[r]-xs[l])||1e-12;out.push({x:xs[i],y:ys[i],q:Math.abs(xs[i])/w})}}
+ return out}
+function skewKurt490(a){const m=mean490(a);let v=0,s3=0,s4=0;for(const x of a){const d=x-m;v+=d*d;s3+=d*d*d;s4+=d*d*d*d}
+ v/=a.length;const sd=Math.sqrt(v)||1e-12;return {skew:s3/a.length/sd**3,kurt:s4/a.length/v**2-3}}
+function entropy490(a){const n=a.length;if(n<4)return 0;const lo=Math.min(...a),hi=Math.max(...a);if(!(hi>lo))return 0;
+ const B=8,h=new Array(B).fill(0);for(const v of a)h[Math.min(B-1,Math.floor((v-lo)/(hi-lo)*B))]++;
+ let e=0;for(const c of h){if(!c)continue;const p=c/n;e-=p*Math.log2(p)}return e/3}
+function featurize490(xs,ys){const pos=xs[0]>0&&xs[xs.length-1]>0;
+ const span=pos?Math.log10(xs[xs.length-1]/xs[0]):(xs[xs.length-1]-xs[0]);
+ const pk=peaks490(xs,ys),sk=skewKurt490(ys);
+ const q=Math.min(4,xs.length>>2);
+ const headP=fitPower490(xs.slice(0,Math.max(8,q*1)),ys.slice(0,Math.max(8,q*1)));
+ const tailP=fitPower490(xs.slice(-Math.max(8,q*1)),ys.slice(-Math.max(8,q*1)));
+ return [Math.min(9,Math.abs(span)),Math.min(9,pk.length),Math.min(9,Math.log10(1+median490(pk.map(p=>p.q))||0)),
+  entropy490(ys),Math.max(-4,Math.min(4,sk.skew)),Math.max(-4,Math.min(9,sk.kurt)),
+  Math.max(-6,Math.min(6,headP?.params.p??0)),Math.max(-6,Math.min(6,tailP?.params.p??0))]}
+function novelty490(f,catalog){if(!catalog||!catalog.length)return null;const D=f.length;
+ const meds=[],mads=[];for(let d=0;d<D;d++){const col=catalog.map(c=>c.f[d]);meds.push(median490(col));mads.push(mad490(col))}
+ let bestD=Infinity,bestId=null;for(const c of catalog){let s=0;for(let d=0;d<D;d++){const z=(f[d]-c.f[d])/(1.4826*mads[d]);s+=z*z}
+  const dist=Math.sqrt(s/D);if(dist<bestD){bestD=dist;bestId=c.id}}
+ return {distance:bestD,nearest:bestId,score:1-Math.exp(-bestD/1.6)}}
+/* -------------------------------------------- active agenda (committee) */
+function agenda490(xs,ys,ranking){if(!ranking||ranking.length<2)return [];
+ /* Extrapolative disagreement needs runner-up laws even when one law dominates
+    in-sample, so the committee is the top-3 by AICc with floored weights. */
+ let committee=ranking.filter(r=>FIN(r.rss)&&r.r2>.25).slice(0,3);
+ if(committee.length<2)committee=ranking.slice(0,2);
+ let wsum=0;const eff=committee.map(m=>{const w=Math.max(m.w,.08);wsum+=w;return w});
+ committee=committee.map((m,i)=>({...m,w:eff[i]/wsum}));
+ const pos=xs[0]>0,c=v=>pos?Math.log10(v):v;
+ const lo=c(xs[0]),hi=c(xs[xs.length-1]),span=hi-lo;const cands=[];
+ for(let j=1;j<=8;j++){cands.push({t:lo-span*j/8*.9,zone:'below'});cands.push({t:hi+span*j/8*.9,zone:'above'})}
+ let gi=1,gap=0;for(let i=1;i<xs.length;i++){const g=c(xs[i])-c(xs[i-1]);if(g>gap){gap=g;gi=i}}
+ for(let j=1;j<=4;j++)cands.push({t:c(xs[gi-1])+gap*j/5,zone:'gap'});
+ const out=[];for(const cd of cands){const x=pos?Math.pow(10,cd.t):cd.t;const vals=[];
+  for(const m of committee){let v=NaN;try{v=m.f(x)}catch(_){}if(FIN(v))vals.push({v,w:m.w})}
+  if(vals.length<2)continue;const mw=vals.reduce((s,a)=>s+a.w,0),mu=vals.reduce((s,a)=>s+a.v*a.w,0)/(mw||1);
+  let sd=0;for(const a of vals)sd+=a.w*(a.v-mu)*(a.v-mu);sd=Math.sqrt(sd/(mw||1));
+  const rel=sd/(Math.abs(mu)+1e-9);if(FIN(rel))out.push({x,zone:cd.zone,disagreement:rel})}
+ out.sort((a,b)=>b.disagreement-a.disagreement);return out.slice(0,6)}
+/* ----------------------------------------------- next-resonance forecasting */
+function nextResonance490(xs,ys,pr){const pos=xs[0]>0,c=v=>pos?Math.log10(v):v;
+ const pk=peaks490(xs,ys);if(pk.length>=3){const ts=pk.map(p=>c(p.x)),gaps=[];for(let i=1;i<ts.length;i++)gaps.push(ts[i]-ts[i-1]);
+  const g=median490(gaps),cv=mad490(gaps)/(Math.abs(g)||1e-12);
+  if(cv<.4&&g>0){const t=ts[ts.length-1]+g,x=pos?Math.pow(10,t):t;
+   let corro=null;const osc=pr?.modes?.find(m=>m.freq>1e-9&&Math.abs(m.damp)<2);
+   if(osc){const period=1/osc.freq;corro=Math.abs(period-g)/(g||1e-12)}
+   return {x,basis:'peak-train',spacing:g,cv,pronyCorroboration:corro,confidence:Math.max(.2,Math.min(.95,(1-cv)*(corro!=null&&corro<.35?1:.75)))}}}
+ const osc=pr?.modes?.find(m=>m.freq>1e-9&&Math.abs(m.damp)<2);
+ if(osc){const t=c(xs[xs.length-1])+1/osc.freq/2,x=pos?Math.pow(10,t):t;
+  return {x,basis:'prony-mode',spacing:1/osc.freq,cv:null,pronyCorroboration:0,confidence:.35}}
+ return null}
+/* ================================================================ app layer */
+function sweepXY490(){const a=(typeof state!=='undefined'&&state.sweep)||[];const xs=[],ys=[];
+ for(const s of a){const m=Math.hypot(s.gamma?.re,s.gamma?.im);if(FIN(s.x)&&FIN(m)){xs.push(s.x);ys.push(m)}}
+ return {xs,ys}}
+function resample490(xs,ys,N){if(xs.length<4)return null;const pos=xs[0]>0&&xs[xs.length-1]>0;
+ const c=v=>pos?Math.log10(v):v,lo=c(xs[0]),hi=c(xs[xs.length-1]);if(!(hi>lo))return null;const out=[];
+ for(let i=0;i<N;i++){const t=lo+(hi-lo)*i/(N-1);let j=1;while(j<xs.length-1&&c(xs[j])<t)j++;
+  const t0=c(xs[j-1]),t1=c(xs[j]),f=(t-t0)/((t1-t0)||1);out.push(ys[j-1]+f*(ys[j]-ys[j-1]))}
+ return {ys:out,dt:(hi-lo)/(N-1)}}
+function family490(){try{const m=UPRSO_MODELS[state.model];if(!m)return null;const p=modelParams();
+ const d=m.params.find(q=>q.scale==='log'&&p[q.key]>0)||m.params[0];if(!d||!(p[d.key]!==0))return null;
+ const {xs}=sweepXY490();if(xs.length<16)return null;const fams=[];
+ for(const s of [.72,.85,1,1.18,1.4]){const pp={...p,[d.key]:p[d.key]*s};const ys=[];
+  for(const x of xs){const r=responseAt(x,pp);const mm=Math.hypot(r.gamma?.re,r.gamma?.im);ys.push(FIN(mm)?mm:0)}
+  fams.push({s,xs:[...xs],ys})}
+ return {param:d.key,fams}}catch(_){return null}}
+let CAT490=null;
+function catalog490(){if(CAT490)return CAT490;const out=[];
+ try{for(const [id,m] of Object.entries(UPRSO_MODELS)){try{
+  const [lo,hi]=m.range||[1,10];if(!FIN(lo)||!FIN(hi))continue;const pos=lo>0&&hi>0,N=96,xs=[],ys=[];
+  const p=Object.fromEntries((m.params||[]).map(q=>[q.key,q.value]));
+  for(let i=0;i<N;i++){const x=pos?lo*Math.pow(hi/lo,i/(N-1)):lo+(hi-lo)*i/(N-1);
+   const r=mapResponse(m,m.response(x,p));const mm=Math.hypot(r.gamma?.re,r.gamma?.im);if(FIN(mm)){xs.push(x);ys.push(mm)}}
+  if(xs.length>32)out.push({id,f:featurize490(xs,ys)})}catch(_){}}}catch(_){}
+ CAT490=out;return out}
+function analyze490(){const {xs,ys}=sweepXY490();if(xs.length<12)return {error:'insufficient sweep'};
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ const law=induceLaw490(xs,ys);
+ const rs=resample490(xs,ys,128);const pr=rs?prony490(rs.ys,rs.dt,5):{modes:[]};
+ const next=nextResonance490(xs,ys,pr);
+ const famPack=family490();const col=famPack?collapse490(famPack.fams):null;
+ const q=Math.max(10,xs.length>>2);
+ const headP=fitPower490(xs.slice(0,q),ys.slice(0,q)),tailP=fitPower490(xs.slice(-q),ys.slice(-q));
+ const exps={beta:Math.abs(headP?.params.p??NaN),gamma:Math.abs(tailP?.params.p??NaN),nu:col?Math.abs(col.a):NaN};
+ const uni=classifyUniversality490(exps);
+ const cat=catalog490();const feat=featurize490(xs,ys);
+ const others=cat.filter(c=>c.id!==state.model);
+ const nov=others.length?novelty490(feat,others):null;
+ const ag=law?agenda490(xs,ys,law.ranking):[];
+ return {version:V490,elapsedMs:Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10,
+  law:law?{best:law.best.id,r2:law.best.r2,params:law.best.params,akaikeWeight:law.ranking[0].w,
+   ranking:law.ranking.slice(0,4).map(r=>({id:r.id,delta:Math.round(r.delta*100)/100,w:Math.round(r.w*1000)/1000}))}:null,
+  resonanceModes:pr.modes.slice(0,4).map(m=>({freq:m.freq,damp:m.damp,amp:m.amp})),
+  nextResonance:next,scalingCollapse:col?{param:famPack.param,a:col.a,b:col.b,quality:col.quality}:null,
+  criticalExponents:exps,universality:uni,
+  novelty:nov?{score:nov.score,distance:nov.distance,nearestModel:nov.nearest,candidateNewPhenomenon:nov.score>.82}:null,
+  agenda:ag}}
+/* ------------------------------------------------------------------- i18n */
+const L490={
+ title:{ru:'Ab initio: индукция закона и открытие',en:'Ab initio law induction & discovery',de:'Ab-initio-Gesetzinduktion & Entdeckung'},
+ law:{ru:'Выведенный закон',en:'Induced law',de:'Induziertes Gesetz'},
+ weight:{ru:'вес Акаике',en:'Akaike weight',de:'Akaike-Gewicht'},
+ next:{ru:'Прогноз следующего резонанса',en:'Predicted next resonance',de:'Vorhergesagte nächste Resonanz'},
+ collapse:{ru:'Скейлинг-коллапс',en:'Scaling collapse',de:'Skalenkollaps'},
+ uni:{ru:'Ближайший класс универсальности',en:'Nearest universality class',de:'Nächste Universalitätsklasse'},
+ novel:{ru:'Новизна отклика',en:'Response novelty',de:'Antwort-Neuheit'},
+ novelCand:{ru:'КАНДИДАТ В НОВЫЙ ФЕНОМЕН',en:'CANDIDATE NEW PHENOMENON',de:'KANDIDAT FÜR NEUES PHÄNOMEN'},
+ nearest:{ru:'ближайшая модель каталога',en:'nearest catalogue model',de:'nächstes Katalogmodell'},
+ agenda:{ru:'Программа открытий: следующие зонды',en:'Discovery agenda: next probes',de:'Entdeckungsagenda: nächste Sonden'},
+ disag:{ru:'расхождение комитета',en:'committee disagreement',de:'Komitee-Divergenz'},
+ quality:{ru:'качество',en:'quality',de:'Qualität'},
+ conf:{ru:'уверенность',en:'confidence',de:'Konfidenz'},
+ none:{ru:'недостаточно данных',en:'insufficient data',de:'unzureichende Daten'}};
+const lang490=()=>(typeof state!=='undefined'&&['ru','en','de'].includes(state.lang))?state.lang:'en';
+const t490=k=>L490[k][lang490()];
+const fmt490=(v,n=5)=>FIN(v)?Number(v).toPrecision(n):'—';
+const LAWNAMES490={linear:'y = a + b·x',power:'y = A·x^p',exp:'y = A·e^(b·x)',lorentz:'Lorentzian',fano:'Fano',logistic:'logistic',stretched:'stretched exp'};
+/* ------------------------------------------------------- panel integration */
+function sectionHTML490(d){if(!d||d.error)return `<div class="discoverySection300"><h3>${t490('title')}</h3><div class="note">${t490('none')}</div></div>`;
+ const unit=(typeof UPRSO_MODELS!=='undefined'&&UPRSO_MODELS[state.model]?.axisUnit)||'';
+ let h=`<div class="discoverySection300"><h3>◈ ${t490('title')} · v${V490}</h3><div class="discoveryGrid300">`;
+ if(d.law){const pr=Object.entries(d.law.params).slice(0,4).map(([k,v])=>`${k}=${fmt490(v,4)}`).join(' ');
+  h+=`<div>${t490('law')}</div><div><b>${LAWNAMES490[d.law.best]||d.law.best}</b> · R²=${fmt490(d.law.r2,4)} · ${t490('weight')}=${fmt490(d.law.akaikeWeight,3)}<br><small>${pr}</small></div>`}
+ if(d.nextResonance)h+=`<div>${t490('next')}</div><div><b>${fmt490(d.nextResonance.x,7)} ${unit}</b> · ${d.nextResonance.basis} · ${t490('conf')}=${Math.round((d.nextResonance.confidence||0)*100)}%</div>`;
+ if(d.scalingCollapse)h+=`<div>${t490('collapse')}</div><div>y=s<sup>b</sup>·g(x/s<sup>a</sup>) [${d.scalingCollapse.param}] · a=${fmt490(d.scalingCollapse.a,3)} · b=${fmt490(d.scalingCollapse.b,3)} · ${t490('quality')}=${fmt490(d.scalingCollapse.quality,3)}</div>`;
+ if(d.universality)h+=`<div>${t490('uni')}</div><div>${d.universality.label} · ${t490('conf')}=${Math.round((d.universality.confidence||0)*100)}% <small>(β=${fmt490(d.criticalExponents.beta,3)} γ=${fmt490(d.criticalExponents.gamma,3)} ν=${fmt490(d.criticalExponents.nu,3)})</small></div>`;
+ if(d.novelty)h+=`<div>${t490('novel')}</div><div>${d.novelty.candidateNewPhenomenon?`<b style="color:#ffd479">${t490('novelCand')}</b> · `:''}score=${fmt490(d.novelty.score,3)} · ${t490('nearest')}: ${d.novelty.nearestModel}</div>`;
+ h+='</div>';
+ if(d.agenda?.length){h+=`<h3>${t490('agenda')}</h3>`+d.agenda.map(a=>`<div class="discoveryItem300"><div><b>${a.zone}</b></div><small>${t490('disag')}=${fmt490(a.disagreement,3)}</small><output>${fmt490(a.x,7)} ${unit}</output></div>`).join('')}
+ h+='</div>';return h}
+function appendSection490(){try{const p=document.getElementById('discoveryPanel300');if(!p)return;
+ const body=p.querySelector('.discoveryBody300');if(!body)return;
+ const d=state.discovery300?.abinitio490;if(!d)return;
+ const host=document.createElement('div');host.id='abinitio490';host.innerHTML=sectionHTML490(d);
+ const old=body.querySelector('#abinitio490');if(old)old.remove();
+ body.insertBefore(host,body.firstChild)}catch(_){}}
+/* The v3.0.0 scan/render functions live inside their own IIFE (not globals),
+   so the hook is a MutationObserver on the Discovery panel body: any re-render
+   from any code path (Scan button, auto-rescan, localisation) re-attaches the
+   analysis and re-appends the section. Loop-safe via the scan timestamp. */
+let lastStamp490='',observer490=null;
+function maybeAttach490(){try{
+ const body=document.querySelector('#discoveryPanel300 .discoveryBody300');if(!body)return;
+ const d=typeof state!=='undefined'?state.discovery300:null;if(!d)return;
+ if(d.abinitio490&&d.time===lastStamp490&&body.querySelector('#abinitio490'))return;
+ if(!d.abinitio490||d.time!==lastStamp490){try{d.abinitio490=analyze490()}catch(e){d.abinitio490={error:String(e?.message||e)}}lastStamp490=d.time}
+ if(!body.querySelector('#abinitio490'))appendSection490()}catch(_){}}
+function wire490(){try{
+ const body=document.querySelector('#discoveryPanel300 .discoveryBody300');
+ if(!body||body.dataset.uprs490==='1')return;body.dataset.uprs490='1';
+ observer490=new MutationObserver(()=>{queueMicrotask(maybeAttach490)});
+ observer490.observe(body,{childList:true});
+ maybeAttach490()}catch(_){}}
+/* ------------------------------------------------------------- self-checks */
+function checks490(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}T.push({name,pass,detail})};
+ ok('v4.9.0 power-law recovery exact',()=>{const xs=[],ys=[];for(let i=0;i<40;i++){const x=Math.pow(10,-1+3*i/39);xs.push(x);ys.push(3.7*Math.pow(x,-2.5))}
+  const r=induceLaw490(xs,ys);return {ok:r.best.id==='power'&&Math.abs(r.best.params.p+2.5)<1e-8,detail:r.best.id+' p='+r.best.params.p}});
+ ok('v4.9.0 AICc selects linear on linear data',()=>{const xs=[],ys=[];for(let i=0;i<36;i++){xs.push(i+1);ys.push(4+.75*(i+1))}
+  const r=induceLaw490(xs,ys);return {ok:r.best.id==='linear'&&Math.abs(r.best.params.b-.75)<1e-9,detail:r.best.id}});
+ ok('v4.9.0 Lorentzian centre & width recovered',()=>{const xs=[],ys=[];for(let i=0;i<80;i++){const x=i/79*10;xs.push(x);const e=(x-5.2)/.4;ys.push(2/(1+e*e)+.1)}
+  const r=induceLaw490(xs,ys);return {ok:(r.best.id==='lorentz'||r.best.id==='fano')&&Math.abs(r.best.params.x0-5.2)<.06,detail:r.best.id+' x0='+r.best.params.x0}});
+ ok('v4.9.0 Fano asymmetry sign',()=>{const xs=[],ys=[];for(let i=0;i<90;i++){const x=i/89*10;xs.push(x);const e=(x-5)/.5,q=1.6;ys.push(.8*(q+e)*(q+e)/(1+e*e)+.2)}
+  const r=fitFano490(xs,ys);return {ok:!!r&&r.params.q>0&&Math.abs(r.params.x0-5)<.3,detail:'q='+r?.params.q}});
+ ok('v4.9.0 Prony recovers two mode frequencies',()=>{const ys=[];for(let n=0;n<128;n++)ys.push(Math.exp(-.015*n)*Math.cos(2*Math.PI*.11*n)+.6*Math.exp(-.008*n)*Math.cos(2*Math.PI*.23*n+1));
+  const r=prony490(ys,1,4);const f=r.modes.map(m=>m.freq).sort((a,b)=>a-b);
+  const has=t=>f.some(v=>Math.abs(v-t)<2e-3);return {ok:has(.11)&&has(.23),detail:f.slice(0,4).map(v=>v.toFixed(4)).join(',')}});
+ ok('v4.9.0 scaling collapse recovers (a,b)',()=>{const fams=[];for(const s of [.6,.8,1,1.3,1.7]){const xs=[],ys=[];
+   for(let i=0;i<60;i++){const x=.05+3*i/59;xs.push(x);const u=x/Math.pow(s,.75);ys.push(Math.pow(s,1.5)/(1+u*u))}fams.push({s,xs,ys})}
+  const r=collapse490(fams);return {ok:!!r&&Math.abs(r.a-.75)<.06&&Math.abs(r.b-1.5)<.09,detail:r?`a=${r.a.toFixed(3)} b=${r.b.toFixed(3)}`:'null'}});
+ ok('v4.9.0 universality: exact 2D Ising exponents classified',()=>{const r=classifyUniversality490({beta:.125,gamma:1.75,nu:1});
+  return {ok:r?.best==='ising-2d'&&r.confidence>.9,detail:r?.best+' conf='+r?.confidence?.toFixed(3)}});
+ ok('v4.9.0 universality: mean-field distinct from Ising',()=>{const r=classifyUniversality490({beta:.5,gamma:1,nu:.5});
+  return {ok:r?.best==='mean-field',detail:r?.best}});
+ ok('v4.9.0 novelty: catalogue member scores ≈ 0',()=>{const cat=[{id:'a',f:[1,2,0,1,.2,.1,-1,2]},{id:'b',f:[4,0,2,.5,-.3,3,1,-2]}];
+  const r=novelty490([1,2,0,1,.2,.1,-1,2],cat);return {ok:r.distance<1e-9&&r.nearest==='a',detail:'d='+r.distance}});
+ ok('v4.9.0 novelty: distant feature flagged',()=>{const cat=[];for(let i=0;i<6;i++)cat.push({id:'m'+i,f:[1+i*.1,2,0,1,.2,.1,-1,2]});
+  const r=novelty490([8,8,8,3,3,8,5,-5],cat);return {ok:r.score>.82,detail:'score='+r.score.toFixed(3)}});
+ ok('v4.9.0 agenda ranks by committee disagreement',()=>{const xs=[],ys=[];for(let i=0;i<40;i++){const x=Math.pow(10,i/39*2);xs.push(x);ys.push(2*Math.pow(x,-1.2)*(1+.02*Math.sin(i)))}
+  const law=induceLaw490(xs,ys);const a=agenda490(xs,ys,law.ranking);
+  return {ok:a.length>0&&a.every(p=>FIN(p.x)&&FIN(p.disagreement))&&a[0].disagreement>=a[a.length-1].disagreement,detail:a.length+' probes'}});
+ ok('v4.9.0 peak-train forecast with corroboration',()=>{const xs=[],ys=[];for(let i=0;i<200;i++){const t=i/199*6;xs.push(Math.pow(10,t));
+   ys.push(.4+((t*4)%4<0.5?1:0))}
+  const nx=nextResonance490(xs,ys,{modes:[]});return {ok:!nx||FIN(nx.x),detail:nx?nx.basis:'none'}});
+ ok('v4.9.0 analyze() attaches full report on live sweep',()=>{if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'no live sweep (headless)'};
+  const d=analyze490();return {ok:!d.error&&(!!d.law||!!d.novelty),detail:'law='+(d.law?.best||'—')+' elapsed='+d.elapsedMs+'ms'}});
+ return T}
+/* --------------------------------------------------------------- runTests */
+function wrapTests490(){try{if(typeof runTests!=='function'||runTests.__uprs490)return;const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks490())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs490=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+function boot490(){wire490();return !!document.querySelector('#discoveryPanel300 .discoveryBody300')?.dataset.uprs490}
+if(typeof document!=='undefined'){
+ /* The Discovery panel is injected asynchronously by the v3.0.0 module, so a
+    document-level observer waits for it, wires it, then disconnects. */
+ if(!boot490()){try{const mo=new MutationObserver(()=>{if(boot490())mo.disconnect()});
+  mo.observe(document.documentElement,{childList:true,subtree:true});setTimeout(()=>{try{mo.disconnect()}catch(_){}boot490()},45000)}catch(_){}}
+ for(const ms of [1500,5600,12000,19500])setTimeout(boot490,ms);
+ setTimeout(wrapTests490,800);for(const ms of [2600,5600,12000,19000])setTimeout(wrapTests490,ms);}
+/* ---------------------------------------------------------------- API */
+globalThis.__UPRS490__={version:V490,analyze:analyze490,checks:checks490,
+ core:{solve:solve490,linfit:linfit490,aicc:aicc490,induceLaw:induceLaw490,
+  fitPower:fitPower490,fitExp:fitExp490,fitLinear:fitLinear490,fitLorentz:fitLorentz490,fitFano:fitFano490,fitLogistic:fitLogistic490,fitStretched:fitStretched490,
+  prony:prony490,durandKerner:durandKerner490,nelderMead:nm490,collapse:collapse490,
+  classifyUniversality:classifyUniversality490,featurize:featurize490,novelty:novelty490,agenda:agenda490,nextResonance:nextResonance490,
+  peaks:peaks490,resample:resample490,median:median490,mad:mad490},
+ catalog:catalog490,wire:wire490,attach:maybeAttach490,
+ audit:()=>({version:V490,catalogued:CAT490?CAT490.length:0,
+  wired:!!(typeof document!=='undefined'&&document.querySelector?.('#discoveryPanel300 .discoveryBody300')?.dataset.uprs490==='1'),
+  lastScan:state?.discovery300?.abinitio490?{law:state.discovery300.abinitio490.law?.best,novelty:state.discovery300.abinitio490.novelty?.score}:null})};
+})();</script>
 </body></html>
