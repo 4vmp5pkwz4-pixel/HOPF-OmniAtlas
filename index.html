@@ -7767,8 +7767,12 @@ function verifyCore398(pred,respond){const T=pred.test;if(!T)return {resolved:fa
    const cands=detectAll398(ser,{light:T.kind==='res-dip'||T.kind==='res-peak'}).filter(f=>f.kind===T.kind);
    if(!cands.length)return {resolved:true,hit:0,measured:null,err:null};
    const best=cands.sort((a,b)=>relErr398(a.x,xh)-relErr398(b.x,xh))[0];
-   const err=relErr398(best.x,xh);
-   return {resolved:true,hit:err<=w?1:0,measured:best.x,err}}
+   let bx=best.x; /* v4.6 precision: second, 10x narrower refinement pass */
+   try{if(bx>0){const w2=Math.max(w/10,.004),xs2=grid398(bx*Math.exp(-3*w2),bx*Math.exp(3*w2),201,true);
+    const c2=detectAll398(buildSeries398(xs2,x=>respond(x,p)),{light:T.kind==='res-dip'||T.kind==='res-peak'}).filter(f=>f.kind===T.kind);
+    if(c2.length)bx=c2.sort((p1,p2)=>relErr398(p1.x,bx)-relErr398(p2.x,bx))[0].x}}catch(_){}
+   const err=relErr398(bx,xh);
+   return {resolved:true,hit:err<=w?1:0,measured:bx,err}}
   if(T.type==='param-count'){
    const sw=env.sweep(),xs=grid398(sw[0].x,sw[sw.length-1].x,141,env.logAxis());
    const cnt=v=>{const ser=buildSeries398(xs,x=>respond(x,{...env.params(),[T.key]:v}));return detectAll398(ser,{light:true}).filter(f=>f.confidence>.35).length};
@@ -9363,9 +9367,8 @@ function frame440(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimati
 async function enterImmersive440(){
  if(S.sess){try{await S.sess.end()}catch(_){}return}
  if(!navigator.xr){toast440(t440('noXR'));try{if(typeof window.__UPRS440_LEGACY_XR__==='function')window.__UPRS440_LEGACY_XR__()}catch(_){}return}
- let mode=null;
- try{if(await navigator.xr.isSessionSupported('immersive-ar'))mode='immersive-ar'}catch(_){}
- if(!mode){try{if(await navigator.xr.isSessionSupported('immersive-vr'))mode='immersive-vr'}catch(_){}}
+ /* v4.6 fix: no awaits before requestSession (preserve user activation) */
+ let mode=S.support.ar?'immersive-ar':S.support.vr?'immersive-vr':(typeof XRSession!=='undefined'?'immersive-ar':null);
  if(!mode){toast440(t440('noXR'));return}
  try{
   const opts={requiredFeatures:['local'],optionalFeatures:['local-floor','bounded-floor','hand-tracking','hit-test','anchors']};
@@ -9410,7 +9413,10 @@ async function enterImmersive440(){
   refreshScene440(true);S.panel.dirty=true;
   sess.requestAnimationFrame(frame440);
   toast440(t440('started')+(S.support.rate?` · ${S.support.rate} Hz`:'')+(mode==='immersive-ar'?' · AR':' · VR'));
- }catch(e){console.warn('UPRS440 session',e);toast440('XR: '+e.message)}}
+ }catch(e){console.warn('UPRS440 session',e);
+ try{if(S.sess){const _s=S.sess;S.sess=null;S.gl=null;if(_s.end)_s.end().catch(()=>{})}}catch(_){}
+ if(e&&e.name==='NotSupportedError'&&mode==='immersive-ar'){S.support.ar=false;S.support.vr=true;toast440('AR → VR: retry')}
+ else toast440('XR: '+((e&&e.message)||e))}}
 /* --------------------------------------------------------------- install */
 let tries=0;
 function install440(){if(typeof document==='undefined')return;
@@ -9715,6 +9721,7 @@ function frame450(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimati
   gl.uniform4f(S.loc.uVp,vp.x,vp.y,vp.width,vp.height);
   const dOn=setDepthUniforms450(gl,S.loc,view,frame);
   const proj=view.projectionMatrix,vinv=view.transform.inverse.matrix;
+  try{if(window.__UPRS460__)window.__UPRS460__.occlude(gl,proj,vinv,frame,view,S,c)}catch(_){}
   c.m4Mul(S.tmpA,vinv,S.worldMat);                       /* MV = view⁻¹·model */
   drawGeom450(gl,proj,S.tmpA,S.buf.lp,S.buf.lc,S.counts.ln,gl.LINES);
   drawGeom450(gl,proj,S.tmpA,S.buf.pp,S.buf.pc,S.counts.pn,gl.POINTS,64);
@@ -9735,13 +9742,20 @@ function frame450(t,frame){const sess=S.sess;if(!sess)return;sess.requestAnimati
    gl.depthMask(false);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);gl.depthMask(true)}
  }}
 /* ------------------------------------------------------------- session */
+let xrModeCache450=null;
+async function probeXR450(){try{if(!navigator.xr){xrModeCache450='none';return}
+ if(await navigator.xr.isSessionSupported('immersive-ar').catch(()=>false))xrModeCache450='immersive-ar';
+ else if(await navigator.xr.isSessionSupported('immersive-vr').catch(()=>false))xrModeCache450='immersive-vr';
+ else xrModeCache450='none'}catch(_){xrModeCache450='none'}}
 async function enterImmersive450(){
  if(S.sess){try{await S.sess.end()}catch(_){}return}
  if(!navigator.xr){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
- let mode=null;
- try{if(await navigator.xr.isSessionSupported('immersive-ar'))mode='immersive-ar'}catch(_){}
- if(!mode){try{if(await navigator.xr.isSessionSupported('immersive-vr'))mode='immersive-vr'}catch(_){}}
- if(!mode){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
+ /* v4.6 fix: requestSession MUST be the first await after the user's click —
+    awaiting isSessionSupported inside the handler consumes the transient user
+    activation on Quest Browser and requestSession then rejects (SecurityError). */
+ let mode=xrModeCache450;
+ if(!mode){probeXR450();mode=(typeof XRSession!=='undefined')?'immersive-ar':null}
+ if(!mode||mode==='none'){toast450(t450('noXR'));AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);return}
  const c=CORE();if(!c){try{return window.__UPRS440__?.enter()}catch(_){return}}
  try{
   const opts={requiredFeatures:['local'],optionalFeatures:['local-floor','bounded-floor','hand-tracking','hit-test','anchors','depth-sensing'],
@@ -9778,7 +9792,7 @@ async function enterImmersive450(){
   if(mode==='immersive-ar'){try{const vs=await sess.requestReferenceSpace('viewer');S.hit.source=await sess.requestHitTestSource({space:vs})}catch(_){S.hit.source=null}}
   sess.addEventListener('select',e=>{
    if(S.hit.visible&&(S.hit.placing||!S.placedOnce)){const m=S.hit.mat;S.world.pos=[m[12],m[13]+.02,m[14]];S.placedOnce=true;S.hit.placing=false;
-    try{if(S.lastHit&&S.lastHit.createAnchor)S.lastHit.createAnchor().then(an=>{S.anchorSpace=an.anchorSpace}).catch(()=>{})}catch(_){}
+    try{if(S.lastHit&&S.lastHit.createAnchor)S.lastHit.createAnchor().then(an=>{S.anchorSpace=an.anchorSpace;try{window.__UPRS460__&&window.__UPRS460__.onAnchor(an,S,e.frame)}catch(_){}}).catch(()=>{})}catch(_){}
     toast450(t450('placed'));return}
    doPick450(e.frame,e.inputSource)});
   sess.addEventListener('squeezestart',e=>startGrab450(e.frame,e.inputSource));
@@ -9787,9 +9801,14 @@ async function enterImmersive450(){
   sess.addEventListener('end',()=>{S.sess=null;S.gl=null;S.sceneKey='';S.grabs.clear();btnPrev.clear();S.hands.clear();S.panel.tex=null;S.hit.source=null;S.anchorSpace=null;S.depth.binding=null;try{state.xrSession=null}catch(_){}toast450(t450('ended'))});
   AU.setEnabled(true);const sel=currentSel450();if(sel)AU.apply(sel);
   refreshScene450(true);S.panel.dirty=true;
+  try{if(window.__UPRS460__)await window.__UPRS460__.onSession(sess,gl,S,c,mode)}catch(_){}
   sess.requestAnimationFrame(frame450);
   toast450(t450('started')+(S.support.rate?` · ${S.support.rate} Hz`:'')+(mode==='immersive-ar'?' · AR':' · VR'));
- }catch(e){console.warn('UPRS450 session',e);toast450('XR: '+e.message);try{window.__UPRS440__?.enter()}catch(_){}}}
+ }catch(e){console.warn('UPRS450 session',e);S.lastError=String((e&&e.message)||e);
+ try{if(S.sess){const _s=S.sess;S.sess=null;S.gl=null;if(_s.end)_s.end().catch(()=>{})}}catch(_){}
+ if(e&&e.name==='NotSupportedError'&&mode==='immersive-ar'){xrModeCache450='immersive-vr';toast450(lang450()===0?'AR недоступен → VR: нажмите кнопку ещё раз':'AR unavailable → VR: press the button again')}
+ else if(e&&e.name==='SecurityError'){toast450(lang450()===0?'XR: требуется нажатие — нажмите кнопку ещё раз':'XR needs a user tap — press the button again')}
+ else toast450('XR: '+((e&&e.message)||e))}}
 /* desktop sonification loop */
 let deskTimer=0;
 function desktopAudioTick450(){if(!AU.enabled||S.sess)return;const idx=(()=>{try{return state.index}catch(_){return -1}})();
@@ -9805,6 +9824,7 @@ function install450(){if(typeof document==='undefined')return;
  if(!document.body||typeof state==='undefined'||!CORE()){if(tries++<90)return setTimeout(install450,220);return}
  try{
   const btn=document.getElementById('xrBtn');if(btn)btn.onclick=()=>enterImmersive450();
+  probeXR450();
   try{enterXR=enterImmersive450;globalThis.enterXR=enterImmersive450;window.enterXR=enterImmersive450}catch(_){}
   const acts=document.querySelector('.top-actions');
   if(acts&&!document.getElementById('sndBtn450')){const sb=document.createElement('button');sb.className='btn';sb.id='sndBtn450';sb.textContent='🔊';sb.title=lang450()===0?'Соникация резонансов':'Resonance sonification';sb.onclick=toggleSound450;acts.insertBefore(sb,acts.firstChild)}
@@ -9849,6 +9869,181 @@ globalThis.__UPRS450__={version:V450,enter:enterImmersive450,exit:()=>{try{S.ses
  core:{sonify:sonify450,depthLA:depthLA450,currentSel:currentSel450,makeAudio:makeAudio450,shaders:{VS450,FS450,VSQ450,FSQ450}},
  audit:()=>({version:V450,active:!!S.sess,mode:S.mode,depth:{mode:S.depth.mode,gpu:S.support.depthGpu,cpu:S.support.depthCpu},
   audio:{enabled:AU.enabled,ctx:!!AU.ctx,err:AU.err,probe:audioProbe},world:{...S.world},rate:S.support.rate})};
+})();
+</script>
+
+<script id="uprs460HandsPersistence">(()=>{
+'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v4.6.0 · HAND-MESH OCCLUSION + PERSISTENT SCENE
+   Hooks into the v4.5.0 immersive render loop (occlude / onSession / onAnchor):
+   · Hand occlusion — a depth-only occluder built from all XRHand joint poses
+     (spheres sized by joint radius) is rendered with the colour mask off, so
+     the environment passthrough shows through and the hologram is depth-tested
+     away behind your real hands, per pixel, at hand-tracking latency.
+   · Persistent spatial scene — on placement the hologram's XRAnchor is asked
+     for a persistent handle; the workspace (anchor UUID, model, projection
+     mode, and the 6-DoF + scale offset of the hologram relative to the anchor)
+     is saved to localStorage. On the next session the anchor is restored and
+     the exact placement, model and mode are reproduced. Graceful partial
+     restore (model/mode/scale) when the runtime lacks anchor persistence.
+   All geometry and serialization math is pure and unit-tested.
+   ========================================================================== */
+const V460='4.6.0';
+const CORE=()=>globalThis.__UPRS440__?.core;
+const LSKEY='uprs460-scene-v1';
+const qConj=q=>[-q[0],-q[1],-q[2],q[3]];
+/* ---------------------------------------------------- pure: anchor offset */
+function sceneToAnchorOffset(aPos,aQuat,world,c){c=c||CORE();
+ const qi=qConj(aQuat),d=[world.pos[0]-aPos[0],world.pos[1]-aPos[1],world.pos[2]-aPos[2]];
+ return {pos:c.qRotV(qi,d),quat:c.qMul(qi,world.quat),scale:world.scale}}
+function anchorOffsetToScene(aPos,aQuat,off,c){c=c||CORE();
+ const r=c.qRotV(aQuat,off.pos);
+ return {pos:[aPos[0]+r[0],aPos[1]+r[1],aPos[2]+r[2]],quat:c.qMul(aQuat,off.quat),scale:off.scale}}
+/* ---------------------------------------------------- pure: serialization */
+function serializeScene(rec){return JSON.stringify({v:V460,uuid:rec.uuid||null,model:rec.model||'',mode:rec.mode||'',
+ offset:{pos:rec.offset.pos.map(Number),quat:rec.offset.quat.map(Number),scale:Number(rec.offset.scale)},savedAt:rec.savedAt||Date.now()})}
+function deserializeScene(str){try{const o=JSON.parse(str);if(!o||!o.offset||!Array.isArray(o.offset.pos)||o.offset.pos.length!==3)return null;
+ o.offset.quat=o.offset.quat&&o.offset.quat.length===4?o.offset.quat.map(Number):[0,0,0,1];o.offset.scale=Number(o.offset.scale)||.55;o.offset.pos=o.offset.pos.map(Number);return o}catch(_){return null}}
+function loadScene(){try{const s=localStorage.getItem(LSKEY);return s?deserializeScene(s):null}catch(_){return null}}
+function storeScene(rec){try{localStorage.setItem(LSKEY,serializeScene(rec));return true}catch(_){return false}}
+function clearScene(){try{localStorage.removeItem(LSKEY);return true}catch(_){return false}}
+/* ---------------------------------------------------- pure: unit sphere */
+function buildSphere460(rings,sectors){rings=rings||6;sectors=sectors||8;const pos=[];
+ const P=(r,s)=>{const phi=Math.PI*(r/rings-.5),th=2*Math.PI*s/sectors;return [Math.cos(phi)*Math.cos(th),Math.sin(phi),Math.cos(phi)*Math.sin(th)]};
+ for(let r=0;r<rings;r++)for(let s=0;s<sectors;s++){const a=P(r,s),b=P(r+1,s),cc=P(r+1,s+1),d=P(r,s+1);
+  pos.push(...a,...b,...cc,...a,...cc,...d)}
+ return new Float32Array(pos)}
+/* --------------------------------------------------------------- GL */
+const OCC_VS='attribute vec3 aP;uniform mat4 uP;uniform mat4 uMV;void main(){gl_Position=uP*uMV*vec4(aP,1.);}';
+const OCC_FS='precision mediump float;void main(){gl_FragColor=vec4(0.,0.,0.,1.);}';
+function mkProg460(gl,vs,fs){const c=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh)||'shader');return sh};
+ const p=gl.createProgram();gl.attachShader(p,c(gl.VERTEX_SHADER,vs));gl.attachShader(p,c(gl.FRAGMENT_SHADER,fs));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p)||'link');return p}
+/* --------------------------------------------------------------- state */
+const G={prog:null,aP:-1,uP:null,uMV:null,buf:null,nVerts:0,ready:false,enabled:true,jointK:1.9,
+ model:new Float32Array(16),mv:new Float32Array(16),lastJoints:0,persist:null,wantSave:false,supportPersist:false};
+const lang460=()=>{try{return state.lang==='ru'?0:state.lang==='de'?2:1}catch(_){return 1}};
+const TT={saved:['Пространственная сцена сохранена','Spatial scene saved','Räumliche Szene gespeichert'],
+ restored:['Сцена восстановлена из прошлой сессии','Scene restored from last session','Szene aus letzter Sitzung wiederhergestellt'],
+ restoredPart:['Модель и вид восстановлены (без якоря)','Model & view restored (no anchor)','Modell & Ansicht wiederhergestellt (kein Anker)'],
+ needPlace:['Сначала закрепите голограмму (курок на поверхность)','Place the hologram first (trigger on a surface)','Erst Hologramm platzieren (Trigger auf Fläche)'],
+ cleared:['Сохранённая сцена удалена','Saved scene cleared','Gespeicherte Szene gelöscht'],
+ handsOn:['Окклюзия руками включена','Hand occlusion on','Handokklusion an'],handsOff:['Окклюзия руками выключена','Hand occlusion off','Handokklusion aus']};
+const t460=k=>TT[k][lang460()];
+function toast460(s){try{toast(s)}catch(_){console.log('UPRS460:',s)}}
+/* --------------------------------------------------------------- occluder */
+function ensureGL460(gl){if(G.ready&&G.prog)return true;try{
+ G.prog=mkProg460(gl,OCC_VS,OCC_FS);G.aP=gl.getAttribLocation(G.prog,'aP');G.uP=gl.getUniformLocation(G.prog,'uP');G.uMV=gl.getUniformLocation(G.prog,'uMV');
+ const sph=buildSphere460(6,8);G.nVerts=sph.length/3;G.buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,G.buf);gl.bufferData(gl.ARRAY_BUFFER,sph,gl.STATIC_DRAW);
+ G.ready=true;return true}catch(e){console.warn('UPRS460 gl',e);return false}}
+function collectJoints460(frame,ref,sess){const out=[];if(!sess)return out;
+ for(const src of sess.inputSources){if(!src.hand)continue;let joints;try{joints=src.hand.values?[...src.hand.values()]:null}catch(_){joints=null}
+  if(!joints)continue;
+  for(const j of joints){let jp=null;try{jp=frame.getJointPose?frame.getJointPose(j,ref):null}catch(_){jp=null}
+   if(jp&&jp.transform){const p=jp.transform.position,r=jp.radius||.01;out.push([p.x,p.y,p.z,r])}}}
+ return out}
+function occlude460(gl,proj,vinv,frame,view,S,c){c=c||CORE();if(!c)return;
+ /* persistent-anchor drive + deferred save (needs a live frame) */
+ if(G.persist&&G.persist.anchorSpace){try{const ap=frame.getPose(G.persist.anchorSpace,S.ref);
+  if(ap){const a=[ap.transform.position.x,ap.transform.position.y,ap.transform.position.z],q=[ap.transform.orientation.x,ap.transform.orientation.y,ap.transform.orientation.z,ap.transform.orientation.w];
+   const sc=anchorOffsetToScene(a,q,G.persist.offset,c);S.world.pos=sc.pos;S.world.quat=sc.quat;S.world.scale=sc.scale}}catch(_){}}
+ if(G.wantSave){G.wantSave=false;doSave460(frame,S,c)}
+ if(!G.enabled)return;
+ const joints=collectJoints460(frame,S.ref,S.sess);G.lastJoints=joints.length;if(!joints.length)return;
+ gl.useProgram(G.prog);gl.enableVertexAttribArray(G.aP);
+ gl.bindBuffer(gl.ARRAY_BUFFER,G.buf);gl.vertexAttribPointer(G.aP,3,gl.FLOAT,false,0,0);
+ gl.uniformMatrix4fv(G.uP,false,proj);
+ gl.colorMask(false,false,false,false);gl.depthMask(true);gl.enable(gl.DEPTH_TEST);
+ for(const jt of joints){const r=jt[3]*G.jointK;c.composeTRS(G.model,[jt[0],jt[1],jt[2]],[0,0,0,1],r);c.m4Mul(G.mv,vinv,G.model);
+  gl.uniformMatrix4fv(G.uMV,false,G.mv);gl.drawArrays(gl.TRIANGLES,0,G.nVerts)}
+ gl.colorMask(true,true,true,true);
+ /* restore the main program state the 450 loop expects */
+ gl.useProgram(S.prog);try{gl.enableVertexAttribArray(S.loc.aP);gl.enableVertexAttribArray(S.loc.aC)}catch(_){}}
+/* --------------------------------------------------------------- persistence */
+function anchorPoseNow460(frame,ref,anchorSpace){try{const ap=frame.getPose(anchorSpace,ref);if(!ap)return null;
+ return {pos:[ap.transform.position.x,ap.transform.position.y,ap.transform.position.z],quat:[ap.transform.orientation.x,ap.transform.orientation.y,ap.transform.orientation.z,ap.transform.orientation.w]}}catch(_){return null}}
+function doSave460(frame,S,c){c=c||CORE();const aspace=(G.persist&&G.persist.anchorSpace)||S.anchorSpace;
+ if(!aspace){toast460(t460('needPlace'));return false}
+ const ap=anchorPoseNow460(frame,S.ref,aspace);if(!ap)return false;
+ const off=sceneToAnchorOffset(ap.pos,ap.quat,S.world,c);
+ let model='',mode='';try{model=state.model;mode=state.mode}catch(_){}
+ const rec={uuid:(G.persist&&G.persist.uuid)||S._persistUuid||null,model,mode,offset:off,savedAt:Date.now()};
+ if(storeScene(rec)){toast460(t460('saved'));return true}return false}
+function onAnchor460(anchor,S,frame){const c=CORE();if(!c)return;
+ /* persistent handle (experimental API) */
+ try{if(anchor&&typeof anchor.requestPersistentHandle==='function'){G.supportPersist=true;
+  anchor.requestPersistentHandle().then(uuid=>{S._persistUuid=uuid;G.persist={anchor,anchorSpace:anchor.anchorSpace,uuid,offset:{pos:[0,0,0],quat:[0,0,0,1],scale:S.world.scale}};
+   if(frame)doSave460(frame,S,c);else G.wantSave=true}).catch(()=>{G.wantSave=true})}
+  else{G.wantSave=true}}catch(_){G.wantSave=true}}
+async function onSession460(sess,gl,S,c,mode){c=c||CORE();ensureGL460(gl);
+ G.persist=null;G.wantSave=false;
+ addButtons460();
+ /* attempt scene restore */
+ const rec=loadScene();if(!rec)return;
+ /* bring back model + projection regardless of anchor support */
+ try{if(rec.model&&typeof setModel==='function'&&rec.model!==state.model)setModel(rec.model,true)}catch(_){}
+ try{if(rec.mode&&typeof setMode==='function')setMode(rec.mode)}catch(_){}
+ let anchored=false;
+ try{if(rec.uuid&&typeof sess.restorePersistentAnchor==='function'){
+  const anchor=await sess.restorePersistentAnchor(rec.uuid).catch(()=>null);
+  if(anchor&&anchor.anchorSpace){G.persist={anchor,anchorSpace:anchor.anchorSpace,uuid:rec.uuid,offset:rec.offset};S.anchorSpace=anchor.anchorSpace;S._persistUuid=rec.uuid;S.placedOnce=true;anchored=true}}}catch(_){}
+ if(!anchored){/* partial: apply scale/mode, keep default placement */ try{S.world.scale=rec.offset.scale||S.world.scale}catch(_){}}
+ setTimeout(()=>toast460(anchored?t460('restored'):t460('restoredPart')),400)}
+/* --------------------------------------------------------------- UI */
+function addButtons460(){try{const acts=document.querySelector('.top-actions');if(!acts)return;
+ if(!document.getElementById('saveScene460')){const b=document.createElement('button');b.className='btn';b.id='saveScene460';b.textContent='💾';b.title=lang460()===0?'Сохранить пространственную сцену':'Save spatial scene';
+  b.onclick=()=>{if(!S_ref()){toast460(t460('needPlace'));return}G.wantSave=true};acts.insertBefore(b,acts.firstChild)}
+}catch(_){}}
+let _S=null;function S_ref(){try{return _S&&_S.sess}catch(_){return null}}
+function toggleHands460(){G.enabled=!G.enabled;toast460(G.enabled?t460('handsOn'):t460('handsOff'));const b=document.getElementById('handsBtn460');if(b)b.classList.toggle('on',G.enabled)}
+/* keep a reference to S once a session starts (for the button) */
+const _onSessionWrap=async(sess,gl,S,c,mode)=>{_S=S;return onSession460(sess,gl,S,c,mode)};
+/* --------------------------------------------------------------- install */
+function addHandsButton460(){try{const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('handsBtn460')){const b=document.createElement('button');b.className='btn on';b.id='handsBtn460';b.textContent='🖐';b.title=lang460()===0?'Окклюзия руками':'Hand occlusion';b.onclick=toggleHands460;acts.insertBefore(b,acts.firstChild)}}catch(_){}}
+let tries=0;
+function install460(){if(typeof document==='undefined')return;
+ if(!document.body||typeof state==='undefined'){if(tries++<90)return setTimeout(install460,220);return}
+ try{addHandsButton460()}catch(e){console.warn('UPRS460 install',e)}}
+try{if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install460,240),{once:true});else setTimeout(install460,240)}}catch(_){}
+for(const ms of [1200,3200,8000])setTimeout(()=>{try{install460()}catch(_){}},ms);
+/* --------------------------------------------------------------- tests */
+function checks460(){const out=[],ok=(name,fn)=>{let pass=false,detail='';try{const r=fn();if(r&&typeof r==='object'){pass=!!r.ok;detail=r.detail||''}else pass=!!r}catch(e){detail=e.message}out.push({name,pass,detail})};
+ const c=CORE();
+ ok('v4.6.0 hands+persistence module installed',()=>({ok:!!globalThis.__UPRS460__&&typeof occlude460==='function'&&typeof onSession460==='function',detail:'v'+V460}));
+ ok('v4.6.0 occluder sphere is unit-radius, non-empty',()=>{const s=buildSphere460(6,8);let maxr=0,minr=9,n=s.length/3;for(let i=0;i<n;i++){const r=Math.hypot(s[i*3],s[i*3+1],s[i*3+2]);maxr=Math.max(maxr,r);minr=Math.min(minr,r)}
+  return {ok:n>=200&&maxr<1.0001&&minr>.98,detail:n+' verts, r∈['+minr.toFixed(3)+','+maxr.toFixed(3)+']'}});
+ ok('v4.6.0 anchor-offset round-trip (6-DoF + scale)',()=>{if(!c)return {ok:false,detail:'no core'};
+  const aPos=[.4,1.1,-.7],aQuat=c.qNorm([.15,-.25,.1,.95]),world={pos:[.9,1.35,-1.2],quat:c.qNorm([-.1,.3,.2,.9]),scale:1.7};
+  const off=sceneToAnchorOffset(aPos,aQuat,world,c),back=anchorOffsetToScene(aPos,aQuat,off,c);
+  const ep=Math.hypot(back.pos[0]-world.pos[0],back.pos[1]-world.pos[1],back.pos[2]-world.pos[2]);
+  let eq=0;for(let i=0;i<4;i++)eq=Math.max(eq,Math.abs(back.quat[i]-world.quat[i]));
+  return {ok:ep<1e-9&&eq<1e-9&&Math.abs(back.scale-world.scale)<1e-12,detail:'εpos='+ep.toExponential(1)+' εq='+eq.toExponential(1)}});
+ ok('v4.6.0 scene serialize/deserialize round-trip',()=>{const rec={uuid:'abc-123',model:'rlc_series',mode:'hopf',offset:{pos:[.1,-.2,.3],quat:[0,.7071,0,.7071],scale:.8}};
+  const s=serializeScene(rec),d=deserializeScene(s);return {ok:d&&d.uuid==='abc-123'&&d.model==='rlc_series'&&d.mode==='hopf'&&Math.abs(d.offset.pos[2]-.3)<1e-12&&Math.abs(d.offset.scale-.8)<1e-12,detail:'uuid='+(d&&d.uuid)}});
+ ok('v4.6.0 deserialize rejects malformed input',()=>({ok:deserializeScene('not json')===null&&deserializeScene('{"x":1}')===null,detail:'guards ok'}));
+ ok('v4.6.0 localStorage store/load/clear cycle',()=>{const rec={uuid:'u1',model:'m',mode:'smith',offset:{pos:[1,2,3],quat:[0,0,0,1],scale:1}};
+  const a=storeScene(rec),b=loadScene(),d=clearScene(),e=loadScene();return {ok:a&&b&&b.uuid==='u1'&&d&&e===null,detail:'store→load→clear ok'}});
+ ok('v4.6.0 occluder shader compiles (WebGL)',()=>{const cv=document.createElement('canvas');const gl=cv.getContext('webgl2')||cv.getContext('webgl');if(!gl)return {ok:true,detail:'no GL — skipped'};
+  mkProg460(gl,OCC_VS,OCC_FS);return {ok:true,detail:'depth-only program linked'}});
+ ok('v4.6.0 joint occluder matrix places+scales sphere',()=>{if(!c)return {ok:false,detail:'no core'};
+  const jt=[0.2,1.0,-0.6,0.012],r=jt[3]*G.jointK,M=new Float32Array(16);c.composeTRS(M,[jt[0],jt[1],jt[2]],[0,0,0,1],r);
+  /* translate column = joint pos; unit +x vertex maps to pos+[r,0,0] */
+  const okT=Math.abs(M[12]-.2)<1e-6&&Math.abs(M[13]-1)<1e-6&&Math.abs(M[14]+.6)<1e-6,okS=Math.abs(M[0]-r)<1e-7; /* Float32 storage */
+  return {ok:okT&&okS,detail:'scale='+r.toFixed(4)}});
+ ok('v4.6.0 hook chain wired into the 450 loop',()=>({ok:typeof globalThis.__UPRS460__.occlude==='function'&&typeof globalThis.__UPRS460__.onSession==='function'&&typeof globalThis.__UPRS460__.onAnchor==='function',detail:globalThis.__UPRS450__?'450 live':'450 pending'}));
+ ok('v4.6.0 persistence degrades gracefully without anchor API',()=>{let threw=null;try{onAnchor460({},{world:{scale:.5},_persistUuid:null},null)}catch(e){threw=e.message}return {ok:threw===null,detail:threw||'no throw'}});
+ return out}
+function wrapTests460(){try{if(typeof runTests!=='function'||runTests.__uprs460)return;const base=runTests;
+ const w=function(show=true){const r=base(false),T=r.tests.filter(x=>!String(x.name||'').startsWith('v4.6.0'));for(const x of checks460())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}return rep};
+ w.__uprs460=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+setTimeout(wrapTests460,500);for(const ms of [2000,5000,11000,18000])setTimeout(wrapTests460,ms);
+/* --------------------------------------------------------------- API */
+globalThis.__UPRS460__={version:V460,occlude:occlude460,onSession:_onSessionWrap,onAnchor:onAnchor460,
+ saveScene:()=>{G.wantSave=true},clearScene:()=>{clearScene();toast460(t460('cleared'))},toggleHands:toggleHands460,checks:checks460,
+ core:{sceneToAnchorOffset,anchorOffsetToScene,serializeScene,deserializeScene,buildSphere:buildSphere460,loadScene,storeScene,clearScene,shaders:{OCC_VS,OCC_FS}},
+ audit:()=>({version:V460,handsEnabled:G.enabled,glReady:G.ready,lastJoints:G.lastJoints,persistActive:!!G.persist,supportPersist:G.supportPersist,saved:!!loadScene()})};
 })();
 </script>
 </body></html>
