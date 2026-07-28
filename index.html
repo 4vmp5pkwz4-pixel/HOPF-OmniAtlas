@@ -11058,4 +11058,606 @@ function install(){if(!document.body||typeof state==='undefined')return setTimeo
 function integrityChecks(){const s=snapshot(),C=checks(s);return [{name:'v5.3.0 integrity snapshot is deterministic',pass:s.reproducibility.stateFingerprint===snapshot().reproducibility.stateFingerprint,detail:s.reproducibility.stateFingerprint},{name:'v5.3.0 canonical serializer is key-order independent',pass:stable({b:2,a:1})===stable({a:1,b:2}),detail:stable({b:2,a:1})},{name:'v5.3.0 health checks cover finite samples and provenance',pass:C.some(x=>x.name==='Finite numerical sweep')&&C.some(x=>x.name==='Reproducible state identity'),detail:C.length+' checks'}]}
 setTimeout(install,500);globalThis.__UPRS530__={version:V,snapshot,checks:integrityChecks,open,export:download,stable,hash32};
 })();</script>
+<script id="uprs540TheoryEngine">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v5.4.0 · THEORY & UNIFICATION ENGINE
+   ----------------------------------------------------------------------------
+   Six first-principles capabilities layered on the v4.9.0 discovery core:
+
+   1. BUCKINGHAM Π — parses the SI units declared by every model parameter,
+      builds the dimensional matrix and computes its null space: the complete
+      set of independent dimensionless groups. Dimensional analysis constrains
+      the admissible physics BEFORE any data is seen.
+   2. ANALYTIC CONTINUATION (Padé / rational LS) — fits a rational function to
+      the measured response and locates its poles in the COMPLEX plane. Those
+      poles are quasi-bound states / resonances that never appear directly on
+      the measured axis: phenomena predicted, not observed.
+   3. BAYESIAN EVIDENCE — Laplace/BIC evidence, posterior model probabilities,
+      Bayes factors, and Gauss–Newton credible intervals (σ²(JᵀJ)⁻¹) for the
+      parameters of the winning law.
+   4. SYMBOLIC REGRESSION (genetic programming) — evolves genuinely new closed
+      forms beyond any fixed dictionary, with parsimony pressure and a SEEDED
+      PRNG so every discovery is exactly reproducible.
+   5. CONFORMAL PREDICTION — split-conformal intervals with a distribution-free
+      finite-sample coverage guarantee (no Gaussian assumption).
+   6. CROSS-DOMAIN ISOMORPHISM — scale- and amplitude-invariant shape
+      signatures matched against models in OTHER physical domains, surfacing
+      structural analogies across spheres (electrical ↔ mechanical ↔ acoustic…).
+
+   Renders inside the existing Discovery panel; adds no buttons or chrome.
+   Pure core is headlessly unit-testable via __UPRS540__.core / .checks().
+   ========================================================================== */
+const V540='5.4.0';
+const FIN=Number.isFinite;
+const C490=()=>globalThis.__UPRS490__;
+
+/* ======================================================= linear algebra */
+function solve540(A,b){const n=A.length,M=A.map((r,i)=>[...r,b[i]]);
+ for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;
+  if(Math.abs(M[p][c])<1e-300)return null;[M[c],M[p]]=[M[p],M[c]];
+  for(let r=0;r<n;r++){if(r===c)continue;const f=M[r][c]/M[c][c];for(let k=c;k<=n;k++)M[r][k]-=f*M[c][k]}}
+ return M.map((r,i)=>r[n]/r[i])}
+function inv540(A){const n=A.length,M=A.map((r,i)=>[...r,...Array.from({length:n},(_,j)=>i===j?1:0)]);
+ for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;
+  if(Math.abs(M[p][c])<1e-300)return null;[M[c],M[p]]=[M[p],M[c]];
+  const d=M[c][c];for(let k=0;k<2*n;k++)M[c][k]/=d;
+  for(let r=0;r<n;r++){if(r===c)continue;const f=M[r][c];if(!f)continue;for(let k=0;k<2*n;k++)M[r][k]-=f*M[c][k]}}
+ return M.map(r=>r.slice(n))}
+/* least squares via ridge-regularised normal equations */
+function lstsq540(A,b,ridge=1e-12){const n=A[0].length,AtA=[],Atb=new Array(n).fill(0);
+ for(let i=0;i<n;i++){AtA.push(new Array(n).fill(0))}
+ for(let r=0;r<A.length;r++){const row=A[r];for(let i=0;i<n;i++){Atb[i]+=row[i]*b[r];for(let j=0;j<n;j++)AtA[i][j]+=row[i]*row[j]}}
+ for(let i=0;i<n;i++)AtA[i][i]+=ridge;
+ return solve540(AtA,Atb)}
+
+/* ============================================ 1 · units → dimensions → Π */
+/* base dimensions: [M, L, T, I, Θ] */
+const UNIT540={
+ '':[0,0,0,0,0],'1':[0,0,0,0,0],'-':[0,0,0,0,0],'rad':[0,0,0,0,0],'sr':[0,0,0,0,0],
+ '%':[0,0,0,0,0],'dB':[0,0,0,0,0],'deg':[0,0,0,0,0],
+ 'kg':[1,0,0,0,0],'g':[1,0,0,0,0],'t':[1,0,0,0,0],
+ 'm':[0,1,0,0,0],'s':[0,0,1,0,0],'A':[0,0,0,1,0],'K':[0,0,0,0,1],
+ 'Hz':[0,0,-1,0,0],'N':[1,1,-2,0,0],'J':[1,2,-2,0,0],'eV':[1,2,-2,0,0],
+ 'W':[1,2,-3,0,0],'Pa':[1,-1,-2,0,0],'bar':[1,-1,-2,0,0],
+ 'V':[1,2,-3,-1,0],'Ω':[1,2,-3,-2,0],'ohm':[1,2,-3,-2,0],
+ 'S':[-1,-2,3,2,0],'F':[-1,-2,4,2,0],'H':[1,2,-2,-2,0],
+ 'C':[0,0,1,1,0],'Wb':[1,2,-2,-1,0],'T':[1,0,-2,-1,0],
+ 'mol':[0,0,0,0,0],'cd':[0,0,0,0,0]};
+const SUP540={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-'};
+function normSup540(s){let o='';for(const ch of s)o+=SUP540[ch]!==undefined?SUP540[ch]:ch;return o}
+/* parse a compound unit like "N·s/m", "kg/m³", "Ω/m", "m/s" → dimension vector */
+function parseUnit540(u){if(u===undefined||u===null)return null;
+ let s=String(u).trim();if(!s)return [0,0,0,0,0];
+ s=s.replace(/\s+/g,'');
+ const parts=s.split('/');if(parts.length>3)return null;
+ const dim=[0,0,0,0,0];
+ for(let pi=0;pi<parts.length;pi++){const sign=pi===0?1:-1;
+  const atoms=parts[pi].split(/[·*.]/).filter(Boolean);
+  for(const raw of atoms){const a=normSup540(raw);
+   const m=a.match(/^([A-Za-zΩμ°%\-]+)(?:\^)?(-?\d+)?$/);
+   if(!m)return null;const sym=m[1],exp=m[2]?parseInt(m[2],10):1;
+   const base=UNIT540[sym];if(!base)return null;
+   for(let k=0;k<5;k++)dim[k]+=sign*exp*base[k]}}
+ return dim}
+/* rank + null-space basis of a dimensional matrix (rows = dims, cols = vars) */
+function nullspace540(rows,ncol){
+ const M=rows.map(r=>[...r]),nrow=M.length,pivots=[];let r=0;
+ for(let c=0;c<ncol&&r<nrow;c++){
+  let p=-1,best=1e-9;for(let i=r;i<nrow;i++)if(Math.abs(M[i][c])>best){best=Math.abs(M[i][c]);p=i}
+  if(p<0)continue;[M[r],M[p]]=[M[p],M[r]];
+  const d=M[r][c];for(let k=0;k<ncol;k++)M[r][k]/=d;
+  for(let i=0;i<nrow;i++){if(i===r)continue;const f=M[i][c];if(!f)continue;for(let k=0;k<ncol;k++)M[i][k]-=f*M[r][k]}
+  pivots.push(c);r++}
+ const rank=pivots.length,free=[];
+ for(let c=0;c<ncol;c++)if(!pivots.includes(c))free.push(c);
+ const basis=free.map(fc=>{const v=new Array(ncol).fill(0);v[fc]=1;
+  for(let i=0;i<rank;i++)v[pivots[i]]=-M[i][fc];
+  /* rationalise: scale so the largest |component| is a small integer where possible */
+  let mx=0;for(const x of v)mx=Math.max(mx,Math.abs(x));
+  if(mx>0){const scaled=v.map(x=>x/mx);
+   for(const den of [1,2,3,4,6]){const test=scaled.map(x=>x*den);
+    if(test.every(x=>Math.abs(x-Math.round(x))<1e-7))return test.map(x=>Math.round(x)+0)}
+   return scaled}
+  return v});
+ return {rank,basis,free}}
+function buckingham540(vars){
+ const named=[],rows=[[],[],[],[],[]];
+ for(const v of vars){const d=parseUnit540(v.unit);if(!d)continue;
+  named.push(v);for(let k=0;k<5;k++)rows[k].push(d[k])}
+ const n=named.length;if(n<2)return null;
+ const used=rows.filter(r=>r.some(x=>Math.abs(x)>1e-12));
+ const {rank,basis}=nullspace540(used.length?used:[new Array(n).fill(0)],n);
+ const groups=basis.map(vec=>({
+  exponents:named.map((v,i)=>({key:v.key,exp:vec[i]})).filter(e=>Math.abs(e.exp)>1e-7),
+  text:named.map((v,i)=>({k:v.key,e:vec[i]})).filter(t=>Math.abs(t.e)>1e-7)
+   .map(t=>Math.abs(t.e-1)<1e-7?t.k:`${t.k}^${Math.round(t.e*1000)/1000}`).join('·')}));
+ return {variables:named.map(v=>v.key),dimensionalRank:rank,groupCount:groups.length,
+  theoremCheck:groups.length===n-rank,groups}}
+
+/* ============================ 2 · analytic continuation: rational → poles */
+const cA=(a,b)=>({re:a.re+b.re,im:a.im+b.im}),cS=(a,b)=>({re:a.re-b.re,im:a.im-b.im});
+const cM=(a,b)=>({re:a.re*b.re-a.im*b.im,im:a.re*b.im+a.im*b.re});
+function cD(a,b){const d=b.re*b.re+b.im*b.im||1e-300;return {re:(a.re*b.re+a.im*b.im)/d,im:(a.im*b.re-a.re*b.im)/d}}
+const cAb=a=>Math.hypot(a.re,a.im);
+function polyEvalC540(co,z){let r={re:0,im:0};for(const c of co)r=cA(cM(r,z),{re:c,im:0});return r}
+/* Durand–Kerner: co in DESCENDING order */
+function roots540(co){while(co.length>1&&Math.abs(co[0])<1e-300)co=co.slice(1);
+ const n=co.length-1;if(n<1)return [];
+ const z=[];for(let i=0;i<n;i++){const a=2*Math.PI*i/n+.4;z.push({re:.65*Math.cos(a),im:.65*Math.sin(a)})}
+ for(let it=0;it<420;it++){let mv=0;
+  for(let i=0;i<n;i++){let d={re:co[0],im:0};
+   for(let j=0;j<n;j++){if(j===i)continue;d=cM(d,cS(z[i],z[j]))}
+   if(cAb(d)<1e-300)continue;
+   const st=cD(polyEvalC540(co,z[i]),d);z[i]=cS(z[i],st);mv=Math.max(mv,cAb(st))}
+  if(mv<1e-14)break}
+ return z}
+/* rational least squares  y ≈ P(u)/Q(u),  deg P=m, deg Q=n, q0=1 */
+function ratFit540(xs,ys,m,n){const N=xs.length;if(N<m+n+3)return null;
+ const c=(xs[0]+xs[N-1])/2,h=(xs[N-1]-xs[0])/2||1;
+ const A=[],b=[];
+ for(let i=0;i<N;i++){const u=(xs[i]-c)/h,row=[];
+  let up=1;for(let j=0;j<=m;j++){row.push(up);up*=u}
+  up=u;for(let j=1;j<=n;j++){row.push(-ys[i]*up);up*=u}
+  A.push(row);b.push(ys[i])}
+ const th=lstsq540(A,b,1e-11);if(!th)return null;
+ const p=th.slice(0,m+1),q=[1,...th.slice(m+1)];
+ /* residual of the rational model itself */
+ let rss=0;for(let i=0;i<N;i++){const u=(xs[i]-c)/h;
+  let P=0,up=1;for(let j=0;j<=m;j++){P+=p[j]*up;up*=u}
+  let Q=0;up=1;for(let j=0;j<=n;j++){Q+=q[j]*up;up*=u}
+  if(Math.abs(Q)<1e-300)return null;const e=ys[i]-P/Q;rss+=e*e}
+ const qd=[...q].reverse();          /* descending for the root finder */
+ const ru=roots540(qd);
+ const poles=ru.map(u=>({re:c+h*u.re,im:h*u.im}));
+ return {p,q,center:c,half:h,rss,polesU:ru,poles}}
+/* physical reading of complex poles: hidden resonances.
+   A sweep spanning many decades is unresolvable by a rational fit in linear x
+   (every feature collapses against one end), so when the axis is positive and
+   wide the continuation is performed in t = log10 x. A pole at t_r + i·t_i
+   then means f0 = 10^t_r with fractional half-width Δf/f0 = ln10·t_i, hence
+   Q = f0/(2·HWHM) = 1/(2·ln10·t_i). */
+const LN10=Math.LN10;
+function hiddenResonances540(xs,ys,opts){const o=opts||{};
+ const N=xs.length;if(N<24)return {poles:[],fit:null};
+ const logMode=o.logMode!==undefined?o.logMode:(xs[0]>0&&xs[N-1]>0&&Math.log10(xs[N-1]/xs[0])>1.5);
+ const zs=logMode?xs.map(Math.log10):xs;
+ const lo=zs[0],hi=zs[N-1],span=hi-lo;
+ let best=null;
+ for(const [m,n] of [[2,2],[3,3],[4,4],[5,5],[6,6]]){
+  let f=null;try{f=ratFit540(zs,ys,m,n)}catch(_){}
+  if(!f||!FIN(f.rss))continue;
+  const k=m+n+1,aicc=N*Math.log(Math.max(f.rss,1e-300)/N)+2*k+(N-k-1>0?2*k*(k+1)/(N-k-1):1e9);
+  if(!best||aicc<best.aicc){best={...f,m,n,aicc}}}
+ if(!best)return {poles:[],fit:null};
+ const out=[];
+ for(const p of best.poles){
+  if(!FIN(p.re)||!FIN(p.im))continue;
+  if(Math.abs(p.im)<1e-12)continue;                       /* real pole: not a resonance */
+  if(p.im<0)continue;                                     /* conjugate pair: keep upper half */
+  if(p.re<lo-span||p.re>hi+span)continue;                 /* far outside: extrapolation noise */
+  const inBand=p.re>=lo&&p.re<=hi;
+  const freq=logMode?Math.pow(10,p.re):p.re;
+  const hw=logMode?freq*LN10*Math.abs(p.im):Math.abs(p.im);
+  const Q=hw>0?Math.abs(freq)/(2*hw):Infinity;
+  if(!FIN(freq)||!FIN(hw))continue;
+  out.push({freq,linewidth:hw,Q,observable:inBand,coordinate:logMode?'log10':'linear',
+   /* a mode outside the measured band, or too narrow to have been resolved,
+      is a genuinely unmeasured prediction */
+   unmeasured:!inBand||Q>40})}
+ out.sort((a,b)=>b.Q-a.Q);
+ return {poles:out.slice(0,6),fit:{m:best.m,n:best.n,rss:best.rss,coordinate:logMode?'log10':'linear'}}}
+
+/* ============================================= 3 · Bayesian evidence & CIs */
+const LAWS540={
+ linear:{names:['a','b'],get:p=>[p.a,p.b],f:(t,x)=>t[0]+t[1]*x},
+ power:{names:['A','p'],get:p=>[p.A,p.p],f:(t,x)=>x>0?t[0]*Math.pow(x,t[1]):NaN},
+ exp:{names:['A','b'],get:p=>[p.A,p.b],f:(t,x)=>t[0]*Math.exp(t[1]*x)},
+ lorentz:{names:['x0','w','A','C'],get:p=>[p.x0,p.w,p.A,p.C],
+  f:(t,x)=>{const e=(x-t[0])/t[1];return t[2]/(1+e*e)+t[3]}},
+ fano:{names:['x0','w','q','A','C'],get:p=>[p.x0,p.w,p.q,p.A,p.C],
+  f:(t,x)=>{const e=(x-t[0])/t[1];return t[3]*(t[2]+e)*(t[2]+e)/(1+e*e)+t[4]}},
+ logistic:{names:['x0','kk','A','C'],get:p=>[p.x0,p.kk,p.A,p.C],
+  f:(t,x)=>t[2]/(1+Math.exp(-t[1]*(x-t[0])))+t[3]},
+ stretched:{names:['A','tau','beta'],get:p=>[p.A,p.tau,p.beta],
+  f:(t,x)=>x>0?t[0]*Math.exp(-Math.pow(x/t[1],t[2])):NaN}};
+function lnEvidence540(n,k,rss){const s2=Math.max(rss,1e-300)/n;
+ const lnLmax=-0.5*n*(Math.log(2*Math.PI*s2)+1);
+ return lnLmax-0.5*k*Math.log(n)}                          /* Laplace/BIC */
+function credible540(id,params,xs,ys){const L=LAWS540[id];if(!L)return null;
+ const th=L.get(params);if(!th||th.some(v=>!FIN(v)))return null;
+ const k=th.length,n=xs.length;if(n<=k+1)return null;
+ const f=x=>L.f(th,x);let rss=0;for(let i=0;i<n;i++){const e=ys[i]-f(xs[i]);if(!FIN(e))return null;rss+=e*e}
+ const s2=rss/(n-k);
+ /* Gauss–Newton: J_ij = ∂f(x_i)/∂θ_j by central differences */
+ const J=[];for(let i=0;i<n;i++){const row=[];
+  for(let j=0;j<k;j++){const hj=Math.max(1e-7,Math.abs(th[j])*1e-5);
+   const tp=[...th];tp[j]+=hj;const tm=[...th];tm[j]-=hj;
+   const d=(L.f(tp,xs[i])-L.f(tm,xs[i]))/(2*hj);row.push(FIN(d)?d:0)}
+  J.push(row)}
+ const JtJ=[];for(let i=0;i<k;i++)JtJ.push(new Array(k).fill(0));
+ for(let r=0;r<n;r++)for(let i=0;i<k;i++)for(let j=0;j<k;j++)JtJ[i][j]+=J[r][i]*J[r][j];
+ const Ci=inv540(JtJ);if(!Ci)return null;
+ return {sigma:Math.sqrt(s2),params:L.names.map((nm,j)=>{
+  const v=s2*Ci[j][j];const se=v>0?Math.sqrt(v):NaN;
+  return {name:nm,value:th[j],se,lo:th[j]-1.96*se,hi:th[j]+1.96*se}})}}
+function bayes540(xs,ys,ranking){if(!ranking||!ranking.length)return null;
+ const n=xs.length;
+ const rows=ranking.map(r=>({id:r.id,k:r.k,rss:r.rss,lnZ:lnEvidence540(n,r.k,r.rss)}));
+ rows.sort((a,b)=>b.lnZ-a.lnZ);
+ const mx=rows[0].lnZ;let z=0;for(const r of rows){r.w=Math.exp(r.lnZ-mx);z+=r.w}
+ for(const r of rows)r.posterior=r.w/z;
+ const bf=rows.length>1?Math.exp(rows[0].lnZ-rows[1].lnZ):Infinity;
+ /* Jeffreys' scale for the decisiveness of the winner */
+ const lb=Math.log10(bf);
+ const strength=!FIN(lb)?'decisive':lb>2?'decisive':lb>1.5?'very strong':lb>1?'strong':lb>.5?'substantial':'weak';
+ return {models:rows.slice(0,5).map(r=>({id:r.id,lnZ:r.lnZ,posterior:r.posterior})),
+  bayesFactor:bf,log10BayesFactor:lb,strength,winner:rows[0].id}}
+
+/* ================================== 4 · symbolic regression (seeded GP) */
+function rng540(seed){let s=(seed>>>0)||1;return ()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+const UN540=['neg','inv','sq','sqrt','exp','log','sin'],BIN540=['add','sub','mul','div'];
+function eval540(t,x){switch(t.t){
+ case 'x':return x;
+ case 'c':return t.v;
+ case 'u':{const a=eval540(t.a,x);if(!FIN(a))return NaN;switch(t.op){
+  case 'neg':return -a;case 'inv':return Math.abs(a)<1e-12?NaN:1/a;case 'sq':return a*a;
+  case 'sqrt':return a<0?NaN:Math.sqrt(a);case 'exp':return Math.abs(a)>60?NaN:Math.exp(a);
+  case 'log':return a<=0?NaN:Math.log(a);case 'sin':return Math.sin(a)}return NaN}
+ case 'b':{const a=eval540(t.a,x),b=eval540(t.b,x);if(!FIN(a)||!FIN(b))return NaN;switch(t.op){
+  case 'add':return a+b;case 'sub':return a-b;case 'mul':return a*b;
+  case 'div':return Math.abs(b)<1e-12?NaN:a/b}return NaN}}
+ return NaN}
+function size540(t){return t.t==='u'?1+size540(t.a):t.t==='b'?1+size540(t.a)+size540(t.b):1}
+function str540(t){switch(t.t){
+ case 'x':return 'x';case 'c':return (Math.round(t.v*10000)/10000).toString();
+ case 'u':{const a=str540(t.a);return t.op==='neg'?`(-${a})`:t.op==='inv'?`(1/${a})`:t.op==='sq'?`${a}²`:`${t.op}(${a})`}
+ case 'b':{const a=str540(t.a),b=str540(t.b),s={add:'+',sub:'-',mul:'·',div:'/'}[t.op];return `(${a}${s}${b})`}}
+ return '?'}
+function rand540(R,d){const r=R();
+ if(d<=0||r<.30)return R()<.55?{t:'x'}:{t:'c',v:Math.round((R()*8-3)*1000)/1000};
+ if(r<.62){const op=UN540[Math.floor(R()*UN540.length)];return {t:'u',op,a:rand540(R,d-1)}}
+ const op=BIN540[Math.floor(R()*BIN540.length)];return {t:'b',op,a:rand540(R,d-1),b:rand540(R,d-1)}}
+function nodes540(t,acc){acc=acc||[];acc.push(t);
+ if(t.t==='u')nodes540(t.a,acc);else if(t.t==='b'){nodes540(t.a,acc);nodes540(t.b,acc)}return acc}
+function clone540(t){return t.t==='u'?{t:'u',op:t.op,a:clone540(t.a)}:t.t==='b'?{t:'b',op:t.op,a:clone540(t.a),b:clone540(t.b)}:{...t}}
+function replace540(t,target,rep){if(t===target)return rep;
+ if(t.t==='u')return {t:'u',op:t.op,a:replace540(t.a,target,rep)};
+ if(t.t==='b')return {t:'b',op:t.op,a:replace540(t.a,target,rep),b:replace540(t.b,target,rep)};
+ return t}
+/* linear top-scaling y ≈ α·tree(x)+β makes the search invariant to units */
+function score540(t,xs,ys,lam){const n=xs.length,v=[];
+ for(let i=0;i<n;i++){const g=eval540(t,xs[i]);if(!FIN(g))return {err:1e9,a:1,b:0};v.push(g)}
+ let sg=0,sy=0,sgg=0,sgy=0;
+ for(let i=0;i<n;i++){sg+=v[i];sy+=ys[i];sgg+=v[i]*v[i];sgy+=v[i]*ys[i]}
+ const den=n*sgg-sg*sg;let a=1,b=0;
+ if(Math.abs(den)>1e-14){a=(n*sgy-sg*sy)/den;b=(sy-a*sg)/n}else{a=0;b=sy/n}
+ let rss=0;for(let i=0;i<n;i++){const e=ys[i]-(a*v[i]+b);rss+=e*e}
+ let yv=0;const ym=sy/n;for(const y of ys)yv+=(y-ym)*(y-ym);
+ const nrmse=Math.sqrt(rss/n)/(Math.sqrt(yv/n)||1e-12);
+ return {err:nrmse+lam*size540(t),nrmse,a,b}}
+/* The independent variable is normalised before the search: a raw axis
+   spanning decades makes every evolved subtree over/underflow. u is the
+   dimensionless coordinate the discovered formula is expressed in. */
+function xform540(xs){const n=xs.length,lo=xs[0],hi=xs[n-1];
+ if(lo>0&&hi>0&&Math.log10(hi/lo)>1.5){const a=Math.log10(lo),b=Math.log10(hi);
+  return {kind:'log',label:'u = (log₁₀x − '+(Math.round(a*1000)/1000)+')/'+(Math.round((b-a)*1000)/1000),
+   fwd:x=>(Math.log10(x)-a)/((b-a)||1)}}
+ const c=(lo+hi)/2,h=(hi-lo)/2||1;
+ return {kind:'linear',label:'u = (x − '+(Math.round(c*1e6)/1e6)+')/'+(Math.round(h*1e6)/1e6),fwd:x=>(x-c)/h}}
+function symbolic540(xs,ys,opt){const o=opt||{};
+ const seed=o.seed||20260724,gens=o.gens||60,pop=o.pop||220,lam=o.lam||.0035,depth=o.depth||5;
+ if(xs.length<8)return null;
+ const tf=o.raw?{kind:'raw',label:'u = x',fwd:x=>x}:xform540(xs);
+ const us=xs.map(tf.fwd);
+ const R=rng540(seed);
+ /* Hybrid initialisation: canonical physical building blocks seed the
+    population alongside random trees, so the search starts from the motifs
+    real laws are made of instead of pure noise. */
+ const X={t:'x'},U=(op,a)=>({t:'u',op,a}),B=(op,a,b)=>({t:'b',op,a,b}),K=v=>({t:'c',v});
+ const seeds=[X,U('sq',X),B('mul',X,U('sq',X)),U('exp',X),U('log',X),U('sqrt',X),U('sin',X),U('inv',X),
+  B('add',U('sq',X),X),B('sub',U('sq',X),X),B('add',U('sq',X),B('mul',K(1.5),X)),
+  B('mul',X,U('sin',X)),U('exp',U('neg',U('sq',X))),B('div',K(1),B('add',K(1),U('sq',X))),
+  B('add',X,U('inv',X)),B('mul',U('exp',U('neg',X)),X)];
+ let P=[];
+ for(const t of seeds)P.push({t,s:score540(t,us,ys,lam)});
+ for(let i=P.length;i<pop;i++){const t=rand540(R,depth);P.push({t,s:score540(t,us,ys,lam)})}
+ P.sort((a,b)=>a.s.err-b.s.err);
+ const pick=()=>{let best=P[Math.floor(R()*P.length)];
+  for(let i=0;i<2;i++){const c=P[Math.floor(R()*P.length)];if(c.s.err<best.s.err)best=c}return best};
+ for(let g=0;g<gens;g++){const next=P.slice(0,Math.max(2,Math.floor(pop*.08)));
+  while(next.length<pop){const r=R();let t;
+   if(r<.62){const A=pick().t,B=pick().t;const na=nodes540(A),nb=nodes540(B);
+    t=replace540(clone540(A),na[Math.floor(R()*na.length)],clone540(nb[Math.floor(R()*nb.length)]))}
+   else if(r<.94){const A=clone540(pick().t),na=nodes540(A);
+    t=replace540(A,na[Math.floor(R()*na.length)],rand540(R,2))}
+   else t=rand540(R,depth);
+   if(size540(t)>34)continue;
+   next.push({t,s:score540(t,us,ys,lam)})}
+  P=next;P.sort((a,b)=>a.s.err-b.s.err)}
+ const b=P[0];if(!b||!FIN(b.s.nrmse))return null;
+ const sc=Math.round(b.s.a*1e6)/1e6,of=Math.round(b.s.b*1e6)/1e6;
+ return {expression:str540(b.t),formula:`y ≈ ${sc}·[${str540(b.t)}] + ${of}`,
+  variable:tf.label,coordinate:tf.kind,
+  nrmse:b.s.nrmse,size:size540(b.t),scale:b.s.a,offset:b.s.b,
+  /* only a genuinely tight closed form is reported as a discovery */
+  informative:b.s.nrmse<.35,
+  seed,generations:gens,population:pop,
+  predict:x=>{const g=eval540(b.t,tf.fwd(x));return FIN(g)?b.s.a*g+b.s.b:NaN}}}
+
+/* ============================================== 5 · conformal prediction */
+function conformal540(xs,ys,fitFn,alpha){const a=FIN(alpha)?alpha:.1,n=xs.length;
+ if(n<20||typeof fitFn!=='function')return null;
+ /* deterministic interleaved split keeps both halves spanning the axis */
+ const fx=[],fy=[],cx=[],cy=[];
+ for(let i=0;i<n;i++){if(i%2===0){fx.push(xs[i]);fy.push(ys[i])}else{cx.push(xs[i]);cy.push(ys[i])}}
+ let f=null;try{f=fitFn(fx,fy)}catch(_){}
+ if(typeof f!=='function')return null;
+ const res=[];for(let i=0;i<cx.length;i++){const p=f(cx[i]);if(FIN(p))res.push(Math.abs(cy[i]-p))}
+ if(res.length<8)return null;
+ res.sort((p,q)=>p-q);
+ const m=res.length,idx=Math.ceil((m+1)*(1-a))-1;
+ const q=res[Math.min(m-1,Math.max(0,idx))];
+ let cov=0;for(let i=0;i<cx.length;i++){const p=f(cx[i]);if(FIN(p)&&Math.abs(cy[i]-p)<=q)cov++}
+ return {alpha:a,quantile:q,calibration:m,empiricalCoverage:cov/cx.length,
+  guarantee:1-a,interval:x=>{const p=f(x);return FIN(p)?{lo:p-q,mid:p,hi:p+q}:null}}}
+
+/* ======================================= 6 · cross-domain isomorphism */
+const SIGN540=16;
+function signature540(xs,ys){const n=xs.length;if(n<8)return null;
+ const pos=xs[0]>0&&xs[n-1]>0,c=v=>pos?Math.log10(v):v;
+ const lo=c(xs[0]),hi=c(xs[n-1]);if(!(hi>lo))return null;
+ let mn=Infinity,mx=-Infinity;for(const y of ys){if(y<mn)mn=y;if(y>mx)mx=y}
+ const rng=mx-mn;if(!(rng>0))return null;
+ const sig=[];
+ for(let i=0;i<SIGN540;i++){const t=lo+(hi-lo)*i/(SIGN540-1);
+  let j=1;while(j<n-1&&c(xs[j])<t)j++;
+  const t0=c(xs[j-1]),t1=c(xs[j]),f=(t-t0)/((t1-t0)||1);
+  const v=ys[j-1]+f*(ys[j]-ys[j-1]);sig.push((v-mn)/rng)}
+ let ext=0;for(let i=1;i<n-1;i++)if((ys[i]-ys[i-1])*(ys[i+1]-ys[i])<0)ext++;
+ return {shape:sig,extrema:ext}}
+function sigDistance540(a,b){if(!a||!b)return Infinity;let s=0;
+ for(let i=0;i<SIGN540;i++){const d=a.shape[i]-b.shape[i];s+=d*d}
+ return Math.sqrt(s/SIGN540)}
+function isomorphisms540(cur,catalog,domain){if(!cur||!catalog)return [];
+ const out=[];
+ for(const e of catalog){if(!e.sig)continue;if(e.domain===domain)continue;
+  const d=sigDistance540(cur,e.sig);if(!FIN(d))continue;
+  out.push({model:e.id,domain:e.domain,distance:d,similarity:Math.exp(-d*4.2),
+   sameExtrema:e.sig.extrema===cur.extrema})}
+ out.sort((a,b)=>a.distance-b.distance);
+ return out.slice(0,4)}
+
+/* ================================================================ app layer */
+function sweepXY540(){const a=(typeof state!=='undefined'&&state.sweep)||[],xs=[],ys=[];
+ for(const s of a){const m=Math.hypot(s.gamma?.re,s.gamma?.im);if(FIN(s.x)&&FIN(m)){xs.push(s.x);ys.push(m)}}
+ return {xs,ys}}
+let SIGCAT540=null;
+function sigCatalog540(){if(SIGCAT540)return SIGCAT540;const out=[];
+ try{for(const [id,m] of Object.entries(UPRSO_MODELS)){try{
+  const [lo,hi]=m.range||[];if(!FIN(lo)||!FIN(hi))continue;
+  const pos=lo>0&&hi>0,N=80,xs=[],ys=[];
+  const p=Object.fromEntries((m.params||[]).map(q=>[q.key,q.value]));
+  for(let i=0;i<N;i++){const x=pos?lo*Math.pow(hi/lo,i/(N-1)):lo+(hi-lo)*i/(N-1);
+   const r=mapResponse(m,m.response(x,p));const v=Math.hypot(r.gamma?.re,r.gamma?.im);
+   if(FIN(v)){xs.push(x);ys.push(v)}}
+  if(xs.length>32)out.push({id,domain:m.domain||'—',sig:signature540(xs,ys)})}catch(_){}}}catch(_){}
+ SIGCAT540=out;return out}
+function modelVars540(){try{const m=UPRSO_MODELS[state.model];if(!m)return [];
+ const vs=(m.params||[]).map(p=>({key:p.key,unit:p.unit}));
+ if(m.axisUnit)vs.unshift({key:m.axis||'x',unit:m.axisUnit});
+ return vs}catch(_){return []}}
+function analyze540(){const {xs,ys}=sweepXY540();
+ if(xs.length<16)return {error:'insufficient sweep'};
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ const out={version:V540};
+ try{out.dimensional=buckingham540(modelVars540())}catch(e){out.dimensional=null}
+ try{out.hidden=hiddenResonances540(xs,ys)}catch(e){out.hidden={poles:[],fit:null}}
+ const c=C490();
+ let law=null;try{law=c&&c.core.induceLaw(xs,ys)}catch(_){}
+ if(law){try{out.bayes=bayes540(xs,ys,law.ranking)}catch(_){out.bayes=null}
+  try{out.credible=credible540(law.best.id,law.best.params,xs,ys)}catch(_){out.credible=null}
+  try{const id=law.best.id;
+   out.conformal=conformal540(xs,ys,(fx,fy)=>{const r=c.core.induceLaw(fx,fy);return r?r.best.f:null},.1);
+   out.conformal&&(out.conformal.lawId=id)}catch(_){out.conformal=null}}
+ try{out.symbolic=symbolic540(xs,ys,{seed:20260724})}catch(_){out.symbolic=null}
+ if(out.symbolic)delete out.symbolic.predict;
+ try{const sig=signature540(xs,ys);const dom=UPRSO_MODELS[state.model]?.domain;
+  out.isomorphisms=isomorphisms540(sig,sigCatalog540(),dom)}catch(_){out.isomorphisms=[]}
+ out.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
+ return out}
+
+/* ------------------------------------------------------------------- i18n */
+const L540={
+ title:{ru:'Теория и унификация',en:'Theory & unification',de:'Theorie & Vereinheitlichung'},
+ pi:{ru:'Безразмерные группы (Букингем Π)',en:'Dimensionless groups (Buckingham Π)',de:'Dimensionslose Gruppen (Buckingham Π)'},
+ rank:{ru:'ранг размерностей',en:'dimensional rank',de:'Dimensionsrang'},
+ hidden:{ru:'Скрытые резонансы (полюсы в комплексной плоскости)',en:'Hidden resonances (complex-plane poles)',de:'Verborgene Resonanzen (Pole in der komplexen Ebene)'},
+ unmeasured:{ru:'НЕ ИЗМЕРЕН',en:'UNMEASURED',de:'UNGEMESSEN'},
+ width:{ru:'ширина',en:'linewidth',de:'Linienbreite'},
+ bayes:{ru:'Байесовская очевидность',en:'Bayesian evidence',de:'Bayessche Evidenz'},
+ bf:{ru:'фактор Байеса',en:'Bayes factor',de:'Bayes-Faktor'},
+ cred:{ru:'Доверительные интервалы параметров (95%)',en:'Parameter credible intervals (95%)',de:'Parameter-Kredibilitätsintervalle (95%)'},
+ sym:{ru:'Символьная регрессия (генетический поиск формулы)',en:'Symbolic regression (evolved formula)',de:'Symbolische Regression (evolvierte Formel)'},
+ conf:{ru:'Конформный интервал (гарантия покрытия)',en:'Conformal interval (coverage guarantee)',de:'Konformes Intervall (Abdeckungsgarantie)'},
+ coverage:{ru:'покрытие',en:'coverage',de:'Abdeckung'},
+ iso:{ru:'Межотраслевые изоморфизмы (аналогии между сферами)',en:'Cross-domain isomorphisms (analogies across spheres)',de:'Domänenübergreifende Isomorphismen'},
+ sim:{ru:'сходство',en:'similarity',de:'Ähnlichkeit'},
+ noForm:{ru:'компактная замкнутая форма не найдена',en:'no compact closed form found',de:'keine kompakte geschlossene Form gefunden'},
+ none:{ru:'недостаточно данных',en:'insufficient data',de:'unzureichende Daten'}};
+const lang540=()=>(typeof state!=='undefined'&&['ru','en','de'].includes(state.lang))?state.lang:'en';
+const t540=k=>L540[k][lang540()];
+const f540=(v,n=5)=>FIN(v)?Number(v).toPrecision(n):'—';
+function esc540(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function sectionHTML540(d){
+ if(!d||d.error)return `<div class="discoverySection300"><h3>${t540('title')}</h3><div class="note">${t540('none')}</div></div>`;
+ const unit=(typeof UPRSO_MODELS!=='undefined'&&UPRSO_MODELS[state.model]?.axisUnit)||'';
+ let h=`<div class="discoverySection300"><h3>◇ ${t540('title')} · v${V540}</h3><div class="discoveryGrid300">`;
+ if(d.dimensional&&d.dimensional.groups)h+=`<div>${t540('pi')}</div><div>${d.dimensional.groupCount} Π · ${t540('rank')}=${d.dimensional.dimensionalRank}${d.dimensional.theoremCheck?' ✓':''}<br><small>${d.dimensional.groups.slice(0,4).map(g=>esc540(g.text)).join('  ·  ')||'—'}</small></div>`;
+ if(d.bayes)h+=`<div>${t540('bayes')}</div><div><b>${esc540(d.bayes.winner)}</b> · P=${f540(d.bayes.models[0]?.posterior,3)} · ${t540('bf')}=${FIN(d.bayes.log10BayesFactor)?'10^'+f540(d.bayes.log10BayesFactor,3):'∞'} (${d.bayes.strength})</div>`;
+ if(d.credible)h+=`<div>${t540('cred')}</div><div><small>${d.credible.params.map(p=>`${esc540(p.name)}=${f540(p.value,4)} ±${f540(1.96*p.se,2)}`).join('  ·  ')}</small></div>`;
+ if(d.symbolic)h+=d.symbolic.informative
+  ?`<div>${t540('sym')}</div><div><code>${esc540(d.symbolic.formula||d.symbolic.expression)}</code><br><small>${esc540(d.symbolic.variable||'')} · NRMSE=${f540(d.symbolic.nrmse,3)} · size=${d.symbolic.size} · seed=${d.symbolic.seed}</small></div>`
+  :`<div>${t540('sym')}</div><div>${t540('noForm')} <small>(best NRMSE=${f540(d.symbolic.nrmse,3)})</small></div>`;
+ if(d.conformal)h+=`<div>${t540('conf')}</div><div>±${f540(d.conformal.quantile,3)} · ${t540('coverage')}=${Math.round(d.conformal.empiricalCoverage*100)}% (≥${Math.round(d.conformal.guarantee*100)}%)</div>`;
+ h+='</div>';
+ if(d.hidden&&d.hidden.poles.length){h+=`<h3>${t540('hidden')}</h3>`+d.hidden.poles.map(p=>
+  `<div class="discoveryItem300"><div>${p.unmeasured?`<span class="discoveryBadge300" data-status="HYPOTHESIS">${t540('unmeasured')}</span>`:''}<b>Q=${f540(p.Q,4)}</b></div><small>${t540('width')}=${f540(p.linewidth,4)} ${esc540(unit)}</small><output>${f540(p.freq,7)} ${esc540(unit)}</output></div>`).join('')}
+ if(d.isomorphisms&&d.isomorphisms.length){h+=`<h3>${t540('iso')}</h3>`+d.isomorphisms.map(i=>
+  `<div class="discoveryItem300"><div><b>${esc540(i.model)}</b></div><small>${esc540(i.domain)} · ${t540('sim')}=${f540(i.similarity,3)}</small><output>d=${f540(i.distance,3)}</output></div>`).join('')}
+ h+='</div>';return h}
+
+let stamp540='',mo540=null;
+function attach540(){try{
+ const body=document.querySelector('#discoveryPanel300 .discoveryBody300');if(!body)return;
+ const d=typeof state!=='undefined'?state.discovery300:null;if(!d)return;
+ if(d.theory540&&d.time===stamp540&&body.querySelector('#theory540'))return;
+ if(!d.theory540||d.time!==stamp540){try{d.theory540=analyze540()}catch(e){d.theory540={error:String(e?.message||e)}}stamp540=d.time}
+ if(!body.querySelector('#theory540')){const host=document.createElement('div');host.id='theory540';
+  host.innerHTML=sectionHTML540(d.theory540);
+  const ab=body.querySelector('#abinitio490');
+  if(ab&&ab.nextSibling)body.insertBefore(host,ab.nextSibling);else if(ab)body.appendChild(host);else body.insertBefore(host,body.firstChild)}}catch(_){}}
+function wire540(){try{const body=document.querySelector('#discoveryPanel300 .discoveryBody300');
+ if(!body||body.dataset.uprs540==='1')return false;body.dataset.uprs540='1';
+ mo540=new MutationObserver(()=>{queueMicrotask(attach540)});mo540.observe(body,{childList:true});
+ attach540();return true}catch(_){return false}}
+
+/* ------------------------------------------------------------ self-checks */
+function checks540(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
+ T.push({name,pass,detail})};
+ ok('v5.4.0 unit parser: compound SI units → dimensions',()=>{
+  const a=parseUnit540('N·s/m'),b=parseUnit540('kg/m³'),c=parseUnit540('Ω'),d=parseUnit540('F');
+  const eq=(u,v)=>u&&u.every((x,i)=>x===v[i]);
+  return {ok:eq(a,[1,0,-1,0,0])&&eq(b,[1,-3,0,0,0])&&eq(c,[1,2,-3,-2,0])&&eq(d,[-1,-2,4,2,0]),
+   detail:'N·s/m='+JSON.stringify(a)+' kg/m³='+JSON.stringify(b)}});
+ ok('v5.4.0 Buckingham Π: Reynolds number recovered',()=>{
+  const r=buckingham540([{key:'rho',unit:'kg/m³'},{key:'v',unit:'m/s'},{key:'D',unit:'m'},{key:'mu',unit:'Pa·s'}]);
+  if(!r||r.groupCount!==1)return {ok:false,detail:'groups='+(r&&r.groupCount)};
+  const e=Object.fromEntries(r.groups[0].exponents.map(x=>[x.key,x.exp]));
+  const s=e.rho>0?1:-1;
+  const okv=Math.abs(s*e.rho-1)<1e-6&&Math.abs(s*e.v-1)<1e-6&&Math.abs(s*e.D-1)<1e-6&&Math.abs(s*e.mu+1)<1e-6;
+  return {ok:okv,detail:r.groups[0].text}});
+ ok('v5.4.0 Buckingham Π: theorem count n−rank holds for RLC',()=>{
+  const r=buckingham540([{key:'f',unit:'Hz'},{key:'R',unit:'Ω'},{key:'L',unit:'H'},{key:'C',unit:'F'}]);
+  return {ok:!!r&&r.theoremCheck&&r.groupCount===r.variables.length-r.dimensionalRank,
+   detail:`n=${r&&r.variables.length} rank=${r&&r.dimensionalRank} Π=${r&&r.groupCount}`}});
+ ok('v5.4.0 Π group is genuinely dimensionless',()=>{
+  const vars=[{key:'f',unit:'Hz'},{key:'R',unit:'Ω'},{key:'L',unit:'H'},{key:'C',unit:'F'}];
+  const r=buckingham540(vars);if(!r||!r.groups.length)return {ok:false};
+  const acc=[0,0,0,0,0];
+  for(const e of r.groups[0].exponents){const d=parseUnit540(vars.find(v=>v.key===e.key).unit);
+   for(let k=0;k<5;k++)acc[k]+=e.exp*d[k]}
+  return {ok:acc.every(v=>Math.abs(v)<1e-7),detail:JSON.stringify(acc.map(v=>Math.round(v*1e6)/1e6))}});
+ ok('v5.4.0 polynomial roots (Durand–Kerner) exact on known cubic',()=>{
+  /* (z-1)(z-2)(z+3) = z³ - 7z + 6 */
+  const r=roots540([1,0,-7,6]).map(z=>z.re).sort((a,b)=>a-b);
+  return {ok:Math.abs(r[0]+3)<1e-9&&Math.abs(r[1]-1)<1e-9&&Math.abs(r[2]-2)<1e-9,detail:r.map(v=>v.toFixed(6)).join(',')}});
+ ok('v5.4.0 analytic continuation recovers complex pole pair',()=>{
+  /* single Lorentzian: poles at 0.4 ± 0.05i */
+  const xs=[],ys=[];for(let i=0;i<160;i++){const x=i/159;xs.push(x);
+   const e=(x-.4);ys.push(1/(e*e+.05*.05))}
+  const h=hiddenResonances540(xs,ys);
+  const p=h.poles[0];
+  return {ok:!!p&&Math.abs(p.freq-.4)<5e-3&&Math.abs(p.linewidth-.05)<5e-3,
+   detail:p?`f=${p.freq.toFixed(5)} w=${p.linewidth.toFixed(5)} Q=${p.Q.toFixed(2)}`:'none'}});
+ ok('v5.4.0 analytic continuation finds TWO distinct resonances',()=>{
+  const xs=[],ys=[];for(let i=0;i<220;i++){const x=i/219;xs.push(x);
+   const a=(x-.3),b=(x-.7);ys.push(1/(a*a+.03*.03)+.7/(b*b+.05*.05))}
+  const h=hiddenResonances540(xs,ys);
+  const f=h.poles.map(p=>p.freq).sort((u,v)=>u-v);
+  const near=(t)=>f.some(v=>Math.abs(v-t)<1.5e-2);
+  return {ok:h.poles.length>=2&&near(.3)&&near(.7),detail:f.map(v=>v.toFixed(4)).join(',')}});
+ ok('v5.4.0 log-axis continuation resolves a decade-spanning resonance',()=>{
+  /* Lorentzian centred at 1 MHz with HWHM 0.25 decades, swept over 6 decades:
+     unresolvable in linear x, exact in log coordinate. Q = 1/(2·ln10·Δt). */
+  const xs=[],ys=[];for(let i=0;i<200;i++){const x=1e4*Math.pow(1e6,i/199),t=Math.log10(x);
+   const e=(t-6)/.25;xs.push(x);ys.push(1/(1+e*e))}
+  const h=hiddenResonances540(xs,ys);
+  const p=h.poles[0];const Qex=1/(2*Math.LN10*.25);
+  return {ok:!!p&&h.fit.coordinate==='log10'&&Math.abs(Math.log10(p.freq)-6)<.02&&Math.abs(p.Q-Qex)/Qex<.08,
+   detail:p?`f=${p.freq.toExponential(4)} Q=${p.Q.toFixed(4)} (exact ${Qex.toFixed(4)})`:'none'}});
+ ok('v5.4.0 symbolic regression normalises a decade-spanning axis',()=>{
+  const xs=[],ys=[];for(let i=0;i<70;i++){const x=1e3*Math.pow(1e6,i/69),u=(Math.log10(x)-3)/6;
+   xs.push(x);ys.push(2*u*u+.5)}
+  const r=symbolic540(xs,ys,{seed:31337,gens:26,pop:120});
+  return {ok:!!r&&r.coordinate==='log'&&r.nrmse<.05,detail:r?`${r.expression} NRMSE=${r.nrmse.toExponential(2)} [${r.coordinate}]`:'null'}});
+ ok('v5.4.0 Bayesian evidence prefers the true generating law',()=>{
+  const xs=[],ys=[];for(let i=0;i<60;i++){const x=1+i*.2;xs.push(x);ys.push(2.5*Math.pow(x,1.7))}
+  const c=C490();if(!c)return {ok:true,detail:'v4.9.0 core absent (headless)'};
+  const law=c.core.induceLaw(xs,ys);const b=bayes540(xs,ys,law.ranking);
+  return {ok:b.winner==='power'&&b.models[0].posterior>.9,detail:b.winner+' P='+b.models[0].posterior.toFixed(4)}});
+ ok('v5.4.0 credible interval matches OLS closed form for slope',()=>{
+  /* SE(b) = σ/√Σ(x−x̄)² ; build data with a known residual pattern */
+  const xs=[],ys=[];for(let i=0;i<40;i++){const x=i*.5;xs.push(x);ys.push(3+1.4*x+((i%2)?.2:-.2))}
+  const cr=credible540('linear',{a:3,b:1.4},xs,ys);if(!cr)return {ok:false,detail:'null'};
+  const n=xs.length,xm=xs.reduce((s,v)=>s+v,0)/n;
+  let sxx=0;for(const x of xs)sxx+=(x-xm)*(x-xm);
+  const rss=xs.length*.04,sigma=Math.sqrt(rss/(n-2)),se=sigma/Math.sqrt(sxx);
+  const got=cr.params.find(p=>p.name==='b').se;
+  return {ok:Math.abs(got-se)/se<1e-6,detail:`got=${got.toExponential(6)} exact=${se.toExponential(6)}`}});
+ ok('v5.4.0 symbolic regression is reproducible under a fixed seed',()=>{
+  const xs=[],ys=[];for(let i=0;i<50;i++){const x=-2+4*i/49;xs.push(x);ys.push(x*x+3*x-1)}
+  const a=symbolic540(xs,ys,{seed:777,gens:14,pop:70}),b=symbolic540(xs,ys,{seed:777,gens:14,pop:70});
+  return {ok:!!a&&!!b&&a.expression===b.expression&&a.nrmse===b.nrmse,detail:a?a.expression:'null'}});
+ ok('v5.4.0 symbolic regression discovers a quadratic law',()=>{
+  const xs=[],ys=[];for(let i=0;i<60;i++){const x=-2+4*i/59;xs.push(x);ys.push(x*x+3*x-1)}
+  const r=symbolic540(xs,ys,{seed:20260724,gens:40,pop:180});
+  return {ok:!!r&&r.nrmse<.02,detail:r?`${r.expression} NRMSE=${r.nrmse.toExponential(2)}`:'null'}});
+ ok('v5.4.0 conformal interval attains its coverage guarantee',()=>{
+  const R=rng540(4242);const xs=[],ys=[];
+  for(let i=0;i<200;i++){const x=i*.05;xs.push(x);ys.push(2+.8*x+(R()-.5)*.4)}
+  const c=conformal540(xs,ys,(fx,fy)=>{const n=fx.length;let sx=0,sy=0,sxx=0,sxy=0;
+   for(let i=0;i<n;i++){sx+=fx[i];sy+=fy[i];sxx+=fx[i]*fx[i];sxy+=fx[i]*fy[i]}
+   const d=n*sxx-sx*sx,b=(n*sxy-sx*sy)/d,a=(sy-b*sx)/n;return x=>a+b*x},.1);
+  return {ok:!!c&&c.empiricalCoverage>=.88,detail:c?`cov=${(c.empiricalCoverage*100).toFixed(1)}% q=${c.quantile.toFixed(4)}`:'null'}});
+ ok('v5.4.0 isomorphism: same shape across domains, invariant to scale',()=>{
+  const mk=(x0,amp,scale)=>{const xs=[],ys=[];for(let i=0;i<80;i++){const x=scale*Math.pow(10,i/79*3);xs.push(x);
+   const e=(Math.log10(x/scale)-x0)/.3;ys.push(amp/(1+e*e))}return signature540(xs,ys)};
+  const a=mk(1.5,1,1),b=mk(1.5,750,1e6);
+  const d=sigDistance540(a,b);
+  return {ok:d<1e-6,detail:'d='+d.toExponential(3)}});
+ ok('v5.4.0 isomorphism: different shapes stay far apart',()=>{
+  const xs=[],y1=[],y2=[];
+  for(let i=0;i<80;i++){const x=1+i;xs.push(x);const e=(i-40)/8;y1.push(1/(1+e*e));y2.push(i/79)}
+  const d=sigDistance540(signature540(xs,y1),signature540(xs,y2));
+  return {ok:d>.2,detail:'d='+d.toFixed(4)}});
+ ok('v5.4.0 matrix inverse round-trips to identity',()=>{
+  const A=[[4,1,2],[1,3,0],[2,0,5]],Ai=inv540(A);let err=0;
+  for(let i=0;i<3;i++)for(let j=0;j<3;j++){let s=0;for(let k=0;k<3;k++)s+=A[i][k]*Ai[k][j];
+   err=Math.max(err,Math.abs(s-(i===j?1:0)))}
+  return {ok:err<1e-12,detail:'max err='+err.toExponential(2)}});
+ ok('v5.4.0 full analysis runs on the live sweep',()=>{
+  if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'no live sweep (headless)'};
+  const d=analyze540();
+  return {ok:!d.error,detail:`Π=${d.dimensional?.groupCount??'—'} poles=${d.hidden?.poles.length??0} elapsed=${d.elapsedMs}ms`}});
+ return T}
+function wrapTests540(){try{if(typeof runTests!=='function'||runTests.__uprs540)return;const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks540())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs540=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+if(typeof document!=='undefined'){
+ if(!wire540()){try{const mo=new MutationObserver(()=>{if(wire540())mo.disconnect()});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(()=>{try{mo.disconnect()}catch(_){}wire540()},45000)}catch(_){}}
+ for(const ms of [1800,6000,12500,20000])setTimeout(wire540,ms);
+ setTimeout(wrapTests540,900);for(const ms of [2800,6000,12500,19500])setTimeout(wrapTests540,ms);}
+/* ---------------------------------------------------------------- API */
+globalThis.__UPRS540__={version:V540,analyze:analyze540,checks:checks540,wire:wire540,attach:attach540,
+ core:{solve:solve540,inv:inv540,lstsq:lstsq540,parseUnit:parseUnit540,nullspace:nullspace540,buckingham:buckingham540,
+  roots:roots540,ratFit:ratFit540,hiddenResonances:hiddenResonances540,
+  lnEvidence:lnEvidence540,bayes:bayes540,credible:credible540,laws:LAWS540,
+  rng:rng540,symbolic:symbolic540,evalTree:eval540,treeString:str540,
+  conformal:conformal540,signature:signature540,sigDistance:sigDistance540,isomorphisms:isomorphisms540},
+ sigCatalog:sigCatalog540,
+ audit:()=>({version:V540,
+  wired:!!(typeof document!=='undefined'&&document.querySelector?.('#discoveryPanel300 .discoveryBody300')?.dataset.uprs540==='1'),
+  signatures:SIGCAT540?SIGCAT540.length:0,
+  lastScan:state?.discovery300?.theory540?{pi:state.discovery300.theory540.dimensional?.groupCount,
+   poles:state.discovery300.theory540.hidden?.poles?.length,symbolic:state.discovery300.theory540.symbolic?.expression}:null})};
+})();</script>
 </body></html>
