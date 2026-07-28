@@ -10188,7 +10188,10 @@ async function start(mode='immersive-vr',profile='safe'){
  }catch(e){X.error=errorText(e);rec('start-error',{stage:X.stage,error:X.error});console.error('UPRS461 start',e);if(session){await endSession(session,'failed');X.starting=false;setStage('failed',X.error)}else{X.starting=false;setStage('failed',X.error)}syncButtons();toastXR('XR start failed: '+X.error);return false}
 }
 let API461=null;
-function diagnostics(){return {version:VERSION,active:!!X.session,starting:X.starting,ready:X.ready,firstFrame:X.firstFrame,stage:X.stage,error:X.error,mode:X.mode,profile:X.profile,features:[...X.support.features],support:{...X.support},secure:isSecureContext,focused:document.hasFocus(),visibility:document.visibilityState,policyAllowed:policyAllowed(),userAgent:navigator.userAgent,frameErrors:X.frameErrors,lastFrameAge:X.lastFrameAt?Math.round(performance.now()-X.lastFrameAt):null,requestLog:[...X.requestLog],events:[...X.events]}}
+/* X.world is the transform this renderer draws state.scene through. Anything
+   that maps a controller pose onto scene coordinates has to undo it - pick()
+   below already does - so it is reported read-only rather than left private. */
+function diagnostics(){return {version:VERSION,active:!!X.session,starting:X.starting,ready:X.ready,firstFrame:X.firstFrame,stage:X.stage,error:X.error,mode:X.mode,profile:X.profile,features:[...X.support.features],support:{...X.support},secure:isSecureContext,focused:document.hasFocus(),visibility:document.visibilityState,policyAllowed:policyAllowed(),userAgent:navigator.userAgent,frameErrors:X.frameErrors,lastFrameAge:X.lastFrameAt?Math.round(performance.now()-X.lastFrameAt):null,world:{pos:[...X.world.pos],quat:[...X.world.quat],scale:X.world.scale},requestLog:[...X.requestLog],events:[...X.events]}}
 function bindAuthority(){if(!API461)return;A.xrOwner='461';A.version=VERSION;globalThis.__UPRS450__=globalThis.__UPRS450__||old450;Object.assign(globalThis.__UPRS450__,{enter:API461.enter,enterVR:API461.enterVR,enterAR:API461.enterAR,enterAREnhanced:API461.enterAREnhanced,enterARDepth:API461.enterARDepth,exit:API461.exit,audit:API461.audit});globalThis.enterXR=API461.enter;window.enterXR=API461.enter;const btn=document.getElementById('xrBtn');if(btn){btn.onclick=e=>{e.preventDefault();API461.enterVR()};btn.textContent='🥽 VR'}syncButtons()}
 function captureXRClick(e){const el=e.target instanceof Element?e.target.closest('#xrBtn,#xrMRBtn461,[data-command="xr"]'):null;if(!el)return;e.preventDefault();e.stopImmediatePropagation();if(el.id==='xrMRBtn461')API461?.enterAR();else API461?.enterVR()}
 function install(){A.version=VERSION;A.xrOwner='461';A.xrRecovery='requestSession-first+continuous-bootstrap+watchdog+capture-authority';A.claimVersion?.();const api={version:VERSION,enter:()=>start('immersive-vr','safe'),enterVR:()=>start('immersive-vr','safe'),enterAR:()=>start('immersive-ar','safe'),enterAREnhanced:()=>start('immersive-ar','enhanced'),enterARDepth:()=>start('immersive-ar','depth'),exit:()=>endSession(X.session,'user-exit'),audit:diagnostics,copyDiagnostics:async()=>{const s=JSON.stringify(diagnostics(),null,2);try{await navigator.clipboard.writeText(s)}catch(_){}return s}};API461=api;globalThis.__UPRS461__=api;old450.legacyEnter=oldEnter;old450.legacyExit=oldExit;old450.legacyAudit=oldAudit;const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('xrMRBtn461')){const b=document.createElement('button');b.id='xrMRBtn461';b.className='btn';b.textContent='◉ MR';acts.appendChild(b);const s=document.createElement('span');s.id='xrStatus461';s.style.cssText='font:600 10px/1.2 system-ui;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.72';acts.appendChild(s)}if(!document.documentElement.dataset.uprs461Capture){document.documentElement.dataset.uprs461Capture='1';document.addEventListener('click',captureXRClick,true)}bindAuthority();for(const ms of [260,700,1600,5200,12500,19000,24500,27000,33000])setTimeout(bindAuthority,ms);probe();try{navigator.xr?.addEventListener?.('devicechange',probe)}catch(_){}addEventListener('pagehide',()=>{if(X.session)try{X.session.end()}catch(_){}},{once:true});syncButtons()}
@@ -12329,7 +12332,10 @@ globalThis.__UPRS550__={version:V550,analyze:analyze550,checks:checks550,wire:wi
   lyapunov:lyapunov550,correlationDim:correlationDim550,rqa:rqa550,
   charPoly:charPoly550,roots:rootsOf550,koopman:koopman550,
   kendall:kendall550,ar1:ar1_550,earlyWarning:earlyWarning550,portrait:portrait550,
-  logisticMap:logistic550,solve:solve550,dist:dist550},
+  logisticMap:logistic550,solve:solve550,dist:dist550,
+  /* one definition of "is this axis time?", shared with anything that has to
+     decide whether a swept curve may be read as a trajectory */
+  axisKind:axisKind550,timeUnits:TIME_UNITS550},
  audit:()=>({version:V550,
   wired:!!(typeof document!=='undefined'&&document.querySelector?.('#discoveryPanel300 .discoveryBody300')?.dataset.uprs550==='1'),
   lastScan:state?.discovery300?.phase550?{m:state.discovery300.phase550.embedding?.m,
@@ -12803,7 +12809,10 @@ function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    detail:`attractor=${g.attractor.length} S³=${g.s3Curve.length} fibres=${g.fibres.length} explained=${(g.explained*100).toFixed(1)}% ${g.elapsedMs}ms`}});
  ok('v5.6.0 geometry is injected exactly once however often buildScene is wrapped',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
-  const prev=state.mode;let n=0;
+  /* runTests() is reachable from the Self-test button and from manifest() during
+     JSON export, so the user's scene has to be handed back: restoring only the
+     mode left the app rendering this synthetic scene */
+  const prev=state.mode,prevScene=state.scene;let n=0;
   try{state.mode='hopf';state.scene={lines:[],points:[]};
    /* three appender passes over one built scene, as a multiply-wrapped chain
       does, with the scene's arrays REPLACED in between (an intermediate wrapper
@@ -12812,17 +12821,17 @@ function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    state.scene.lines=[...state.scene.lines];state.scene.points=[...state.scene.points];
    appendGeometry560();appendGeometry560();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps560-attractor').length;
-  }finally{state.mode=prev}
+  }finally{state.mode=prev;state.scene=prevScene}
   return {ok:n===1,detail:`attractor groups after 3 passes = ${n} (expect 1)`}});
  ok('v5.6.0 scene entities are appended only in the 3D projections',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
-  const prev=state.mode;let inHopf=0,inSmith=0;
+  const prev=state.mode,prevScene=state.scene;let inHopf=0,inSmith=0;
   try{
    state.mode='hopf';state.scene={lines:[],points:[]};appendGeometry560();
    inHopf=state.scene.lines.filter(l=>String(l.meta?.kind||'').startsWith('ps560')).length;
    state.mode='smith';state.scene={lines:[],points:[]};appendGeometry560();
    inSmith=state.scene.lines.filter(l=>String(l.meta?.kind||'').startsWith('ps560')).length;
-  }finally{state.mode=prev}
+  }finally{state.mode=prev;state.scene=prevScene}
   return {ok:inHopf>0&&inSmith===0,detail:`hopf=${inHopf} smith=${inSmith}`}});
  return T}
 function wrapTests560(){try{if(typeof runTests!=='function'||runTests.__uprs560)return;const base=runTests;
@@ -12990,12 +12999,35 @@ function fixedPoints570(pairs,opt){const o=opt||{};
  return out}
 /* placement of the plane from a 6-DoF pose: position on the plane, forward as
    the normal (the convention every headset uses for a pointing ray) */
-function planeFromPose570(position,orientation){
- const q=orientation,x=q[0],y=q[1],z=q[2],w=q[3];
+function forward570(q){const x=q[0],y=q[1],z=q[2],w=q[3];
  /* rotate (0,0,-1) by the quaternion */
- const fx=-2*(x*z+w*y),fy=-2*(y*z-w*x),fz=-(1-2*(x*x+y*y));
- const n=norm3_570([fx,fy,fz]);if(!n)return null;
+ return [-2*(x*z+w*y),-2*(y*z-w*x),-(1-2*(x*x+y*y))]}
+function planeFromRay570(position,direction){
+ const n=norm3_570(direction);if(!n)return null;
  return {normal:n,offset:dot3_570(n,position),origin:[...position]}}
+function planeFromPose570(position,orientation){
+ return planeFromRay570(position,forward570(orientation))}
+/* A controller pose is expressed in the XR reference space, but state.scene is
+   drawn through the v4.6.1 renderer's world transform (position, orientation
+   and a scale near 0.6). Handing the raw pose to the plane builder therefore
+   placed the section somewhere else entirely - wrong position, wrong tilt, and
+   wrong again after the hologram is grabbed or rescaled. That renderer's own
+   ray picker already does the right thing, so this reproduces its construction:
+   undo the world transform, mapping the pose into scene-local coordinates. */
+function xrWorld570(){try{
+ const d=globalThis.__UPRS461__&&typeof __UPRS461__.audit==='function'?__UPRS461__.audit():null;
+ const w=d&&d.world;
+ return (w&&Array.isArray(w.pos)&&w.pos.length===3&&Array.isArray(w.quat)&&w.quat.length===4
+  &&Number.isFinite(w.scale)&&w.scale>0)?w:null}catch(_){return null}}
+function toSceneLocal570(position,direction,world){
+ const w=world!==undefined?world:xrWorld570();
+ const core=globalThis.__UPRS440__&&__UPRS440__.core;
+ if(!w||!core||typeof core.invTRS!=='function'||typeof core.qRotV!=='function')
+  return {position:[...position],direction:[...direction],transformed:false};
+ const inv=core.invTRS(w.pos,w.quat,w.scale);
+ const p=core.qRotV(inv.q,[position[0]*inv.s,position[1]*inv.s,position[2]*inv.s]);
+ p[0]+=inv.p[0];p[1]+=inv.p[1];p[2]+=inv.p[2];
+ return {position:p,direction:core.qRotV(inv.q,direction),transformed:true}}
 
 /* ================================================================ app layer */
 const S={enabled:true,mode:'auto',normal:[0,0,1],offset:0,origin:[0,0,0],
@@ -13053,7 +13085,21 @@ function build570(){const g=attractor570();if(!g)return null;
   hits,first:R1,second:R2,fixed1:fp1,fixed2:fp2,
   attractorPoints:g.attractor.length,
   elapsedMs:Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10}}
-function key570(){try{return [state.model,state.mode,state.index,state.sweep?.length,
+/* Editing a model parameter or an axis bound rebuilds state.sweep with the SAME
+   length, model, mode and selected index, so a key built from those alone never
+   changes and the cached section, return map and fixed points stay on screen
+   describing the previous experiment. The key therefore carries a fingerprint of
+   the sweep's contents; twelve samples are enough to move on any real edit and
+   cost nothing next to rebuilding the geometry. */
+function sweepFingerprint570(){const a=(typeof state!=='undefined'&&state.sweep)||[];
+ if(!a.length)return '0';
+ let h=2166136261>>>0;
+ const step=Math.max(1,Math.floor(a.length/12));
+ const mix=v=>{h=(h^((Math.round((Number(v)||0)*1e6)|0)>>>0))>>>0;h=Math.imul(h,16777619)>>>0};
+ for(let i=0;i<a.length;i+=step){const r=a[i];mix(r?.x);mix(r?.gamma?.re);mix(r?.gamma?.im)}
+ const last=a[a.length-1];mix(last?.x);mix(last?.gamma?.re);mix(last?.gamma?.im);
+ return a.length+':'+h.toString(36)}
+function key570(){try{return [state.model,state.mode,state.index,sweepFingerprint570(),
  S.mode,S.offset.toFixed(6),S.normal.map(v=>v.toFixed(4)).join(','),S.lag,S.placedAt].join('|')}
  catch(_){return String(S.placedAt)}}
 function geometry570(force){const k=key570();
@@ -13078,7 +13124,9 @@ function bindSession570(){try{
   const src=e.inputSource,sp=src.gripSpace||src.targetRaySpace;
   const pose=e.frame.getPose(sp,S.ref);if(!pose)return;
   const p=pose.transform.position,o=pose.transform.orientation;
-  const pl=planeFromPose570([p.x,p.y,p.z],[o.x,o.y,o.z,o.w]);
+  /* reference-space pose -> scene-local, or the plane lands off the hologram */
+  const loc=toSceneLocal570([p.x,p.y,p.z],forward570([o.x,o.y,o.z,o.w]));
+  const pl=planeFromRay570(loc.position,loc.direction);
   if(!pl)return;
   S.mode='manual';S.normal=pl.normal;S.offset=pl.offset;S.placedAt=Date.now();
   try{toast('Сечение размещено контроллером')}catch(_){}
@@ -13166,7 +13214,11 @@ function refresh570(){try{S.key='';if(typeof buildScene==='function'){buildScene
  if(typeof draw==='function')draw(performance.now())}}catch(_){}}
 
 /* ------------------------------------------------------------ self-checks */
-function checks570(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+function checks570(){const T=[];
+ /* identity of the live scene before any check touches it: a check that swaps in
+    a synthetic scene must hand this exact object back */
+ const sceneAtStart570=(typeof state!=='undefined')?state.scene:null;
+ const ok=(name,fn)=>{let pass=false,detail='';
  try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
  T.push({name,pass,detail})};
  ok('v5.7.0 in-plane basis is orthonormal and spans the plane',()=>{
@@ -13297,14 +13349,18 @@ function checks570(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    detail:`chosen n=[${n}] gives ${chosen} crossings (x:${cx} y:${cy} z:${cz})`}});
  ok('v5.7.0 section geometry builds and is injected exactly once',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
-  const prev=state.mode;let n=0,g=null;
+  /* runTests() is reachable from the Self-test button and from manifest() during
+     JSON export, so a check that swaps in a synthetic scene has to put the
+     user's model back - restoring only the mode left the app rendering the test
+     scene until something happened to rebuild it */
+  const prev=state.mode,prevScene=state.scene;let n=0,g=null;
   try{state.mode='hopf';state.scene={lines:[],points:[]};
    g=geometry570(true);
    append570();
    state.scene.lines=[...state.scene.lines];   /* an intermediate wrapper would do this */
    append570();append570();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps570-plane').length;
-  }finally{state.mode=prev}
+  }finally{state.mode=prev;state.scene=prevScene}
   return {ok:!g||n===1,detail:g?`plane groups after 3 passes = ${n} (expect 1), hits=${g.hits.length},return pairs=${g.first.pairs.length}`:'no attractor (headless)'}});
  ok('v5.7.0 moving the cursor re-cuts the section at a different offset',()=>{
   if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'headless'};
@@ -13316,6 +13372,44 @@ function checks570(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    return {ok:Math.abs(a.offset-b.offset)>1e-9&&a.driver==='cursor',
     detail:`offset ${a.offset.toFixed(5)} → ${b.offset.toFixed(5)} (driver ${a.driver})`}}
   finally{state.index=prevIdx;S.mode=prevMode;geometry570(true)}});
+ ok('v5.7.0 a controller pose is placed in scene coordinates, not reference space',()=>{
+  /* the renderer draws state.scene through a translated, rotated, scaled world
+     transform; the defect this guards handed the raw pose to the plane builder,
+     so the section landed off the hologram and moved again after a grab */
+  const core=globalThis.__UPRS440__&&__UPRS440__.core;
+  if(!core||typeof core.invTRS!=='function')return {ok:true,detail:'440 core absent'};
+  const world={pos:[0,1.18,-1.35],quat:[0,0,0,1],scale:.62};
+  const raw=[0,1.18,-1.35];                       /* controller at the world origin */
+  const t=toSceneLocal570(raw,[0,0,-1],world);
+  const near=t.transformed&&Math.hypot(t.position[0],t.position[1],t.position[2])<1e-6;
+  const untouched=toSceneLocal570(raw,[0,0,-1],null);
+  return {ok:near&&!untouched.transformed
+    &&Math.abs(untouched.position[1]-raw[1])<1e-12,
+   detail:t.transformed
+    ?`world origin → scene [${t.position.map(v=>v.toFixed(4)).join(', ')}] (expect 0,0,0); no session → pose passed through`
+    :'transform not applied'}});
+ ok('v5.7.0 editing the experiment invalidates the cached section',()=>{
+  /* a parameter edit rebuilds state.sweep with the same length, model, mode and
+     index, so a key without a content fingerprint never changed and the section,
+     return map and fixed points stayed on screen from the previous experiment */
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const prev=state.sweep;
+  try{
+   state.sweep=[{x:1,gamma:{re:.10,im:.20}},{x:2,gamma:{re:.30,im:.40}},{x:3,gamma:{re:.5,im:.6}}];
+   const a=key570(),fa=sweepFingerprint570();
+   /* same length, same model, same index - only the values move */
+   state.sweep=[{x:1,gamma:{re:.11,im:.20}},{x:2,gamma:{re:.30,im:.40}},{x:3,gamma:{re:.5,im:.6}}];
+   const b=key570(),fb=sweepFingerprint570();
+   state.sweep=[{x:1,gamma:{re:.10,im:.20}},{x:2,gamma:{re:.30,im:.40}},{x:3,gamma:{re:.5,im:.6}}];
+   const c=key570();
+   return {ok:a!==b&&a===c,
+    detail:`edit changes the key (${fa} → ${fb}), reverting restores it`}}
+  finally{state.sweep=prev;S.key=''}});
+ ok('v5.7.0 the self-test hands the live scene back untouched',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  return {ok:state.scene===sceneAtStart570,
+   detail:state.scene===sceneAtStart570?'same scene object as before the checks ran'
+    :'THE LIVE SCENE WAS REPLACED BY A TEST SCENE'}});
  return T}
 function wrapTests570(){try{if(typeof runTests!=='function'||runTests.__uprs570)return;const base=runTests;
  const w=function(show=true){const r=base(false);const T=[...r.tests];
@@ -13700,6 +13794,36 @@ const V590='5.9.0';
 const FIN=Number.isFinite;
 const FEIGENBAUM=4.669201609102990;
 
+/* ============================================ what the swept curve actually is
+   A period doubling, a Feigenbaum ratio and an accumulation point are
+   statements about SUCCESSIVE STATES of a dynamical system. The bundled models
+   are closed-form responses over an independent axis - almost always frequency
+   - so sweeping a parameter and evaluating one of them produces a stack of
+   static response curves, not trajectories. Reading "period 2" off such a curve
+   because it has two peaks, or extrapolating a Feigenbaum point from where the
+   peak count changes, is not a weak measurement: it is a category error, and it
+   would have printed confident cascade annotations on a linear RLC network.
+
+   The parameter-versus-response density surface is still a real and useful
+   object either way: it shows resonances moving, splitting and merging as the
+   parameter runs. So the surface is always built, and only the dynamical
+   claims are gated - on exactly the axis classification v5.6.1 already
+   established for the phase-space verdicts, so both layers agree about what
+   counts as a trajectory. Of the bundled models, one has a time axis. */
+const TIME_UNITS590=['s','sec','secs','second','seconds','ms','us','µs','ns','ps','fs','min','h','hr','day'];
+function temporalAxis590(name,unit){
+ const u=String(unit||'').trim().toLowerCase(),n=String(name||'').trim();
+ const shared=globalThis.__UPRS550__&&__UPRS550__.core&&__UPRS550__.core.timeUnits;
+ const units=Array.isArray(shared)&&shared.length?shared:TIME_UNITS590;
+ return units.includes(u)||/time|время|zeit/i.test(n)}
+function axisKind590(){try{
+ const shared=globalThis.__UPRS550__&&__UPRS550__.core&&__UPRS550__.core.axisKind;
+ if(typeof shared==='function'){const k=shared();if(k&&typeof k.temporal==='boolean')return k}
+ const m=typeof UPRSO_MODELS!=='undefined'?UPRSO_MODELS[state.model]:null;
+ const name=String(m&&m.axis||''),unit=String(m&&m.axisUnit||'');
+ return {name:name||'index',unit,temporal:temporalAxis590(name,unit)}}
+ catch(_){return {name:'index',unit:'',temporal:false}}}
+
 /* ==================================================== attractor extraction */
 /* The asymptotic set: the transient is dropped, then the values the trajectory
    actually revisits are clustered. For a map every retained sample is such a
@@ -13844,13 +13968,26 @@ function feigenbaum590(doublings){
 
 /* ================================================================ app layer */
 const G={enabled:true,diagram:null,key:'',param:null,steps:96,elapsedMs:0};
+/* The parameter the user is already steering, else the first with a real range.
+   Both selectors need decoding, and neither did: driveParam encodes physical
+   parameters as "param:<key>" and is never empty (it defaults to "axis"), so
+   comparing it raw matched no p.key AND, being truthy, kept quickParam from ever
+   being consulted - every model swept its first parameter no matter what the
+   user had selected. quickParam carries a bare key, with "axis" meaning the
+   sweep axis rather than a parameter. */
+function steeredParamKeys590(){const out=[];
+ const dp=String((typeof state!=='undefined'&&state.driveParam)||'');
+ if(dp.startsWith('param:')&&dp.length>6)out.push(dp.slice(6));
+ const qp=String((typeof state!=='undefined'&&state.quickParam)||'');
+ if(qp&&qp!=='axis'&&!out.includes(qp))out.push(qp);
+ return out}
 function sweepParamDesc590(){try{
  const m=UPRSO_MODELS[state.model];if(!m||!m.params||!m.params.length)return null;
  const store=(state.params&&state.params[state.model])||{};
- /* the parameter the user is already steering, else the first with real range */
- const key=state.driveParam||state.quickParam;
- const byKey=key&&m.params.find(p=>p.key===key);
- const d=byKey||m.params.find(p=>p.max>p.min)||m.params[0];
+ let d=null;
+ for(const k of steeredParamKeys590()){
+  const f=m.params.find(p=>p.key===k&&p.max>p.min);if(f){d=f;break}}
+ if(!d)d=m.params.find(p=>p.max>p.min)||m.params[0];
  if(!d||!(d.max>d.min))return null;
  return {desc:d,value:store[d.key]??d.value}}catch(_){return null}}
 function seriesForParam590(desc,value){try{
@@ -13871,20 +14008,35 @@ function build590(){const P=sweepParamDesc590();if(!P)return null;
  const t0=(typeof performance!=='undefined'?performance.now():Date.now());
  const d=P.desc,steps=G.steps;
  const log=d.scale==='log'&&d.min>0&&d.max>0;
+ const axis=axisKind590(),dynamical=!!axis.temporal;
  const params=[];
  for(let i=0;i<steps;i++){const t=i/(steps-1);
   params.push(log?d.min*Math.pow(d.max/d.min,t):d.min+(d.max-d.min)*t)}
+ /* On a trajectory the classical construction applies: drop the transient, take
+    the recurrent extrema. On a static response there IS no transient - the head
+    of the curve is data, not settling - so nothing is discarded and the full
+    response is what the density surface is built from. */
  const diagram=bifurcationDiagram590(params,v=>seriesForParam590(d,v),
-  {mode:'peaks',transient:.35,tol:.03,bins:56});
+  {mode:dynamical?'peaks':'values',transient:dynamical?.35:0,tol:.03,bins:56});
  if(!diagram||!diagram.range)return null;
- const doublings=detectDoublings590(diagram);
- const fe=feigenbaum590(doublings);
+ const doublings=dynamical?detectDoublings590(diagram):[];
+ const fe=dynamical?feigenbaum590(doublings):null;
  G.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
  return {version:V590,param:d.key,paramLabel:d.label||d.key,unit:d.unit||'',
-  log,steps,diagram,doublings,feigenbaum:fe,elapsedMs:G.elapsedMs,
+  log,steps,diagram,doublings,feigenbaum:fe,elapsedMs:G.elapsedMs,axis,dynamical,
+  verdict:dynamical?'trajectory'
+   :`ось «${axis.name}»${axis.unit?' ['+axis.unit+']':''} не временная — кривая отклика, не траектория`,
   maxBranches:Math.max(...diagram.columns.map(c=>c.branchCount||0))}}
+/* seriesForParam590 reads the axis bounds from the DOM and the swept parameter
+   from the steering selectors, so both belong in the key: without the bounds,
+   changing xmin or xmax reused a diagram built over a different interval, and
+   without the selectors, switching the steered parameter kept the old sweep. */
+function axisBounds590(){try{
+ return [document.getElementById('xmin')?.value,document.getElementById('xmax')?.value,
+  state.log?'log':'lin'].join(',')}catch(_){return ''}}
 function key590(){try{return [state.model,state.mode,state.samples,
- JSON.stringify(state.params?.[state.model]||{}),G.steps].join('|')}catch(_){return ''}}
+ JSON.stringify(state.params?.[state.model]||{}),G.steps,
+ axisBounds590(),steeredParamKeys590().join('+')].join('|')}catch(_){return ''}}
 function diagram590(force){const k=key590();
  if(!force&&G.diagram&&k===G.key)return G.diagram;
  G.diagram=build590();G.key=k;return G.diagram}
@@ -13903,6 +14055,10 @@ function append590(){
  const B=diagram590();if(!B)return false;
  const {grid,bins}=B.diagram,cols=B.diagram.columns.length;
  if(!grid||!cols)return false;
+ /* the vocabulary follows the verdict: "attractor" and "branch" are claims
+    about a trajectory and are not used for a static response curve */
+ const setWord=B.dynamical?'аттрактора':'отклика';
+ const branchWord=B.dynamical?'ветвей':'уровней';
  /* the diagram is placed as a panel standing beside the hologram */
  const W=2.1,H=1.15,X0=-W/2,Y0=-H/2-1.55,Z=-.35;
  const at=(u,v,h)=>[X0+u*W,Y0+v*H,Z+h*.34];
@@ -13913,22 +14069,27 @@ function append590(){
   for(let c=0;c<cols;c++){const h=grid[c][b]||0;if(h>.02)any=true;
    pts.push(at(c/(cols-1),b/(bins-1),h))}
   if(any&&pts.length>2)L(pts,`rgba(126,231,193,${.10+.32*(b/bins)})`,1,
-   {kind:'ps590-ridge',bin:b,label:`Плотность аттрактора · уровень ${b+1}/${bins}`,priority:22})}
- /* columns: the attractor set at individual parameter values */
+   {kind:'ps590-ridge',bin:b,label:`Плотность ${setWord} · уровень ${b+1}/${bins}`,priority:22})}
+ /* columns: the set the response occupies at individual parameter values */
  const cStep=Math.max(1,Math.floor(cols/28));
  for(let c=0;c<cols;c+=cStep){
   const pts=[];
   for(let b=0;b<bins;b++)pts.push(at(c/(cols-1),b/(bins-1),grid[c][b]||0));
   L(pts,'rgba(152,232,255,.18)',.8,
    {kind:'ps590-column',column:c,
-    label:`${B.paramLabel} = ${fmt590(B.diagram.columns[c].param)} ${B.unit} · ветвей: ${B.diagram.columns[c].branchCount}`,
+    label:`${B.paramLabel} = ${fmt590(B.diagram.columns[c].param)} ${B.unit} · ${branchWord}: ${B.diagram.columns[c].branchCount}`,
     priority:20})}
  /* frame + axes so the panel reads as a chart */
  L([at(0,0,0),at(1,0,0),at(1,1,0),at(0,1,0),at(0,0,0)],'rgba(232,197,112,.4)',1.2,
   {kind:'ps590-frame',
-   label:`Диаграмма бифуркаций · ${B.paramLabel} × |Γ| · аттрактор по ${
-    B.diagram.extraction==='peaks'?'локальным максимумам':'значениям отклика'
-   } · ветвей макс.: ${B.maxBranches}`,priority:30});
+   label:B.dynamical
+    ?`Диаграмма бифуркаций · ${B.paramLabel} × |Γ| · аттрактор по ${
+      B.diagram.extraction==='peaks'?'локальным максимумам':'значениям'
+      } · ветвей макс.: ${B.maxBranches}`
+    :`Карта отклика по параметру · ${B.paramLabel} × |Γ| · ${B.verdict}. `
+     +`Расщепление здесь — это расхождение резонансов отклика, а НЕ удвоение `
+     +`периода: каскад, δ Фейгенбаума и точка накопления не выводятся. `
+     +`Уровней макс.: ${B.maxBranches}`,priority:30});
  /* every detected period doubling, marked on the parameter axis */
  B.doublings.forEach((d,i)=>{
   const u=paramU590(B,d.param);
@@ -13966,7 +14127,14 @@ function logisticSeries590(r,n,keep){let x=.4;
  for(let i=0;i<600;i++)x=r*x*(1-x);
  const out=[];for(let i=0;i<(n||300);i++){x=r*x*(1-x);out.push(x)}
  return keep?out.slice(-keep):out}
-function checks590(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+/* The scene the whole self-test chain started from. Captured in the outermost
+   wrapper rather than here, because each module's checks run before the next
+   module's, so a set that captured at its own start could never see a clobber
+   committed by an earlier link in the chain - which is exactly how the v5.6.0
+   checks kept replacing the live scene unnoticed. */
+let sceneBeforeChain590=null,chainCaptured590=false;
+function checks590(){const T=[];
+ const ok=(name,fn)=>{let pass=false,detail='';
  try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
  T.push({name,pass,detail})};
  ok('v5.9.0 branch count of the logistic map matches its known periods',()=>{
@@ -14055,17 +14223,74 @@ function checks590(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    detail:fe?`next≈${fe.nextDoubling.toFixed(5)}, accumulation≈${fe.accumulation.toFixed(5)} (true 3.56995)`:'null'}});
  ok('v5.9.0 the atlas builds on the live model and injects exactly once',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
-  const prev=state.mode;let n=0,B=null;
+  /* the live scene has to survive a self-test run: see the v5.7.0 check */
+  const prev=state.mode,prevScene=state.scene;let n=0,B=null;
   try{state.mode='hopf';state.scene={lines:[],points:[]};
    B=diagram590(true);
    append590();state.scene.lines=[...state.scene.lines];append590();append590();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps590-frame').length;
-  }finally{state.mode=prev}
+  }finally{state.mode=prev;state.scene=prevScene}
   return {ok:!B||n===1,
    detail:B?`frames after 3 passes = ${n} (expect 1); param=${B.param}, max branches=${B.maxBranches}, ${B.elapsedMs}ms`:'no diagram (headless)'}});
+ ok('v5.9.0 a period doubling is claimed only where the axis is time',()=>{
+  /* the defect this guards: the bundled models are closed-form responses over a
+     frequency axis, so sweeping one produces static response curves, not
+     trajectories. Reading "period 2" off two peaks and extrapolating a
+     Feigenbaum point from them printed confident cascade annotations on a
+     linear RLC network - a category error, not an imprecise measurement */
+  const t=temporalAxis590('Time','s')&&temporalAxis590('Время','ms')
+   &&temporalAxis590('Delay','ns');
+  const f=!temporalAxis590('Frequency','Hz')&&!temporalAxis590('Particle energy','eV')
+   &&!temporalAxis590('Wavelength','m');
+  return {ok:t&&f,
+   detail:'Time[s], Время[ms], Delay[ns] → trajectory; Frequency[Hz], Particle energy[eV], Wavelength[m] → response curve'}});
+ ok('v5.9.0 the live model reports its verdict and withholds unsupported claims',()=>{
+  if(typeof state==='undefined'||typeof UPRSO_MODELS==='undefined')return {ok:true,detail:'headless'};
+  const B=diagram590(true);if(!B)return {ok:true,detail:'no diagram'};
+  /* whichever regime the current model is in, the two must agree: no doublings,
+     no delta and no accumulation point unless the axis is temporal */
+  const claims=B.doublings.length>0||!!B.feigenbaum;
+  return {ok:B.dynamical||!claims,
+   detail:B.dynamical?`temporal axis «${B.axis.name}»: cascade detection active, ${B.doublings.length} doublings`
+    :`${B.verdict}; doublings=${B.doublings.length}, δ=${B.feigenbaum?'CLAIMED':'withheld'}, surface still built over ${B.steps} steps`}});
+ ok('v5.9.0 the steered parameter is decoded, not compared raw',()=>{
+  /* driveParam encodes physical parameters as "param:<key>" and defaults to the
+     truthy "axis", so a raw comparison matched nothing and also masked
+     quickParam: every model swept its first parameter regardless of selection */
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const pd=state.driveParam,pq=state.quickParam;
+  try{
+   state.driveParam='param:C';state.quickParam='axis';
+   const a=steeredParamKeys590();
+   state.driveParam='axis';state.quickParam='L';
+   const b=steeredParamKeys590();
+   state.driveParam='axis';state.quickParam='axis';
+   const c=steeredParamKeys590();
+   return {ok:a[0]==='C'&&b[0]==='L'&&c.length===0,
+    detail:`"param:C"→[${a}], quickParam "L"→[${b}], both on the axis→[${c}] (fall back to the first ranged parameter)`}}
+  finally{state.driveParam=pd;state.quickParam=pq}});
+ ok('v5.9.0 changing the axis bounds invalidates the cached diagram',()=>{
+  /* seriesForParam590 reads xmin/xmax from the DOM, so a key without them
+     reused a diagram sampled over a different interval */
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const el=document.getElementById('xmax');if(!el)return {ok:true,detail:'no axis input'};
+  const prev=el.value;
+  try{const a=key590();el.value=String((Number(prev)||1)*2);const b=key590();
+   el.value=prev;const c=key590();
+   return {ok:a!==b&&a===c,detail:`xmax ${prev} → ${(Number(prev)||1)*2} changes the key, reverting restores it`}}
+  finally{el.value=prev;G.key=''}});
+ ok('v5.9.0 the whole self-test chain leaves the live scene untouched',()=>{
+  if(typeof state==='undefined'||!chainCaptured590)
+   return {ok:true,detail:'checks called directly, not through the chain'};
+  const kept=state.scene===sceneBeforeChain590;
+  return {ok:kept,
+   detail:kept?'every module handed the live scene back'
+    :'THE LIVE SCENE WAS REPLACED BY A TEST SCENE somewhere in the chain'}});
  return T}
 function wrapTests590(){try{if(typeof runTests!=='function'||runTests.__uprs590)return;const base=runTests;
- const w=function(show=true){const r=base(false);const T=[...r.tests];
+ const w=function(show=true){
+  try{sceneBeforeChain590=(typeof state!=='undefined')?state.scene:null;chainCaptured590=true}catch(_){}
+  const r=base(false);const T=[...r.tests];
   for(const x of checks590())T.push(x);
   const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
   window.__UPRS_SELF_TEST__=rep;
