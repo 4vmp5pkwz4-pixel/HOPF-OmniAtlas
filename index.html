@@ -11842,7 +11842,25 @@ function lyapunov550(s,m,tau,dt,opt){const o=opt||{};
  const b=my-lam*mean550(fx);
  for(let i=0;i<fx.length;i++){const pr=lam*fx[i]+b;ssRes+=(fy[i]-pr)*(fy[i]-pr);ssTot+=(fy[i]-my)*(fy[i]-my)}
  const r2=ssTot>0?1-ssRes/ssTot:0;
- return {lambda:lam,scalingR2:r2,fitPoints:fitN,
+ /* A chaotic attractor is BOUNDED: neighbouring trajectories separate
+    exponentially only until they span it, after which the divergence curve
+    plateaus. An open arc traversed once - a single sweep cycle - separates
+    monotonically and never saturates, yet its early segment fits a straight
+    line just as well. The late-to-early slope ratio therefore separates a
+    genuine attractor from a curve that merely spreads apart. */
+ /* The plateau only becomes visible well beyond the fitted rise, so the ratio
+    is measured only when the curve is long enough to contain both regimes.
+    On a short curve the answer is "not testable", never "not saturating" -
+    otherwise genuine chaos would be refused for lack of samples. */
+ let saturation=null;
+ const lateFrom=Math.max(fitN,Math.floor(xs.length*.55));
+ const lx=xs.slice(lateFrom),ly=ys.slice(lateFrom);
+ if(xs.length>=2*fitN&&lx.length>=4){
+  const lateSlope=slope550(lx,ly);
+  if(FIN(lateSlope))saturation={lateSlope,ratio:Math.abs(lam)>1e-12?lateSlope/lam:null,testable:true}}
+ else saturation={lateSlope:null,ratio:null,testable:false,
+  reason:'divergence curve too short ('+xs.length+' points, fit '+fitN+') to separate rise from plateau'};
+ return {lambda:lam,scalingR2:r2,fitPoints:fitN,saturation,
   horizon:lam>1e-9?1/lam:Infinity,curve:{x:fx,y:fy},points:N}}
 
 /* ============================ 3 · correlation dimension (Grassberger–Procaccia) */
@@ -11993,6 +12011,20 @@ function portrait550(pts){const n=pts.length;if(n<8)return null;
   closedOrbit:Math.abs(Math.round(wind)-wind)<.12&&Math.abs(wind)>=.88}}
 
 /* ================================================================ app layer */
+/* Takens reconstruction, Lyapunov exponents and critical slowing down are
+   theorems about trajectories in TIME. The atlas sweeps a parameter - frequency,
+   wavenumber, magnetic field, energy - so successive samples are not successive
+   instants, and a chaos or tipping-point claim on such an ordering is a category
+   error however well the numbers behave. The axis is therefore classified and
+   the dynamical verdicts issued only when it is genuinely temporal; the
+   geometric descriptors (D2, RQA, Koopman, portrait) stay valid either way as
+   curve diagnostics. */
+const TIME_UNITS550=['s','sec','secs','second','seconds','ms','us','µs','ns','ps','fs','min','h','hr','day'];
+function axisKind550(){try{
+ const m=typeof UPRSO_MODELS!=='undefined'?UPRSO_MODELS[state.model]:null;
+ const unit=String(m&&m.axisUnit||'').trim(),name=String(m&&m.axis||'').trim();
+ const temporal=TIME_UNITS550.includes(unit.toLowerCase())||/time|время|zeit/i.test(name);
+ return {name:name||'index',unit,temporal}}catch(_){return {name:'index',unit:'',temporal:false}}}
 function sweepSignal550(){const a=(typeof state!=='undefined'&&state.sweep)||[];
  const s=[],pts=[];
  for(const r of a){const re=r.gamma?.re,im=r.gamma?.im;
@@ -12008,7 +12040,9 @@ function analyze550(){const {s,pts}=sweepSignal550();
  const t0=(typeof performance!=='undefined'?performance.now():Date.now());
  const stride=Math.max(1,Math.ceil(s.length/CAP550));
  const sw=stride>1?s.filter((_,i)=>i%stride===0):s;
- const out={version:V550,samples:s.length,analysed:sw.length,stride};
+ /* after decimation one step of sw spans `stride` original samples, so the
+    exponent and the horizon must be expressed in the original sample units */
+ const out={version:V550,samples:s.length,analysed:sw.length,stride,axis:axisKind550()};
  try{const T=optimalTau550(sw);const F=fnn550(sw,T.tau,7);
   /* The embedding window (m-1)*tau consumes samples: left unchecked a large tau
      starves the reconstruction of state vectors. Shrink tau (the softer of the
@@ -12021,7 +12055,7 @@ function analyze550(){const {s,pts}=sweepSignal550();
   const Z=embed550(sw,F.m,tau);
   out.embedding.stateVectors=Z.length;
   out.embedding.converged=F.converged!==false;
-  try{out.lyapunov=lyapunov550(sw,F.m,tau,1)}catch(_){out.lyapunov=null}
+  try{out.lyapunov=lyapunov550(sw,F.m,tau,stride)}catch(_){out.lyapunov=null}
   /* A chaos claim must survive every check: a meaningfully positive exponent, a
      genuinely straight scaling region, a converged reconstruction and an
      attractor that is actually sampled densely enough for the dimension used.
@@ -12029,13 +12063,23 @@ function analyze550(){const {s,pts}=sweepSignal550();
   if(out.lyapunov){const L=out.lyapunov,e=out.embedding;
    const dense=e.stateVectors>=20*e.m;
    const reasons=[];
+   if(!out.axis.temporal)reasons.push('sweep axis is '+(out.axis.name||'a parameter')+
+    (out.axis.unit?' ['+out.axis.unit+']':'')+', not time — a Lyapunov exponent requires a temporal trajectory');
    if(!(L.lambda>.01))reasons.push('exponent not meaningfully positive');
    if(!(L.scalingR2>=.95))reasons.push('no straight scaling region (R²='+L.scalingR2.toFixed(3)+')');
    if(!e.converged)reasons.push('false-nearest-neighbours did not converge');
    if(!dense)reasons.push('attractor undersampled for m='+e.m);
+   if(!L.saturation||L.saturation.testable===false)
+    reasons.push(L.saturation&&L.saturation.reason?L.saturation.reason:'saturation of the divergence curve could not be tested');
+   else if(!(L.saturation.ratio!==null&&L.saturation.ratio<.25))
+    reasons.push('divergence never saturates — the orbit spreads instead of filling a bounded attractor');
    L.chaotic=reasons.length===0;
-   L.verdict=L.chaotic?'chaotic':(L.lambda<=.01&&L.scalingR2>=.95?'regular':'undetermined');
+   L.verdict=!out.axis.temporal?'not-applicable'
+    :L.chaotic?'chaotic'
+    :(L.lambda<=.01&&L.scalingR2>=.95?'regular':'undetermined');
    L.blockers=reasons;
+   /* on a parameter axis the number is a curve-divergence rate, not an exponent */
+   L.quantity=out.axis.temporal?'Lyapunov exponent (per sample)':'curve divergence rate (per sweep sample)';
    /* the horizon is only meaningful once chaos is actually established */
    if(!L.chaotic)L.horizon=null}
   try{out.dimension=correlationDim550(Z)}catch(_){out.dimension=null}
@@ -12223,6 +12267,42 @@ function checks550(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
   const d=analyze550();const e=d.embedding;
   return {ok:!!e&&(e.m-1)*e.tau<=e.windowBudget&&e.stateVectors>=Math.floor(d.analysed/2)&&!!d.lyapunov,
    detail:e?`m=${e.m} τ=${e.tau} (asked ${e.requestedTau}) vectors=${e.stateVectors}/${d.analysed} λ=${d.lyapunov?d.lyapunov.lambda.toFixed(5):'null'}`:'null'}});
+ ok('v5.5.0 chaos is never claimed on a non-temporal parameter sweep',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const prevSweep=state.sweep;
+  try{
+   /* a smooth single-cycle sine: its early divergence fits a straight line
+      (R²≈0.97) and FNN converges, so only the axis and saturation gates stand
+      between it and a false chaos verdict */
+   const sw=[];for(let i=0;i<361;i++){const v=.5+.4*Math.sin(2*Math.PI*i/360);
+    sw.push({x:i+1,gamma:{re:v,im:0}})}
+   state.sweep=sw;const d=analyze550();
+   const L=d.lyapunov;
+   return {ok:!!L&&L.chaotic===false&&(d.axis.temporal?L.verdict!=='chaotic':L.verdict==='not-applicable'),
+    detail:`axis=${d.axis.name}[${d.axis.unit}] temporal=${d.axis.temporal} λ=${L?L.lambda.toFixed(4):'—'} R²=${L?L.scalingR2.toFixed(3):'—'} verdict=${L?L.verdict:'—'}`}}
+  finally{state.sweep=prevSweep}});
+ ok('v5.5.0 an unsaturated divergence curve cannot be chaos',()=>{
+  /* a single arc separates monotonically for ever; a bounded attractor stops */
+  const s=[];for(let i=0;i<361;i++)s.push(.5+.4*Math.sin(2*Math.PI*i/360));
+  const open=lyapunov550(s,2,12,1);
+  /* K matches what analyze550 uses in production: the plateau needs room */
+  const chaos=lyapunov550(logistic550(4,2600),2,1,1,{K:24,fit:5});
+  const ro=open&&open.saturation?open.saturation.ratio:null;
+  const rc=chaos&&chaos.saturation?chaos.saturation.ratio:null;
+  return {ok:ro!==null&&rc!==null&&ro>=.25&&rc<.25,
+   detail:`single arc ratio=${ro===null?'—':ro.toFixed(3)} (must be ≥0.25), logistic map ratio=${rc===null?'—':rc.toFixed(3)} (must be <0.25)`}});
+ ok('v5.5.0 decimation is carried into the exponent, not silently dropped',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const prevSweep=state.sweep;
+  try{
+   const sw=[];for(let i=0;i<2400;i++){const v=.5+.4*Math.sin(2*Math.PI*i/97);
+    sw.push({x:i+1,gamma:{re:v,im:0}})}
+   state.sweep=sw;const d=analyze550();
+   /* stride>1 must reach the estimator: with dt=1 the exponent would be per
+      decimated step and the horizon short by exactly this factor */
+   return {ok:d.stride>1&&d.analysed<d.samples&&!!d.lyapunov,
+    detail:`samples=${d.samples} analysed=${d.analysed} stride=${d.stride} λ=${d.lyapunov?d.lyapunov.lambda.toExponential(2):'—'} per original sample`}}
+  finally{state.sweep=prevSweep}});
  ok('v5.5.0 full phase-space analysis runs on the live sweep',()=>{
   if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'no live sweep (headless)'};
   const d=analyze550();
@@ -12364,10 +12444,11 @@ function poincare560(pts,normal,offset,opt){const o=opt||{},dir=o.direction||0,o
  const f=p=>p[0]*normal[0]+p[1]*normal[1]+p[2]*normal[2]-(offset||0);
  for(let i=1;i<pts.length;i++){const a=f(pts[i-1]),b=f(pts[i]);
   if(!FIN(a)||!FIN(b))continue;
-  if(a===0&&b===0)continue;
-  const crossed=(a<0&&b>=0)||(a>0&&b<=0)||(a===0&&b!==0);
-  if(!crossed)continue;
-  const rising=b>a;
+  /* Half-open convention: zero belongs to the positive side. A symmetric test
+     fires on BOTH the arriving and the departing segment whenever a sample
+     lands exactly on the plane, reporting a single transit twice. */
+  const rising=a<0&&b>=0,falling=a>=0&&b<0;
+  if(!rising&&!falling)continue;
   if(dir>0&&!rising)continue;
   if(dir<0&&rising)continue;
   const t=a/((a-b)||1e-300);
@@ -12411,7 +12492,14 @@ function sweepSignal560(){const a=(typeof state!=='undefined'&&state.sweep)||[],
  for(const r of a){const re=r.gamma?.re,im=r.gamma?.im;
   if(FIN(re)&&FIN(im))s.push(Math.hypot(re,im))}
  return s}
-function embedFor560(s){const c=C550();
+/* The neighbour search is O(N^2) per embedding dimension, so a large imported
+   sweep must be decimated BEFORE it reaches fnn: 4k points already cost ~0.8 s
+   and a 10k Touchstone would freeze the single-page UI for seconds. */
+const CAP560=800;
+function embedFor560(sRaw){
+ const strideIn=Math.max(1,Math.ceil(sRaw.length/CAP560));
+ const s=strideIn>1?sRaw.filter((_,i)=>i%strideIn===0):sRaw;
+ const c=C550();
  if(c&&c.core){try{
   const T=c.core.optimalTau(s);const F=c.core.fnn(s,T.tau,7);
   /* four coordinates are needed for the S³ lift; the window is bounded so the
@@ -12420,11 +12508,11 @@ function embedFor560(s){const c=C550();
   const budget=Math.max(2,Math.floor(s.length/3));
   let tau=T.tau;while(tau>1&&(m-1)*tau>budget)tau--;
   const Z=c.core.embed(s,m,tau);
-  if(Z.length>=16)return {Z,m,tau,converged:F.converged!==false}}catch(_){}}
+  if(Z.length>=16)return {Z,m,tau,converged:F.converged!==false,stride:strideIn,analysed:s.length}}catch(_){}}
  const m=4,tau=Math.max(1,Math.min(8,Math.floor(s.length/40)));
  const Z=[],n=s.length-(m-1)*tau;
  for(let i=0;i<n;i++)Z.push([s[i],s[i+tau],s[i+2*tau],s[i+3*tau]]);
- return {Z,m,tau,converged:null}}
+ return {Z,m,tau,converged:null,stride:strideIn,analysed:s.length}}
 function buildGeometry560(){const s=sweepSignal560();
  if(s.length<48)return null;
  const t0=(typeof performance!=='undefined'?performance.now():Date.now());
@@ -12463,7 +12551,8 @@ function buildGeometry560(){const s=sweepSignal560();
  let chords=[];
  try{const c=C550();const r=c&&c.core.rqa(E.Z,{rate:.06});
   if(r&&r.epsilon>0)chords=recurrenceChords560(E.Z,attractor,r.epsilon,{theiler:Math.max(4,E.tau),cap:140})}catch(_){}
- return {version:V560,embedding:{m:E.m,tau:E.tau,converged:E.converged,states:E.Z.length},
+ return {version:V560,embedding:{m:E.m,tau:E.tau,converged:E.converged,states:E.Z.length,
+   stride:E.stride||1,analysed:E.analysed||s.length,samples:s.length},
   attractor,explained:P3.explained,eigenvalues:P3.eigenvalues,
   s3Curve:curve,s3Points:s3.length,fibres,base,section,chords,
   planeZ:cz,
@@ -12613,12 +12702,30 @@ function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
   const err=Math.max(...q.map((v,i)=>Math.abs(v-back[i])));
   return {ok:err<1e-14,detail:'round-trip error = '+err.toExponential(2)}});
  ok('v5.6.0 Poincaré section counts helix crossings exactly',()=>{
-  /* 5 upward crossings of z=0 for a helix spanning 5 full turns */
+  /* A helix over 5 turns starting at phase 0: sample 0 sits EXACTLY on the
+     plane and the closing sample falls just below it, so the completed
+     transits inside the sampled range are 4 rising and 5 falling. Counting 5
+     rising would mean the start sample had been mistaken for a transit. */
   const pts=[];for(let i=0;i<=1000;i++){const t=i/1000*5*TAU560;
    pts.push([Math.cos(t),Math.sin(t),Math.sin(t)])}
   const up=poincare560(pts,[0,0,1],0,{direction:1});
   const all=poincare560(pts,[0,0,1],0,{direction:0});
+  return {ok:up.length===4&&all.length===9,detail:`rising=${up.length} total=${all.length}`}});
+ ok('v5.6.0 Poincaré: phase-offset helix gives the unambiguous 5 per 5 turns',()=>{
+  /* shifted so that no sample lands on the plane: every turn contributes
+     exactly one rising and one falling transit */
+  const pts=[];for(let i=0;i<=1000;i++){const t=i/1000*5*TAU560+.37;
+   pts.push([Math.cos(t),Math.sin(t),Math.sin(t)])}
+  const up=poincare560(pts,[0,0,1],0,{direction:1});
+  const all=poincare560(pts,[0,0,1],0,{direction:0});
   return {ok:up.length===5&&all.length===10,detail:`rising=${up.length} total=${all.length}`}});
+ ok('v5.6.0 a sample lying on the section plane is counted once, not twice',()=>{
+  const mk=zs=>zs.map((z,i)=>[i,0,z]);
+  const a=poincare560(mk([-1,0,1]),[0,0,1],0,{direction:1});
+  const b=poincare560(mk([-1,0,1]),[0,0,1],0,{direction:0});
+  const c=poincare560(mk([1,0,-1]),[0,0,1],0,{direction:-1});
+  return {ok:a.length===1&&b.length===1&&c.length===1,
+   detail:`rising=${a.length} any=${b.length} falling=${c.length} (each must be 1)`}});
  ok('v5.6.0 Poincaré crossing points lie on the section plane',()=>{
   const pts=[];for(let i=0;i<=600;i++){const t=i/600*3*TAU560;
    pts.push([Math.cos(t)*1.3,Math.sin(t),.4*Math.sin(t)+.15])}
@@ -12659,6 +12766,20 @@ function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
   const shortest=ch.length?Math.min(...ch.map(c=>c.length)):Infinity;
   return {ok:ch.length>0&&shortest>=.01*diam,
    detail:`${ch.length} chords, shortest ${shortest.toFixed(5)} ≥ ${(0.01*diam).toFixed(5)}`}});
+ ok('v5.6.0 a long sweep is decimated before the O(N²) neighbour search',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const prev=state.sweep;
+  try{
+   const big=[];for(let i=0;i<5200;i++){const t=i/5200;
+    const v=.5+.3*Math.sin(2*Math.PI*9*t)+.1*Math.sin(2*Math.PI*23*t);
+    big.push({x:i+1,gamma:{re:v*Math.cos(2*Math.PI*t),im:v*Math.sin(2*Math.PI*t)}})}
+   state.sweep=big;
+   const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+   const g=geometry560(true);
+   const ms=(typeof performance!=='undefined'?performance.now():Date.now())-t0;
+   return {ok:!!g&&!g.degenerate&&g.embedding.stride>1&&g.embedding.analysed<=CAP560&&ms<3000,
+    detail:g?`stride=${g.embedding.stride} analysed=${g.embedding.analysed}/${g.embedding.samples} in ${Math.round(ms)}ms`:'null'}}
+  finally{state.sweep=prev;geometry560(true)}});
  ok('v5.6.0 a signal with no resolvable variation yields no geometry',()=>{
   if(typeof state==='undefined')return {ok:true,detail:'headless'};
   const prev=state.sweep;
