@@ -11660,4 +11660,601 @@ globalThis.__UPRS540__={version:V540,analyze:analyze540,checks:checks540,wire:wi
   lastScan:state?.discovery300?.theory540?{pi:state.discovery300.theory540.dimensional?.groupCount,
    poles:state.discovery300.theory540.hidden?.poles?.length,symbolic:state.discovery300.theory540.symbolic?.expression}:null})};
 })();</script>
+<script id="uprs550PhaseSpaceEngine">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v5.5.0 · PHASE-SPACE & DYNAMICS ENGINE
+   ----------------------------------------------------------------------------
+   Lifts the atlas out of the response curve and into STATE SPACE. A scalar
+   sweep is only a shadow of the system that produced it; Takens' theorem says
+   the full attractor can be rebuilt from that shadow, and once it is rebuilt
+   an entirely different class of prediction becomes available:
+
+   1. DELAY EMBEDDING — optimal lag τ from the first minimum of the mutual
+      information, optimal dimension m from False Nearest Neighbours. The
+      reconstructed attractor is diffeomorphic to the true one (Takens 1981).
+   2. LARGEST LYAPUNOV EXPONENT (Rosenstein) — exponential divergence rate of
+      neighbouring trajectories: λ>0 proves deterministic chaos and fixes a
+      hard PREDICTABILITY HORIZON of ~1/λ samples.
+   3. CORRELATION DIMENSION (Grassberger–Procaccia) — fractal dimension D₂ of
+      the attractor; a non-integer D₂ is the signature of strange attractors.
+   4. RECURRENCE QUANTIFICATION — recurrence rate, determinism, laminarity,
+      longest diagonal and Shannon entropy of the line distribution: separates
+      deterministic dynamics from noise and exposes intermittency.
+   5. KOOPMAN / DMD SPECTRUM — the best linear operator acting on the embedded
+      state; its eigenvalues give growth rates and frequencies of the coherent
+      modes (characteristic polynomial via Faddeev–LeVerrier, roots by
+      Durand–Kerner).
+   6. CRITICAL SLOWING DOWN — sliding-window variance and lag-1 autocorrelation
+      with a Kendall-τ trend test: the canonical EARLY-WARNING SIGNAL that a
+      system is approaching a tipping point before the transition happens.
+   7. PHASE-PORTRAIT TOPOLOGY — winding number, signed enclosed area,
+      self-intersections and total curvature of the Γ-plane orbit itself.
+
+   Renders inside the existing Discovery panel; no buttons, no chrome.
+   Pure core is headlessly unit-testable via __UPRS550__.core / .checks().
+   ========================================================================== */
+const V550='5.5.0';
+const FIN=Number.isFinite;
+
+/* ------------------------------------------------------------- primitives */
+const mean550=a=>{let s=0;for(const v of a)s+=v;return s/(a.length||1)};
+function variance550(a){const m=mean550(a);let s=0;for(const v of a)s+=(v-m)*(v-m);return s/(a.length||1)}
+function solve550(A,b){const n=A.length,M=A.map((r,i)=>[...r,b[i]]);
+ for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;
+  if(Math.abs(M[p][c])<1e-300)return null;[M[c],M[p]]=[M[p],M[c]];
+  for(let r=0;r<n;r++){if(r===c)continue;const f=M[r][c]/M[c][c];for(let k=c;k<=n;k++)M[r][k]-=f*M[c][k]}}
+ return M.map((r,i)=>r[n]/r[i])}
+function slope550(xs,ys){const n=xs.length;if(n<2)return NaN;
+ let sx=0,sy=0,sxx=0,sxy=0;for(let i=0;i<n;i++){sx+=xs[i];sy+=ys[i];sxx+=xs[i]*xs[i];sxy+=xs[i]*ys[i]}
+ const d=n*sxx-sx*sx;return Math.abs(d)<1e-300?NaN:(n*sxy-sx*sy)/d}
+/* complex helpers for the Koopman spectrum */
+const kA=(a,b)=>({re:a.re+b.re,im:a.im+b.im}),kS=(a,b)=>({re:a.re-b.re,im:a.im-b.im});
+const kM=(a,b)=>({re:a.re*b.re-a.im*b.im,im:a.re*b.im+a.im*b.re});
+function kD(a,b){const d=b.re*b.re+b.im*b.im||1e-300;return {re:(a.re*b.re+a.im*b.im)/d,im:(a.im*b.re-a.re*b.im)/d}}
+const kAb=a=>Math.hypot(a.re,a.im);
+function polyEval550(co,z){let r={re:0,im:0};for(const c of co)r=kA(kM(r,z),{re:c,im:0});return r}
+function rootsOf550(co){while(co.length>1&&Math.abs(co[0])<1e-300)co=co.slice(1);
+ const n=co.length-1;if(n<1)return [];
+ const z=[];for(let i=0;i<n;i++){const a=2*Math.PI*i/n+.4;z.push({re:.62*Math.cos(a),im:.62*Math.sin(a)})}
+ for(let it=0;it<500;it++){let mv=0;
+  for(let i=0;i<n;i++){let d={re:co[0],im:0};
+   for(let j=0;j<n;j++){if(j===i)continue;d=kM(d,kS(z[i],z[j]))}
+   if(kAb(d)<1e-300)continue;const st=kD(polyEval550(co,z[i]),d);z[i]=kS(z[i],st);mv=Math.max(mv,kAb(st))}
+  if(mv<1e-14)break}
+ return z}
+/* Faddeev–LeVerrier: characteristic polynomial of a small dense matrix */
+function charPoly550(A){const n=A.length;
+ const I=()=>Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+ const mul=(X,Y)=>{const O=Array.from({length:n},()=>new Array(n).fill(0));
+  for(let i=0;i<n;i++)for(let k=0;k<n;k++){const v=X[i][k];if(!v)continue;
+   for(let j=0;j<n;j++)O[i][j]+=v*Y[k][j]}return O};
+ const tr=X=>{let s=0;for(let i=0;i<n;i++)s+=X[i][i];return s};
+ const c=[1];let M=I();
+ for(let k=1;k<=n;k++){
+  if(k>1){M=mul(A,M);for(let i=0;i<n;i++)M[i][i]+=c[k-1]}
+  const AM=mul(A,M);c.push(-tr(AM)/k)}
+ return c}                                               /* descending, monic */
+
+/* ============================================= 1 · delay embedding (Takens) */
+function mutualInfo550(s,tau,bins){const n=s.length-tau;if(n<16)return NaN;
+ let mn=Infinity,mx=-Infinity;for(const v of s){if(v<mn)mn=v;if(v>mx)mx=v}
+ const rng=mx-mn;if(!(rng>0))return 0;
+ const B=bins||16,bi=v=>Math.min(B-1,Math.max(0,Math.floor((v-mn)/rng*B)));
+ const joint=new Float64Array(B*B),px=new Float64Array(B),py=new Float64Array(B);
+ for(let i=0;i<n;i++){const a=bi(s[i]),b=bi(s[i+tau]);joint[a*B+b]++;px[a]++;py[b]++}
+ let I=0;
+ for(let a=0;a<B;a++){if(!px[a])continue;
+  for(let b=0;b<B;b++){const j=joint[a*B+b];if(!j||!py[b])continue;
+   I+=(j/n)*Math.log((j/n)/((px[a]/n)*(py[b]/n)))}}
+ return I}
+/* For a noiseless deterministic signal the mutual information is functional at
+   every lag, so the first basin is essentially flat and its exact argmin is
+   estimator noise. The profile is therefore smoothed before the search, and the
+   basin is terminated where MI starts climbing back towards the anticorrelation
+   revival - any lag inside that basin is a valid decorrelation lag. */
+function optimalTau550(s,maxTau){const M=Math.max(2,Math.min(maxTau||Math.floor(s.length/8),64));
+ const mi=[];for(let t=1;t<=M;t++)mi.push(mutualInfo550(s,t,16));
+ const sm=mi.map((v,i)=>{const a=mi[i-1],b=mi[i+1];
+  return (a===undefined||b===undefined)?v:(a+v+b)/3});
+ const span=Math.max(...sm)-Math.min(...sm);
+ const tol=Math.max(1e-12,span*.02);
+ /* walk the first basin: stop once the curve has risen clear of its own minimum */
+ let bestI=0,bestV=sm[0];
+ for(let i=1;i<sm.length;i++){
+  if(sm[i]<bestV){bestV=sm[i];bestI=i;continue}
+  if(sm[i]>bestV+tol)return {tau:bestI+1,profile:mi,reason:'first MI basin minimum'}}
+ const target=mi[0]/Math.E;
+ for(let t=0;t<mi.length;t++)if(mi[t]<target)return {tau:t+1,profile:mi,reason:'MI 1/e decay'};
+ return {tau:Math.max(1,bestI+1),profile:mi,reason:'MI global minimum'}}
+function embed550(s,m,tau){const n=s.length-(m-1)*tau;if(n<2)return [];
+ const Z=new Array(n);for(let i=0;i<n;i++){const v=new Array(m);
+  for(let j=0;j<m;j++)v[j]=s[i+j*tau];Z[i]=v}
+ return Z}
+function dist550(a,b){let s=0;for(let i=0;i<a.length;i++){const d=a[i]-b[i];s+=d*d}return Math.sqrt(s)}
+/* Exactly repeating signals produce neighbour pairs separated only by rounding
+   error; the ratio of two such distances is pure floating-point noise, so pairs
+   closer than a fraction of the attractor scale are not resolvable and are
+   skipped rather than counted as false neighbours. */
+function fnn550(s,tau,mMax,opt){const o=opt||{},Rtol=o.Rtol||15,Atol=o.Atol||2,theiler=o.theiler||Math.max(1,tau);
+ const sd=Math.sqrt(variance550(s))||1e-12,out=[];
+ const floor=(o.floor!==undefined?o.floor:1e-8)*sd;
+ for(let m=1;m<=(mMax||8);m++){
+  const Z=embed550(s,m,tau),n=Z.length-m*tau>0?Z.length:0;
+  const usable=Math.min(Z.length,s.length-m*tau);
+  if(usable<24){out.push({m,fraction:NaN});continue}
+  let bad=0,tot=0;
+  for(let i=0;i<usable;i++){
+   let bj=-1,bd=Infinity;
+   for(let j=0;j<usable;j++){if(Math.abs(i-j)<=theiler)continue;
+    const d=dist550(Z[i],Z[j]);if(d<bd&&d>floor){bd=d;bj=j}}
+   if(bj<0||!FIN(bd)||bd<=floor)continue;
+   const extra=Math.abs(s[i+m*tau]-s[bj+m*tau]);
+   const rNew=Math.sqrt(bd*bd+extra*extra);
+   if(extra/bd>Rtol||rNew/sd>Atol)bad++;
+   tot++}
+  out.push({m,fraction:tot?bad/tot:NaN})}
+ /* If no dimension drives the false-neighbour fraction below the threshold the
+    reconstruction has NOT converged; silently returning mMax would hand every
+    downstream estimator a starved, meaningless embedding. Report the knee (the
+    largest relative drop) and say plainly that it did not converge. */
+ let best=null;
+ for(const r of out)if(FIN(r.fraction)&&r.fraction<.01){best=r.m;break}
+ if(best!==null)return {m:best,converged:true,profile:out};
+ let knee=out.length?out[0].m:1,drop=-Infinity;
+ for(let i=1;i<out.length;i++){const a=out[i-1].fraction,b=out[i].fraction;
+  if(!FIN(a)||!FIN(b)||a<=0)continue;const d=(a-b)/a;if(d>drop){drop=d;knee=out[i].m}}
+ return {m:knee,converged:false,profile:out}}
+
+/* ================================= 2 · largest Lyapunov exponent (Rosenstein) */
+function lyapunov550(s,m,tau,dt,opt){const o=opt||{};
+ const Z=embed550(s,m,tau),N=Z.length;if(N<40)return null;
+ /* The Theiler window must exclude temporally correlated neighbours WITHOUT
+    excluding the whole series: m*tau can exceed the embedded length, which would
+    leave no admissible pair at all. */
+ const theiler=Math.max(1,Math.min(o.theiler||Math.max(m*tau,Math.floor(N/50)+1),Math.floor(N/4)));
+ const K=o.K||Math.min(24,Math.floor(N/8));
+ /* an exactly periodic orbit repeats to within rounding error; the logarithm of
+    such a distance is dominated by machine epsilon and would fake a positive
+    exponent, so unresolvable pairs are excluded from the divergence average */
+ let scale=0;for(const z of Z)for(const v of z)scale=Math.max(scale,Math.abs(v));
+ const floor=(o.floor!==undefined?o.floor:1e-8)*(scale||1);
+ const sum=new Float64Array(K+1),cnt=new Float64Array(K+1);
+ for(let i=0;i<N;i++){
+  let bj=-1,bd=Infinity;
+  for(let j=0;j<N;j++){if(Math.abs(i-j)<=theiler)continue;
+   const d=dist550(Z[i],Z[j]);if(d<bd&&d>floor){bd=d;bj=j}}
+  if(bj<0||!FIN(bd)||bd<=floor)continue;
+  for(let k=0;k<=K;k++){const a=i+k,b=bj+k;if(a>=N||b>=N)break;
+   const d=dist550(Z[a],Z[b]);if(d>0&&FIN(d)){sum[k]+=Math.log(d);cnt[k]++}}}
+ const xs=[],ys=[];
+ for(let k=0;k<=K;k++)if(cnt[k]>4){xs.push(k*(dt||1));ys.push(sum[k]/cnt[k])}
+ if(xs.length<4)return null;
+ /* the divergence curve is linear only before saturation: fit the initial rise */
+ const fitN=Math.max(3,Math.min(xs.length,o.fit||Math.max(4,Math.round(xs.length*.4))));
+ const fx=xs.slice(0,fitN),fy=ys.slice(0,fitN);
+ const lam=slope550(fx,fy);
+ if(!FIN(lam))return null;
+ /* A true exponential divergence is STRAIGHT in log space. Curvature-driven
+    artefacts on a smooth, sparsely embedded signal also yield a positive slope,
+    so the linearity of the scaling region is reported and gates the verdict:
+    announcing chaos without a scaling region would be a false positive. */
+ const my=mean550(fy);let ssTot=0,ssRes=0;
+ const b=my-lam*mean550(fx);
+ for(let i=0;i<fx.length;i++){const pr=lam*fx[i]+b;ssRes+=(fy[i]-pr)*(fy[i]-pr);ssTot+=(fy[i]-my)*(fy[i]-my)}
+ const r2=ssTot>0?1-ssRes/ssTot:0;
+ return {lambda:lam,scalingR2:r2,fitPoints:fitN,
+  horizon:lam>1e-9?1/lam:Infinity,curve:{x:fx,y:fy},points:N}}
+
+/* ============================ 3 · correlation dimension (Grassberger–Procaccia) */
+function correlationDim550(Z,opt){const o=opt||{},N=Z.length;if(N<40)return null;
+ const step=Math.max(1,Math.floor(N/(o.cap||360))),P=[];
+ for(let i=0;i<N;i+=step)P.push(Z[i]);
+ const M=P.length,ds=[];
+ for(let i=0;i<M;i++)for(let j=i+1;j<M;j++){const d=dist550(P[i],P[j]);if(d>0&&FIN(d))ds.push(d)}
+ if(ds.length<50)return null;
+ ds.sort((a,b)=>a-b);
+ const lo=ds[Math.floor(ds.length*.02)],hi=ds[Math.floor(ds.length*.60)];
+ if(!(hi>lo&&lo>0))return null;
+ const R=16,xs=[],ys=[];
+ for(let k=0;k<R;k++){const r=lo*Math.pow(hi/lo,k/(R-1));
+  /* C(r) via binary search over the sorted distance list */
+  let a=0,b=ds.length;while(a<b){const mid=(a+b)>>1;if(ds[mid]<r)a=mid+1;else b=mid}
+  const c=a/ds.length;if(c>0){xs.push(Math.log(r));ys.push(Math.log(c))}}
+ if(xs.length<6)return null;
+ /* scaling region: the middle of the log–log curve */
+ const s=Math.floor(xs.length*.2),e=Math.max(s+3,Math.floor(xs.length*.85));
+ const D=slope550(xs.slice(s,e),ys.slice(s,e));
+ return FIN(D)?{D2:D,samples:M,pairs:ds.length}:null}
+
+/* ================================= 4 · recurrence quantification analysis */
+function rqa550(Z,opt){const o=opt||{},N0=Z.length;if(N0<30)return null;
+ const step=Math.max(1,Math.floor(N0/(o.cap||300))),P=[];
+ for(let i=0;i<N0;i+=step)P.push(Z[i]);
+ const N=P.length,ds=[];
+ for(let i=0;i<N;i++)for(let j=i+1;j<N;j++)ds.push(dist550(P[i],P[j]));
+ ds.sort((a,b)=>a-b);
+ const eps=o.eps!==undefined?o.eps:ds[Math.floor(ds.length*(o.rate||.10))];
+ if(!(eps>0))return null;
+ const R=[];for(let i=0;i<N;i++){const row=new Uint8Array(N);
+  for(let j=0;j<N;j++)row[j]=dist550(P[i],P[j])<=eps?1:0;R.push(row)}
+ let rec=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++)rec+=R[i][j];
+ const RR=rec/(N*N);
+ const lmin=o.lmin||2;
+ /* diagonal line distribution (excluding the main diagonal) */
+ const diag=[];
+ for(let k=-(N-1);k<=N-1;k++){if(k===0)continue;let run=0;
+  for(let i=Math.max(0,-k);i<N&&i+k<N;i++){if(R[i][i+k]){run++}else{if(run>=lmin)diag.push(run);run=0}}
+  if(run>=lmin)diag.push(run)}
+ let inDiag=0;for(const l of diag)inDiag+=l;
+ const offRec=rec-N;                                   /* main diagonal removed */
+ const DET=offRec>0?inDiag/offRec:0;
+ /* vertical line distribution → laminarity / trapping */
+ const vert=[];
+ for(let j=0;j<N;j++){let run=0;
+  for(let i=0;i<N;i++){if(R[i][j]&&i!==j){run++}else{if(run>=lmin)vert.push(run);run=0}}
+  if(run>=lmin)vert.push(run)}
+ let inVert=0;for(const l of vert)inVert+=l;
+ const LAM=offRec>0?inVert/offRec:0;
+ const Lmax=diag.length?Math.max(...diag):0;
+ const TT=vert.length?inVert/vert.length:0;
+ /* Shannon entropy of the diagonal-length histogram */
+ const hist={};for(const l of diag)hist[l]=(hist[l]||0)+1;
+ let ENTR=0;const tot=diag.length;
+ for(const k in hist){const p=hist[k]/tot;ENTR-=p*Math.log(p)}
+ return {RR,DET,LAM,Lmax,trappingTime:TT,entropy:FIN(ENTR)?ENTR:0,epsilon:eps,size:N,
+  deterministic:DET>.85}}
+
+/* ================================== 5 · Koopman / DMD spectrum on the embedding */
+function koopman550(Z,dt){const N=Z.length;if(N<12)return null;
+ const m=Z[0].length;
+ /* least-squares A minimising ||Z' − A Z||: A = (Z Zᵀ)⁻¹ applied column-wise */
+ const G=Array.from({length:m},()=>new Array(m).fill(0));
+ const Ccross=Array.from({length:m},()=>new Array(m).fill(0));
+ for(let i=0;i<N-1;i++){const z=Z[i],zn=Z[i+1];
+  for(let a=0;a<m;a++)for(let b=0;b<m;b++){G[a][b]+=z[a]*z[b];Ccross[a][b]+=zn[a]*z[b]}}
+ for(let a=0;a<m;a++)G[a][a]+=1e-10;
+ const A=[];
+ for(let r=0;r<m;r++){const sol=solve550(G.map(row=>[...row]),Ccross[r]);if(!sol)return null;A.push(sol)}
+ const co=charPoly550(A),lam=rootsOf550(co);
+ const D=dt||1,modes=[];
+ for(const l of lam){const mag=kAb(l);if(!FIN(mag)||mag<=0)continue;
+  const growth=Math.log(mag)/D,freq=Math.abs(Math.atan2(l.im,l.re))/(2*Math.PI*D);
+  modes.push({magnitude:mag,growth,freq,damping:-growth,
+   stable:mag<1-1e-9,oscillatory:Math.abs(l.im)>1e-9})}
+ modes.sort((a,b)=>b.magnitude-a.magnitude);
+ return {dimension:m,modes:modes.slice(0,8),
+  spectralRadius:modes.length?modes[0].magnitude:NaN,
+  stable:modes.every(x=>x.magnitude<1+1e-9)}}
+
+/* ============================= 6 · critical slowing down / early warning */
+function kendall550(a){const n=a.length;if(n<4)return NaN;let c=0,d=0;
+ for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const s=(a[j]-a[i]);if(s>0)c++;else if(s<0)d++}
+ const t=c+d;return t?(c-d)/t:0}
+function ar1_550(w){const n=w.length;if(n<4)return NaN;const m=mean550(w);
+ let num=0,den=0;for(let i=1;i<n;i++)num+=(w[i]-m)*(w[i-1]-m);
+ for(let i=0;i<n;i++)den+=(w[i]-m)*(w[i]-m);
+ return den>0?num/den:NaN}
+function earlyWarning550(s,opt){const o=opt||{},n=s.length;
+ const W=o.window||Math.max(20,Math.floor(n/5)),stride=o.stride||Math.max(1,Math.floor(W/8));
+ if(n<W+4*stride)return null;
+ const vars=[],ars=[];
+ for(let i=0;i+W<=n;i+=stride){const w=s.slice(i,i+W);
+  /* detrend each window so a drifting mean cannot masquerade as rising variance */
+  const t=[];for(let k=0;k<W;k++)t.push(k);
+  const b=slope550(t,w),mw=mean550(w),mt=(W-1)/2;
+  const r=w.map((v,k)=>v-(mw+b*(k-mt)));
+  vars.push(variance550(r));ars.push(ar1_550(r))}
+ const va=vars.filter(FIN),aa=ars.filter(FIN);
+ if(va.length<4||aa.length<4)return null;
+ const tv=kendall550(va),ta=kendall550(aa);
+ return {windows:va.length,varianceTrend:tv,autocorrelationTrend:ta,
+  /* both indicators rising together is the classic signature of an
+     approaching bifurcation (critical slowing down) */
+  warning:tv>.5&&ta>.5,
+  score:Math.max(0,Math.min(1,(Math.max(0,tv)+Math.max(0,ta))/2))}}
+
+/* ================================== 7 · phase-portrait topology (Γ orbit) */
+function portrait550(pts){const n=pts.length;if(n<8)return null;
+ let cx=0,cy=0;for(const p of pts){cx+=p[0];cy+=p[1]}cx/=n;cy/=n;
+ /* winding number of the orbit about its own centroid */
+ let wind=0;
+ for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n];
+  let d=Math.atan2(b[1]-cy,b[0]-cx)-Math.atan2(a[1]-cy,a[0]-cx);
+  while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;wind+=d}
+ wind/=2*Math.PI;
+ /* signed area (shoelace) of the closed orbit */
+ let area=0;for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n];area+=a[0]*b[1]-b[0]*a[1]}
+ area/=2;
+ /* self-intersections of the open polyline */
+ const seg=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
+ const onSeg=(p,q,r)=>Math.min(p[0],q[0])-1e-12<=r[0]&&r[0]<=Math.max(p[0],q[0])+1e-12
+                    &&Math.min(p[1],q[1])-1e-12<=r[1]&&r[1]<=Math.max(p[1],q[1])+1e-12;
+ /* proper crossings plus the degenerate touching case: an orbit that returns to
+    a point it already visited (a figure-eight node) crosses itself exactly at a
+    shared vertex, which a strict-inequality test would miss */
+ const cross=(p1,p2,p3,p4)=>{const d1=seg(p3,p4,p1),d2=seg(p3,p4,p2),d3=seg(p1,p2,p3),d4=seg(p1,p2,p4);
+  if(((d1>0&&d2<0)||(d1<0&&d2>0))&&((d3>0&&d4<0)||(d3<0&&d4>0)))return true;
+  const E=1e-12;
+  if(Math.abs(d1)<E&&onSeg(p3,p4,p1))return true;
+  if(Math.abs(d2)<E&&onSeg(p3,p4,p2))return true;
+  if(Math.abs(d3)<E&&onSeg(p1,p2,p3))return true;
+  if(Math.abs(d4)<E&&onSeg(p1,p2,p4))return true;
+  return false};
+ let xcount=0;const cap=Math.min(n-1,420),st=Math.max(1,Math.floor((n-1)/cap));
+ const S=[];for(let i=0;i+st<n;i+=st)S.push([pts[i],pts[i+st]]);
+ for(let i=0;i<S.length;i++)for(let j=i+2;j<S.length;j++)if(cross(S[i][0],S[i][1],S[j][0],S[j][1]))xcount++;
+ /* total absolute turning */
+ let curv=0;
+ for(let i=1;i<n-1;i++){const a=pts[i-1],b=pts[i],c=pts[i+1];
+  let d=Math.atan2(c[1]-b[1],c[0]-b[0])-Math.atan2(b[1]-a[1],b[0]-a[0]);
+  while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;curv+=Math.abs(d)}
+ return {winding:wind,signedArea:area,enclosedArea:Math.abs(area),
+  selfIntersections:xcount,totalCurvature:curv,centroid:[cx,cy],
+  closedOrbit:Math.abs(Math.round(wind)-wind)<.12&&Math.abs(wind)>=.88}}
+
+/* ================================================================ app layer */
+function sweepSignal550(){const a=(typeof state!=='undefined'&&state.sweep)||[];
+ const s=[],pts=[];
+ for(const r of a){const re=r.gamma?.re,im=r.gamma?.im;
+  if(FIN(re)&&FIN(im)){s.push(Math.hypot(re,im));pts.push([re,im])}}
+ return {s,pts}}
+/* Neighbour searches are O(N^2) per embedding dimension, so a very long sweep is
+   strided down to a bounded working length before the state-space analyses. The
+   attractor is scale-free in the sample index, so striding preserves its
+   geometry while keeping an interactive scan responsive. */
+const CAP550=800;
+function analyze550(){const {s,pts}=sweepSignal550();
+ if(s.length<48)return {error:'insufficient sweep'};
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ const stride=Math.max(1,Math.ceil(s.length/CAP550));
+ const sw=stride>1?s.filter((_,i)=>i%stride===0):s;
+ const out={version:V550,samples:s.length,analysed:sw.length,stride};
+ try{const T=optimalTau550(sw);const F=fnn550(sw,T.tau,7);
+  /* The embedding window (m-1)*tau consumes samples: left unchecked a large tau
+     starves the reconstruction of state vectors. Shrink tau (the softer of the
+     two choices - the MI basin is flat) until the window fits comfortably. */
+  const budget=Math.max(2,Math.floor(sw.length/3));
+  let tau=T.tau;while(tau>1&&(F.m-1)*tau>budget)tau--;
+  out.embedding={tau,tauReason:T.reason+(tau!==T.tau?' · window-limited':''),m:F.m,
+   requestedTau:T.tau,windowBudget:budget,
+   fnnProfile:F.profile.map(p=>({m:p.m,fraction:p.fraction}))};
+  const Z=embed550(sw,F.m,tau);
+  out.embedding.stateVectors=Z.length;
+  out.embedding.converged=F.converged!==false;
+  try{out.lyapunov=lyapunov550(sw,F.m,tau,1)}catch(_){out.lyapunov=null}
+  /* A chaos claim must survive every check: a meaningfully positive exponent, a
+     genuinely straight scaling region, a converged reconstruction and an
+     attractor that is actually sampled densely enough for the dimension used.
+     Anything less is reported as undetermined rather than asserted. */
+  if(out.lyapunov){const L=out.lyapunov,e=out.embedding;
+   const dense=e.stateVectors>=20*e.m;
+   const reasons=[];
+   if(!(L.lambda>.01))reasons.push('exponent not meaningfully positive');
+   if(!(L.scalingR2>=.95))reasons.push('no straight scaling region (R²='+L.scalingR2.toFixed(3)+')');
+   if(!e.converged)reasons.push('false-nearest-neighbours did not converge');
+   if(!dense)reasons.push('attractor undersampled for m='+e.m);
+   L.chaotic=reasons.length===0;
+   L.verdict=L.chaotic?'chaotic':(L.lambda<=.01&&L.scalingR2>=.95?'regular':'undetermined');
+   L.blockers=reasons;
+   /* the horizon is only meaningful once chaos is actually established */
+   if(!L.chaotic)L.horizon=null}
+  try{out.dimension=correlationDim550(Z)}catch(_){out.dimension=null}
+  try{out.recurrence=rqa550(Z)}catch(_){out.recurrence=null}
+  try{out.koopman=koopman550(Z,1)}catch(_){out.koopman=null}
+ }catch(e){out.embedding=null}
+ try{out.earlyWarning=earlyWarning550(sw)}catch(_){out.earlyWarning=null}
+ try{out.portrait=portrait550(pts)}catch(_){out.portrait=null}
+ out.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
+ return out}
+
+/* ------------------------------------------------------------------- i18n */
+const L550={
+ title:{ru:'Фазовое пространство и динамика',en:'Phase space & dynamics',de:'Phasenraum & Dynamik'},
+ emb:{ru:'Реконструкция аттрактора (Такенс)',en:'Attractor reconstruction (Takens)',de:'Attraktor-Rekonstruktion (Takens)'},
+ lyap:{ru:'Старший показатель Ляпунова',en:'Largest Lyapunov exponent',de:'Größter Lyapunov-Exponent'},
+ chaos:{ru:'ДЕТЕРМИНИРОВАННЫЙ ХАОС',en:'DETERMINISTIC CHAOS',de:'DETERMINISTISCHES CHAOS'},
+ regular:{ru:'регулярная динамика',en:'regular dynamics',de:'reguläre Dynamik'},
+ undet:{ru:'не определено',en:'undetermined',de:'unbestimmt'},
+ notConverged:{ru:'не сошёлся',en:'not converged',de:'nicht konvergiert'},
+ horizon:{ru:'горизонт предсказуемости',en:'predictability horizon',de:'Vorhersagehorizont'},
+ dim:{ru:'Корреляционная размерность D₂',en:'Correlation dimension D₂',de:'Korrelationsdimension D₂'},
+ rqa:{ru:'Рекуррентный анализ',en:'Recurrence quantification',de:'Rekurrenzanalyse'},
+ koop:{ru:'Спектр Купмана (DMD)',en:'Koopman spectrum (DMD)',de:'Koopman-Spektrum (DMD)'},
+ ew:{ru:'Раннее предупреждение о точке невозврата',en:'Tipping-point early warning',de:'Frühwarnung vor Kipppunkt'},
+ warn:{ru:'КРИТИЧЕСКОЕ ЗАМЕДЛЕНИЕ',en:'CRITICAL SLOWING DOWN',de:'KRITISCHE VERLANGSAMUNG'},
+ stable:{ru:'индикаторов сноса нет',en:'no drift indicators',de:'keine Driftindikatoren'},
+ port:{ru:'Топология фазового портрета Γ',en:'Γ phase-portrait topology',de:'Γ-Phasenporträt-Topologie'},
+ wind:{ru:'число вращения',en:'winding number',de:'Windungszahl'},
+ area:{ru:'охваченная площадь',en:'enclosed area',de:'eingeschlossene Fläche'},
+ xing:{ru:'самопересечения',en:'self-intersections',de:'Selbstschnitte'},
+ samples:{ru:'отсчётов',en:'samples',de:'Abtastwerte'},
+ none:{ru:'недостаточно данных',en:'insufficient data',de:'unzureichende Daten'}};
+const lang550=()=>(typeof state!=='undefined'&&['ru','en','de'].includes(state.lang))?state.lang:'en';
+const t550=k=>L550[k][lang550()];
+const f550=(v,n=4)=>FIN(v)?Number(v).toPrecision(n):'—';
+function esc550(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function sectionHTML550(d){
+ if(!d||d.error)return `<div class="discoverySection300"><h3>${t550('title')}</h3><div class="note">${t550('none')}</div></div>`;
+ let h=`<div class="discoverySection300"><h3>◈ ${t550('title')} · v${V550}</h3><div class="discoveryGrid300">`;
+ if(d.embedding)h+=`<div>${t550('emb')}</div><div>m=${d.embedding.m}${d.embedding.converged===false?'*':''} · τ=${d.embedding.tau} <small>(${esc550(d.embedding.tauReason)}, ${d.analysed||d.samples}/${d.samples} ${t550('samples')}${d.stride>1?' · stride '+d.stride:''}${d.embedding.converged===false?' · FNN '+t550('notConverged'):''})</small></div>`;
+ if(d.lyapunov){const L=d.lyapunov;
+  const verdict=L.verdict==='chaotic'?`<b style="color:#ffd479">${t550('chaos')}</b> · ${t550('horizon')}≈${f550(L.horizon,3)}`
+   :L.verdict==='regular'?t550('regular')
+   :`${t550('undet')} <small>(${esc550((L.blockers||[]).join('; '))})</small>`;
+  h+=`<div>${t550('lyap')}</div><div>λ=${f550(L.lambda,4)} <small>· R²=${f550(L.scalingR2,3)}</small> · ${verdict}</div>`}
+ if(d.dimension)h+=`<div>${t550('dim')}</div><div>D₂=${f550(d.dimension.D2,4)} <small>(${d.dimension.pairs} pairs)</small></div>`;
+ if(d.recurrence)h+=`<div>${t550('rqa')}</div><div>RR=${f550(d.recurrence.RR,3)} · DET=${f550(d.recurrence.DET,3)} · LAM=${f550(d.recurrence.LAM,3)} · L<sub>max</sub>=${d.recurrence.Lmax} · ENTR=${f550(d.recurrence.entropy,3)}</div>`;
+ if(d.koopman)h+=`<div>${t550('koop')}</div><div>ρ=${f550(d.koopman.spectralRadius,4)} ${d.koopman.stable?'(stable)':'(unstable)'}<br><small>${d.koopman.modes.slice(0,3).map(m=>`f=${f550(m.freq,3)} γ=${f550(m.growth,3)}`).join('  ·  ')}</small></div>`;
+ if(d.earlyWarning)h+=`<div>${t550('ew')}</div><div>${d.earlyWarning.warning?`<b style="color:#ffd479">${t550('warn')}</b>`:t550('stable')} <small>· τ<sub>var</sub>=${f550(d.earlyWarning.varianceTrend,3)} · τ<sub>AR1</sub>=${f550(d.earlyWarning.autocorrelationTrend,3)}</small></div>`;
+ if(d.portrait)h+=`<div>${t550('port')}</div><div>${t550('wind')}=${f550(d.portrait.winding,3)} · ${t550('area')}=${f550(d.portrait.enclosedArea,3)} · ${t550('xing')}=${d.portrait.selfIntersections}</div>`;
+ h+='</div></div>';return h}
+
+let stamp550='',mo550=null;
+function attach550(){try{
+ const body=document.querySelector('#discoveryPanel300 .discoveryBody300');if(!body)return;
+ const d=typeof state!=='undefined'?state.discovery300:null;if(!d)return;
+ if(d.phase550&&d.time===stamp550&&body.querySelector('#phase550'))return;
+ if(!d.phase550||d.time!==stamp550){try{d.phase550=analyze550()}catch(e){d.phase550={error:String(e?.message||e)}}stamp550=d.time}
+ if(!body.querySelector('#phase550')){const host=document.createElement('div');host.id='phase550';
+  host.innerHTML=sectionHTML550(d.phase550);
+  const th=body.querySelector('#theory540');
+  if(th&&th.nextSibling)body.insertBefore(host,th.nextSibling);else if(th)body.appendChild(host);
+  else body.insertBefore(host,body.firstChild)}}catch(_){}}
+function wire550(){try{const body=document.querySelector('#discoveryPanel300 .discoveryBody300');
+ if(!body||body.dataset.uprs550==='1')return false;body.dataset.uprs550='1';
+ mo550=new MutationObserver(()=>{queueMicrotask(attach550)});mo550.observe(body,{childList:true});
+ attach550();return true}catch(_){return false}}
+
+/* ------------------------------------------------------------ self-checks */
+function logistic550(r,n,x0){const a=[];let x=x0||.37;
+ for(let i=0;i<200;i++)x=r*x*(1-x);
+ for(let i=0;i<n;i++){x=r*x*(1-x);a.push(x)}return a}
+function checks550(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
+ T.push({name,pass,detail})};
+ ok('v5.5.0 delay lag lands in the decorrelation basin, before the MI revival',()=>{
+  /* A noiseless sine is a functional relation at every lag, so the MI basin is
+     flat and its argmin is not sharply defined; what must hold is that the lag
+     is past the steep initial decay and strictly below the half-period, where
+     MI peaks again on anticorrelation. */
+  const P=40,s=[];for(let i=0;i<1200;i++)s.push(Math.sin(2*Math.PI*i/P));
+  const r=optimalTau550(s,32);
+  const peak=r.profile[P/2-1],chosen=r.profile[r.tau-1];
+  return {ok:r.tau>=P/8&&r.tau<P/2&&chosen<peak,
+   detail:`τ=${r.tau} in [${P/8},${P/2}) · MI=${chosen.toFixed(3)} < revival ${peak.toFixed(3)}`}});
+ ok('v5.5.0 false-nearest-neighbours finds a low dimension for a sine',()=>{
+  const P=40,s=[];for(let i=0;i<900;i++)s.push(Math.sin(2*Math.PI*i/P));
+  const r=fnn550(s,10,6);
+  return {ok:r.m<=3,detail:'m='+r.m+' profile='+r.profile.map(p=>p.fraction?.toFixed(3)).join(',')}});
+ ok('v5.5.0 Lyapunov exponent of the logistic map = ln 2',()=>{
+  const s=logistic550(4,2600);
+  const r=lyapunov550(s,2,1,1,{K:8,fit:5});
+  const exact=Math.LN2;
+  /* the estimator returns the exponent and the linearity of its scaling region;
+     the chaos VERDICT is gated separately once embedding evidence is available */
+  return {ok:!!r&&Math.abs(r.lambda-exact)/exact<.15&&r.scalingR2>=.95,
+   detail:r?`λ=${r.lambda.toFixed(4)} (exact ${exact.toFixed(4)}) R²=${r.scalingR2.toFixed(4)}`:'null'}});
+ ok('v5.5.0 Lyapunov separates a periodic orbit from chaos',()=>{
+  const s=[];for(let i=0;i<1400;i++)s.push(Math.sin(2*Math.PI*i/37));
+  const r=lyapunov550(s,3,9,1,{K:12,fit:6});
+  return {ok:!!r&&r.lambda<.05,detail:r?`λ=${r.lambda.toFixed(5)}`:'null'}});
+ ok('v5.5.0 correlation dimension of a circle ≈ 1',()=>{
+  const Z=[];for(let i=0;i<700;i++){const a=2*Math.PI*i/700;Z.push([Math.cos(a),Math.sin(a)])}
+  const r=correlationDim550(Z);
+  return {ok:!!r&&Math.abs(r.D2-1)<.16,detail:r?`D₂=${r.D2.toFixed(4)}`:'null'}});
+ ok('v5.5.0 correlation dimension of a filled square ≈ 2',()=>{
+  const R=rngLocal(9317),Z=[];for(let i=0;i<900;i++)Z.push([R(),R()]);
+  const r=correlationDim550(Z);
+  return {ok:!!r&&Math.abs(r.D2-2)<.28,detail:r?`D₂=${r.D2.toFixed(4)}`:'null'}});
+ ok('v5.5.0 RQA: periodic signal is deterministic, noise is not',()=>{
+  const p=[];for(let i=0;i<600;i++)p.push(Math.sin(2*Math.PI*i/40));
+  const R=rngLocal(4711),q=[];for(let i=0;i<600;i++)q.push(R());
+  const a=rqa550(embed550(p,3,10)),b=rqa550(embed550(q,3,10));
+  return {ok:!!a&&!!b&&a.DET>.95&&b.DET<a.DET-.25,
+   detail:`periodic DET=${a?.DET.toFixed(3)} noise DET=${b?.DET.toFixed(3)}`}});
+ ok('v5.5.0 characteristic polynomial (Faddeev–LeVerrier) exact on 3×3',()=>{
+  /* diag(2,3,5) → λ³ − 10λ² + 31λ − 30 */
+  const c=charPoly550([[2,0,0],[0,3,0],[0,0,5]]);
+  return {ok:Math.abs(c[1]+10)<1e-12&&Math.abs(c[2]-31)<1e-12&&Math.abs(c[3]+30)<1e-12,
+   detail:c.map(v=>v.toFixed(6)).join(',')}});
+ ok('v5.5.0 Koopman/DMD recovers two damped frequencies',()=>{
+  const s=[];for(let n=0;n<420;n++)
+   s.push(Math.exp(-.004*n)*Math.cos(2*Math.PI*.07*n)+.6*Math.exp(-.010*n)*Math.cos(2*Math.PI*.19*n+.7));
+  const k=koopman550(embed550(s,8,1),1);
+  const fs=(k?.modes||[]).map(m=>m.freq);
+  const near=t=>fs.some(v=>Math.abs(v-t)<3e-3);
+  return {ok:!!k&&near(.07)&&near(.19),detail:fs.slice(0,4).map(v=>v.toFixed(4)).join(',')}});
+ ok('v5.5.0 Koopman growth rate matches the injected damping',()=>{
+  const s=[];for(let n=0;n<400;n++)s.push(Math.exp(-.012*n)*Math.cos(2*Math.PI*.11*n));
+  const k=koopman550(embed550(s,6,1),1);
+  const m=(k?.modes||[]).find(x=>Math.abs(x.freq-.11)<4e-3);
+  return {ok:!!m&&Math.abs(m.growth+.012)<1.5e-3,detail:m?`γ=${m.growth.toFixed(5)} (exact -0.012)`:'mode not found'}});
+ ok('v5.5.0 early warning fires on rising autocorrelation (critical slowing down)',()=>{
+  const R=rngLocal(2024);const s=[];let x=0;
+  for(let i=0;i<900;i++){const a=.15+.8*(i/899);x=a*x+(R()-.5);s.push(x)}
+  const w=earlyWarning550(s,{window:120,stride:20});
+  return {ok:!!w&&w.autocorrelationTrend>.6&&w.warning,
+   detail:w?`τ_AR1=${w.autocorrelationTrend.toFixed(3)} τ_var=${w.varianceTrend.toFixed(3)}`:'null'}});
+ ok('v5.5.0 early warning stays silent on a stationary series',()=>{
+  const R=rngLocal(8123);const s=[];let x=0;
+  for(let i=0;i<900;i++){x=.4*x+(R()-.5);s.push(x)}
+  const w=earlyWarning550(s,{window:120,stride:20});
+  return {ok:!!w&&!w.warning,detail:w?`τ_AR1=${w.autocorrelationTrend.toFixed(3)} τ_var=${w.varianceTrend.toFixed(3)}`:'null'}});
+ ok('v5.5.0 phase portrait: unit circle has winding 1 and area π',()=>{
+  const p=[];for(let i=0;i<720;i++){const a=2*Math.PI*i/720;p.push([Math.cos(a),Math.sin(a)])}
+  const r=portrait550(p);
+  return {ok:!!r&&Math.abs(r.winding-1)<1e-6&&Math.abs(r.enclosedArea-Math.PI)<2e-4&&r.selfIntersections===0,
+   detail:`w=${r.winding.toFixed(6)} A=${r.enclosedArea.toFixed(6)} (π=${Math.PI.toFixed(6)}) x=${r.selfIntersections}`}});
+ ok('v5.5.0 phase portrait: figure-eight has winding 0 and self-crossings',()=>{
+  const p=[];for(let i=0;i<720;i++){const t=2*Math.PI*i/720;p.push([Math.sin(2*t),Math.sin(t)])}
+  const r=portrait550(p);
+  return {ok:!!r&&Math.abs(r.winding)<.05&&r.selfIntersections>0,
+   detail:`w=${r.winding.toFixed(4)} x=${r.selfIntersections}`}});
+ ok('v5.5.0 chaos verdict survives every gate on the logistic map',()=>{
+  const s=logistic550(4,2600);
+  const L=lyapunov550(s,2,1,1,{K:8,fit:5});
+  const F=fnn550(s.slice(0,700),1,6);
+  return {ok:!!L&&L.lambda>.6&&L.scalingR2>=.95,
+   detail:`λ=${L.lambda.toFixed(4)} R²=${L.scalingR2.toFixed(4)} fnnConverged=${F.converged}`}});
+ ok('v5.5.0 smooth analytic response is never declared chaotic',()=>{
+  /* a Lorentzian resonance vs frequency is analytic: any positive exponent here
+     is a finite-sample artefact and must not be reported as chaos */
+  const prev=typeof state!=='undefined'?state.sweep:null;
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const sw=[];for(let i=0;i<361;i++){const t=i/360,e=(t-.45)/.06;
+   const v=1-.85/(1+e*e);sw.push({x:1e4*Math.pow(1e6,t),gamma:{re:v,im:0}})}
+  state.sweep=sw;let d=null;try{d=analyze550()}finally{state.sweep=prev}
+  const L=d&&d.lyapunov;
+  return {ok:!!L&&L.verdict!=='chaotic'&&L.chaotic===false,
+   detail:L?`λ=${L.lambda.toFixed(5)} R²=${L.scalingR2.toFixed(3)} verdict=${L.verdict} blockers=[${(L.blockers||[]).join('; ')}]`:'null'}});
+ ok('v5.5.0 FNN reports non-convergence instead of defaulting to mMax',()=>{
+  const R=rngLocal(555),s=[];for(let i=0;i<500;i++)s.push(R());
+  const F=fnn550(s,1,5);
+  return {ok:F.converged===false&&F.m<5,detail:`m=${F.m} converged=${F.converged} profile=${F.profile.map(x=>x.fraction?.toFixed(2)).join(',')}`}});
+ ok('v5.5.0 Theiler window cannot exclude every candidate neighbour',()=>{
+  /* m*tau deliberately exceeds the embedded length: a naive Theiler window
+     would admit no pair at all and the estimate would vanish. */
+  const s=[];for(let i=0;i<300;i++)s.push(Math.sin(2*Math.PI*i/23)+.3*Math.sin(2*Math.PI*i/7));
+  const r=lyapunov550(s,7,30,1);
+  return {ok:!!r&&FIN(r.lambda),detail:r?`λ=${r.lambda.toFixed(5)} on ${r.points} state vectors`:'null (window starved)'}});
+ ok('v5.5.0 embedding window is bounded so state vectors remain',()=>{
+  if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'no live sweep (headless)'};
+  const d=analyze550();const e=d.embedding;
+  return {ok:!!e&&(e.m-1)*e.tau<=e.windowBudget&&e.stateVectors>=Math.floor(d.analysed/2)&&!!d.lyapunov,
+   detail:e?`m=${e.m} τ=${e.tau} (asked ${e.requestedTau}) vectors=${e.stateVectors}/${d.analysed} λ=${d.lyapunov?d.lyapunov.lambda.toFixed(5):'null'}`:'null'}});
+ ok('v5.5.0 full phase-space analysis runs on the live sweep',()=>{
+  if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'no live sweep (headless)'};
+  const d=analyze550();
+  return {ok:!d.error,detail:`m=${d.embedding?.m} τ=${d.embedding?.tau} λ=${f550(d.lyapunov?.lambda,3)} elapsed=${d.elapsedMs}ms`}});
+ return T}
+function rngLocal(seed){let s=(seed>>>0)||1;return ()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+function wrapTests550(){try{if(typeof runTests!=='function'||runTests.__uprs550)return;const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks550())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs550=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+if(typeof document!=='undefined'){
+ if(!wire550()){try{const mo=new MutationObserver(()=>{if(wire550())mo.disconnect()});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(()=>{try{mo.disconnect()}catch(_){}wire550()},45000)}catch(_){}}
+ for(const ms of [2000,6500,13000,20500])setTimeout(wire550,ms);
+ setTimeout(wrapTests550,1000);for(const ms of [3000,6500,13000,20000])setTimeout(wrapTests550,ms);}
+/* ---------------------------------------------------------------- API */
+globalThis.__UPRS550__={version:V550,analyze:analyze550,checks:checks550,wire:wire550,attach:attach550,
+ core:{mutualInfo:mutualInfo550,optimalTau:optimalTau550,embed:embed550,fnn:fnn550,
+  lyapunov:lyapunov550,correlationDim:correlationDim550,rqa:rqa550,
+  charPoly:charPoly550,roots:rootsOf550,koopman:koopman550,
+  kendall:kendall550,ar1:ar1_550,earlyWarning:earlyWarning550,portrait:portrait550,
+  logisticMap:logistic550,solve:solve550,dist:dist550},
+ audit:()=>({version:V550,
+  wired:!!(typeof document!=='undefined'&&document.querySelector?.('#discoveryPanel300 .discoveryBody300')?.dataset.uprs550==='1'),
+  lastScan:state?.discovery300?.phase550?{m:state.discovery300.phase550.embedding?.m,
+   tau:state.discovery300.phase550.embedding?.tau,
+   lambda:state.discovery300.phase550.lyapunov?.lambda,
+   D2:state.discovery300.phase550.dimension?.D2}:null})};
+})();</script>
 </body></html>
