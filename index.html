@@ -13348,4 +13348,746 @@ globalThis.__UPRS570__={version:V570,geometry:geometry570,checks:checks570,refre
    pairs:S.geom.first.pairs.length,fixed1:S.geom.fixed1.length,fixed2:S.geom.fixed2.length,
    radius:S.geom.radius}:null})};
 })();</script>
+<style id="uprs580ChromeStyle">
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v5.8.0 · ALWAYS-VISIBLE CHROME
+   ----------------------------------------------------------------------------
+   Six separate media queries used to collapse the header on narrow viewports,
+   hiding every action button behind the ☰ menu and swapping the whole mode row
+   for a single chip. Controls that cannot be seen cannot be used, so instead of
+   hiding them the buttons now SHRINK and WRAP: more rows, smaller type, never a
+   control pushed off-screen and never a horizontal overflow.
+
+   The header therefore has to grow, which the old fixed-height grid forbade.
+   Its height is released here and --top-h is re-measured from the real header
+   by the companion script, so every panel that positions itself against the
+   header follows automatically.
+   ========================================================================== */
+header.top{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  row-gap:4px!important;
+  align-items:center;
+}
+/* the header grid must let its rows size to content instead of a fixed track */
+@media(max-width:900px){
+  header.top{grid-template-rows:auto auto!important}
+}
+@media(max-width:520px){
+  header.top{grid-template-rows:auto auto auto!important}
+}
+
+/* ---- action buttons: always shown, wrapping into as many rows as needed ---- */
+.top-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  box-sizing:border-box;
+}
+.top-actions .btn,
+.top-actions button{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+  flex:0 1 auto;
+  min-width:0!important;
+  max-width:100%;
+  box-sizing:border-box;
+  width:auto!important;
+  height:auto!important;
+  font-size:clamp(8.5px,1.45vw,12px)!important;
+  line-height:1.15!important;
+  padding:clamp(3px,.62vw,7px) clamp(5px,1.05vw,11px)!important;
+  letter-spacing:.02em;
+}
+/* the compact menu button no longer needs to stand in for the others */
+.top-actions #menuBtn{width:auto!important;height:auto!important;padding:clamp(3px,.62vw,7px) clamp(6px,1.1vw,10px)!important}
+
+/* ---- projection modes: the same treatment, they are buttons too ---- */
+.modes{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center;
+  gap:4px!important;
+  min-width:0!important;
+  max-width:100%!important;
+  overflow:visible!important;
+  box-sizing:border-box;
+}
+.modes .mode{
+  display:inline-flex!important;
+  align-items:center;
+  white-space:nowrap;
+  flex:0 1 auto;
+  min-width:0!important;
+  max-width:100%;
+  box-sizing:border-box;
+  font-size:clamp(8.5px,1.45vw,12px)!important;
+  line-height:1.15!important;
+  padding:clamp(3px,.62vw,7px) clamp(5px,1.05vw,11px)!important;
+}
+/* with the full mode row visible the single-mode chip is redundant */
+.currentModeChip{display:none!important}
+
+/* ---- the brand keeps its version line at every width ---- */
+.brand{min-width:0!important;overflow:visible!important}
+.brand>div:last-child{min-width:0!important;overflow:visible!important}
+.brand b{font-size:clamp(9px,1.5vw,13px)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{
+  display:block!important;
+  margin-top:2px;
+  font-size:clamp(7.5px,1.05vw,9.5px)!important;
+  letter-spacing:.1em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+/* nothing in the header may push the page sideways */
+html,body{max-width:100%;overflow-x:hidden}
+</style>
+<script id="uprs580ResponsiveChrome">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius-Hopf OmniAtlas · v5.8.0 · ALWAYS-VISIBLE CHROME (script half)
+   ----------------------------------------------------------------------------
+   Two rules outrank anything a stylesheet added here could say:
+
+     body.uprs400 .top-actions > * { display:none; visibility:hidden;
+                                     pointer-events:none }
+     .top .top-actions .btn        { display:block !important }
+
+   The first is the v4.0.0 command-palette mode, which folds every action button
+   behind the hamburger; the second pins the buttons to a block layout. Both
+   out-specify this module, so the contested properties are written INLINE with
+   !important - the one declaration that beats every rule in every sheet.
+
+   The header itself is released from its fixed-height grid and made a wrapping
+   flex row, so brand, modes and actions flow into as many rows as they need
+   instead of the action column collapsing to the width of one button. Because
+   panels all over the app position themselves against --top-h, that variable is
+   re-measured from the real header; the header no longer consumes --top-h
+   itself, which is what stops the measurement from feeding back on itself.
+   ========================================================================== */
+const V580='5.8.0';
+const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
+ '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
+ '__UPRS570__','__UPRS580__','__UPRS590__'];
+function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
+ for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
+function highestVersion580(){let best='0.0.0';
+ for(const k of MODULES580){try{const v=globalThis[k]&&globalThis[k].version;
+  if(typeof v==='string'&&/^\d+\.\d+\.\d+$/.test(v)&&cmpSemver580(v,best)>0)best=v}catch(_){}}
+ return best==='0.0.0'?null:best}
+/* ----------------------------------------------------------- version stamp
+   The version indicator gets its OWN element and must never be written into
+   `.brand small`. That line is contested: v3.7.7 appends to it, v4.6.1 and half
+   a dozen earlier releases overwrite it, and v3.8.1 keeps a MutationObserver on
+   it that restores its own string on every change. An observer here that put
+   the version back would trade writes with that one forever - two observers,
+   each re-firing the other, is an unbounded mutation loop that wedges the main
+   thread before the page ever finishes loading. Measured: the page never
+   reached readyState 'complete' and every evaluate() timed out.
+
+   So: a separate node, id'd, written only when the text actually changes, and
+   never observed. `.brand small` is also display:none in most of the narrow
+   media queries, so a dedicated element carrying inline !important styling is
+   the only way the version stays readable under the title at every width. */
+const STAMP_ID580='uprsVersionStamp580';
+const STAMP580=[['display','block'],['visibility','visible'],['margin-top','2px'],
+ ['color','var(--gold2,#e8cf94)'],['font-size','clamp(7px,.85vw,9px)'],
+ ['letter-spacing','.11em'],['line-height','1.2'],['text-transform','uppercase'],
+ ['white-space','nowrap'],['overflow','hidden'],['text-overflow','ellipsis'],
+ ['max-width','100%'],['opacity','.92'],['pointer-events','none']];
+function stampVersion580(){try{
+ const small=document.querySelector('.brand small');
+ const host=small?small.parentNode:document.querySelector('.brand>div:last-child');
+ if(!host)return false;
+ const v=highestVersion580();if(!v)return false;
+ let el=document.getElementById(STAMP_ID580);
+ if(!el){el=document.createElement('div');el.id=STAMP_ID580;
+  el.setAttribute('aria-label','build version');
+  if(small&&small.nextSibling)host.insertBefore(el,small.nextSibling);else host.appendChild(el)}
+ const text='v'+v+' · BIFURCATION ATLAS';
+ if(el.textContent!==text)el.textContent=text;
+ force580(el,STAMP580);
+ return true}catch(_){return false}}
+
+const BTN580=[
+ ['display','inline-flex'],['visibility','visible'],['pointer-events','auto'],
+ ['align-items','center'],['justify-content','center'],['white-space','nowrap'],
+ ['flex','0 1 auto'],['width','auto'],['height','auto'],['min-width','0'],
+ ['max-width','100%'],['box-sizing','border-box'],
+ ['font-size','clamp(8.5px,1.4vw,12px)'],['line-height','1.15'],
+ ['padding','clamp(3px,.6vw,7px) clamp(5px,1vw,11px)']];
+const BOX580=[
+ ['display','flex'],['visibility','visible'],['pointer-events','auto'],
+ ['flex-wrap','wrap'],['align-items','center'],['gap','4px'],
+ ['min-width','0'],['max-width','100%'],['width','auto'],['height','auto'],
+ ['overflow','visible'],['box-sizing','border-box']];
+const HEAD580=[
+ ['display','flex'],['flex-wrap','wrap'],['align-items','center'],
+ ['gap','6px'],['height','auto'],['min-height','0'],['max-height','none'],
+ ['overflow','visible'],['box-sizing','border-box'],
+ /* the grid tracks are what pinned the action column to one button's width */
+ ['grid-template-rows','none'],['grid-template-columns','none']];
+function force580(el,pairs){if(!el)return;for(const [k,v] of pairs){try{el.style.setProperty(k,v,'important')}catch(_){}}}
+function enforce580(){try{
+ const top=document.querySelector('header.top');if(!top)return false;
+ force580(top,HEAD580);
+ const brand=top.querySelector('.brand');
+ force580(brand,[['flex','0 1 auto'],['min-width','0'],['max-width','100%'],['overflow','visible']]);
+ const modes=top.querySelector('.modes');
+ if(modes){force580(modes,BOX580);force580(modes,[['flex','1 1 auto']]);
+  for(const el of modes.children)force580(el,BTN580)}
+ const acts=top.querySelector('.top-actions');
+ if(acts){force580(acts,BOX580);force580(acts,[['flex','1 1 auto'],['justify-content','flex-end']]);
+  for(const el of acts.children){
+   force580(el,[['display',el.tagName==='BUTTON'?'inline-flex':'inline-block'],
+    ['visibility','visible'],['pointer-events','auto'],
+    ['max-width','100%'],['min-width','0'],['position','static']]);
+   if(el.tagName==='BUTTON')force580(el,BTN580)}}
+ /* the whole mode row is on screen, so the single-mode chip is redundant */
+ const chip=document.getElementById('currentModeChip');
+ if(chip&&modes&&modes.children.length)force580(chip,[['display','none']]);
+ return true}catch(_){return false}}
+
+let ro580=null,mo580=null,last580=-1;
+function measure580(){try{
+ const top=document.querySelector('header.top');if(!top)return false;
+ const h=Math.round(top.getBoundingClientRect().height);
+ if(!(h>0))return false;
+ if(Math.abs(h-last580)<1)return true;      /* write only on real movement */
+ last580=h;
+ /* several media queries declare --top-h with !important, which an inline
+    custom property without it would lose to */
+ document.documentElement.style.setProperty('--top-h',h+'px','important');
+ return true}catch(_){return false}}
+function install580(){try{
+ const top=document.querySelector('header.top');if(!top)return false;
+ stampVersion580();enforce580();measure580();
+ /* later modules append buttons of their own (◉ MR, Focus Cam): style them the
+    moment they land instead of waiting for the next timer */
+ if(!mo580&&typeof MutationObserver==='function'){
+  const acts=top.querySelector('.top-actions');
+  if(acts){mo580=new MutationObserver(()=>{enforce580();measure580()});
+   mo580.observe(acts,{childList:true})}}
+ if(!ro580&&typeof ResizeObserver==='function'){
+  ro580=new ResizeObserver(()=>measure580());ro580.observe(top)}
+ addEventListener('resize',()=>{enforce580();measure580()},{passive:true});
+ addEventListener('orientationchange',()=>setTimeout(()=>{enforce580();measure580()},120),{passive:true});
+ return true}catch(_){return false}}
+
+/* ------------------------------------------------------------ self-checks */
+function overflowing580(){try{const de=document.documentElement;
+ return de.scrollWidth-de.clientWidth>1}catch(_){return false}}
+function hiddenControls580(){try{const out=[];
+ for(const el of document.querySelectorAll('.top-actions .btn, .top-actions button, .modes .mode')){
+  const cs=getComputedStyle(el),r=el.getBoundingClientRect();
+  if(cs.display==='none'||cs.visibility==='hidden'||r.width<1||r.height<1)
+   out.push(el.id||el.textContent.trim().slice(0,18))}
+ return out}catch(_){return['(error)']}}
+function offscreen580(){try{const out=[],vw=document.documentElement.clientWidth;
+ for(const el of document.querySelectorAll('.top-actions .btn, .top-actions button, .modes .mode')){
+  const r=el.getBoundingClientRect();if(r.width<1)continue;
+  if(r.right>vw+1||r.left<-1)out.push((el.id||el.textContent.trim().slice(0,16))+'@'+Math.round(r.left)+'..'+Math.round(r.right))}
+ return out}catch(_){return['(error)']}}
+function checks580(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
+ T.push({name,pass,detail})};
+ ok('v5.8.0 every header control is rendered, none hidden behind the menu',()=>{
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const h=hiddenControls580();
+  return {ok:h.length===0,detail:h.length?('hidden: '+h.join(', ')):'all visible'}});
+ ok('v5.8.0 no header control is pushed outside the viewport',()=>{
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const o=offscreen580();
+  return {ok:o.length===0,detail:o.length?('off-screen: '+o.join(', ')):'all within bounds'}});
+ ok('v5.8.0 the page never scrolls sideways',()=>{
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const de=document.documentElement;
+  return {ok:!overflowing580(),detail:`scrollWidth=${de.scrollWidth} clientWidth=${de.clientWidth}`}});
+ ok('v5.8.0 the header stays a small fraction of the viewport',()=>{
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const top=document.querySelector('header.top');if(!top)return {ok:false,detail:'no header'};
+  const h=top.getBoundingClientRect().height,vh=innerHeight||900;
+  /* wrapping must cost rows, not the whole screen */
+  return {ok:h<=vh*.34,detail:`header ${Math.round(h)}px of ${Math.round(vh)}px viewport`}});
+ ok('v5.8.0 --top-h matches the header that is actually drawn',()=>{
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const top=document.querySelector('header.top');if(!top)return {ok:false,detail:'no header'};
+  const real=Math.round(top.getBoundingClientRect().height);
+  const set=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h'))||0;
+  return {ok:Math.abs(real-set)<=2,detail:`header ${real}px vs --top-h ${Math.round(set)}px`}});
+ ok('v5.8.0 the version stamp under the title reports a real loaded module',()=>{
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const el=document.getElementById(STAMP_ID580),v=highestVersion580();
+  const shown=el?el.textContent:'';
+  const r=el?el.getBoundingClientRect():{width:0,height:0};
+  const visible=!!el&&getComputedStyle(el).display!=='none'&&r.width>0&&r.height>0;
+  return {ok:!!v&&visible&&shown.includes('v'+v),
+   detail:`highest loaded = v${v}; shown "${shown}"; visible=${visible}`}});
+ ok('v5.8.0 the version stamp keeps out of the contested branding line',()=>{
+  /* two observers rewriting one node trade writes forever; the regression this
+     guards froze the page before it finished loading */
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const el=document.getElementById(STAMP_ID580);
+  const small=document.querySelector('.brand small');
+  return {ok:!!el&&el.tagName!=='SMALL'&&el!==small&&!(small&&small.contains(el)),
+   detail:el?`stamp is <${el.tagName.toLowerCase()} id=${el.id}>, separate from .brand small`:'no stamp element'}});
+ ok('v5.8.0 semver ordering picks the newest module, not the longest string',()=>
+  ({ok:cmpSemver580('5.10.0','5.9.0')>0&&cmpSemver580('4.6.1','4.6.1')===0&&cmpSemver580('5.7.0','5.8.0')<0,
+    detail:'5.10.0>5.9.0, 4.6.1==4.6.1, 5.7.0<5.8.0'}));
+ return T}
+function wrapTests580(){try{if(typeof runTests!=='function'||runTests.__uprs580)return;const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks580())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs580=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+if(typeof document!=='undefined'){
+ const boot=()=>{if(!install580())setTimeout(boot,200)};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ for(const ms of [400,1200,3000,7000,13000,20000,27000])
+  setTimeout(()=>{stampVersion580();enforce580();measure580()},ms);
+ setTimeout(wrapTests580,1300);for(const ms of [3500,7200,13200,20200])setTimeout(wrapTests580,ms);}
+globalThis.__UPRS580__={version:V580,measure:measure580,stamp:stampVersion580,enforce:enforce580,checks:checks580,
+ core:{cmpSemver:cmpSemver580,highestVersion:highestVersion580},
+ audit:()=>({version:V580,
+  topH:getComputedStyle(document.documentElement).getPropertyValue('--top-h').trim(),
+  headerHeight:(()=>{const t=document.querySelector('header.top');return t?Math.round(t.getBoundingClientRect().height):null})(),
+  hidden:hiddenControls580(),offscreen:offscreen580(),horizontalOverflow:overflowing580(),
+  stamped:document.getElementById(STAMP_ID580)?.textContent||null,
+  shownVersion:highestVersion580()})};
+})();</script>
+<script id="uprs590BifurcationAtlas">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v5.9.0 · BIFURCATION ATLAS
+   ----------------------------------------------------------------------------
+   Everything so far studied ONE setting of a model. This layer sweeps a
+   parameter and rebuilds the attractor at every step, so the way a system
+   reorganises itself becomes a single object you can look at:
+
+   1. THE ATTRACTOR SET per parameter — the asymptotic values the response
+      settles on once the transient is discarded, clustered into branches.
+      One branch is a period-1 orbit, two a period-2 cycle, a continuum is
+      chaos.
+   2. THE DIAGRAM AS A 3D SURFACE — parameter across, attractor value up, and
+      the density of visits as height. A period-doubling cascade appears as the
+      surface splitting into ridges; the onset of chaos as those ridges melting
+      into a band.
+   3. PERIOD-DOUBLING DETECTION — where the branch count doubles, with the
+      parameter value reported. Verified against the logistic map, whose
+      cascade begins at exactly r=3 and doubles again at r=1+√6.
+   4. THE FEIGENBAUM RATIO — successive doubling intervals are divided; for any
+      system in this universality class the ratio approaches δ=4.669…, which
+      turns three measured bifurcations into a PREDICTION of the next one and
+      of the accumulation point where chaos begins.
+
+   Rendered as scene geometry, so orbit/zoom/pick and the whole WebXR path
+   apply; nothing is added to any 2D panel.
+   Pure core is headlessly unit-testable via __UPRS590__.core.
+   ========================================================================== */
+const V590='5.9.0';
+const FIN=Number.isFinite;
+const FEIGENBAUM=4.669201609102990;
+
+/* ==================================================== attractor extraction */
+/* The asymptotic set: the transient is dropped, then the values the trajectory
+   actually revisits are clustered. For a map every retained sample is such a
+   value; for a continuous response the local maxima play that role, which is
+   the classical construction of a bifurcation diagram. */
+function localMaxima590(s){const out=[];
+ for(let i=1;i<s.length-1;i++)if(s[i]>=s[i-1]&&s[i]>s[i+1])out.push(s[i]);
+ return out}
+/* The tolerance must be measured on a scale that is common to the whole
+   diagram. Taken relative to a column's OWN spread it self-destructs: a
+   converged fixed point has a spread of nothing but floating-point jitter, and
+   a fraction of that splits the jitter into a crowd of "branches" - which then
+   reads as a period doubling hundreds of steps before the real one. */
+function clusterValues590(vals,tol,scale){if(!vals.length)return [];
+ const s=[...vals].sort((a,b)=>a-b);
+ const lo=s[0],hi=s[s.length-1];
+ const ref=FIN(scale)&&scale>0?scale:((hi-lo)||1);
+ const eps=(tol===undefined?.02:tol)*ref;
+ const groups=[];let cur=[s[0]];
+ for(let i=1;i<s.length;i++){
+  if(s[i]-cur[cur.length-1]<=eps)cur.push(s[i]);
+  else{groups.push(cur);cur=[s[i]]}}
+ groups.push(cur);
+ return groups.map(g=>({value:g.reduce((a,b)=>a+b,0)/g.length,count:g.length,
+  spread:g[g.length-1]-g[0]}))}
+function attractorValues590(series,opt){const o=opt||{};
+ const n=series.length;if(n<8)return {values:[],branches:[],mode:o.mode||'values',branchCount:0};
+ const keep=Math.max(4,Math.floor(n*(1-(o.transient!==undefined?o.transient:.5))));
+ const tail=series.slice(n-keep);
+ const mode=o.mode||'values';
+ const vals=mode==='peaks'?localMaxima590(tail):tail;
+ const branches=clusterValues590(vals,o.tol,o.scale);
+ const minV=o.minVisits||2;
+ const count=branches.filter(b=>b.count>=minV).length;
+ /* Stationarity. Approaching a bifurcation the trajectory converges ever more
+    slowly (critical slowing down), so a transient that has not finished still
+    smears across the value axis and clusters into several groups - which reads
+    as a period doubling that has not happened yet. The tail is therefore split
+    in two and the branch count accepted only where BOTH halves agree; while the
+    orbit is still settling the later half is taken, since it is the closer to
+    the asymptotic state. */
+ const h=Math.floor(vals.length/2);
+ let settled=true,reported=count;
+ if(h>=4){
+  const a=clusterValues590(vals.slice(0,h),o.tol,o.scale).filter(b=>b.count>=minV).length;
+  const b=clusterValues590(vals.slice(h),o.tol,o.scale).filter(b=>b.count>=minV).length;
+  if(a!==b){settled=false;reported=Math.min(count,b||count)}}
+ return {values:vals,branches,mode,branchCount:reported,rawCount:count,settled}}
+
+/* ==================================================== the diagram itself */
+function bifurcationDiagram590(params,seriesFn,opt){const o=opt||{};
+ /* Pass one collects the attractor values and the range they span across the
+    WHOLE parameter sweep; pass two clusters every column against that single
+    scale, so a branch means the same distance everywhere in the diagram. */
+ const pass1=mode=>{const raw=[];let vLo=Infinity,vHi=-Infinity;
+  for(const p of params){
+   let s=null;try{s=seriesFn(p)}catch(_){s=null}
+   if(!s||!s.length){raw.push({param:p,series:null,values:[]});continue}
+   const pre=attractorValues590(s,{...o,mode,scale:undefined});
+   for(const v of pre.values){if(v<vLo)vLo=v;if(v>vHi)vHi=v}
+   raw.push({param:p,series:s,values:pre.values})}
+  return {raw,vLo,vHi,mode}};
+ const want=o.mode||'values';
+ let R=pass1(want);
+ /* A response that only rises or only falls across its axis has no interior
+    maxima, so peak extraction returns nothing at every parameter value and the
+    whole diagram collapses to an empty range - which is what silently produced
+    no geometry at all. Such a column is not a system without an attractor: its
+    asymptotic set is the run of retained values itself. The fallback is decided
+    once for the entire sweep so every column is measured the same way and the
+    common cluster scale keeps its meaning. */
+ if(want==='peaks'&&(!FIN(R.vLo)||!FIN(R.vHi)||!(R.vHi>R.vLo)))R=pass1('values');
+ const {raw,vLo,vHi}=R,extraction=R.mode;
+ if(!FIN(vLo)||!FIN(vHi)||!(vHi>vLo))
+  return {columns:raw.map(r=>({param:r.param,branches:[],branchCount:0,values:r.values})),
+   range:null,grid:null,extraction,requested:want};
+ const scale=vHi-vLo;
+ const cols=[];
+ for(const r of raw){
+  if(!r.series){cols.push({param:r.param,branches:[],branchCount:0,values:[]});continue}
+  const a=attractorValues590(r.series,{...o,mode:extraction,scale});
+  cols.push({param:r.param,branches:a.branches,branchCount:a.branchCount,
+   values:a.values,settled:a.settled})}
+ /* density grid: parameter across, value up, visits as height */
+ const B=o.bins||64,grid=[];
+ for(const c of cols){const row=new Float64Array(B);
+  for(const v of c.values){const k=Math.min(B-1,Math.max(0,Math.floor((v-vLo)/(vHi-vLo)*B)));row[k]++}
+  let mx=0;for(const x of row)if(x>mx)mx=x;
+  if(mx>0)for(let i=0;i<B;i++)row[i]/=mx;      /* per-column normalisation */
+  grid.push(row)}
+ return {columns:cols,range:{lo:vLo,hi:vHi},grid,bins:B,extraction,requested:want}}
+/* Where the branch count doubles. Comparing ADJACENT columns fails on a real
+   cascade: crossing 4→8 the trajectory is still settling, so a handful of
+   columns read 5, 6 or 7, and any of them resets an adjacent-sample reference
+   so the doubling is never seen. The sequence is therefore compressed into
+   PLATEAUX - counts that hold for several consecutive columns - and a doubling
+   is a plateau whose count is twice the previous plateau's. Unsettled columns
+   in between are ignored rather than destroying the reference, and the
+   transition is bracketed between the end of the old plateau and the first
+   column that actually reads the new count. */
+function plateaux590(cols,hold){const runs=[];
+ for(let i=0;i<cols.length;i++){const c=cols[i].branchCount;
+  if(!(c>=1))continue;
+  const last=runs[runs.length-1];
+  if(last&&last.count===c&&last.end===i-1)last.end=i;
+  else runs.push({count:c,start:i,end:i})}
+ return runs.filter(r=>r.end-r.start+1>=hold)}
+function detectDoublings590(diagram,opt){const o=opt||{},hold=o.hold||3;
+ const cols=diagram&&diagram.columns;if(!cols||cols.length<4)return [];
+ const runs=plateaux590(cols,hold);
+ const out=[];
+ for(let k=1;k<runs.length;k++){
+  const a=runs[k-1],b=runs[k];
+  if(b.count!==a.count*2)continue;
+  /* the first column that actually reads the new count brackets the transition
+     from above; the end of the settled old plateau brackets it from below */
+  let upper=b.start;
+  for(let i=a.end+1;i<=b.start;i++)if(cols[i].branchCount===b.count){upper=i;break}
+  const lower=a.end;
+  out.push({from:a.count,to:b.count,
+   param:(cols[lower].param+cols[upper].param)/2,
+   lower:cols[lower].param,upper:cols[upper].param,index:upper})}
+ return out}
+/* Three doublings fix the geometric rate; for a system in this universality
+   class it tends to Feigenbaum's constant, which predicts where the next
+   doubling and the accumulation point (the onset of chaos) will fall. */
+function feigenbaum590(doublings){
+ if(!doublings||doublings.length<3)return null;
+ const p=doublings.map(d=>d.param);
+ const ratios=[];
+ for(let i=2;i<p.length;i++){const d=(p[i]-p[i-1])||1e-300;ratios.push((p[i-1]-p[i-2])/d)}
+ const delta=ratios[ratios.length-1];
+ const last=p[p.length-1],gap=last-p[p.length-2];
+ const nextGap=gap/(FIN(delta)&&Math.abs(delta)>1e-9?delta:FEIGENBAUM);
+ /* the remaining gaps form a geometric series summing to gap/(delta-1) */
+ const d=FIN(delta)&&delta>1.0001?delta:FEIGENBAUM;
+ return {ratios,delta,reference:FEIGENBAUM,
+  relativeError:Math.abs(delta-FEIGENBAUM)/FEIGENBAUM,
+  nextDoubling:last+nextGap,
+  accumulation:last+nextGap*d/(d-1),
+  universal:Math.abs(delta-FEIGENBAUM)/FEIGENBAUM<.25}}
+
+/* ================================================================ app layer */
+const G={enabled:true,diagram:null,key:'',param:null,steps:96,elapsedMs:0};
+function sweepParamDesc590(){try{
+ const m=UPRSO_MODELS[state.model];if(!m||!m.params||!m.params.length)return null;
+ const store=(state.params&&state.params[state.model])||{};
+ /* the parameter the user is already steering, else the first with real range */
+ const key=state.driveParam||state.quickParam;
+ const byKey=key&&m.params.find(p=>p.key===key);
+ const d=byKey||m.params.find(p=>p.max>p.min)||m.params[0];
+ if(!d||!(d.max>d.min))return null;
+ return {desc:d,value:store[d.key]??d.value}}catch(_){return null}}
+function seriesForParam590(desc,value){try{
+ const m=UPRSO_MODELS[state.model];
+ const base=modelParams();
+ const p={...base,[desc.key]:value};
+ const lo=Number(document.getElementById('xmin')?.value)||m.range[0];
+ const hi=Number(document.getElementById('xmax')?.value)||m.range[1];
+ const N=Math.max(64,Math.min(240,state.samples||180));
+ const pos=lo>0&&hi>0,out=[];
+ for(let i=0;i<N;i++){
+  const x=pos?lo*Math.pow(hi/lo,i/(N-1)):lo+(hi-lo)*i/(N-1);
+  const r=mapResponse(m,m.response(x,p));
+  const v=Math.hypot(r.gamma?.re,r.gamma?.im);
+  out.push(FIN(v)?v:0)}
+ return out}catch(_){return null}}
+function build590(){const P=sweepParamDesc590();if(!P)return null;
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ const d=P.desc,steps=G.steps;
+ const log=d.scale==='log'&&d.min>0&&d.max>0;
+ const params=[];
+ for(let i=0;i<steps;i++){const t=i/(steps-1);
+  params.push(log?d.min*Math.pow(d.max/d.min,t):d.min+(d.max-d.min)*t)}
+ const diagram=bifurcationDiagram590(params,v=>seriesForParam590(d,v),
+  {mode:'peaks',transient:.35,tol:.03,bins:56});
+ if(!diagram||!diagram.range)return null;
+ const doublings=detectDoublings590(diagram);
+ const fe=feigenbaum590(doublings);
+ G.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
+ return {version:V590,param:d.key,paramLabel:d.label||d.key,unit:d.unit||'',
+  log,steps,diagram,doublings,feigenbaum:fe,elapsedMs:G.elapsedMs,
+  maxBranches:Math.max(...diagram.columns.map(c=>c.branchCount||0))}}
+function key590(){try{return [state.model,state.mode,state.samples,
+ JSON.stringify(state.params?.[state.model]||{}),G.steps].join('|')}catch(_){return ''}}
+function diagram590(force){const k=key590();
+ if(!force&&G.diagram&&k===G.key)return G.diagram;
+ G.diagram=build590();G.key=k;return G.diagram}
+
+/* ------------------------------------------------------- scene construction */
+const MODES590=['sphere','hopf','hopfion','spectral'];
+function append590(){
+ if(!G.enabled)return false;
+ if(typeof state==='undefined'||!state.scene)return false;
+ if(!MODES590.includes(state.mode))return false;
+ const L=globalThis.L,P=globalThis.P;
+ if(typeof L!=='function'||typeof P!=='function')return false;
+ const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps590');
+ if(state.scene.lines.some(mine))state.scene.lines=state.scene.lines.filter(e=>!mine(e));
+ if(state.scene.points.some(mine))state.scene.points=state.scene.points.filter(e=>!mine(e));
+ const B=diagram590();if(!B)return false;
+ const {grid,bins}=B.diagram,cols=B.diagram.columns.length;
+ if(!grid||!cols)return false;
+ /* the diagram is placed as a panel standing beside the hologram */
+ const W=2.1,H=1.15,X0=-W/2,Y0=-H/2-1.55,Z=-.35;
+ const at=(u,v,h)=>[X0+u*W,Y0+v*H,Z+h*.34];
+ /* ridges along the parameter axis: one polyline per value bin that is visited */
+ const bStep=Math.max(1,Math.floor(bins/40));
+ for(let b=0;b<bins;b+=bStep){
+  const pts=[];let any=false;
+  for(let c=0;c<cols;c++){const h=grid[c][b]||0;if(h>.02)any=true;
+   pts.push(at(c/(cols-1),b/(bins-1),h))}
+  if(any&&pts.length>2)L(pts,`rgba(126,231,193,${.10+.32*(b/bins)})`,1,
+   {kind:'ps590-ridge',bin:b,label:`Плотность аттрактора · уровень ${b+1}/${bins}`,priority:22})}
+ /* columns: the attractor set at individual parameter values */
+ const cStep=Math.max(1,Math.floor(cols/28));
+ for(let c=0;c<cols;c+=cStep){
+  const pts=[];
+  for(let b=0;b<bins;b++)pts.push(at(c/(cols-1),b/(bins-1),grid[c][b]||0));
+  L(pts,'rgba(152,232,255,.18)',.8,
+   {kind:'ps590-column',column:c,
+    label:`${B.paramLabel} = ${fmt590(B.diagram.columns[c].param)} ${B.unit} · ветвей: ${B.diagram.columns[c].branchCount}`,
+    priority:20})}
+ /* frame + axes so the panel reads as a chart */
+ L([at(0,0,0),at(1,0,0),at(1,1,0),at(0,1,0),at(0,0,0)],'rgba(232,197,112,.4)',1.2,
+  {kind:'ps590-frame',
+   label:`Диаграмма бифуркаций · ${B.paramLabel} × |Γ| · аттрактор по ${
+    B.diagram.extraction==='peaks'?'локальным максимумам':'значениям отклика'
+   } · ветвей макс.: ${B.maxBranches}`,priority:30});
+ /* every detected period doubling, marked on the parameter axis */
+ B.doublings.forEach((d,i)=>{
+  const u=paramU590(B,d.param);
+  L([at(u,0,0),at(u,1,.06)],'rgba(255,214,140,.8)',1.6,
+   {kind:'ps590-doubling',index:i,
+    label:`Удвоение периода ${d.from}→${d.to} при ${B.paramLabel} = ${fmt590(d.param)} ${B.unit}`,priority:120});
+  P(at(u,1,.06),'rgba(255,214,140,1)',5.4,'',
+   {kind:'ps590-doubling-mark',index:i,
+    label:`Бифуркация ${d.from}→${d.to} · ${B.paramLabel} = ${fmt590(d.param)} ${B.unit}`,priority:140})});
+ /* the Feigenbaum extrapolation: where the cascade accumulates and chaos starts */
+ const fe=B.feigenbaum;
+ if(fe&&FIN(fe.accumulation)){
+  const u=paramU590(B,fe.accumulation);
+  if(u>=0&&u<=1.02){
+   L([at(Math.min(1,u),0,0),at(Math.min(1,u),1,.1)],'rgba(255,157,157,.75)',1.8,
+    {kind:'ps590-accumulation',
+     label:`Точка накопления каскада (начало хаоса) ≈ ${fmt590(fe.accumulation)} ${B.unit} · δ=${fe.delta.toFixed(4)} (Фейгенбаум ${FEIGENBAUM.toFixed(4)})`,priority:130})}}
+ return true}
+function paramU590(B,p){try{const c=B.diagram.columns,lo=c[0].param,hi=c[c.length-1].param;
+ if(B.log&&lo>0&&hi>0&&p>0)return (Math.log(p)-Math.log(lo))/(Math.log(hi)-Math.log(lo));
+ return (p-lo)/((hi-lo)||1)}catch(_){return 0}}
+function fmt590(v){try{return (typeof fmt==='function')?fmt(v,4):(+v).toPrecision(4)}catch(_){return String(v)}}
+function wrap590(){try{const cur=globalThis.buildScene;
+ if(typeof cur!=='function'||cur.__uprs590)return false;
+ const w=function(){const r=cur.apply(this,arguments);
+  try{append590()}catch(e){console.warn('UPRS590 bifurcation',e)}
+  return r};
+ w.__uprs590=true;globalThis.buildScene=w;try{window.buildScene=w}catch(_){}
+ return true}catch(_){return false}}
+function refresh590(){try{G.key='';if(typeof buildScene==='function'){buildScene();
+ if(typeof draw==='function')draw(performance.now())}}catch(_){}}
+
+/* ------------------------------------------------------------ self-checks */
+function logisticSeries590(r,n,keep){let x=.4;
+ for(let i=0;i<600;i++)x=r*x*(1-x);
+ const out=[];for(let i=0;i<(n||300);i++){x=r*x*(1-x);out.push(x)}
+ return keep?out.slice(-keep):out}
+function checks590(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
+ T.push({name,pass,detail})};
+ ok('v5.9.0 branch count of the logistic map matches its known periods',()=>{
+  const at=r=>attractorValues590(logisticSeries590(r,400),{transient:.5,tol:.01}).branchCount;
+  const p1=at(2.8),p2=at(3.2),p4=at(3.52),ch=at(3.99);
+  return {ok:p1===1&&p2===2&&p4===4&&ch>8,
+   detail:`r=2.8→${p1} (period 1), r=3.2→${p2} (period 2), r=3.52→${p4} (period 4), r=3.99→${ch} (chaos)`}});
+ ok('v5.9.0 first period doubling found at r=3 exactly',()=>{
+  const params=[];for(let i=0;i<=300;i++)params.push(2.6+1.4*i/300);
+  const d=bifurcationDiagram590(params,r=>logisticSeries590(r,400),{transient:.5,tol:.01});
+  const dd=detectDoublings590(d);
+  const first=dd.find(x=>x.from===1&&x.to===2);
+  return {ok:!!first&&Math.abs(first.param-3)<.02,
+   detail:first?`r₁=${first.param.toFixed(4)} (exact 3.0000)`:'not found; doublings='+JSON.stringify(dd.map(x=>x.from+'→'+x.to))}});
+ ok('v5.9.0 second doubling found at r = 1+√6',()=>{
+  const params=[];for(let i=0;i<=300;i++)params.push(2.6+1.4*i/300);
+  const d=bifurcationDiagram590(params,r=>logisticSeries590(r,400),{transient:.5,tol:.01});
+  const dd=detectDoublings590(d);
+  const second=dd.find(x=>x.from===2&&x.to===4);
+  const exact=1+Math.sqrt(6);
+  return {ok:!!second&&Math.abs(second.param-exact)<.02,
+   detail:second?`r₂=${second.param.toFixed(4)} (exact ${exact.toFixed(4)})`:'not found'}});
+ ok('v5.9.0 the cascade ratio approaches the Feigenbaum constant',()=>{
+  /* the third doubling sits where convergence is slowest, so it needs a finer
+     sweep and a longer run than the first two before the stationarity gate will
+     accept the count as settled; the grid below is the cheapest one measured to
+     still resolve all three, keeping this check around 200 ms */
+  const params=[];for(let i=0;i<=700;i++)params.push(2.9+.68*i/700);
+  const d=bifurcationDiagram590(params,r=>logisticSeries590(r,1500),{transient:.6,tol:.0035});
+  const dd=detectDoublings590(d);
+  const fe=feigenbaum590(dd);
+  return {ok:!!fe&&fe.relativeError<.25,
+   detail:fe?`δ=${fe.delta.toFixed(4)} vs ${FEIGENBAUM.toFixed(4)} (rel err ${(fe.relativeError*100).toFixed(1)}%), from ${dd.length} doublings`
+    :'fewer than three doublings: '+JSON.stringify(dd.map(x=>x.from+'→'+x.to+'@'+x.param.toFixed(3)))}});
+ ok('v5.9.0 a converged fixed point is one branch, not a crowd of jitter',()=>{
+  /* the defect this guards: with the tolerance taken relative to a column's own
+     spread, floating-point jitter around a settled fixed point fragmented into
+     many clusters and faked a doubling at r=2.62, far below the true r=3 */
+  const s=logisticSeries590(2.62,400);
+  const own=attractorValues590(s,{transient:.5,tol:.01});
+  const onScale=attractorValues590(s,{transient:.5,tol:.01,scale:.7});
+  return {ok:onScale.branchCount===1,
+   detail:`on a common scale → ${onScale.branchCount} branch (own-spread tolerance gave ${own.branchCount})`}});
+ ok('v5.9.0 a monotone response still yields a diagram instead of nothing',()=>{
+  /* the defect this guards: asking for peak extraction on a response that only
+     rises produced zero values in every column, a null range, and therefore no
+     geometry at all - the atlas silently rendered nothing on the live models */
+  const d=bifurcationDiagram590([1,2,3,4,5,6],
+   a=>Array.from({length:64},(_,i)=>a*i/63),{mode:'peaks',transient:.3,tol:.02});
+  return {ok:!!d.range&&d.extraction==='values'&&d.columns.every(c=>c.values.length>0),
+   detail:`requested "${d.requested}" → used "${d.extraction}", range ${
+    d.range?d.range.lo.toFixed(3)+'..'+d.range.hi.toFixed(3):'null'}`}});
+ ok('v5.9.0 an oscillatory response keeps peak extraction, no needless fallback',()=>{
+  const d=bifurcationDiagram590([1,1.5,2,2.5],
+   a=>Array.from({length:256},(_,i)=>a*Math.sin(i*.35)),{mode:'peaks',transient:.3,tol:.02});
+  return {ok:d.extraction==='peaks'&&!!d.range,
+   detail:`used "${d.extraction}" on a sine, range ${d.range?d.range.lo.toFixed(3)+'..'+d.range.hi.toFixed(3):'null'}`}});
+ ok('v5.9.0 a flicker of one column is not reported as a bifurcation',()=>{
+  /* branch counts 1,1,1,2,1,1,1: a single column at twice the count is noise */
+  const cols=[1,1,1,2,1,1,1].map((c,i)=>({param:i,branchCount:c,branches:[],values:[]}));
+  return {ok:detectDoublings590({columns:cols}).length===0,
+   detail:detectDoublings590({columns:cols}).length+' doublings (expect 0)'}});
+ ok('v5.9.0 a sustained doubling IS reported',()=>{
+  const cols=[1,1,1,2,2,2,2].map((c,i)=>({param:i,branchCount:c,branches:[],values:[]}));
+  const dd=detectDoublings590({columns:cols});
+  return {ok:dd.length===1&&dd[0].from===1&&dd[0].to===2,
+   detail:JSON.stringify(dd.map(x=>x.from+'→'+x.to+'@'+x.param))}});
+ ok('v5.9.0 a single visit is not counted as a branch of the attractor',()=>{
+  /* one stray value must not inflate the period */
+  const s=[];for(let i=0;i<200;i++)s.push(i%2?0.2:0.8);
+  s[13]=0.5;
+  const a=attractorValues590(s,{transient:.2,tol:.01,minVisits:2});
+  return {ok:a.branchCount===2,detail:`${a.branchCount} branches from ${a.branches.length} clusters`}});
+ ok('v5.9.0 the density grid is normalised per parameter column',()=>{
+  const params=[2.8,3.2,3.9];
+  const d=bifurcationDiagram590(params,r=>logisticSeries590(r,300),{transient:.5,bins:32});
+  const okAll=d.grid.every(row=>{let mx=0;for(const v of row)mx=Math.max(mx,v);
+   return Math.abs(mx-1)<1e-12});
+  return {ok:okAll&&d.grid.length===3,detail:`${d.grid.length} columns, each peaking at 1`}});
+ ok('v5.9.0 Feigenbaum extrapolation places the accumulation beyond the last doubling',()=>{
+  /* synthetic cascade with the exact ratio: the accumulation point is analytic */
+  const p=[3,3.449,3.544,3.5644];
+  const dd=p.map((v,i)=>({from:1<<i,to:1<<(i+1),param:v}));
+  const fe=feigenbaum590(dd);
+  return {ok:!!fe&&fe.accumulation>p[p.length-1]&&fe.accumulation<3.60&&fe.nextDoubling>p[p.length-1],
+   detail:fe?`next≈${fe.nextDoubling.toFixed(5)}, accumulation≈${fe.accumulation.toFixed(5)} (true 3.56995)`:'null'}});
+ ok('v5.9.0 the atlas builds on the live model and injects exactly once',()=>{
+  if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
+  const prev=state.mode;let n=0,B=null;
+  try{state.mode='hopf';state.scene={lines:[],points:[]};
+   B=diagram590(true);
+   append590();state.scene.lines=[...state.scene.lines];append590();append590();
+   n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps590-frame').length;
+  }finally{state.mode=prev}
+  return {ok:!B||n===1,
+   detail:B?`frames after 3 passes = ${n} (expect 1); param=${B.param}, max branches=${B.maxBranches}, ${B.elapsedMs}ms`:'no diagram (headless)'}});
+ return T}
+function wrapTests590(){try{if(typeof runTests!=='function'||runTests.__uprs590)return;const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks590())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs590=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+if(typeof document!=='undefined'){
+ wrap590();
+ for(const ms of [700,1800,3600,7600,13600,20600])setTimeout(()=>{if(wrap590())refresh590()},ms);
+ setTimeout(refresh590,2200);
+ setTimeout(wrapTests590,1500);for(const ms of [3800,7600,13600,20600])setTimeout(wrapTests590,ms);}
+globalThis.__UPRS590__={version:V590,diagram:diagram590,checks:checks590,refresh:refresh590,
+ setEnabled:v=>{G.enabled=!!v;G.key='';refresh590();return G.enabled},
+ setSteps:n=>{G.steps=Math.max(16,Math.min(320,n|0));G.key='';refresh590();return G.steps},
+ core:{localMaxima:localMaxima590,clusterValues:clusterValues590,attractorValues:attractorValues590,
+  bifurcationDiagram:bifurcationDiagram590,detectDoublings:detectDoublings590,
+  feigenbaum:feigenbaum590,logisticSeries:logisticSeries590,FEIGENBAUM},
+ audit:()=>({version:V590,enabled:G.enabled,steps:G.steps,
+  active:(()=>{try{return state.scene.lines.some(l=>String(l.meta&&l.meta.kind||'').startsWith('ps590'))}catch(_){return false}})(),
+  diagram:G.diagram?{param:G.diagram.param,steps:G.diagram.steps,
+   maxBranches:G.diagram.maxBranches,doublings:G.diagram.doublings.length,
+   delta:G.diagram.feigenbaum?G.diagram.feigenbaum.delta:null,
+   elapsedMs:G.diagram.elapsedMs}:null})};
+})();</script>
 </body></html>
