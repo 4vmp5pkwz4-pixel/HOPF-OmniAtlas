@@ -12861,4 +12861,491 @@ globalThis.__UPRS560__={version:V560,
    fibres:G.geom.fibres.length,section:G.geom.section.length,
    chords:G.geom.chords.length,explained:G.geom.explained}:null})};
 })();</script>
+<script id="uprs570SectionReturnMap">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v5.7.0 · INTERACTIVE POINCARÉ SECTION
+                                          & FIRST-RETURN MAP
+   ----------------------------------------------------------------------------
+   v5.6.0 drew a fixed section through the reconstructed attractor. This layer
+   makes the section an INSTRUMENT you move, and turns what it catches into the
+   classical reduction of a continuous orbit to a discrete map:
+
+   1. A MOVABLE SECTION PLANE. Its offset tracks the selected sweep sample, so
+      every control the atlas already has for the cursor - the range slider, the
+      canvas drag, and the Spatial Control Deck's cursor slider inside VR -
+      sweeps the plane through the attractor and re-cuts it live. In an
+      immersive session the plane can additionally be PLACED with the
+      controller: squeeze puts it at the controller's position with the
+      controller's forward direction as its normal, giving true 6-DoF
+      placement of the section.
+   2. THE FIRST-RETURN MAP. Successive crossings (u_n, u_{n+1}) are plotted in
+      an in-plane coordinate against the diagonal, as 3D geometry beside the
+      attractor: the standard passage from a flow to a map.
+   3. FIXED POINTS AND THEIR STABILITY. Where the return map meets the diagonal
+      the orbit closes on itself - a periodic orbit. The slope there decides
+      whether it is attracting (|g'|<1, observable) or repelling (|g'|>1,
+      a skeleton the trajectory shadows but never settles on). Period-2 orbits
+      are found the same way on the second-return map.
+
+   Everything is scene geometry, so orbit/zoom/pick and the whole WebXR path
+   apply unchanged, and nothing is added to any 2D panel.
+   Pure core is headlessly unit-testable via __UPRS570__.core.
+   ========================================================================== */
+const V570='5.7.0';
+const FIN=Number.isFinite;
+const C560=()=>globalThis.__UPRS560__;
+
+/* ============================================================ plane algebra */
+function norm3_570(v){const n=Math.hypot(v[0],v[1],v[2]);
+ return n>1e-12?[v[0]/n,v[1]/n,v[2]/n]:null}
+/* An orthonormal in-plane basis for a given normal. The seed axis is chosen as
+   the world axis least aligned with the normal, so the cross product never
+   degenerates however the plane is oriented. */
+function planeBasis570(normal){const n=norm3_570(normal);if(!n)return null;
+ const ax=Math.abs(n[0]),ay=Math.abs(n[1]),az=Math.abs(n[2]);
+ const seed=(ax<=ay&&ax<=az)?[1,0,0]:(ay<=az?[0,1,0]:[0,0,1]);
+ let e1=[seed[1]*n[2]-seed[2]*n[1],seed[2]*n[0]-seed[0]*n[2],seed[0]*n[1]-seed[1]*n[0]];
+ e1=norm3_570(e1);if(!e1)return null;
+ const e2=[n[1]*e1[2]-n[2]*e1[1],n[2]*e1[0]-n[0]*e1[2],n[0]*e1[1]-n[1]*e1[0]];
+ return {n,e1,e2:norm3_570(e2)}}
+const dot3_570=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+/* in-plane coordinates of a point relative to an origin on the plane */
+function planeUV570(p,origin,basis){const d=[p[0]-origin[0],p[1]-origin[1],p[2]-origin[2]];
+ return [dot3_570(d,basis.e1),dot3_570(d,basis.e2)]}
+
+/* ==================================================== first-return machinery */
+/* Successive section hits, expressed in one in-plane coordinate, paired as
+   (u_n, u_{n+1}). `lag` selects the return order: 1 is the first-return map,
+   2 the second-return map on which period-2 orbits appear as fixed points. */
+function returnPairs570(hits,origin,basis,lag){const L=Math.max(1,lag||1);
+ const us=[];
+ for(const h of hits){const uv=planeUV570(h.point,origin,basis);
+  if(FIN(uv[0])&&FIN(uv[1]))us.push({u:uv[0],v:uv[1],index:h.index})}
+ const pairs=[];
+ for(let i=0;i+L<us.length;i++)pairs.push({u:us[i].u,next:us[i+L].u,
+  index:us[i].index,nextIndex:us[i+L].index});
+ return {coords:us,pairs,lag:L}}
+const med570=a=>{if(!a.length)return NaN;const b=[...a].sort((x,y)=>x-y),m=b.length>>1;
+ return b.length%2?b[m]:(b[m-1]+b[m])/2};
+/* Fixed points of the map: crossings of g(u)=u, located by interpolation on the
+   u-sorted data, with the local slope giving the stability of the orbit.
+
+   A scattered return map crosses the diagonal many times by accident: on a
+   quasi-periodic torus, which has NO periodic orbit at all, the raw sign
+   changes of g(u)-u produced nine "fixed points" clustered inside one tenth of
+   the range. A crossing is therefore accepted only when the sign change is
+   SUSTAINED - the median of g(u)-u over a window either side must sit on
+   opposite sides of zero by more than the map's own robust scatter - and
+   crossings closer together than a fraction of the range are merged, since a
+   single wiggle of a noisy curve is one crossing, not several. */
+function fixedPoints570(pairs,opt){const o=opt||{};
+ /* a periodic orbit is a claim about the dynamics; a handful of section hits
+    cannot support one, however cleanly they happen to straddle the diagonal */
+ if(!pairs||pairs.length<(o.minPairs!==undefined?o.minPairs:12))return [];
+ const s=[...pairs].sort((a,b)=>a.u-b.u);
+ const dev=s.map(p=>p.next-p.u).filter(FIN);
+ if(dev.length<3)return [];
+ /* Noise must be measured as departure from the LOCAL trend, not as the global
+    spread: for a smooth deterministic map g(u)-u varies systematically across
+    the range, and taking that variation for noise would reject every genuine
+    crossing. The median absolute second difference vanishes for a smooth curve
+    and tracks the true scatter for a noisy one. */
+ const d2=[];
+ for(let i=1;i<dev.length-1;i++){const v=dev[i+1]-2*dev[i]+dev[i-1];if(FIN(v))d2.push(Math.abs(v))}
+ const scatter=d2.length?1.4826*med570(d2)/2:0;
+ const uLo=s[0].u,uHi=s[s.length-1].u,uRange=(uHi-uLo)||1;
+ const win=Math.max(2,Math.round((o.window||.12)*s.length));
+ const k=o.k!==undefined?o.k:1;
+ const minSep=(o.minSeparation!==undefined?o.minSeparation:.06)*uRange;
+ const out=[];
+ for(let i=1;i<s.length;i++){
+  const a=s[i-1],b=s[i];
+  const da=a.next-a.u,db=b.next-b.u;
+  if(!FIN(da)||!FIN(db))continue;
+  const crossed=(da<0&&db>=0)||(da>=0&&db<0);      /* half-open, one count */
+  if(!crossed)continue;
+  /* the sign change must persist over a neighbourhood, not flicker on one pair */
+  const left=[],right=[];
+  for(let j=Math.max(0,i-win);j<i;j++){const d=s[j].next-s[j].u;if(FIN(d))left.push(d)}
+  for(let j=i;j<Math.min(s.length,i+win);j++){const d=s[j].next-s[j].u;if(FIN(d))right.push(d)}
+  if(left.length<2||right.length<2)continue;
+  const ml=med570(left),mr=med570(right);
+  const floor=Math.max(scatter*k,1e-12);
+  if(!(FIN(ml)&&FIN(mr))||!((ml<-floor&&mr>floor)||(ml>floor&&mr<-floor)))continue;
+  const t=da/((da-db)||1e-300);
+  const u=a.u+t*(b.u-a.u);
+  if(out.length&&Math.abs(u-out[out.length-1].u)<minSep)continue;
+  /* local slope of g over a small neighbourhood around the crossing */
+  const lo=Math.max(0,i-1-(o.span||2)),hi=Math.min(s.length,i+1+(o.span||2));
+  const seg=s.slice(lo,hi);
+  let sx=0,sy=0,sxx=0,sxy=0;const n=seg.length;
+  for(const p of seg){sx+=p.u;sy+=p.next;sxx+=p.u*p.u;sxy+=p.u*p.next}
+  const den=n*sxx-sx*sx;
+  const slope=Math.abs(den)>1e-300?(n*sxy-sx*sy)/den:NaN;
+  out.push({u,slope,
+   stable:FIN(slope)?Math.abs(slope)<1:null,
+   /* the orbit closes after `lag` section hits */
+   period:pairs[0]&&pairs[0].lag||undefined,
+   samples:n,scatter,marginLeft:ml,marginRight:mr})}
+ return out}
+/* placement of the plane from a 6-DoF pose: position on the plane, forward as
+   the normal (the convention every headset uses for a pointing ray) */
+function planeFromPose570(position,orientation){
+ const q=orientation,x=q[0],y=q[1],z=q[2],w=q[3];
+ /* rotate (0,0,-1) by the quaternion */
+ const fx=-2*(x*z+w*y),fy=-2*(y*z-w*x),fz=-(1-2*(x*x+y*y));
+ const n=norm3_570([fx,fy,fz]);if(!n)return null;
+ return {normal:n,offset:dot3_570(n,position),origin:[...position]}}
+
+/* ================================================================ app layer */
+const S={enabled:true,mode:'auto',normal:[0,0,1],offset:0,origin:[0,0,0],
+ lag:1,geom:null,key:'',placedAt:0,session:null,ref:null,bound:false};
+function attractor570(){const g=C560()&&C560().geometry();
+ return (g&&!g.degenerate&&g.attractor&&g.attractor.length>16)?g:null}
+/* the cursor drives the plane: the selected sweep sample maps onto the
+   attractor, and the plane is placed through that state */
+function cursorOffset570(g,basis){try{
+ const n=g.attractor.length;
+ const total=(state.sweep&&state.sweep.length)||n;
+ const t=total>1?Math.max(0,Math.min(1,state.index/(total-1))):.5;
+ const i=Math.max(0,Math.min(n-1,Math.round(t*(n-1))));
+ return {offset:dot3_570(basis.n,g.attractor[i]),anchor:g.attractor[i],sampleIndex:i}}
+ catch(_){return null}}
+/* A section is only useful if the flow actually goes THROUGH it. The attractor
+   arrives already expressed in its principal axes, so the candidate normals are
+   those three axes; the one the orbit crosses most often at the attractor's own
+   centre is the most transverse, and is kept while the cursor slides the offset
+   along it so the plane does not flip about as the cursor moves. */
+function autoNormal570(g){
+ const core=C560()&&C560().core;if(!core)return [0,0,1];
+ let cx=0,cy=0,cz=0;for(const p of g.attractor){cx+=p[0];cy+=p[1];cz+=p[2]}
+ const m=g.attractor.length;cx/=m;cy/=m;cz/=m;const c=[cx,cy,cz];
+ let best=[0,0,1],bestN=-1;
+ for(const n of [[1,0,0],[0,1,0],[0,0,1]]){
+  const off=dot3_570(n,c);
+  let k=0;try{k=core.poincare(g.attractor,n,off,{direction:1}).length}catch(_){}
+  if(k>bestN){bestN=k;best=n}}
+ return best}
+function build570(){const g=attractor570();if(!g)return null;
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ if(S.mode==='auto'){const an=autoNormal570(g);
+  if(an[0]!==S.normal[0]||an[1]!==S.normal[1]||an[2]!==S.normal[2])S.normal=an}
+ const basis=planeBasis570(S.normal);if(!basis)return null;
+ let offset=S.offset,anchor=null,driver='manual';
+ if(S.mode==='auto'){const c=cursorOffset570(g,basis);
+  if(c){offset=c.offset;anchor=c.anchor;driver='cursor'}}
+ /* the plane origin: the point on the plane closest to the attractor centroid */
+ let cx=0,cy=0,cz=0;for(const p of g.attractor){cx+=p[0];cy+=p[1];cz+=p[2]}
+ const m=g.attractor.length;cx/=m;cy/=m;cz/=m;
+ const d=dot3_570(basis.n,[cx,cy,cz])-offset;
+ const origin=[cx-basis.n[0]*d,cy-basis.n[1]*d,cz-basis.n[2]*d];
+ const core=C560()&&C560().core;if(!core)return null;
+ const hits=core.poincare(g.attractor,basis.n,offset,{direction:1});
+ const R1=returnPairs570(hits,origin,basis,1);
+ const R2=returnPairs570(hits,origin,basis,2);
+ const fp1=fixedPoints570(R1.pairs.map(p=>({...p,lag:1})));
+ const fp2=fixedPoints570(R2.pairs.map(p=>({...p,lag:2})));
+ /* extent of the attractor in the plane, for drawing the plane at the right size */
+ let rad=0;for(const p of g.attractor){const dd=[p[0]-origin[0],p[1]-origin[1],p[2]-origin[2]];
+  const inPlane=Math.hypot(dot3_570(dd,basis.e1),dot3_570(dd,basis.e2));
+  if(inPlane>rad)rad=inPlane}
+ return {version:V570,basis,offset,origin,anchor,driver,mode:S.mode,radius:rad||1,
+  hits,first:R1,second:R2,fixed1:fp1,fixed2:fp2,
+  attractorPoints:g.attractor.length,
+  elapsedMs:Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10}}
+function key570(){try{return [state.model,state.mode,state.index,state.sweep?.length,
+ S.mode,S.offset.toFixed(6),S.normal.map(v=>v.toFixed(4)).join(','),S.lag,S.placedAt].join('|')}
+ catch(_){return String(S.placedAt)}}
+function geometry570(force){const k=key570();
+ if(!force&&S.geom&&k===S.key)return S.geom;
+ S.geom=build570();S.key=k;return S.geom}
+
+/* ------------------------------------------------- immersive plane placement */
+/* A squeeze places the section at the controller: position on the plane,
+   pointing direction as the normal. The XR session is owned by the v4.6.1
+   engine - this only ADDS listeners and requests its own reference space, so
+   nothing about the running renderer is disturbed. */
+function bindSession570(){try{
+ const sess=(typeof state!=='undefined')?state.xrSession:null;
+ if(!sess){S.session=null;S.ref=null;S.bound=false;return false}
+ if(S.session===sess&&S.bound)return true;
+ S.session=sess;S.bound=true;S.ref=null;
+ Promise.resolve(sess.requestReferenceSpace('local-floor'))
+  .catch(()=>sess.requestReferenceSpace('local'))
+  .then(r=>{S.ref=r}).catch(()=>{});
+ const place=e=>{try{
+  if(!S.ref||!e.frame||!e.inputSource)return;
+  const src=e.inputSource,sp=src.gripSpace||src.targetRaySpace;
+  const pose=e.frame.getPose(sp,S.ref);if(!pose)return;
+  const p=pose.transform.position,o=pose.transform.orientation;
+  const pl=planeFromPose570([p.x,p.y,p.z],[o.x,o.y,o.z,o.w]);
+  if(!pl)return;
+  S.mode='manual';S.normal=pl.normal;S.offset=pl.offset;S.placedAt=Date.now();
+  try{toast('Сечение размещено контроллером')}catch(_){}
+  refresh570()}catch(_){}};
+ sess.addEventListener('squeezestart',place);
+ /* leaving the session releases the manual placement back to cursor control */
+ sess.addEventListener('end',()=>{S.session=null;S.ref=null;S.bound=false;
+  S.mode='auto';S.placedAt=Date.now()},{once:true});
+ return true}catch(_){return false}}
+
+/* ------------------------------------------------------- scene construction */
+const MODES570=['sphere','hopf','hopfion','spectral'];
+function append570(){
+ if(!S.enabled)return false;
+ if(typeof state==='undefined'||!state.scene)return false;
+ if(!MODES570.includes(state.mode))return false;
+ const L=globalThis.L,P=globalThis.P;
+ if(typeof L!=='function'||typeof P!=='function')return false;
+ /* strictly idempotent: later modules re-wrap buildScene and can rebuild the
+    scene between our passes, so we purge our own entities before adding */
+ const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps570');
+ if(state.scene.lines.some(mine))state.scene.lines=state.scene.lines.filter(e=>!mine(e));
+ if(state.scene.points.some(mine))state.scene.points=state.scene.points.filter(e=>!mine(e));
+ const g=geometry570();if(!g)return false;
+ const {basis,origin}=g,R=g.radius*1.08;
+ /* the section plane: a disc outline plus a light cross-hatch */
+ const ring=[];
+ for(let i=0;i<=72;i++){const a=i/72*Math.PI*2,c=Math.cos(a)*R,s=Math.sin(a)*R;
+  ring.push([origin[0]+basis.e1[0]*c+basis.e2[0]*s,
+             origin[1]+basis.e1[1]*c+basis.e2[1]*s,
+             origin[2]+basis.e1[2]*c+basis.e2[2]*s])}
+ L(ring,'rgba(232,197,112,.42)',1.6,{kind:'ps570-plane',
+  label:`Плоскость сечения · ${g.driver==='cursor'?'ведётся курсором':'размещена контроллером'}`,priority:70});
+ for(let k=-2;k<=2;k++){if(!k)continue;const t=k/3*R,seg=[];
+  for(const sgn of [-1,1]){const w=Math.sqrt(Math.max(0,R*R-t*t))*sgn;
+   seg.push([origin[0]+basis.e1[0]*t+basis.e2[0]*w,
+             origin[1]+basis.e1[1]*t+basis.e2[1]*w,
+             origin[2]+basis.e1[2]*t+basis.e2[2]*w])}
+  L(seg,'rgba(232,197,112,.14)',.8,{kind:'ps570-plane-grid',label:'Сетка плоскости',priority:16})}
+ /* the plane normal, so its orientation is readable at a glance */
+ L([origin,[origin[0]+basis.n[0]*R*.45,origin[1]+basis.n[1]*R*.45,origin[2]+basis.n[2]*R*.45]],
+  'rgba(232,197,112,.6)',1.6,{kind:'ps570-normal',label:'Нормаль плоскости',priority:60});
+ /* section hits */
+ g.hits.slice(0,80).forEach((h,i)=>P(h.point,'rgba(255,214,140,.92)',4.6,'',
+  {kind:'ps570-hit',index:h.index,label:`Пересечение сечения ${i+1}`,priority:126}));
+ /* ---- the first-return map, drawn as its own little chart in 3D ---- */
+ const pr=g.first.pairs;
+ if(pr.length>=2){
+  let lo=Infinity,hi=-Infinity;
+  for(const p of pr){lo=Math.min(lo,p.u,p.next);hi=Math.max(hi,p.u,p.next)}
+  const span=(hi-lo)||1,side=R*1.15;
+  /* the chart sits in the plane, offset along the normal so it never overlaps
+     the attractor it was derived from */
+  const O=[origin[0]+basis.n[0]*R*.9+basis.e1[0]*R*1.35,
+           origin[1]+basis.n[1]*R*.9+basis.e1[1]*R*1.35,
+           origin[2]+basis.n[2]*R*.9+basis.e1[2]*R*1.35];
+  const at=(a,b)=>[O[0]+basis.e1[0]*a+basis.e2[0]*b,
+                   O[1]+basis.e1[1]*a+basis.e2[1]*b,
+                   O[2]+basis.e1[2]*a+basis.e2[2]*b];
+  const map=v=>((v-lo)/span)*side;
+  L([at(0,0),at(side,0)],'rgba(152,232,255,.5)',1.2,{kind:'ps570-map-axis',label:'Ось uₙ карты возврата',priority:34});
+  L([at(0,0),at(0,side)],'rgba(152,232,255,.5)',1.2,{kind:'ps570-map-axis',label:'Ось uₙ₊₁ карты возврата',priority:34});
+  L([at(0,0),at(side,side)],'rgba(255,157,157,.45)',1.1,
+   {kind:'ps570-map-diagonal',label:'Диагональ uₙ₊₁ = uₙ (неподвижные точки)',priority:32});
+  pr.slice(0,120).forEach((p,i)=>P(at(map(p.u),map(p.next)),'rgba(126,231,193,.9)',3.4,'',
+   {kind:'ps570-map-point',index:p.index,
+    label:`Карта возврата ${i+1}: uₙ=${p.u.toFixed(4)} → uₙ₊₁=${p.next.toFixed(4)}`,priority:118}));
+  /* fixed points = periodic orbits, marked with their stability */
+  g.fixed1.forEach((f,i)=>{const m=map(f.u);
+   P(at(m,m),f.stable?'rgba(126,231,193,1)':'rgba(255,157,157,1)',7,'',
+    {kind:'ps570-fixed',label:`Неподвижная точка (период 1) u=${f.u.toFixed(5)} · наклон ${FIN(f.slope)?f.slope.toFixed(3):'—'} · ${f.stable?'устойчива':'неустойчива'}`,priority:150})});
+  g.fixed2.forEach((f,i)=>{const m=map(f.u);
+   P(at(m,m),f.stable?'rgba(195,173,255,1)':'rgba(255,190,120,1)',5.6,'',
+    {kind:'ps570-fixed2',label:`Неподвижная точка второго возврата (период 2) u=${f.u.toFixed(5)} · наклон ${FIN(f.slope)?f.slope.toFixed(3):'—'}`,priority:146})});
+ }
+ return true}
+function wrap570(){try{const cur=globalThis.buildScene;
+ if(typeof cur!=='function'||cur.__uprs570)return false;
+ const w=function(){const r=cur.apply(this,arguments);
+  try{append570()}catch(e){console.warn('UPRS570 section',e)}
+  return r};
+ w.__uprs570=true;globalThis.buildScene=w;try{window.buildScene=w}catch(_){}
+ return true}catch(_){return false}}
+function refresh570(){try{S.key='';if(typeof buildScene==='function'){buildScene();
+ if(typeof draw==='function')draw(performance.now())}}catch(_){}}
+
+/* ------------------------------------------------------------ self-checks */
+function checks570(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
+ T.push({name,pass,detail})};
+ ok('v5.7.0 in-plane basis is orthonormal and spans the plane',()=>{
+  let worst=0;
+  for(const n of [[0,0,1],[1,0,0],[0,1,0],[.3,-.7,.5],[1,1,1],[-2,.1,.05]]){
+   const b=planeBasis570(n);if(!b)return {ok:false,detail:'null basis for '+n};
+   worst=Math.max(worst,
+    Math.abs(dot3_570(b.n,b.e1)),Math.abs(dot3_570(b.n,b.e2)),Math.abs(dot3_570(b.e1,b.e2)),
+    Math.abs(Math.hypot(...b.e1)-1),Math.abs(Math.hypot(...b.e2)-1),Math.abs(Math.hypot(...b.n)-1))}
+  return {ok:worst<1e-15,detail:'max deviation '+worst.toExponential(2)}});
+ ok('v5.7.0 basis stays well conditioned for a normal along every world axis',()=>{
+  /* a fixed seed axis would collapse the cross product when the normal aligns
+     with it; the seed is chosen as the least aligned axis instead */
+  let worst=0;
+  for(const n of [[1,0,0],[0,1,0],[0,0,1],[-1,0,0],[0,-1,0],[0,0,-1]]){
+   const b=planeBasis570(n);if(!b)return {ok:false,detail:'null for '+n};
+   const area=Math.hypot(b.e1[1]*b.e2[2]-b.e1[2]*b.e2[1],
+                         b.e1[2]*b.e2[0]-b.e1[0]*b.e2[2],
+                         b.e1[0]*b.e2[1]-b.e1[1]*b.e2[0]);
+   worst=Math.max(worst,Math.abs(area-1))}
+  return {ok:worst<1e-15,detail:'max |e1×e2|-1 = '+worst.toExponential(2)}});
+ ok('v5.7.0 in-plane coordinates ignore the out-of-plane component',()=>{
+  const b=planeBasis570([0,0,1]),o=[1,2,3];
+  const a=planeUV570([1+.4,2-.7,3],o,b),c=planeUV570([1+.4,2-.7,3+9.5],o,b);
+  return {ok:Math.abs(a[0]-c[0])<1e-15&&Math.abs(a[1]-c[1])<1e-15&&
+   Math.abs(Math.hypot(a[0],a[1])-Math.hypot(.4,.7))<1e-15,
+   detail:`uv=${a.map(v=>v.toFixed(4))} vs shifted ${c.map(v=>v.toFixed(4))}`}});
+ ok('v5.7.0 pose placement: forward becomes the normal, position sets the offset',()=>{
+  /* identity orientation points along -Z */
+  const p=planeFromPose570([0,1.4,-2],[0,0,0,1]);
+  const okN=Math.abs(p.normal[0])<1e-15&&Math.abs(p.normal[1])<1e-15&&Math.abs(p.normal[2]+1)<1e-15;
+  const okO=Math.abs(p.offset-2)<1e-15;      /* n·position = (0,0,-1)·(0,1.4,-2) = 2 */
+  /* a quarter turn about +Y sends the forward direction to -X */
+  const s=Math.SQRT1_2,q=planeFromPose570([0,0,0],[0,s,0,s]);
+  const okQ=Math.abs(q.normal[0]+1)<1e-9&&Math.abs(q.normal[2])<1e-9;
+  return {ok:okN&&okO&&okQ,
+   detail:`n=${p.normal.map(v=>v.toFixed(3))} offset=${p.offset} rotated n=${q.normal.map(v=>v.toFixed(3))}`}});
+ ok('v5.7.0 the plane always passes through its own offset',()=>{
+  let worst=0;
+  for(const n of [[0,0,1],[.4,.2,-.9],[1,1,0]]){
+   const b=planeBasis570(n);
+   const off=1.37,centroid=[2,-3,.5];
+   const d=dot3_570(b.n,centroid)-off;
+   const origin=[centroid[0]-b.n[0]*d,centroid[1]-b.n[1]*d,centroid[2]-b.n[2]*d];
+   worst=Math.max(worst,Math.abs(dot3_570(b.n,origin)-off))}
+  return {ok:worst<1e-14,detail:'max |n·origin − offset| = '+worst.toExponential(2)}});
+ ok('v5.7.0 return map of a period-2 orbit alternates between two values',()=>{
+  const b=planeBasis570([0,0,1]),o=[0,0,0];
+  /* hits alternating between two in-plane positions */
+  const hits=[];for(let i=0;i<9;i++)hits.push({index:i,point:[(i%2)?1:-1,0,0]});
+  const R1=returnPairs570(hits,o,b,1),R2=returnPairs570(hits,o,b,2);
+  const alt=R1.pairs.every(p=>Math.abs(p.u+p.next)<1e-15);   /* u_{n+1} = −u_n */
+  const same=R2.pairs.every(p=>Math.abs(p.u-p.next)<1e-15);  /* second return is identity */
+  return {ok:alt&&same&&R1.pairs.length===8&&R2.pairs.length===7,
+   detail:`first-return alternates=${alt} (n=${R1.pairs.length}), second-return identity=${same} (n=${R2.pairs.length})`}});
+ ok('v5.7.0 fixed point of a known contracting map is exact',()=>{
+  /* g(u) = 0.5u + 1 has its fixed point at u = 2, slope 0.5 (stable) */
+  const pairs=[];for(let i=0;i<=40;i++){const u=i/10;pairs.push({u,next:.5*u+1})}
+  const fp=fixedPoints570(pairs);
+  return {ok:fp.length===1&&Math.abs(fp[0].u-2)<1e-12&&Math.abs(fp[0].slope-.5)<1e-12&&fp[0].stable===true,
+   detail:fp.length?`u=${fp[0].u.toFixed(12)} slope=${fp[0].slope.toFixed(12)} stable=${fp[0].stable}`:'none'}});
+ ok('v5.7.0 an expanding fixed point is reported unstable',()=>{
+  /* g(u) = 2u − 3 has its fixed point at u = 3, slope 2 (repelling) */
+  const pairs=[];for(let i=0;i<=40;i++){const u=i/8;pairs.push({u,next:2*u-3})}
+  const fp=fixedPoints570(pairs);
+  return {ok:fp.length===1&&Math.abs(fp[0].u-3)<1e-12&&Math.abs(fp[0].slope-2)<1e-12&&fp[0].stable===false,
+   detail:fp.length?`u=${fp[0].u.toFixed(12)} slope=${fp[0].slope.toFixed(12)} stable=${fp[0].stable}`:'none'}});
+ ok('v5.7.0 a map that never meets the diagonal has no fixed point',()=>{
+  const pairs=[];for(let i=0;i<=30;i++){const u=i/10;pairs.push({u,next:u+1.5})}
+  return {ok:fixedPoints570(pairs).length===0,detail:fixedPoints570(pairs).length+' found (expect 0)'}});
+ ok('v5.7.0 a sample sitting exactly on the diagonal is counted once',()=>{
+  /* g(u)=0.5u+0.5 has its fixed point at u=1, and u=1 is sampled exactly, so
+     g(u)-u is exactly zero there: a symmetric test would fire on the pair
+     arriving at it and again on the pair leaving it */
+  const pairs=[];for(let i=0;i<=40;i++){const u=i/20;pairs.push({u,next:.5*u+.5})}
+  const onDiag=pairs.filter(p=>p.next===p.u).length;
+  const fp=fixedPoints570(pairs);
+  return {ok:onDiag===1&&fp.length===1&&Math.abs(fp[0].u-1)<1e-12&&fp[0].stable===true,
+   detail:`${onDiag} sample exactly on the diagonal → ${fp.length} fixed point at `+
+    fp.map(f=>f.u.toFixed(12)).join(',')}});
+ ok('v5.7.0 no periodic orbit is claimed from too few section hits',()=>{
+  const few=[{u:0,next:-1},{u:1,next:1},{u:2,next:3}];
+  return {ok:fixedPoints570(few).length===0,
+   detail:few.length+' pairs → '+fixedPoints570(few).length+' fixed points (a claim needs support)'}});
+ ok('v5.7.0 logistic-map section reproduces its analytic fixed point',()=>{
+  /* the r=3.2 logistic map settles on a period-2 cycle; its FIRST-return map
+     therefore has the repelling fixed point 1−1/r = 0.6875 on the diagonal */
+  const r=3.2;let x=.4;for(let i=0;i<400;i++)x=r*x*(1-x);
+  const pairs=[];let u=.05;
+  for(let i=0;i<120;i++){u=i/119;pairs.push({u,next:r*u*(1-u)})}
+  const fp=fixedPoints570(pairs).filter(f=>f.u>.1);
+  const exact=1-1/r;
+  return {ok:fp.length>=1&&Math.abs(fp[0].u-exact)<2e-3&&fp[0].stable===false,
+   detail:fp.length?`u=${fp[0].u.toFixed(5)} (exact ${exact.toFixed(5)}) slope=${fp[0].slope.toFixed(4)} stable=${fp[0].stable}`:'none'}});
+ ok('v5.7.0 a scattered return map is not read as a crowd of periodic orbits',()=>{
+  /* the observed defect: a quasi-periodic section produced a noisy cloud whose
+     raw sign changes gave NINE "fixed points" bunched inside a tenth of the
+     range. One wiggle of a noisy curve is one crossing at most, never nine. */
+  let seed=7;const rnd=()=>{seed=(seed*1103515245+12345)>>>0;return seed/4294967296-.5};
+  const pairs=[];
+  for(let i=0;i<140;i++){const u=-1+2*i/139;
+   /* a curve that hugs the diagonal, so scatter alone flips the sign repeatedly */
+   pairs.push({u,next:u+rnd()*.05})}
+  const fp=fixedPoints570(pairs);
+  return {ok:fp.length<=1,detail:fp.length+' fixed point(s) (must be ≤1, was 9 before the rule)'}});
+ ok('v5.7.0 a noisy line through the diagonal still yields exactly one',()=>{
+  /* the sustained-crossing rule must not throw away genuine crossings buried
+     in scatter: g(u)=0.6u+0.4 crossed by noise of a tenth of its own swing */
+  let seed=99;const rnd=()=>{seed=(seed*1103515245+12345)>>>0;return seed/4294967296-.5};
+  const pairs=[];for(let i=0;i<120;i++){const u=i/60;pairs.push({u,next:.6*u+.4+rnd()*.08})}
+  const fp=fixedPoints570(pairs);
+  return {ok:fp.length===1&&Math.abs(fp[0].u-1)<.15,
+   detail:fp.length+' at '+fp.map(f=>f.u.toFixed(4)).join(',')+' (exact 1.0)'}});
+ ok('v5.7.0 the auto normal is the axis the orbit actually crosses most',()=>{
+  const core=C560()&&C560().core;if(!core)return {ok:true,detail:'no v5.6.0 core'};
+  /* a helix winding along z: a plane perpendicular to z is crossed once per
+     turn, while planes perpendicular to x or y are crossed far less usefully */
+  const att=[];for(let i=0;i<600;i++){const t=i/600*8*Math.PI;
+   att.push([Math.cos(t),Math.sin(t),-1+2*i/599])}
+  const fake={attractor:att};
+  const n=autoNormal570(fake);
+  const count=v=>{let cx=0,cy=0,cz=0;for(const p of att){cx+=p[0];cy+=p[1];cz+=p[2]}
+   const c=[cx/att.length,cy/att.length,cz/att.length];
+   return core.poincare(att,v,dot3_570(v,c),{direction:1}).length};
+  const cx=count([1,0,0]),cy=count([0,1,0]),cz=count([0,0,1]);
+  const chosen=count(n);
+  return {ok:chosen>=Math.max(cx,cy,cz),
+   detail:`chosen n=[${n}] gives ${chosen} crossings (x:${cx} y:${cy} z:${cz})`}});
+ ok('v5.7.0 section geometry builds and is injected exactly once',()=>{
+  if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
+  const prev=state.mode;let n=0,g=null;
+  try{state.mode='hopf';state.scene={lines:[],points:[]};
+   g=geometry570(true);
+   append570();
+   state.scene.lines=[...state.scene.lines];   /* an intermediate wrapper would do this */
+   append570();append570();
+   n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps570-plane').length;
+  }finally{state.mode=prev}
+  return {ok:!g||n===1,detail:g?`plane groups after 3 passes = ${n} (expect 1), hits=${g.hits.length},return pairs=${g.first.pairs.length}`:'no attractor (headless)'}});
+ ok('v5.7.0 moving the cursor re-cuts the section at a different offset',()=>{
+  if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'headless'};
+  const prevIdx=state.index,prevMode=S.mode;
+  try{S.mode='auto';
+   state.index=Math.floor(state.sweep.length*.2);const a=geometry570(true);
+   state.index=Math.floor(state.sweep.length*.8);const b=geometry570(true);
+   if(!a||!b)return {ok:true,detail:'no attractor'};
+   return {ok:Math.abs(a.offset-b.offset)>1e-9&&a.driver==='cursor',
+    detail:`offset ${a.offset.toFixed(5)} → ${b.offset.toFixed(5)} (driver ${a.driver})`}}
+  finally{state.index=prevIdx;S.mode=prevMode;geometry570(true)}});
+ return T}
+function wrapTests570(){try{if(typeof runTests!=='function'||runTests.__uprs570)return;const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks570())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs570=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+if(typeof document!=='undefined'){
+ wrap570();
+ for(const ms of [500,1400,3200,7200,13200,20200])setTimeout(()=>{if(wrap570())refresh570()},ms);
+ setTimeout(refresh570,1800);
+ /* watch for an immersive session appearing so the controller can place the plane */
+ setInterval(bindSession570,1200);
+ setTimeout(wrapTests570,1200);for(const ms of [3400,7200,13200,20200])setTimeout(wrapTests570,ms);}
+/* ---------------------------------------------------------------- API */
+globalThis.__UPRS570__={version:V570,geometry:geometry570,checks:checks570,refresh:refresh570,
+ setEnabled:v=>{S.enabled=!!v;S.key='';refresh570();return S.enabled},
+ setPlane:(normal,offset)=>{const n=norm3_570(normal);if(!n)return false;
+  S.normal=n;S.offset=FIN(offset)?offset:S.offset;S.mode='manual';S.placedAt=Date.now();refresh570();return true},
+ followCursor:()=>{S.mode='auto';S.placedAt=Date.now();refresh570();return true},
+ core:{normalize:norm3_570,planeBasis:planeBasis570,planeUV:planeUV570,dot:dot3_570,
+  returnPairs:returnPairs570,fixedPoints:fixedPoints570,planeFromPose:planeFromPose570,
+  bindSession:bindSession570},
+ audit:()=>({version:V570,enabled:S.enabled,mode:S.mode,lag:S.lag,
+  boundToSession:!!S.session,hasRefSpace:!!S.ref,
+  active:(()=>{try{return state.scene.lines.some(l=>String(l.meta&&l.meta.kind||'').startsWith('ps570'))}catch(_){return false}})(),
+  geometry:S.geom?{driver:S.geom.driver,offset:S.geom.offset,hits:S.geom.hits.length,
+   pairs:S.geom.first.pairs.length,fixed1:S.geom.fixed1.length,fixed2:S.geom.fixed2.length,
+   radius:S.geom.radius}:null})};
+})();</script>
 </body></html>
