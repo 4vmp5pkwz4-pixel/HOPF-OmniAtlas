@@ -12257,4 +12257,487 @@ globalThis.__UPRS550__={version:V550,analyze:analyze550,checks:checks550,wire:wi
    lambda:state.discovery300.phase550.lyapunov?.lambda,
    D2:state.discovery300.phase550.dimension?.D2}:null})};
 })();</script>
+<script id="uprs560PhaseGeometryS3">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius–Hopf OmniAtlas · v5.6.0 · PHASE-SPACE GEOMETRY ON S³
+   ----------------------------------------------------------------------------
+   v5.5.0 measured the reconstructed attractor and reported numbers. This layer
+   makes that state space GEOMETRY: it is built into the existing 3D scene, so
+   every interaction the atlas already has — orbit, zoom, pick, drag, and the
+   whole immersive WebXR path — applies to it unchanged, with no new chrome.
+
+   1. PCA PROJECTION (Jacobi eigensolver) — the delay embedding lives in m
+      dimensions; its covariance is diagonalised exactly and the attractor is
+      projected onto its three principal axes, carrying the explained-variance
+      fraction so the viewer knows how faithful the 3D shadow is.
+   2. S³ LIFT + HOPF FIBRATION — the four leading coordinates are read as a
+      pair of complex numbers (z₁,z₂), normalised onto the unit 3-sphere, and
+      stereographically projected to R³. This is the atlas's own language: the
+      phase-space orbit becomes a curve on S³, and the Hopf map sends it down
+      to S². Fibres are drawn through selected states; every point of a fibre
+      has the SAME image under the Hopf map, which is asserted exactly.
+   3. POINCARÉ SECTION — crossings of the principal plane are located by linear
+      interpolation between straddling samples and become pickable points, the
+      classical route from a continuous flow to a discrete return map.
+   4. RECURRENCE CHORDS — pairs of states closer than the RQA radius are joined
+      in 3D, turning the recurrence matrix into visible structure.
+
+   Pure geometry core is headlessly unit-testable via __UPRS560__.core.
+   ========================================================================== */
+const V560='5.6.0';
+const FIN=Number.isFinite;
+const TAU560=Math.PI*2;
+const C550=()=>globalThis.__UPRS550__;
+
+/* ===================================== multidimensional algebra (exact PCA) */
+/* Jacobi rotations diagonalise a real symmetric matrix; for a covariance this
+   yields principal axes and variances with no iteration-order ambiguity. */
+function jacobi560(Ain,maxSweeps){const n=Ain.length;
+ const A=Ain.map(r=>[...r]);
+ const V=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+ for(let sweep=0;sweep<(maxSweeps||128);sweep++){
+  let off=0;for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)off+=A[i][j]*A[i][j];
+  if(off<1e-26)break;
+  for(let p=0;p<n-1;p++)for(let q=p+1;q<n;q++){
+   if(Math.abs(A[p][q])<1e-300)continue;
+   const theta=(A[q][q]-A[p][p])/(2*A[p][q]);
+   const sg=theta>=0?1:-1;
+   const t=sg/(Math.abs(theta)+Math.sqrt(theta*theta+1));
+   const c=1/Math.sqrt(t*t+1),s=t*c;
+   for(let k=0;k<n;k++){const akp=A[k][p],akq=A[k][q];A[k][p]=c*akp-s*akq;A[k][q]=s*akp+c*akq}
+   for(let k=0;k<n;k++){const apk=A[p][k],aqk=A[q][k];A[p][k]=c*apk-s*aqk;A[q][k]=s*apk+c*aqk}
+   for(let k=0;k<n;k++){const vkp=V[k][p],vkq=V[k][q];V[k][p]=c*vkp-s*vkq;V[k][q]=s*vkp+c*vkq}}}
+ const out=[];for(let i=0;i<n;i++)out.push({value:A[i][i],vector:V.map(r=>r[i])});
+ out.sort((a,b)=>b.value-a.value);
+ return out}
+function covariance560(Z){const n=Z.length,m=Z[0].length;
+ const mu=new Array(m).fill(0);
+ for(const z of Z)for(let j=0;j<m;j++)mu[j]+=z[j];
+ for(let j=0;j<m;j++)mu[j]/=n;
+ const C=Array.from({length:m},()=>new Array(m).fill(0));
+ for(const z of Z)for(let a=0;a<m;a++){const da=z[a]-mu[a];
+  for(let b=a;b<m;b++){const v=da*(z[b]-mu[b]);C[a][b]+=v;if(b!==a)C[b][a]+=v}}
+ for(let a=0;a<m;a++)for(let b=0;b<m;b++)C[a][b]/=(n-1)||1;
+ return {C,mu}}
+/* project an m-dimensional cloud onto its k leading principal axes */
+function pca560(Z,k){if(!Z||Z.length<4)return null;
+ const m=Z[0].length,K=Math.min(k||3,m);
+ const {C,mu}=covariance560(Z);
+ const eig=jacobi560(C);
+ let total=0;for(const e of eig)total+=Math.max(0,e.value);
+ let kept=0;for(let i=0;i<K;i++)kept+=Math.max(0,eig[i].value);
+ const axes=eig.slice(0,K).map(e=>e.vector);
+ const proj=Z.map(z=>{const out=new Array(K).fill(0);
+  for(let a=0;a<K;a++){let s=0;const v=axes[a];for(let j=0;j<m;j++)s+=(z[j]-mu[j])*v[j];out[a]=s}
+  return out});
+ return {points:proj,axes,mean:mu,
+  eigenvalues:eig.map(e=>e.value),
+  explained:total>0?kept/total:0,
+  dimension:m,kept:K}}
+
+/* ============================================== S³, Hopf map, stereographic */
+function normalizeS3_560(v){const n=Math.hypot(v[0],v[1],v[2],v[3]);
+ if(!(n>0)||!FIN(n))return null;return [v[0]/n,v[1]/n,v[2]/n,v[3]/n]}
+/* Hopf map S³→S²: q=(a,b,c,d) read as z₁=a+ib, z₂=c+id
+   h = (2·Re(z₁ z̄₂), 2·Im(z₁ z̄₂), |z₁|²−|z₂|²) — a unit vector, and constant
+   along the fibre q ↦ (e^{iθ}z₁, e^{iθ}z₂). */
+function hopfMap560(q){const a=q[0],b=q[1],c=q[2],d=q[3];
+ return [2*(a*c+b*d),2*(b*c-a*d),a*a+b*b-(c*c+d*d)]}
+/* the fibre through q: the circle traced by a common phase on both components */
+function hopfFibrePoint560(q,theta){const cs=Math.cos(theta),sn=Math.sin(theta);
+ const a=q[0],b=q[1],c=q[2],d=q[3];
+ return [a*cs-b*sn, a*sn+b*cs, c*cs-d*sn, c*sn+d*cs]}
+/* stereographic projection S³→R³ from the pole (0,0,0,1) */
+function stereo560(q,scale){const den=1-q[3];
+ if(!(Math.abs(den)>1e-9))return null;
+ const s=(scale===undefined?1:scale)/den;
+ return [q[0]*s,q[1]*s,q[2]*s]}
+function fibreCurve560(q,n,scale){const out=[];
+ for(let i=0;i<=(n||96);i++){const p=stereo560(hopfFibrePoint560(q,TAU560*i/(n||96)),scale);
+  if(p)out.push(p)}
+ return out}
+
+/* ================================================= sections and recurrences */
+/* crossings of the plane {p·normal = offset}, located by linear interpolation
+   between the two samples that straddle it (one-sided by default) */
+function poincare560(pts,normal,offset,opt){const o=opt||{},dir=o.direction||0,out=[];
+ const f=p=>p[0]*normal[0]+p[1]*normal[1]+p[2]*normal[2]-(offset||0);
+ for(let i=1;i<pts.length;i++){const a=f(pts[i-1]),b=f(pts[i]);
+  if(!FIN(a)||!FIN(b))continue;
+  if(a===0&&b===0)continue;
+  const crossed=(a<0&&b>=0)||(a>0&&b<=0)||(a===0&&b!==0);
+  if(!crossed)continue;
+  const rising=b>a;
+  if(dir>0&&!rising)continue;
+  if(dir<0&&rising)continue;
+  const t=a/((a-b)||1e-300);
+  const p=[pts[i-1][0]+t*(pts[i][0]-pts[i-1][0]),
+           pts[i-1][1]+t*(pts[i][1]-pts[i-1][1]),
+           pts[i-1][2]+t*(pts[i][2]-pts[i-1][2])];
+  out.push({index:i,t,point:p,rising})}
+ return out}
+/* Recurrence chords, sampled so they describe the WHOLE orbit.
+   A greedy nested scan with an early cap is worthless here: where a response is
+   nearly flat over most of its range (a narrow resonance in a wide sweep) the
+   first index alone has hundreds of recurrent partners and fills the entire
+   budget, collapsing the picture into a single point. Instead each sampled state
+   contributes at most one chord - to its CLOSEST recurrent partner, the most
+   significant one - so the budget spreads across the attractor. Chords shorter
+   than a fraction of the attractor's own extent carry no visible information and
+   are dropped. */
+function recurrenceChords560(Z,pts,eps,opt){const o=opt||{},theiler=o.theiler||8,cap=o.cap||160;
+ const n=Math.min(Z.length,pts.length);if(n<4)return [];
+ let diam=0;
+ for(let i=1;i<n;i++){const d=Math.hypot(pts[i][0]-pts[0][0],pts[i][1]-pts[0][1],pts[i][2]-pts[0][2]);
+  if(d>diam)diam=d}
+ const minLen=(o.minLength!==undefined?o.minLength:.01)*(diam||1);
+ const out=[],stepI=Math.max(1,Math.floor(n/cap));
+ for(let i=0;i<n&&out.length<cap;i+=stepI){
+  let bj=-1,bd=Infinity;
+  for(let j=i+theiler;j<n;j++){
+   let s=0;const a=Z[i],b=Z[j];
+   for(let k=0;k<a.length;k++){const d=a[k]-b[k];s+=d*d}
+   s=Math.sqrt(s);
+   if(s<=eps&&s<bd){bd=s;bj=j}}
+  if(bj<0)continue;
+  const len=Math.hypot(pts[bj][0]-pts[i][0],pts[bj][1]-pts[i][1],pts[bj][2]-pts[i][2]);
+  if(len<minLen)continue;
+  out.push({i,j:bj,separation:bd,length:len,a:pts[i],b:pts[bj]})}
+ return out}
+
+/* ================================================================ app layer */
+const G={enabled:true,geom:null,key:'',stats:null,appends:0,lastAppends:0};
+function sweepSignal560(){const a=(typeof state!=='undefined'&&state.sweep)||[],s=[];
+ for(const r of a){const re=r.gamma?.re,im=r.gamma?.im;
+  if(FIN(re)&&FIN(im))s.push(Math.hypot(re,im))}
+ return s}
+function embedFor560(s){const c=C550();
+ if(c&&c.core){try{
+  const T=c.core.optimalTau(s);const F=c.core.fnn(s,T.tau,7);
+  /* four coordinates are needed for the S³ lift; the window is bounded so the
+     reconstruction keeps enough state vectors */
+  const m=Math.max(4,F.m);
+  const budget=Math.max(2,Math.floor(s.length/3));
+  let tau=T.tau;while(tau>1&&(m-1)*tau>budget)tau--;
+  const Z=c.core.embed(s,m,tau);
+  if(Z.length>=16)return {Z,m,tau,converged:F.converged!==false}}catch(_){}}
+ const m=4,tau=Math.max(1,Math.min(8,Math.floor(s.length/40)));
+ const Z=[],n=s.length-(m-1)*tau;
+ for(let i=0;i<n;i++)Z.push([s[i],s[i+tau],s[i+2*tau],s[i+3*tau]]);
+ return {Z,m,tau,converged:null}}
+function buildGeometry560(){const s=sweepSignal560();
+ if(s.length<48)return null;
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ /* The projection normalises the attractor to unit size, which would happily
+    magnify a cloud made only of rounding error into confident-looking structure.
+    A signal whose variation is at the floating-point floor of its own magnitude
+    carries no reconstructable state, and is reported as degenerate instead. */
+ let mn=Infinity,mx=-Infinity,sum=0;
+ for(const v of s){if(v<mn)mn=v;if(v>mx)mx=v;sum+=v}
+ const scale=Math.max(Math.abs(mn),Math.abs(mx),Math.abs(sum/s.length));
+ if(!(mx-mn>1e-12*(scale||1)))
+  return {version:V560,degenerate:true,reason:'signal variation is at the rounding floor',
+   range:mx-mn,scale,elapsedMs:0};
+ const E=embedFor560(s);if(!E||E.Z.length<16)return null;
+ /* 3D principal shadow of the m-dimensional attractor */
+ const P3=pca560(E.Z,3);if(!P3)return null;
+ let rad=0;for(const p of P3.points)rad=Math.max(rad,Math.hypot(p[0],p[1],p[2]));
+ const norm=rad>0?1.05/rad:1;
+ const attractor=P3.points.map(p=>[p[0]*norm,p[1]*norm,p[2]*norm]);
+ /* S³ lift from the four leading principal coordinates */
+ const P4=pca560(E.Z,4);
+ const s3=[],curve=[];
+ if(P4&&P4.kept===4){
+  for(const p of P4.points){const q=normalizeS3_560(p);if(!q)continue;
+   s3.push(q);const r=stereo560(q,.62);if(r)curve.push(r)}}
+ /* Hopf fibres through evenly spaced states, plus their S² base images */
+ const fibres=[],base=[];
+ if(s3.length>8){const K=Math.min(10,s3.length);
+  for(let k=0;k<K;k++){const q=s3[Math.floor(k*(s3.length-1)/(K-1))];
+   const f=fibreCurve560(q,84,.62);if(f.length>4)fibres.push(f);
+   const h=hopfMap560(q);base.push([h[0]*.5,h[1]*.5,h[2]*.5])}}
+ /* Poincaré section on the principal plane through the attractor centroid */
+ let cz=0;for(const p of attractor)cz+=p[2];cz/=attractor.length||1;
+ const section=poincare560(attractor,[0,0,1],cz,{direction:1});
+ /* recurrence chords at the RQA radius */
+ let chords=[];
+ try{const c=C550();const r=c&&c.core.rqa(E.Z,{rate:.06});
+  if(r&&r.epsilon>0)chords=recurrenceChords560(E.Z,attractor,r.epsilon,{theiler:Math.max(4,E.tau),cap:140})}catch(_){}
+ return {version:V560,embedding:{m:E.m,tau:E.tau,converged:E.converged,states:E.Z.length},
+  attractor,explained:P3.explained,eigenvalues:P3.eigenvalues,
+  s3Curve:curve,s3Points:s3.length,fibres,base,section,chords,
+  planeZ:cz,
+  elapsedMs:Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10}}
+function geomKey560(){try{return [state.model,state.mode,state.sweep?.length,
+ globalThis.__UPRS_APP__?.sceneRevision||0].join('|')}catch(_){return ''}}
+function geometry560(force){const k=geomKey560();
+ if(!force&&G.geom&&k===G.key)return G.geom;
+ G.geom=buildGeometry560();G.key=k;return G.geom}
+
+const MODES560=['sphere','hopf','hopfion','spectral'];
+function appendGeometry560(){
+ if(!G.enabled)return false;
+ if(typeof state==='undefined'||!state.scene)return false;
+ if(!MODES560.includes(state.mode))return false;
+ const L=globalThis.L,P=globalThis.P;
+ if(typeof L!=='function'||typeof P!=='function')return false;
+ /* Idempotence, the robust way. A later module may re-wrap buildScene without
+    carrying our marker, so this appender legitimately sits several times in the
+    chain; worse, an intermediate wrapper can rebuild state.scene between two of
+    our passes, which defeats any latch placed on the scene object. Purging our
+    own entities before appending is therefore the only construction that yields
+    exactly one copy regardless of chain shape or scene replacement. */
+ const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps560');
+ if(state.scene.lines.some(mine))state.scene.lines=state.scene.lines.filter(e=>!mine(e));
+ if(state.scene.points.some(mine))state.scene.points=state.scene.points.filter(e=>!mine(e));
+ G.appends++;
+ const g=geometry560();if(!g||g.degenerate)return false;
+ const unit=(typeof UPRSO_MODELS!=='undefined'&&UPRSO_MODELS[state.model]?.axisUnit)||'';
+ /* the reconstructed attractor: one polyline, capped for render cost */
+ const cap=560,st=Math.max(1,Math.ceil(g.attractor.length/cap));
+ const trail=[];for(let i=0;i<g.attractor.length;i+=st)trail.push(g.attractor[i]);
+ if(trail.length>3)L(trail,'rgba(126,231,193,.66)',1.8,
+  {kind:'ps560-attractor',label:`Реконструированный аттрактор · m=${g.embedding.m} τ=${g.embedding.tau} · ${Math.round(g.explained*100)}% дисперсии`,priority:66});
+ /* the same orbit lifted to S³ and stereographically projected */
+ if(g.s3Curve.length>3){const c2=[],s2=Math.max(1,Math.ceil(g.s3Curve.length/cap));
+  for(let i=0;i<g.s3Curve.length;i+=s2)c2.push(g.s3Curve[i]);
+  L(c2,'rgba(195,173,255,.60)',1.6,
+   {kind:'ps560-s3',label:'Орбита фазового пространства на S³ (стереографическая проекция)',priority:64})}
+ /* Hopf fibres of selected states + their images in the S² base */
+ g.fibres.forEach((f,i)=>L(f,`rgba(${140+Math.round(90*i/Math.max(1,g.fibres.length))},170,255,.20)`,1,
+  {kind:'ps560-fibre',sample:i,label:`Hopf-волокно состояния ${i+1}`,priority:42}));
+ g.base.forEach((b,i)=>P(b,'rgba(152,232,255,.5)',2.6,'',
+  {kind:'ps560-base',sample:i,label:`База S² состояния ${i+1} (образ Hopf-отображения)`,priority:88}));
+ /* Poincaré crossings become pickable points */
+ const secCap=64,ss=Math.max(1,Math.ceil(g.section.length/secCap));
+ for(let i=0;i<g.section.length;i+=ss){const c=g.section[i];
+  P(c.point,'rgba(232,197,112,.85)',4.2,'',
+   {kind:'ps560-poincare',index:c.index,label:`Сечение Пуанкаре · пересечение ${i+1}`,priority:120})}
+ /* recurrence structure drawn as chords in 3D */
+ const chCap=140,cs=Math.max(1,Math.ceil(g.chords.length/chCap));
+ for(let i=0;i<g.chords.length;i+=cs){const c=g.chords[i];
+  L([c.a,c.b],'rgba(255,157,157,.12)',.8,
+   {kind:'ps560-chord',label:`Рекуррентная пара ${c.i}↔${c.j}`,priority:18})}
+ G.stats={mode:state.mode,attractor:trail.length,s3:g.s3Curve.length,fibres:g.fibres.length,
+  section:g.section.length,chords:g.chords.length,explained:g.explained,unit};
+ return true}
+
+/* ------------------------------------------------- buildScene integration */
+function wrap560(){try{
+ const cur=globalThis.buildScene;
+ if(typeof cur!=='function'||cur.__uprs560)return false;
+ const w=function(){const r=cur.apply(this,arguments);
+  try{appendGeometry560()}catch(e){console.warn('UPRS560 geometry',e)}
+  return r};
+ w.__uprs560=true;
+ globalThis.buildScene=w;try{window.buildScene=w}catch(_){}
+ return true}catch(_){return false}}
+function refresh560(){try{if(typeof buildScene==='function'){buildScene();
+ if(typeof draw==='function')draw(performance.now())}}catch(_){}}
+
+/* ------------------------------------------------------------ self-checks */
+function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!r?.ok;detail=r?.detail||''}catch(e){detail=String(e?.message||e)}
+ T.push({name,pass,detail})};
+ ok('v5.6.0 Jacobi eigensolver exact on a known symmetric matrix',()=>{
+  /* [[2,1],[1,2]] has eigenvalues 3 and 1 with axes (1,1)/√2 and (1,-1)/√2 */
+  const e=jacobi560([[2,1],[1,2]]);
+  const v=e[0].vector,nrm=Math.hypot(v[0],v[1]);
+  return {ok:Math.abs(e[0].value-3)<1e-12&&Math.abs(e[1].value-1)<1e-12
+   &&Math.abs(Math.abs(v[0]/nrm)-Math.SQRT1_2)<1e-9,
+   detail:`λ=${e[0].value.toFixed(12)},${e[1].value.toFixed(12)}`}});
+ ok('v5.6.0 Jacobi eigenvectors are orthonormal',()=>{
+  const A=[[4,1,2,0],[1,3,0,1],[2,0,5,1],[0,1,1,2]],e=jacobi560(A);
+  let worst=0;
+  for(let i=0;i<4;i++)for(let j=0;j<4;j++){
+   let d=0;for(let k=0;k<4;k++)d+=e[i].vector[k]*e[j].vector[k];
+   worst=Math.max(worst,Math.abs(d-(i===j?1:0)))}
+  return {ok:worst<1e-10,detail:'max deviation '+worst.toExponential(2)}});
+ ok('v5.6.0 Jacobi reproduces the matrix trace (invariant)',()=>{
+  const A=[[4,1,2,0],[1,3,0,1],[2,0,5,1],[0,1,1,2]],e=jacobi560(A);
+  let tr=0;for(let i=0;i<4;i++)tr+=A[i][i];
+  let sum=0;for(const x of e)sum+=x.value;
+  return {ok:Math.abs(sum-tr)<1e-11,detail:`Σλ=${sum.toFixed(11)} tr=${tr}`}});
+ ok('v5.6.0 PCA of a planar cloud explains ~100% in two components',()=>{
+  const Z=[];for(let i=0;i<160;i++){const t=i/159*6;
+   /* a curve confined to a plane embedded in 4-D */
+   const u=Math.cos(t),v=Math.sin(t)*.5;
+   Z.push([u+2*v, .5*u-v, 2*u+0.5*v, -u+3*v])}
+  const p2=pca560(Z,2),p3=pca560(Z,3);
+  return {ok:p2.explained>.999999&&Math.abs(p3.eigenvalues[2])<1e-12,
+   detail:`2-comp explained=${p2.explained.toFixed(9)} λ₃=${p3.eigenvalues[2].toExponential(2)}`}});
+ ok('v5.6.0 S³ normalisation lands exactly on the unit 3-sphere',()=>{
+  const q=normalizeS3_560([3,-4,12,84]);
+  const n=Math.hypot(q[0],q[1],q[2],q[3]);
+  return {ok:Math.abs(n-1)<1e-15,detail:'|q|-1 = '+(n-1).toExponential(2)}});
+ ok('v5.6.0 Hopf map sends S³ onto the unit S²',()=>{
+  let worst=0;
+  for(let i=0;i<64;i++){const a=Math.sin(i*1.7),b=Math.cos(i*2.3),c=Math.sin(i*.7+1),d=Math.cos(i*1.1);
+   const q=normalizeS3_560([a,b,c,d]);const h=hopfMap560(q);
+   worst=Math.max(worst,Math.abs(Math.hypot(h[0],h[1],h[2])-1))}
+  return {ok:worst<1e-14,detail:'max ||h|-1| = '+worst.toExponential(2)}});
+ ok('v5.6.0 Hopf map is CONSTANT along a fibre (defining property)',()=>{
+  const q=normalizeS3_560([.3,-.7,.5,.4]),h0=hopfMap560(q);
+  let worst=0;
+  for(let i=0;i<=48;i++){const h=hopfMap560(hopfFibrePoint560(q,TAU560*i/48));
+   worst=Math.max(worst,Math.abs(h[0]-h0[0]),Math.abs(h[1]-h0[1]),Math.abs(h[2]-h0[2]))}
+  return {ok:worst<1e-14,detail:'max drift along fibre = '+worst.toExponential(2)}});
+ ok('v5.6.0 fibre stays on S³ and closes after a full turn',()=>{
+  const q=normalizeS3_560([.2,.5,-.6,.58]);
+  let worstN=0;
+  for(let i=0;i<=32;i++){const p=hopfFibrePoint560(q,TAU560*i/32);
+   worstN=Math.max(worstN,Math.abs(Math.hypot(p[0],p[1],p[2],p[3])-1))}
+  const end=hopfFibrePoint560(q,TAU560);
+  const close=Math.max(...q.map((v,i)=>Math.abs(v-end[i])));
+  return {ok:worstN<1e-14&&close<1e-14,
+   detail:`norm dev=${worstN.toExponential(2)} closure=${close.toExponential(2)}`}});
+ ok('v5.6.0 distinct fibres never intersect (Hopf fibration is a bundle)',()=>{
+  const qa=normalizeS3_560([.9,.1,.2,.05]),qb=normalizeS3_560([.1,.2,.9,.3]);
+  const A=[],B=[];
+  for(let i=0;i<72;i++){A.push(hopfFibrePoint560(qa,TAU560*i/72));B.push(hopfFibrePoint560(qb,TAU560*i/72))}
+  let minD=Infinity;
+  for(const a of A)for(const b of B)minD=Math.min(minD,Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2],a[3]-b[3]));
+  const baseGap=Math.hypot(...hopfMap560(qa).map((v,i)=>v-hopfMap560(qb)[i]));
+  return {ok:minD>1e-3&&baseGap>1e-3,detail:`min fibre separation=${minD.toFixed(5)} base gap=${baseGap.toFixed(5)}`}});
+ ok('v5.6.0 stereographic projection matches its closed form',()=>{
+  const p=stereo560([0,0,0,-1],1);          /* antipode of the pole → origin */
+  const r=stereo560([1,0,0,0],1);           /* equator → unit sphere in R³ */
+  const h=stereo560([0,0,.6,.8],1);         /* (0,0,0.6)/(1-0.8) = (0,0,3) */
+  return {ok:Math.hypot(p[0],p[1],p[2])<1e-15&&Math.abs(r[0]-1)<1e-15&&Math.abs(h[2]-3)<1e-13,
+   detail:`antipode→${p.map(v=>v.toFixed(1))} equator→${r[0]} test→${h[2].toFixed(12)}`}});
+ ok('v5.6.0 projection is invertible on the covered hemisphere',()=>{
+  const q=normalizeS3_560([.3,-.2,.5,.4]);const r=stereo560(q,1);
+  /* inverse stereographic from R³ back to S³ */
+  const n2=r[0]*r[0]+r[1]*r[1]+r[2]*r[2],den=n2+1;
+  const back=[2*r[0]/den,2*r[1]/den,2*r[2]/den,(n2-1)/den];
+  const err=Math.max(...q.map((v,i)=>Math.abs(v-back[i])));
+  return {ok:err<1e-14,detail:'round-trip error = '+err.toExponential(2)}});
+ ok('v5.6.0 Poincaré section counts helix crossings exactly',()=>{
+  /* 5 upward crossings of z=0 for a helix spanning 5 full turns */
+  const pts=[];for(let i=0;i<=1000;i++){const t=i/1000*5*TAU560;
+   pts.push([Math.cos(t),Math.sin(t),Math.sin(t)])}
+  const up=poincare560(pts,[0,0,1],0,{direction:1});
+  const all=poincare560(pts,[0,0,1],0,{direction:0});
+  return {ok:up.length===5&&all.length===10,detail:`rising=${up.length} total=${all.length}`}});
+ ok('v5.6.0 Poincaré crossing points lie on the section plane',()=>{
+  const pts=[];for(let i=0;i<=600;i++){const t=i/600*3*TAU560;
+   pts.push([Math.cos(t)*1.3,Math.sin(t),.4*Math.sin(t)+.15])}
+  const cr=poincare560(pts,[0,0,1],.15,{direction:0});
+  let worst=0;for(const c of cr)worst=Math.max(worst,Math.abs(c.point[2]-.15));
+  return {ok:cr.length>0&&worst<1e-12,detail:`${cr.length} crossings, max offset ${worst.toExponential(2)}`}});
+ ok('v5.6.0 recurrence chords only join genuinely close states',()=>{
+  /* the 3D layout drifts along z so that states which recur in the EMBEDDING
+     land at nearby but distinct positions, as a real projected attractor does;
+     an exactly overlapping layout is rejected by the degeneracy filter instead */
+  const Z=[],pts=[];
+  for(let i=0;i<240;i++){const t=i/240*4*TAU560;
+   Z.push([Math.cos(t),Math.sin(t)]);pts.push([Math.cos(t),Math.sin(t),.004*i])}
+  const eps=.05,ch=recurrenceChords560(Z,pts,eps,{theiler:10,cap:500});
+  let worst=0;
+  for(const c of ch){const d=Math.hypot(Z[c.i][0]-Z[c.j][0],Z[c.i][1]-Z[c.j][1]);
+   worst=Math.max(worst,d)}
+  return {ok:ch.length>0&&worst<=eps+1e-12&&ch.every(c=>c.j-c.i>=10),
+   detail:`${ch.length} chords, max embedding separation ${worst.toFixed(6)} ≤ ${eps}`}});
+ ok('v5.6.0 recurrence chords span the orbit instead of piling on one state',()=>{
+  /* a nearly flat signal with one excursion: the pathological case that made a
+     greedy scan emit every chord from index 0 */
+  const Z=[],pts=[];
+  for(let i=0;i<300;i++){const flat=1+1e-6*i;
+   const v=(i>200&&i<230)?flat+.9:flat;
+   Z.push([v,v+1e-7,v-1e-7]);pts.push([Math.cos(i/300*4*Math.PI)*v,Math.sin(i/300*4*Math.PI)*v,i/300])}
+  const ch=recurrenceChords560(Z,pts,.05,{theiler:6,cap:80});
+  const uniq=new Set(ch.map(c=>c.i)).size;
+  const spread=ch.length?Math.max(...ch.map(c=>c.i))-Math.min(...ch.map(c=>c.i)):0;
+  return {ok:ch.length>4&&uniq===ch.length&&spread>100,
+   detail:`${ch.length} chords, ${uniq} distinct anchors, index spread ${spread}`}});
+ ok('v5.6.0 no chord is drawn as a degenerate zero-length segment',()=>{
+  const Z=[],pts=[];
+  for(let i=0;i<260;i++){const t=i/260*6*Math.PI;
+   Z.push([Math.cos(t),Math.sin(t)]);pts.push([Math.cos(t),Math.sin(t),.001*i])}
+  const ch=recurrenceChords560(Z,pts,.08,{theiler:8,cap:120});
+  let diam=0;for(let i=1;i<pts.length;i++)diam=Math.max(diam,Math.hypot(pts[i][0]-pts[0][0],pts[i][1]-pts[0][1],pts[i][2]-pts[0][2]));
+  const shortest=ch.length?Math.min(...ch.map(c=>c.length)):Infinity;
+  return {ok:ch.length>0&&shortest>=.01*diam,
+   detail:`${ch.length} chords, shortest ${shortest.toFixed(5)} ≥ ${(0.01*diam).toFixed(5)}`}});
+ ok('v5.6.0 a signal with no resolvable variation yields no geometry',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const prev=state.sweep;
+  try{
+   const flat=[];for(let i=0;i<200;i++)flat.push({x:i+1,gamma:{re:.5,im:0}});
+   state.sweep=flat;const g=geometry560(true);
+   /* and nothing may reach the scene */
+   const pm=state.mode;state.mode='hopf';
+   const scene={lines:[],points:[]};const keep=state.scene;state.scene=scene;
+   let injected=0;try{appendGeometry560();
+    injected=scene.lines.filter(l=>String(l.meta&&l.meta.kind||'').startsWith('ps560')).length}
+   finally{state.scene=keep;state.mode=pm}
+   return {ok:!!g&&g.degenerate===true&&injected===0,
+    detail:g?`degenerate=${g.degenerate} reason="${g.reason||''}" injected=${injected}`:'null'}}
+  finally{state.sweep=prev;geometry560(true)}});
+ ok('v5.6.0 geometry builds from the live sweep and injects into the scene',()=>{
+  if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'no live sweep (headless)'};
+  const g=geometry560(true);
+  if(!g)return {ok:false,detail:'geometry null'};
+  return {ok:g.attractor.length>8&&g.s3Curve.length>8&&g.fibres.length>0&&FIN(g.explained),
+   detail:`attractor=${g.attractor.length} S³=${g.s3Curve.length} fibres=${g.fibres.length} explained=${(g.explained*100).toFixed(1)}% ${g.elapsedMs}ms`}});
+ ok('v5.6.0 geometry is injected exactly once however often buildScene is wrapped',()=>{
+  if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
+  const prev=state.mode;let n=0;
+  try{state.mode='hopf';state.scene={lines:[],points:[]};
+   /* three appender passes over one built scene, as a multiply-wrapped chain
+      does, with the scene's arrays REPLACED in between (an intermediate wrapper
+      filtering entities does exactly this) so no object latch could survive */
+   appendGeometry560();
+   state.scene.lines=[...state.scene.lines];state.scene.points=[...state.scene.points];
+   appendGeometry560();appendGeometry560();
+   n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps560-attractor').length;
+  }finally{state.mode=prev}
+  return {ok:n===1,detail:`attractor groups after 3 passes = ${n} (expect 1)`}});
+ ok('v5.6.0 scene entities are appended only in the 3D projections',()=>{
+  if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
+  const prev=state.mode;let inHopf=0,inSmith=0;
+  try{
+   state.mode='hopf';state.scene={lines:[],points:[]};appendGeometry560();
+   inHopf=state.scene.lines.filter(l=>String(l.meta?.kind||'').startsWith('ps560')).length;
+   state.mode='smith';state.scene={lines:[],points:[]};appendGeometry560();
+   inSmith=state.scene.lines.filter(l=>String(l.meta?.kind||'').startsWith('ps560')).length;
+  }finally{state.mode=prev}
+  return {ok:inHopf>0&&inSmith===0,detail:`hopf=${inHopf} smith=${inSmith}`}});
+ return T}
+function wrapTests560(){try{if(typeof runTests!=='function'||runTests.__uprs560)return;const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks560())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  window.__UPRS_SELF_TEST__=rep;
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs560=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}}catch(_){}}
+if(typeof document!=='undefined'){
+ wrap560();
+ /* later modules may replace buildScene without chaining; re-wrap a few times
+    and rebuild once so the geometry is present on first paint */
+ for(const ms of [400,1200,3000,7000,13000,20000])setTimeout(()=>{if(wrap560())refresh560()},ms);
+ setTimeout(refresh560,1600);
+ setTimeout(wrapTests560,1100);for(const ms of [3200,7000,13000,20000])setTimeout(wrapTests560,ms);}
+/* ---------------------------------------------------------------- API */
+globalThis.__UPRS560__={version:V560,
+ geometry:geometry560,checks:checks560,refresh:refresh560,
+ setEnabled:v=>{G.enabled=!!v;G.key='';refresh560();return G.enabled},
+ isEnabled:()=>G.enabled,
+ core:{jacobi:jacobi560,covariance:covariance560,pca:pca560,
+  normalizeS3:normalizeS3_560,hopfMap:hopfMap560,hopfFibrePoint:hopfFibrePoint560,
+  stereo:stereo560,fibreCurve:fibreCurve560,poincare:poincare560,
+  recurrenceChords:recurrenceChords560},
+ audit:()=>({version:V560,enabled:G.enabled,wrapped:!!globalThis.buildScene?.__uprs560,
+  modes:[...MODES560],stats:G.stats?{...G.stats}:null,appends:G.appends,
+  /* the outermost buildScene marker is cleared whenever a later module re-wraps,
+     so "active" reports whether our geometry actually reached the built scene */
+  active:(()=>{try{return state.scene.lines.some(l=>String(l.meta&&l.meta.kind||'').startsWith('ps560'))}catch(_){return false}})(),
+  sceneGroups:(()=>{try{const k=e=>String(e.meta&&e.meta.kind||'');
+   return [...state.scene.lines].filter(e=>k(e)==='ps560-attractor').length}catch(_){return null}})(),
+  geometry:G.geom?{m:G.geom.embedding.m,tau:G.geom.embedding.tau,
+   attractor:G.geom.attractor.length,s3:G.geom.s3Curve.length,
+   fibres:G.geom.fibres.length,section:G.geom.section.length,
+   chords:G.geom.chords.length,explained:G.geom.explained}:null})};
+})();</script>
 </body></html>
