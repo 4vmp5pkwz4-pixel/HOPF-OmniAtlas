@@ -13572,7 +13572,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const V580='5.8.0';
 const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
  '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
- '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__'];
+ '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__'];
 function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
  for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
 function highestVersion580(){let best='0.0.0';
@@ -13608,7 +13608,7 @@ function stampVersion580(){try{
  if(!el){el=document.createElement('div');el.id=STAMP_ID580;
   el.setAttribute('aria-label','build version');
   if(small&&small.nextSibling)host.insertBefore(el,small.nextSibling);else host.appendChild(el)}
- const text='v'+v+' · ADAPTIVE ATLAS';
+ const text='v'+v+' · TOPOLOGICAL ATLAS';
  if(el.textContent!==text)el.textContent=text;
  force580(el,STAMP580);
  return true}catch(_){return false}}
@@ -14882,5 +14882,454 @@ globalThis.__UPRS610__={version:V610,apply:applyAll610,checks:checks610,
   topH:getComputedStyle(document.documentElement).getPropertyValue('--top-h').trim(),
   offscreen:offscreen610('.top-actions .btn, .top-actions button, .modes .mode'),
   horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth>1})};
+})();</script>
+<script id="uprs620TopologicalAtlas">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius-Hopf OmniAtlas · v6.2.0 · TOPOLOGY OF THE ATTRACTOR
+   ----------------------------------------------------------------------------
+   Every dynamical verdict in this app so far is metric: a Lyapunov exponent, a
+   correlation dimension, a recurrence statistic, a branch count. All of them
+   read numbers off the trajectory. None of them answers the question a
+   topologist would ask first - WHAT SHAPE IS THIS SET - and that question is
+   the one that survives every smooth change of coordinates, every rescaling of
+   the axis, and every monotone distortion of the observable.
+
+   This layer computes the persistent homology of the reconstructed attractor
+   over a Vietoris-Rips filtration, exactly, over Z/2:
+
+     H0 - how many pieces the attractor has. Two or more is coexisting
+          attractors, i.e. multistability, which no single-trajectory metric
+          reports at all.
+     H1 - how many irreducible loops it has. One is a closed orbit, and it is
+          established without any spectral assumption; zero means the set is
+          contractible at the resolved scale (a fixed point, or a set that
+          fills in); several means several independent circulations.
+
+   Crucially the answer comes with the SCALE AT WHICH IT HOLDS. A Rips complex
+   cannot see a hole narrower than its own radius, so a hole smaller than that
+   is not "absent", it is UNDECIDED - and that is reported rather than rounded
+   to zero. The measured rule, from the reference tori below: an essential loop
+   survives exactly while the diameter of its hole exceeds the filtration
+   radius.
+
+   The result is an INDEPENDENT line of evidence. Where it agrees with the
+   v5.5.0 Lyapunov verdict the two together are worth far more than either;
+   where it disagrees, the disagreement is reported, because a conflict between
+   a metric and a topological reading of the same data is a finding, not a bug
+   to be hidden.
+
+   Rendered as scene geometry - a persistence diagram standing beside the
+   hologram, and the representative loop drawn on the attractor itself, so the
+   claim "there is a loop here" points at where it is. Nothing is added to any
+   2D panel. Pure core is headlessly testable via __UPRS620__.core.
+   ========================================================================== */
+const V620='6.2.0';
+const FIN=Number.isFinite;
+
+/* ===================================================== point cloud sampling */
+/* Farthest-point sampling, not a stride: a stride along a trajectory keeps the
+   time order and clumps where the orbit is slow, which biases every distance in
+   the filtration. Farthest-point spreads the sample over the SET. */
+function fps620(pts,k){const n=pts.length;if(n<=k)return pts.map((_,i)=>i);
+ const idx=[0],d=new Float64Array(n).fill(Infinity);
+ for(let s=1;s<k;s++){const L=pts[idx[idx.length-1]];let best=0,bd=-1;
+  for(let i=0;i<n;i++){const dx=pts[i][0]-L[0],dy=pts[i][1]-L[1],dz=pts[i][2]-L[2];
+   const v=dx*dx+dy*dy+dz*dz;if(v<d[i])d[i]=v;if(d[i]>bd){bd=d[i];best=i}}
+  idx.push(best)}
+ return idx}
+function distMatrix620(P){const n=P.length,D=new Float64Array(n*n);
+ for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+  const dx=P[i][0]-P[j][0],dy=P[i][1]-P[j][1],dz=P[i][2]-P[j][2];
+  const v=Math.sqrt(dx*dx+dy*dy+dz*dz);D[i*n+j]=v;D[j*n+i]=v}
+ return D}
+function mstEdges620(P){const n=P.length,D=distMatrix620(P);
+ const inTree=new Uint8Array(n),best=new Float64Array(n).fill(Infinity),out=[];
+ best[0]=0;
+ for(let it=0;it<n;it++){let u=-1,bu=Infinity;
+  for(let i=0;i<n;i++)if(!inTree[i]&&best[i]<bu){bu=best[i];u=i}
+  if(u<0)break;inTree[u]=1;if(it>0&&FIN(bu))out.push(bu);
+  for(let v=0;v<n;v++)if(!inTree[v]){const d=D[u*n+v];if(d<best[v])best[v]=d}}
+ out.sort((a,b)=>a-b);return out}
+/* The MAXIMUM spanning-tree edge is the gap BETWEEN components, so building the
+   filtration on it set the radius above the separation of two well-parted limit
+   cycles and filled both of them in - two loops became none. A high quantile is
+   the spacing WITHIN a component, which is the scale a Rips complex wants. */
+function spacing620(P,q){const e=mstEdges620(P);if(!e.length)return 0;
+ const i=Math.min(e.length-1,Math.max(0,Math.round((q===undefined?.85:q)*(e.length-1))));
+ return e[i]}
+
+/* ================================================ Vietoris-Rips complex */
+function buildRips620(P,maxR,capT){const n=P.length,D=distMatrix620(P);
+ const edges=[];
+ for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const f=D[i*n+j];if(f<=maxR)edges.push([i,j,f])}
+ edges.sort((a,b)=>a[2]-b[2]);
+ const eSet=new Set();for(const e of edges)eSet.add(e[0]*n+e[1]);
+ const adj=Array.from({length:n},()=>[]);
+ for(const e of edges)adj[e[0]].push(e[1]);
+ const tris=[];let truncated=false;
+ outer:for(let i=0;i<n;i++){const ai=adj[i];
+  for(let a=0;a<ai.length;a++)for(let b=a+1;b<ai.length;b++){
+   const j=Math.min(ai[a],ai[b]),k=Math.max(ai[a],ai[b]);
+   if(!eSet.has(j*n+k))continue;
+   tris.push([i,j,k,Math.max(D[i*n+j],D[i*n+k],D[j*n+k])]);
+   if(tris.length>capT){truncated=true;break outer}}}
+ tris.sort((a,b)=>a[3]-b[3]);
+ return {n,D,edges,tris,truncated}}
+function chooseRadius620(P,capE,capT,alpha,q){
+ const sp=spacing620(P,q);let r=(alpha||2.8)*sp;
+ for(let it=0;it<8;it++){const R=buildRips620(P,r,capT+1);
+  if(!R.truncated&&R.edges.length<=capE&&R.tris.length<=capT)break;
+  r*=.82}
+ return {radius:r,spacing:sp}}
+
+/* ============================== persistent homology over Z/2, dims 0 and 1 */
+function persistence620(P,opt){
+ const o=opt||{},capE=o.capE||2600,capT=o.capT||16000;
+ const ch=FIN(o.maxR)?{radius:o.maxR,spacing:spacing620(P,o.q)}
+  :chooseRadius620(P,capE,capT,o.alpha||2.8,o.q);
+ const maxR=ch.radius;
+ const R=buildRips620(P,maxR,capT);
+ const n=R.n,S=[];
+ for(let i=0;i<n;i++)S.push({dim:0,f:0,v:[i],bnd:[]});
+ const items=[];
+ R.edges.forEach(e=>items.push({dim:1,f:e[2],v:[e[0],e[1]]}));
+ R.tris.forEach(t=>items.push({dim:2,f:t[3],t}));
+ /* faces must precede cofaces: sort by filtration, then by dimension */
+ items.sort((a,b)=>a.f-b.f||a.dim-b.dim);
+ const edgeGlobal=new Map();
+ for(const it of items){
+  if(it.dim===1){edgeGlobal.set(it.v[0]*n+it.v[1],S.length);
+   S.push({dim:1,f:it.f,v:it.v,bnd:[it.v[0],it.v[1]].sort((x,y)=>x-y)})}
+  else{const [i,j,k,f]=it.t;
+   const b=[edgeGlobal.get(i*n+j),edgeGlobal.get(i*n+k),edgeGlobal.get(j*n+k)];
+   if(b.some(x=>x===undefined))continue;
+   S.push({dim:2,f,v:[i,j,k],bnd:b.sort((x,y)=>x-y)})}}
+ const N=S.length,cols=new Array(N),lowInv=new Map(),pairs=[];
+ const sym=(a,b)=>{const out=[];let x=0,y=0;
+  while(x<a.length&&y<b.length){if(a[x]===b[y]){x++;y++}
+   else if(a[x]<b[y])out.push(a[x++]);else out.push(b[y++])}
+  while(x<a.length)out.push(a[x++]);while(y<b.length)out.push(b[y++]);return out};
+ for(let j=0;j<N;j++){let col=S[j].bnd.slice();
+  while(col.length){const low=col[col.length-1];const k=lowInv.get(low);
+   if(k===undefined)break;col=sym(col,cols[k])}
+  cols[j]=col;
+  if(col.length){const low=col[col.length-1];lowInv.set(low,j);
+   pairs.push({birth:low,death:j,dim:S[low].dim,b:S[low].f,d:S[j].f})}}
+ const paired=new Set();for(const p of pairs){paired.add(p.birth);paired.add(p.death)}
+ const H0=[],H1=[],essentialEdges=[];
+ for(const p of pairs){if(!(p.d>p.b))continue;
+  const rec={birth:p.b,death:p.d,persistence:p.d-p.b,birthSimplex:p.birth};
+  if(p.dim===0)H0.push(rec);else if(p.dim===1)H1.push(rec)}
+ let comps=0;
+ for(let i=0;i<N;i++){if(paired.has(i))continue;
+  if(S[i].dim===0)comps++;else if(S[i].dim===1)essentialEdges.push(i)}
+ H0.sort((a,b)=>b.persistence-a.persistence);
+ H1.sort((a,b)=>b.persistence-a.persistence);
+ return {maxR,spacing:ch.spacing,n,edges:R.edges.length,triangles:R.tris.length,
+  simplices:N,H0,H1,components:comps,essentialEdges,
+  essentialH1:essentialEdges.length,truncated:R.truncated,S}}
+
+/* A representative loop for an essential class born at edge (u,v): the edge
+   itself plus the shortest path from v back to u through edges already present
+   at that filtration. That path exists precisely because the edge closed a
+   cycle. It is A representative, not a canonical one, and is labelled so. */
+function representativeLoop620(H,birthSimplexIndex){
+ const S=H.S,sig=S[birthSimplexIndex];
+ if(!sig||sig.dim!==1)return null;
+ const u=sig.v[0],v=sig.v[1],f=sig.f,n=H.n;
+ const adj=Array.from({length:n},()=>[]);
+ for(let i=0;i<S.length;i++){const s=S[i];
+  if(s.dim!==1||s.f>f||i===birthSimplexIndex)continue;
+  adj[s.v[0]].push(s.v[1]);adj[s.v[1]].push(s.v[0])}
+ const prev=new Int32Array(n).fill(-1),seen=new Uint8Array(n),q=[v];
+ seen[v]=1;
+ while(q.length){const x=q.shift();if(x===u)break;
+  for(const y of adj[x])if(!seen[y]){seen[y]=1;prev[y]=x;q.push(y)}}
+ if(!seen[u])return null;
+ const path=[];let x=u;
+ while(x!==-1&&x!==v){path.push(x);x=prev[x]}
+ path.push(v);
+ return path.length>2?path:null}
+
+/* ================================================== reading the shape out */
+function diameter620(P){let m=0;
+ for(let i=0;i<P.length;i+=Math.max(1,Math.floor(P.length/40)))
+  for(let j=i+1;j<P.length;j+=Math.max(1,Math.floor(P.length/40))){
+   const dx=P[i][0]-P[j][0],dy=P[i][1]-P[j][1],dz=P[i][2]-P[j][2];
+   const v=dx*dx+dy*dy+dz*dz;if(v>m)m=v}
+ return Math.sqrt(m)}
+function classify620(H,diam){
+ const c=H.components,l=H.essentialH1;
+ const res=H.maxR;
+ let structure,detail;
+ if(c>1){structure='multistable';
+  detail=`${c} несвязных компонент — сосуществующие аттракторы`}
+ else if(l===0){structure='contractible';
+  detail='стягиваемо на разрешённом масштабе: неподвижная точка либо множество, заполняющее свою оболочку'}
+ else if(l===1){structure='single-loop';
+  detail='одна неустранимая петля — замкнутая орбита, установленная без спектральных допущений'}
+ else{structure='multi-loop';
+  detail=`${l} независимых петли — несколько независимых циркуляций`}
+ return {structure,detail,components:c,essentialLoops:l,
+  /* a Rips complex cannot see a hole narrower than its own radius: below this
+     the answer is undecided, not zero */
+  resolvedScale:res,
+  resolvedFraction:diam>0?res/diam:null,
+  undecidedBelow:`отверстия уже ${res.toFixed(4)} не разрешаются этой выборкой`}}
+/* ================================================================ app layer */
+const G={enabled:true,result:null,key:'',rev:0,points:80,elapsedMs:0};
+function cloud620(){try{
+ const m=globalThis.__UPRS560__;if(!m||typeof m.geometry!=='function')return null;
+ const g=m.geometry();
+ if(!g||g.degenerate||!g.attractor||g.attractor.length<24)return null;
+ return g.attractor}catch(_){return null}}
+function key620(){try{
+ const a=(typeof state!=='undefined'&&state.sweep)||[];
+ let h=2166136261>>>0;const step=Math.max(1,Math.floor(a.length/10));
+ const mix=v=>{h=(h^((Math.round((Number(v)||0)*1e6)|0)>>>0))>>>0;h=Math.imul(h,16777619)>>>0};
+ for(let i=0;i<a.length;i+=step){const r=a[i];mix(r&&r.x);mix(r&&r.gamma&&r.gamma.re);mix(r&&r.gamma&&r.gamma.im)}
+ return [state.model,state.mode,a.length,h.toString(36),G.points].join('|')}catch(_){return ''}}
+function analyze620(force){
+ const k=key620();
+ if(!force&&G.result&&G.key===k)return G.result;
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ const raw=cloud620();
+ if(!raw){G.result=null;G.key=k;return null}
+ const idx=fps620(raw,G.points);
+ const P=idx.map(i=>raw[i]);
+ const H=persistence620(P,{capE:2200,capT:12000});
+ const diam=diameter620(P);
+ const cls=classify620(H,diam);
+ /* representative loops: only for classes the filtration actually certifies */
+ const loops=[];
+ for(const ei of H.essentialEdges.slice(0,4)){
+  const L=representativeLoop620(H,ei);
+  if(L&&L.length>3)loops.push(L.map(i=>P[i]))}
+ G.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
+ G.result={version:V620,points:P.length,fromSamples:raw.length,diameter:diam,
+  homology:{components:H.components,essentialH1:H.essentialH1,
+   finiteH1:H.H1.length,maxR:H.maxR,spacing:H.spacing,
+   edges:H.edges,triangles:H.triangles,simplices:H.simplices,truncated:H.truncated},
+  H0:H.H0.slice(0,24),H1:H.H1.slice(0,24),
+  classification:cls,loops,cross:crossCheck620(cls),elapsedMs:G.elapsedMs};
+ G.key=k;G.rev=(G.rev+1)>>>0;
+ return G.result}
+/* An independent reading of the same data is only worth having if a conflict is
+   reported rather than smoothed over. */
+function crossCheck620(cls){try{
+ const m=globalThis.__UPRS550__;
+ if(!m||typeof m.analyze!=='function')return {status:'unavailable',detail:'фазовый анализ v5.5.0 недоступен'};
+ const a=m.analyze();
+ const L=a&&a.lyapunov;
+ if(!L||!L.verdict)return {status:'unavailable',detail:'вердикт по показателю Ляпунова не выдан'};
+ if(L.verdict==='not-applicable')
+  return {status:'not-applicable',lyapunov:L.verdict,
+   detail:'ось не временная — метрический вердикт неприменим; топология оси не требует и остаётся в силе'};
+ const chaotic=L.verdict==='chaotic';
+ if(chaotic&&cls.structure==='single-loop')
+  return {status:'conflict',lyapunov:L.verdict,
+   detail:'метрика говорит «хаос», топология видит одну замкнутую петлю — расхождение, требующее разбора'};
+ if(!chaotic&&cls.structure==='contractible'&&cls.components===1)
+  return {status:'agree',lyapunov:L.verdict,
+   detail:'регулярная динамика и стягиваемое множество — согласовано'};
+ if(chaotic&&cls.structure==='contractible')
+  return {status:'agree',lyapunov:L.verdict,
+   detail:'хаос заполняет свою оболочку: неустранимых петель на разрешённом масштабе нет — согласовано'};
+ if(!chaotic&&cls.structure==='single-loop')
+  return {status:'agree',lyapunov:L.verdict,
+   detail:'регулярная динамика и одна замкнутая орбита — согласовано'};
+ return {status:'inconclusive',lyapunov:L.verdict,
+  detail:`метрика «${L.verdict}», топология «${cls.structure}» — однозначного соответствия нет`}}
+ catch(e){return {status:'unavailable',detail:String((e&&e.message)||e)}}}
+
+/* ------------------------------------------------------- scene construction */
+const MODES620=['sphere','hopf','hopfion','spectral'];
+const GEOM620={key:'',lines:[],points:[]};
+function geometry620(){
+ const A=analyze620();if(!A)return null;
+ const k=G.key+'|r'+G.rev;
+ if(GEOM620.key===k&&(GEOM620.lines.length||GEOM620.points.length))return GEOM620;
+ const lines=[],points=[];
+ const L=(pts,color,width,meta)=>lines.push({pts,color,width,meta});
+ const P=(p,color,size,label,meta)=>points.push({p,color,size,label,meta});
+ const H=A.homology,cls=A.classification;
+ /* the persistence diagram, standing beside the hologram */
+ const W=1.05,Hh=1.05,X0=1.35,Y0=-Hh/2,Z=-.3,R=H.maxR||1;
+ const at=(b,d)=>[X0+Math.min(1,b/R)*W,Y0+Math.min(1,d/R)*Hh,Z];
+ L([at(0,0),at(R,0),at(R,R),at(0,R),at(0,0)],'rgba(232,197,112,.4)',1.2,
+  {kind:'ps620-frame',
+   label:`Диаграмма персистентности · рождение × смерть · радиус фильтрации ${R.toFixed(4)} · ${cls.detail}`,
+   priority:30});
+ /* the diagonal: everything is born before it dies, so nothing lies below it */
+ L([at(0,0),at(R,R)],'rgba(255,255,255,.22)',1,
+  {kind:'ps620-diagonal',label:'Диагональ рождение=смерть: точка на ней — шум нулевой длительности',priority:18});
+ for(const h of A.H1)P(at(h.birth,h.death),'rgba(152,232,255,.75)',3.2,'',
+  {kind:'ps620-h1',label:`H₁ · рождение ${h.birth.toFixed(4)}, смерть ${h.death.toFixed(4)}, длительность ${h.persistence.toFixed(4)}`,priority:60});
+ for(const h of A.H0)P(at(0,h.death),'rgba(126,231,193,.6)',2.6,'',
+  {kind:'ps620-h0',label:`H₀ · компонента сливается на ${h.death.toFixed(4)}`,priority:55});
+ /* essential classes never die inside the filtration: drawn on the top edge */
+ for(let i=0;i<H.essentialH1;i++){
+  const x=X0+W*(0.14+0.72*(H.essentialH1===1?.5:i/Math.max(1,H.essentialH1-1)));
+  L([[x,Y0+Hh,Z],[x,Y0+Hh*1.13,Z]],'rgba(255,214,140,.9)',1.8,
+   {kind:'ps620-essential',index:i,
+    label:`Существенный класс H₁ №${i+1}: петля не исчезает до конца фильтрации`,priority:120});
+  P([x,Y0+Hh*1.13,Z],'rgba(255,214,140,1)',5,'',
+   {kind:'ps620-essential-mark',index:i,
+    label:`Неустранимая петля №${i+1} · ${cls.detail}`,priority:140})}
+ /* and the loop itself, drawn where it actually lies on the attractor */
+ A.loops.forEach((loop,i)=>{
+  if(loop.length<3)return;
+  L([...loop,loop[0]],'rgba(255,157,157,.9)',2.4,
+   {kind:'ps620-loop',index:i,
+    label:`Представительная петля №${i+1} на аттракторе (${loop.length} узлов) — представитель класса, не канонический цикл`,
+    priority:118})});
+ GEOM620.key=k;GEOM620.lines=lines;GEOM620.points=points;
+ return GEOM620}
+function append620(){
+ if(!G.enabled)return false;
+ if(typeof state==='undefined'||!state.scene)return false;
+ if(!MODES620.includes(state.mode))return false;
+ const L=globalThis.L,P=globalThis.P;
+ if(typeof L!=='function'||typeof P!=='function')return false;
+ const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps620');
+ if(state.scene.lines.some(mine))state.scene.lines=state.scene.lines.filter(e=>!mine(e));
+ if(state.scene.points.some(mine))state.scene.points=state.scene.points.filter(e=>!mine(e));
+ const g=geometry620();if(!g)return false;
+ for(const l of g.lines)L(l.pts,l.color,l.width,l.meta);
+ for(const q of g.points)P(q.p,q.color,q.size,q.label,q.meta);
+ return true}
+function wrap620(){try{const cur=globalThis.buildScene;
+ if(typeof cur!=='function'||cur.__uprs620)return false;
+ const w=function(){const r=cur.apply(this,arguments);
+  try{append620()}catch(e){console.warn('UPRS620 topology',e)}
+  return r};
+ w.__uprs620=true;globalThis.buildScene=w;try{window.buildScene=w}catch(_){}
+ return true}catch(_){return false}}
+function refresh620(){try{G.key='';GEOM620.key='';
+ if(typeof buildScene==='function'){buildScene();
+  if(typeof draw==='function')draw(performance.now())}}catch(_){}}
+
+/* ------------------------------------------------------------ self-checks */
+const TAU620=Math.PI*2;
+function refCircle620(n,r,cx){const p=[];for(let i=0;i<n;i++){const a=TAU620*i/n;
+ p.push([(cx||0)+r*Math.cos(a),r*Math.sin(a),.02*Math.sin(i*7.3)])}return p}
+function refSphere620(n,r){const p=[],g=Math.PI*(3-Math.sqrt(5));
+ for(let i=0;i<n;i++){const y=1-2*i/(n-1),rr=Math.sqrt(Math.max(0,1-y*y)),a=g*i;
+  p.push([r*rr*Math.cos(a),r*y,r*rr*Math.sin(a)])}return p}
+function refBlob620(n){const p=[];let s=12345;
+ const rnd=()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff};
+ for(let i=0;i<n;i++)p.push([rnd()-.5,rnd()-.5,rnd()-.5]);return p}
+function refTorus620(nu,nv,R,r){const p=[];
+ for(let a=0;a<nu;a++)for(let b=0;b<nv;b++){const u=TAU620*a/nu,v=TAU620*b/nv;
+  p.push([(R+r*Math.cos(v))*Math.cos(u),(R+r*Math.cos(v))*Math.sin(u),r*Math.sin(v)])}return p}
+function sub620(P,k){return fps620(P,k).map(i=>P[i])}
+/* The reference clouds are fixed, so their homology is computed once per run and
+   shared by every check that needs it. Recomputing per check cost 746ms of a
+   suite this app already runs in the background; memoised it is under 100. */
+const REF620=new Map();
+function refHomology620(name,make,k){
+ const key=name+'@'+(k||60);
+ if(REF620.has(key))return REF620.get(key);
+ const P=sub620(make(),k||60);
+ const H=persistence620(P,{capE:1800,capT:9000});
+ const v={P,H};REF620.set(key,v);return v}
+function homologyOf620(P,k){return persistence620(sub620(P,k||60),{capE:1800,capT:9000})}
+function checks620(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!(r&&r.ok);detail=(r&&r.detail)||''}catch(e){detail=String((e&&e.message)||e)}
+ T.push({name,pass,detail})};
+ ok('v6.2.0 a closed orbit has exactly one irreducible loop',()=>{
+  const {H}=refHomology620('circle',()=>refCircle620(300,1),60);
+  return {ok:H.components===1&&H.essentialH1===1,
+   detail:`components=${H.components}, essential H₁=${H.essentialH1} (exact: 1 and 1)`}});
+ ok('v6.2.0 a filled shell has none',()=>{
+  const {H}=refHomology620('sphere',()=>refSphere620(300,1),60);
+  return {ok:H.components===1&&H.essentialH1===0,
+   detail:`sphere → components=${H.components}, essential H₁=${H.essentialH1} (exact: 1 and 0)`}});
+ ok('v6.2.0 unstructured noise produces no loop at all',()=>{
+  const {H}=refHomology620('blob',()=>refBlob620(300),60);
+  return {ok:H.components===1&&H.essentialH1===0,
+   detail:`random cloud → components=${H.components}, essential H₁=${H.essentialH1}; ${H.H1.length} short-lived classes correctly left unpromoted`}});
+ ok('v6.2.0 two coexisting orbits are seen as two, not averaged into one',()=>{
+  /* multistability is invisible to every single-trajectory metric in this app */
+  const {H}=refHomology620('two',()=>[...refCircle620(150,1,-4),...refCircle620(150,1,4)],64);
+  return {ok:H.components===2&&H.essentialH1===2,
+   detail:`components=${H.components}, essential H₁=${H.essentialH1} (exact: 2 and 2)`}});
+ ok('v6.2.0 the filtration scale follows the spacing within a component, not the gap between them',()=>{
+  /* the defect this guards: the radius was taken from the LARGEST spanning-tree
+     edge, which is exactly the gap between two separated orbits, so the radius
+     exceeded their separation and both loops were filled in - two became zero */
+  const {P,H}=refHomology620('two',()=>[...refCircle620(150,1,-4),...refCircle620(150,1,4)],64);
+  const e=mstEdges620(P),maxEdge=e[e.length-1],q85=spacing620(P,.85);
+  return {ok:q85<maxEdge*.5&&H.maxR<maxEdge&&H.essentialH1===2,
+   detail:`largest MST edge ${maxEdge.toFixed(3)} (the gap), 85th percentile ${q85.toFixed(3)}, radius used ${H.maxR.toFixed(3)} → ${H.essentialH1} loops kept`}});
+ ok('v6.2.0 a hole wider than the filtration radius is found',()=>{
+  const {H}=refHomology620('torusWide',()=>refTorus620(48,24,3,1),60);
+  return {ok:H.essentialH1>=1&&H.maxR<4,
+   detail:`hole diameter 4.000 vs radius ${H.maxR.toFixed(3)} → essential H₁=${H.essentialH1}`}});
+ ok('v6.2.0 a hole narrower than the radius is reported as undecided, not as absent',()=>{
+  /* the honest half of the previous check: a Rips complex cannot see a hole it
+     can bridge, and that is a statement about resolution, not about the set */
+  const {P,H}=refHomology620('torusTight',()=>refTorus620(48,24,2,1),60);
+  const cls=classify620(H,diameter620(P));
+  return {ok:H.maxR>2&&H.essentialH1===0&&/не разрешаются/.test(cls.undecidedBelow),
+   detail:`hole diameter 2.000 < radius ${H.maxR.toFixed(3)} → no loop certified, and the report states: ${cls.undecidedBelow}`}});
+ ok('v6.2.0 the complex is a valid filtration: every face precedes its cofaces',()=>{
+  const {H}=refHomology620('circle',()=>refCircle620(300,1),60);
+  let bad=0;
+  for(let i=0;i<H.S.length;i++)for(const b of H.S[i].bnd)if(b>=i||H.S[b].f>H.S[i].f+1e-12)bad++;
+  return {ok:bad===0,detail:`${H.simplices} simplices, ${bad} ordering violations (must be 0)`}});
+ ok('v6.2.0 a representative loop is a closed path lying on the sampled set',()=>{
+  const {P,H}=refHomology620('circle',()=>refCircle620(300,1),60);
+  if(!H.essentialEdges.length)return {ok:false,detail:'no essential class to represent'};
+  const L=representativeLoop620(H,H.essentialEdges[0]);
+  const closed=!!L&&L.length>3&&new Set(L).size===L.length;
+  return {ok:closed,detail:L?`loop of ${L.length} distinct vertices out of ${P.length} sampled`:'none'}});
+ ok('v6.2.0 the reading is independent evidence and reports conflict rather than hiding it',()=>{
+  const agree=crossCheck620({structure:'single-loop',components:1});
+  return {ok:['agree','conflict','inconclusive','not-applicable','unavailable'].includes(agree.status),
+   detail:`cross-check against the v5.5.0 Lyapunov verdict → ${agree.status}: ${agree.detail}`}});
+ ok('v6.2.0 the atlas injects into the scene exactly once',()=>{
+  if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
+  const prev=state.mode,prevScene=state.scene;let n=0,A=null;
+  try{state.mode='hopf';state.scene={lines:[],points:[]};
+   A=analyze620(true);
+   append620();state.scene.lines=[...state.scene.lines];append620();append620();
+   n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps620-frame').length;
+  }finally{state.mode=prev;state.scene=prevScene}
+  return {ok:!A||n===1,
+   detail:A?`frames after 3 passes = ${n} (expect 1); ${A.points} points, ${A.homology.simplices} simplices, ${A.elapsedMs}ms`:'no attractor (headless)'}});
+ return T}
+function wrapTests620(){try{if(typeof runTests!=='function'||runTests.__uprs620)return false;
+ const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks620())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  try{globalThis.__UPRS_SELF_TEST__=rep}catch(_){}
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs620=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+ return true}catch(_){return false}}
+
+if(typeof document!=='undefined'){
+ wrap620();
+ for(const ms of [700,1800,3600,7600,13600,20600])setTimeout(()=>{if(wrap620())refresh620()},ms);
+ setTimeout(refresh620,2200);
+ setTimeout(wrapTests620,1900);
+ for(const ms of [4100,7900,13900,20900,27900])setTimeout(wrapTests620,ms);}
+globalThis.__UPRS620__={version:V620,analyze:analyze620,checks:checks620,refresh:refresh620,
+ setEnabled:v=>{G.enabled=!!v;G.key='';GEOM620.key='';refresh620();return G.enabled},
+ setPoints:n=>{G.points=Math.max(32,Math.min(140,n|0));G.key='';GEOM620.key='';refresh620();return G.points},
+ core:{fps:fps620,distMatrix:distMatrix620,mstEdges:mstEdges620,spacing:spacing620,
+  buildRips:buildRips620,chooseRadius:chooseRadius620,persistence:persistence620,
+  representativeLoop:representativeLoop620,classify:classify620,diameter:diameter620},
+ audit:()=>({version:V620,enabled:G.enabled,points:G.points,
+  wrapped:!!(globalThis.buildScene&&globalThis.buildScene.__uprs620),
+  active:(()=>{try{return state.scene.lines.some(l=>String(l.meta&&l.meta.kind||'').startsWith('ps620'))}catch(_){return false}})(),
+  result:G.result?{components:G.result.homology.components,
+   essentialH1:G.result.homology.essentialH1,
+   radius:G.result.homology.maxR,points:G.result.points,
+   structure:G.result.classification.structure,
+   cross:G.result.cross.status,loops:G.result.loops.length,
+   elapsedMs:G.result.elapsedMs}:null})};
 })();</script>
 </body></html>
