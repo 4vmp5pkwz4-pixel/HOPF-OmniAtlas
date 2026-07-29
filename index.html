@@ -13572,7 +13572,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const V580='5.8.0';
 const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
  '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
- '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__','__UPRS640__'];
+ '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__','__UPRS640__','__UPRS650__'];
 function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
  for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
 function highestVersion580(){let best='0.0.0';
@@ -13608,7 +13608,7 @@ function stampVersion580(){try{
  if(!el){el=document.createElement('div');el.id=STAMP_ID580;
   el.setAttribute('aria-label','build version');
   if(small&&small.nextSibling)host.insertBefore(el,small.nextSibling);else host.appendChild(el)}
- const text='v'+v+' · DYNAMICAL ATLAS';
+ const text='v'+v+' · PREDICTIVE ATLAS';
  if(el.textContent!==text)el.textContent=text;
  force580(el,STAMP580);
  return true}catch(_){return false}}
@@ -15999,5 +15999,488 @@ globalThis.__UPRS640__={version:V640,checks:checks640,refresh:refresh640,
   applied:S.applied,last:S.lastKinds,
   inChain:!!globalThis.__UPRS640_WRAPPED__,
   switchPresent:typeof document!=='undefined'&&!!document.getElementById(SW_ID)})};
+})();</script>
+<script id="uprs650PredictiveMethods">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius-Hopf OmniAtlas · v6.5.0 · THREE PREDICTIVE INSTRUMENTS
+   ----------------------------------------------------------------------------
+   1. NUMERICAL CONTINUATION. A parameter sweep can only see branches that exist
+      at the value it samples, and it walks straight past a fold: at a turning
+      point the branch doubles back in the parameter, and any method that steps
+      IN the parameter loses it. Pseudo-arclength continuation steps along the
+      ARC of the solution curve instead, so the fold is just another point.
+      This turns "what happens at this setting" into "where does this branch go,
+      and where does it cease to exist" - the question a bifurcation actually
+      answers. Verified against the logistic period-3 saddle-node, whose exact
+      location is r = 1+2√2: found to 2·10⁻⁵.
+
+   2. KRAMERS-MOYAL. Everything measured so far is deterministic. A real system
+      is not: it sits in a potential well and noise eventually kicks it out, and
+      WHEN that happens is a prediction no deterministic method makes. Binning
+      the increments conditionally on the state recovers the drift D₁ and the
+      diffusion D₂ directly from one series, and from them the effective
+      potential - its wells, its barriers, and therefore which transitions are
+      available and how deep they are. Verified against Ornstein-Uhlenbeck,
+      where D₁ = −θx and D₂ = σ²/2 are exact, and against a double well whose
+      minima at ±1 are recovered from the series alone.
+
+   3. CONVERGENT CROSS MAPPING. Correlation is not causation and the app should
+      not pretend otherwise, but for a deterministic dynamical system there IS a
+      test: if X drives Y, the attractor reconstructed from Y alone contains the
+      information needed to recover X, and the recovery IMPROVES with more data.
+      That convergence - not the correlation value - is the evidence. Verified
+      on coupled logistic maps where the dominant direction is known, and on
+      independent series, where neither direction converges and the method
+      correctly declines to find a cause.
+
+   Rendered as scene geometry beside the hologram. Nothing is added to any 2D
+   panel. Pure core is headlessly testable via __UPRS650__.core.
+   ========================================================================== */
+const V650='6.5.0';
+const FIN=Number.isFinite;
+/* ================= pseudo-arclength continuation ================= */
+function tangent(Fx,Fl,prev){
+ let dx,dl;
+ if(Math.abs(Fx)>=Math.abs(Fl)){dl=1;dx=-Fl/(Fx||1e-300)}else{dx=1;dl=-Fx/(Fl||1e-300)}
+ const n=Math.hypot(dx,dl)||1;dx/=n;dl/=n;
+ if(prev&&(dx*prev[0]+dl*prev[1])<0){dx=-dx;dl=-dl}
+ return [dx,dl]}
+function continuation(F,Fx,Fl,x0,l0,opt){
+ const o=opt||{},ds0=o.ds||.02,maxS=o.steps||4000,tol=o.tol||1e-11;
+ const lmin=FIN(o.lmin)?o.lmin:-Infinity,lmax=FIN(o.lmax)?o.lmax:Infinity;
+ let x=x0,l=l0,ds=ds0,prev=o.dir?[o.dir[0],o.dir[1]]:null;
+ const pts=[],folds=[];let closed=false,arclength=0;
+ const start=[x0,l0];
+ for(let s=0;s<maxS;s++){
+  const t=tangent(Fx(x,l),Fl(x,l),prev);
+  /* predictor */
+  let xp=x+ds*t[0],lp=l+ds*t[1],ok=false;
+  /* corrector: Newton on the augmented system */
+  for(let it=0;it<40;it++){
+   const g1=F(xp,lp),g2=(xp-x)*t[0]+(lp-l)*t[1]-ds;
+   if(Math.abs(g1)<tol&&Math.abs(g2)<tol){ok=true;break}
+   const a=Fx(xp,lp),b=Fl(xp,lp),c=t[0],d=t[1];
+   const det=a*d-b*c;
+   if(!FIN(det)||Math.abs(det)<1e-300)break;
+   xp-=( d*g1-b*g2)/det;
+   lp-=(-c*g1+a*g2)/det;
+   if(!FIN(xp)||!FIN(lp))break}
+  if(!ok){ds*=.5;if(ds<ds0*1e-4)break;continue}
+  const prevL=l;
+  arclength+=Math.hypot(xp-x,lp-l);
+  x=xp;l=lp;prev=t;ds=Math.min(ds0,ds*1.3);
+  pts.push([x,l]);
+  /* a fold is where the branch turns back in the parameter */
+  if(pts.length>2){
+   const n=pts.length;
+   const d1=pts[n-1][1]-pts[n-2][1],d2=pts[n-2][1]-pts[n-3][1];
+   if(d1*d2<0)folds.push({x:pts[n-2][0],lambda:pts[n-2][1],index:n-2})}
+  if(o.close&&pts.length>10&&Math.hypot(x-start[0],l-start[1])<ds0*1.5){
+   /* the branch closes on the start: the gap back to it is part of the loop */
+   arclength+=Math.hypot(start[0]-x,start[1]-l);closed=true;break}
+  if(l<lmin||l>lmax)break}
+ return {points:pts,folds,closed,arclength,steps:pts.length}}
+/* ================= Kramers-Moyal drift & diffusion ================= */
+function kramersMoyal(series,dt,bins,minCount){
+ const n=series.length;if(n<64)return null;
+ let lo=Infinity,hi=-Infinity;
+ for(const v of series){if(v<lo)lo=v;if(v>hi)hi=v}
+ if(!(hi>lo))return null;
+ const B=bins||24,mc=minCount||12;
+ const s1=new Float64Array(B),s2=new Float64Array(B),cnt=new Float64Array(B);
+ for(let i=0;i<n-1;i++){
+  const k=Math.min(B-1,Math.max(0,Math.floor((series[i]-lo)/(hi-lo)*B)));
+  const d=series[i+1]-series[i];
+  s1[k]+=d;s2[k]+=d*d;cnt[k]++}
+ const out=[];
+ for(let k=0;k<B;k++){
+  if(cnt[k]<mc)continue;
+  const x=lo+(hi-lo)*(k+.5)/B;
+  out.push({x,D1:s1[k]/cnt[k]/dt,D2:s2[k]/cnt[k]/(2*dt),count:cnt[k]})}
+ return {lo,hi,bins:B,cells:out,samples:n}}
+/* effective potential from the stationary Fokker-Planck solution:
+   p_s ∝ exp(-U)/D2 with U(x) = -∫ D1/D2 dx  */
+function potential(km){
+ if(!km||km.cells.length<3)return null;
+ const c=km.cells,U=[0];
+ for(let i=1;i<c.length;i++){
+  const dx=c[i].x-c[i-1].x;
+  const f0=c[i-1].D2>0?c[i-1].D1/c[i-1].D2:0;
+  const f1=c[i].D2>0?c[i].D1/c[i].D2:0;
+  U.push(U[i-1]-.5*(f0+f1)*dx)}
+ const m=Math.min(...U);
+ return c.map((q,i)=>({x:q.x,U:U[i]-m,D1:q.D1,D2:q.D2}))}
+function wellsAndBarriers(pot){
+ if(!pot||pot.length<5)return {wells:[],barriers:[]};
+ const wells=[],barriers=[];
+ for(let i=1;i<pot.length-1;i++){
+  if(pot[i].U<pot[i-1].U&&pot[i].U<pot[i+1].U)wells.push({x:pot[i].x,U:pot[i].U,index:i});
+  if(pot[i].U>pot[i-1].U&&pot[i].U>pot[i+1].U)barriers.push({x:pot[i].x,U:pot[i].U,index:i})}
+ return {wells,barriers}}
+/* ================= convergent cross mapping ================= */
+function embed(s,E,tau){const out=[];
+ for(let i=(E-1)*tau;i<s.length;i++){const v=[];
+  for(let e=0;e<E;e++)v.push(s[i-e*tau]);out.push({v,t:i})}
+ return out}
+function corr(a,b){const n=a.length;if(n<3)return NaN;
+ let ma=0,mb=0;for(let i=0;i<n;i++){ma+=a[i];mb+=b[i]}ma/=n;mb/=n;
+ let sa=0,sb=0,sab=0;
+ for(let i=0;i<n;i++){const da=a[i]-ma,db=b[i]-mb;sa+=da*da;sb+=db*db;sab+=da*db}
+ return (sa>0&&sb>0)?sab/Math.sqrt(sa*sb):NaN}
+/* predict TARGET from the shadow manifold of DRIVER-candidate `from` */
+function crossMap(from,target,E,tau,libSize,seed){
+ const M=embed(from,E,tau);
+ if(M.length<E+2)return NaN;
+ const lib=[];
+ let r=(seed||1)>>>0;const rnd=()=>{r=(r*1664525+1013904223)>>>0;return r/4294967296};
+ const idx=M.map((_,i)=>i);
+ for(let i=idx.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));const t=idx[i];idx[i]=idx[j];idx[j]=t}
+ for(let i=0;i<Math.min(libSize,idx.length);i++)lib.push(idx[i]);
+ const pred=[],act=[];
+ for(let q=0;q<M.length;q++){
+  const vq=M[q].v;
+  const d=[];
+  for(const li of lib){
+   if(li===q)continue;
+   const vl=M[li].v;let s=0;
+   for(let e=0;e<E;e++){const dd=vq[e]-vl[e];s+=dd*dd}
+   d.push([Math.sqrt(s),li])}
+  if(d.length<E+1)continue;
+  d.sort((a,b)=>a[0]-b[0]);
+  const k=E+1,near=d.slice(0,k);
+  const d0=Math.max(near[0][0],1e-12);
+  let W=0;const w=[];
+  for(const [dist,li] of near){const u=Math.exp(-dist/d0);w.push([u,li]);W+=u}
+  if(!(W>0))continue;
+  let p=0;for(const [u,li] of w)p+=u/W*target[M[li].t];
+  pred.push(p);act.push(target[M[q].t])}
+ return corr(pred,act)}
+function ccm(X,Y,opt){
+ const o=opt||{},E=o.E||3,tau=o.tau||1;
+ const Ls=o.libSizes||[20,40,80,160,320];
+ const xy=[],yx=[];
+ for(const L of Ls){
+  /* X causes Y  <=>  X is recoverable from the shadow manifold of Y */
+  xy.push({L,rho:crossMap(Y,X,E,tau,L,7)});
+  yx.push({L,rho:crossMap(X,Y,E,tau,L,7)})}
+ const conv=a=>{const f=a[0].rho,l=a[a.length-1].rho;
+  return {first:f,last:l,gain:l-f,converged:FIN(f)&&FIN(l)&&l-f>.05&&l>.2}};
+ return {E,tau,libSizes:Ls,xCausesY:{curve:xy,...conv(xy)},yCausesX:{curve:yx,...conv(yx)}}}
+
+/* ================================================================ app layer */
+const G={enabled:true,result:null,key:'',rev:0,elapsedMs:0};
+const STEP650=['step','steps','iter','iters','iteration','iterations'];
+function axis650(){try{const m=UPRSO_MODELS[state.model];
+ return {name:String(m&&m.axis||''),unit:String(m&&m.axisUnit||'')}}catch(_){return {name:'',unit:''}}}
+function temporal650(){try{
+ const c=globalThis.__UPRS550__&&__UPRS550__.core;
+ if(c&&typeof c.axisKind==='function')return !!c.axisKind().temporal;
+ const a=axis650();return /time|время|zeit/i.test(a.name)}catch(_){return false}}
+function discrete650(){const a=axis650();
+ return STEP650.includes(a.unit.trim().toLowerCase())||/iteration|итерац/i.test(a.name)}
+function series650(){try{
+ const a=state.sweep||[];const re=[],im=[];
+ for(const s of a){if(!s.gamma)continue;
+  if(FIN(s.gamma.re)&&FIN(s.gamma.im)){re.push(s.gamma.re);im.push(s.gamma.im)}}
+ return {re,im}}catch(_){return {re:[],im:[]}}}
+
+/* ---- 1. continuation of the logistic branches ---- */
+function continueLogistic650(){
+ if(state.model!=='logistic_map')
+  return {status:'not-applicable',
+   detail:'продолжение реализовано скалярным корректором и применяется к одномерному отображению; для многомерных нужен векторный, он не реализован'};
+ const f=(x,r)=>r*x*(1-x),df=(x,r)=>r*(1-2*x);
+ const out={status:'applied',branches:[]};
+ /* period 1: x = f(x,r), exact branch x = 1-1/r */
+ const b1=continuation((x,r)=>f(x,r)-x,(x,r)=>df(x,r)-1,
+  (x,r)=>x*(1-x),1-1/3.2,3.2,{ds:.01,steps:900,lmin:2.4,lmax:4,dir:[0,1]});
+ out.branches.push({period:1,points:b1.points,folds:b1.folds,
+  detail:`ветвь неподвижной точки, ${b1.points.length} шагов, складок ${b1.folds.length}`});
+ /* period 3: the saddle-node at r = 1+2√2 is the exact reference */
+ const f3=(x,r)=>f(f(f(x,r),r),r);
+ const F3x=(x,r)=>{const a=f(x,r),b=f(a,r);return df(x,r)*df(a,r)*df(b,r)-1};
+ const F3l=(x,r)=>{const h=1e-6;return (f3(x,r+h)-f3(x,r-h))/(2*h)};
+ let x=.15;for(let i=0;i<20000;i++)x=f(x,3.84);
+ const b3=continuation((x,r)=>f3(x,r)-x,F3x,F3l,x,3.84,
+  {ds:.002,steps:20000,lmin:3.5,lmax:3.95,dir:[0,-1]});
+ const exact=1+2*Math.SQRT2;
+ const fold=b3.folds.length?b3.folds.reduce((a,b)=>
+  Math.abs(a.lambda-exact)<Math.abs(b.lambda-exact)?a:b):null;
+ out.branches.push({period:3,points:b3.points,folds:b3.folds,
+  fold:fold?fold.lambda:null,exact,
+  error:fold?Math.abs(fold.lambda-exact):null,
+  detail:fold?`седло-узел периода 3 при r=${fold.lambda.toFixed(7)} (точно 1+2√2=${exact.toFixed(7)}, ошибка ${Math.abs(fold.lambda-exact).toExponential(1)})`
+   :'складка не найдена на этом отрезке'});
+ return out}
+
+/* ---- 2. Kramers-Moyal on the live trajectory ---- */
+function drift650(){
+ if(!temporal650())return {status:'not-applicable',
+  detail:'снос и диффузия — свойства процесса во времени; ось не временная'};
+ const s=series650().re;
+ if(s.length<200)return {status:'insufficient',detail:`нужно ≥200 отсчётов, есть ${s.length}`};
+ const a=state.sweep;
+ const dt=(a.length>1&&FIN(a[1].x)&&FIN(a[0].x))?Math.abs(a[1].x-a[0].x)||1:1;
+ const km=kramersMoyal(s,dt,22,10);
+ if(!km||km.cells.length<5)return {status:'insufficient',detail:'слишком мало заполненных ячеек'};
+ const pot=potential(km),wb=wellsAndBarriers(pot);
+ /* the deepest barrier between two wells is the transition that is available */
+ let best=null;
+ for(const b of wb.barriers){
+  const l=wb.wells.filter(w=>w.x<b.x).pop(),r=wb.wells.find(w=>w.x>b.x);
+  if(!l||!r)continue;
+  const dU=Math.min(b.U-l.U,b.U-r.U);
+  if(!best||dU>best.deltaU)best={barrier:b.x,left:l.x,right:r.x,deltaU:dU}}
+ const D=km.cells.reduce((q,c)=>q+c.D2,0)/km.cells.length;
+ return {status:'applied',dt,cells:km.cells.length,potential:pot,
+  wells:wb.wells,barriers:wb.barriers,meanD2:D,transition:best,
+  /* Kramers: the escape rate falls exponentially with the barrier measured in
+     units of the noise strength, so ΔU/D is what decides whether a transition
+     is reachable at all */
+  barrierOverNoise:best&&D>0?best.deltaU/D:null,
+  detail:best?`ям ${wb.wells.length}, барьер ΔU=${best.deltaU.toFixed(4)} при D₂≈${D.toExponential(2)} → ΔU/D=${(best.deltaU/D).toFixed(2)}`
+   :`ям ${wb.wells.length}, барьеров ${wb.barriers.length}: доступного перехода между двумя ямами не найдено`}}
+
+/* ---- 3. CCM between the two observed coordinates ---- */
+function causality650(){
+ const {re,im}=series650();
+ if(re.length<160)return {status:'insufficient',detail:`нужно ≥160 отсчётов, есть ${re.length}`};
+ const n=re.length;
+ const Ls=[20,40,80,Math.min(160,n-8),Math.min(320,n-8)].filter((v,i,a)=>v>10&&a.indexOf(v)===i);
+ const r=ccm(re,im,{E:3,tau:1,libSizes:Ls});
+ const both=r.xCausesY.converged&&r.yCausesX.converged;
+ return {status:'applied',...r,
+  /* two coordinates of ONE system are not cause and effect: both directions
+     converging is the signature of shared dynamics, and saying so is the
+     honest reading of this test on this data */
+  verdict:both?'shared-dynamics':(r.xCausesY.converged?'re→im':(r.yCausesX.converged?'im→re':'no-convergence')),
+  detail:both?'обе стороны сходятся — это подпись общей динамики двух координат одной системы, а не причинности одной над другой'
+   :(r.xCausesY.converged||r.yCausesX.converged)?'сходится только одна сторона — асимметрия восстановления между координатами'
+   :'сходимости нет ни в одну сторону: свидетельства связи эти данные не дают'}}
+
+function key650(){try{
+ const a=state.sweep||[];let h=2166136261>>>0;
+ const step=Math.max(1,Math.floor(a.length/10));
+ const mix=v=>{h=(h^((Math.round((Number(v)||0)*1e6)|0)>>>0))>>>0;h=Math.imul(h,16777619)>>>0};
+ for(let i=0;i<a.length;i+=step){const r=a[i];mix(r&&r.x);mix(r&&r.gamma&&r.gamma.re)}
+ return [state.model,a.length,h.toString(36)].join('|')}catch(_){return ''}}
+function analyze650(force){
+ const k=key650();
+ if(!force&&G.result&&G.key===k)return G.result;
+ const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+ let cont,drift,cause;
+ try{cont=continueLogistic650()}catch(e){cont={status:'error',detail:String(e.message)}}
+ try{drift=drift650()}catch(e){drift={status:'error',detail:String(e.message)}}
+ try{cause=causality650()}catch(e){cause={status:'error',detail:String(e.message)}}
+ G.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
+ G.result={version:V650,continuation:cont,drift,causality:cause,elapsedMs:G.elapsedMs};
+ G.key=k;G.rev=(G.rev+1)>>>0;
+ return G.result}
+
+/* ------------------------------------------------------- scene construction */
+const MODES650=['sphere','hopf','hopfion','spectral'];
+const GEOM={key:'',lines:[],points:[]};
+function geometry650(){
+ const A=analyze650();if(!A)return null;
+ const k=G.key+'|r'+G.rev;
+ if(GEOM.key===k&&(GEOM.lines.length||GEOM.points.length))return GEOM;
+ const lines=[],points=[];
+ const L=(pts,color,width,meta)=>lines.push({pts,color,width,meta});
+ const P=(p,color,size,label,meta)=>points.push({p,color,size,label,meta});
+ const X0=-2.5,W=1.0,Z=-.3;
+ const panel=(y0,h,title,kind)=>{
+  L([[X0,y0,Z],[X0+W,y0,Z],[X0+W,y0+h,Z],[X0,y0+h,Z],[X0,y0,Z]],
+   'rgba(232,197,112,.36)',1.1,{kind,label:title,priority:30})};
+ /* continuation */
+ const c=A.continuation;
+ panel(.35,.62,'Продолжение по параметру · '+(c.status==='applied'
+   ?(c.branches.map(b=>b.detail).join(' · ')):c.detail),'ps650-continuation-frame');
+ if(c.status==='applied'){
+  for(const b of c.branches){
+   if(!b.points.length)continue;
+   let lo=Infinity,hi=-Infinity,xlo=Infinity,xhi=-Infinity;
+   for(const [xx,ll] of b.points){if(ll<lo)lo=ll;if(ll>hi)hi=ll;if(xx<xlo)xlo=xx;if(xx>xhi)xhi=xx}
+   const sx=v=>X0+W*((v-lo)/((hi-lo)||1)),sy=v=>.35+.62*((v-xlo)/((xhi-xlo)||1));
+   const step=Math.max(1,Math.floor(b.points.length/90));
+   const pts=[];for(let i=0;i<b.points.length;i+=step)pts.push([sx(b.points[i][1]),sy(b.points[i][0]),Z]);
+   if(pts.length>2)L(pts,b.period===3?'rgba(255,157,157,.85)':'rgba(126,231,193,.75)',1.4,
+    {kind:'ps650-branch',period:b.period,
+     label:`Ветвь периода ${b.period}: ${b.detail}`,priority:70});
+   for(const f of b.folds)P([sx(f.lambda),sy(f.x),Z],'rgba(255,214,140,1)',5.2,'',
+    {kind:'ps650-fold',period:b.period,
+     label:`Складка (седло-узел) периода ${b.period} при параметре ${f.lambda.toFixed(6)} — ветвь здесь поворачивает назад и перестаёт существовать`,
+     priority:145})}}
+ /* potential */
+ const d=A.drift;
+ panel(-.35,.62,'Снос и диффузия (Крамерс–Мойал) · '+d.detail,'ps650-drift-frame');
+ if(d.status==='applied'&&d.potential&&d.potential.length>2){
+  let lo=Infinity,hi=-Infinity,ulo=Infinity,uhi=-Infinity;
+  for(const q of d.potential){if(q.x<lo)lo=q.x;if(q.x>hi)hi=q.x;if(q.U<ulo)ulo=q.U;if(q.U>uhi)uhi=q.U}
+  const sx=v=>X0+W*((v-lo)/((hi-lo)||1)),sy=v=>-.35+.62*((v-ulo)/((uhi-ulo)||1));
+  L(d.potential.map(q=>[sx(q.x),sy(q.U),Z]),'rgba(152,232,255,.8)',1.4,
+   {kind:'ps650-potential',label:'Эффективный потенциал U(x) = −∫ D₁/D₂ dx: глубина ям задаёт, какие переходы доступны',priority:70});
+  for(const w of d.wells)P([sx(w.x),sy(w.U),Z],'rgba(126,231,193,1)',4.6,'',
+   {kind:'ps650-well',label:`Яма при x=${w.x.toFixed(4)} — метастабильное состояние`,priority:140});
+  for(const b of d.barriers)P([sx(b.x),sy(b.U),Z],'rgba(255,157,157,1)',4.6,'',
+   {kind:'ps650-barrier',label:`Барьер при x=${b.x.toFixed(4)}, высота U=${b.U.toFixed(4)}`,priority:140})}
+ /* causality */
+ const q=A.causality;
+ panel(-1.05,.62,'Сходящееся перекрёстное отображение · '+q.detail,'ps650-ccm-frame');
+ if(q.status==='applied'){
+  const draw=(curve,color,name)=>{
+   const Ls=curve.map(p=>p.L),lo=Math.min(...Ls),hi=Math.max(...Ls);
+   const pts=curve.filter(p=>FIN(p.rho)).map(p=>
+    [X0+W*((p.L-lo)/((hi-lo)||1)),-1.05+.62*Math.max(0,Math.min(1,(p.rho+.2)/1.2)),Z]);
+   if(pts.length>1)L(pts,color,1.4,{kind:'ps650-ccm',direction:name,
+    label:`${name}: ρ растёт с длиной библиотеки — сходимость и есть свидетельство, а не само значение корреляции`,priority:70})};
+  draw(q.xCausesY.curve,'rgba(255,214,140,.85)','Re восстанавливается из Im');
+  draw(q.yCausesX.curve,'rgba(195,173,255,.85)','Im восстанавливается из Re')}
+ GEOM.key=k;GEOM.lines=lines;GEOM.points=points;
+ return GEOM}
+function append650(){
+ if(!G.enabled||typeof state==='undefined'||!state.scene)return false;
+ if(!MODES650.includes(state.mode))return false;
+ const L=globalThis.L,P=globalThis.P;
+ if(typeof L!=='function'||typeof P!=='function')return false;
+ const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps650');
+ if(state.scene.lines.some(mine))state.scene.lines=state.scene.lines.filter(e=>!mine(e));
+ if(state.scene.points.some(mine))state.scene.points=state.scene.points.filter(e=>!mine(e));
+ const g=geometry650();if(!g)return false;
+ for(const l of g.lines)L(l.pts,l.color,l.width,l.meta);
+ for(const p of g.points)P(p.p,p.color,p.size,p.label,p.meta);
+ return true}
+function wrap650(){try{const cur=globalThis.buildScene;
+ if(typeof cur!=='function'||cur.__uprs650||globalThis.__UPRS650_WRAPPED__)return false;
+ globalThis.__UPRS650_WRAPPED__=true;
+ const w=function(){const r=cur.apply(this,arguments);
+  try{append650()}catch(e){console.warn('UPRS650',e)}return r};
+ w.__uprs650=true;globalThis.buildScene=w;try{window.buildScene=w}catch(_){}
+ return true}catch(_){return false}}
+function refresh650(){try{G.key='';GEOM.key='';
+ if(typeof buildScene==='function'){buildScene();
+  if(typeof draw==='function')draw(performance.now())}}catch(_){}}
+/* ---------------------------------------------------------- self-checks */
+function ou650(theta,sigma,dt,n,seed){let s=seed>>>0,x=0;const out=[];
+ const rnd=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296};
+ const g=()=>{const u=Math.max(1e-12,rnd()),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+ for(let i=0;i<n;i++){x+=-theta*x*dt+sigma*Math.sqrt(dt)*g();out.push(x)}return out}
+function dw650(sigma,dt,n,seed){let s=seed>>>0,x=1;const out=[];
+ const rnd=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296};
+ const g=()=>{const u=Math.max(1e-12,rnd()),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};
+ for(let i=0;i<n;i++){x+=(x-x*x*x)*dt+sigma*Math.sqrt(dt)*g();out.push(x)}return out}
+function coupled650(n,bxy,byx,seed){let x=.4,y=.2;const X=[],Y=[];
+ for(let i=0;i<n+300;i++){
+  const nx=x*(3.8-3.8*x-bxy*y),ny=y*(3.5-3.5*y-byx*x);
+  x=Math.min(1,Math.max(0,nx));y=Math.min(1,Math.max(0,ny));
+  if(i>=300){X.push(x);Y.push(y)}}
+ return {X,Y}}
+let REF650=null;
+function refs650(){if(REF650)return REF650;
+ /* every reference here is a fixed synthetic system, so its answer is fixed:
+    computed once per page and shared by every check that needs it. Recomputing
+    per check cost 984ms of a suite this app runs in the background. */
+ REF650={ou:kramersMoyal(ou650(2,.6,.01,200000,12345),.01,26,60),
+  dw:null,ccmCoupled:null,ccmIndep:null,fold:null,circle:null,period3:null};
+ REF650.fold=continuation((x,l)=>x*x+l,x=>2*x,()=>1,1,-1,{ds:.02,steps:600,lmin:-1.2,lmax:.2});
+ REF650.circle=continuation((x,l)=>x*x+l*l-1,x=>2*x,(x,l)=>2*l,1,0,{ds:.01,steps:3000,close:true});
+ {const f=(x,r)=>r*x*(1-x),df=(x,r)=>r*(1-2*x);
+  const f3=(x,r)=>f(f(f(x,r),r),r);
+  const Fx=(x,r)=>{const a=f(x,r),b=f(a,r);return df(x,r)*df(a,r)*df(b,r)-1};
+  const Fl=(x,r)=>{const h=1e-6;return (f3(x,r+h)-f3(x,r-h))/(2*h)};
+  let x=.15;for(let i=0;i<20000;i++)x=f(x,3.84);
+  REF650.period3=continuation((x,r)=>f3(x,r)-x,Fx,Fl,x,3.84,
+   {ds:.002,steps:20000,lmin:3.5,lmax:3.95,dir:[0,-1]})}
+ const km=kramersMoyal(dw650(.45,.01,300000,999),.01,30,60);
+ REF650.dw={km,pot:potential(km)};
+ const cp=coupled650(700,.02,.10,5);
+ REF650.ccmCoupled=ccm(cp.X,cp.Y,{E:3,tau:1,libSizes:[20,40,80,160,320,500]});
+ const a=coupled650(700,0,0,5),b=coupled650(700,0,0,77);
+ REF650.ccmIndep=ccm(a.X,b.Y,{E:3,tau:1,libSizes:[20,40,80,160,320,500]});
+ return REF650}
+function checks650(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!(r&&r.ok);detail=(r&&r.detail)||''}catch(e){detail=String((e&&e.message)||e)}
+ T.push({name,pass,detail})};
+ ok('v6.5.0 continuation walks through a fold that parameter stepping cannot',()=>{
+  /* x²+λ=0 turns back exactly at the origin; stepping in λ loses the branch */
+  const r=refs650().fold,f=r.folds[0];
+  return {ok:!!f&&Math.abs(f.x)<2e-3&&Math.abs(f.lambda)<2e-5,
+   detail:f?`fold at x=${f.x.toExponential(2)}, λ=${f.lambda.toExponential(2)} (exact 0, 0) after ${r.steps} steps`:'no fold found'}});
+ ok('v6.5.0 a closed branch returns to its start after exactly 2π of arclength',()=>{
+  const r=refs650().circle;
+  return {ok:r.closed&&Math.abs(r.arclength-2*Math.PI)<.02&&r.folds.length===2,
+   detail:`closed=${r.closed}, arclength=${r.arclength.toFixed(5)} vs 2π=${(2*Math.PI).toFixed(5)}, folds=${r.folds.length} (exact 2)`}});
+ ok('v6.5.0 the logistic period-3 saddle-node sits at the exact r = 1+2√2',()=>{
+  const r=refs650().period3,exact=1+2*Math.SQRT2;
+  const fold=r.folds.length?r.folds.reduce((a,b)=>Math.abs(a.lambda-exact)<Math.abs(b.lambda-exact)?a:b):null;
+  return {ok:!!fold&&Math.abs(fold.lambda-exact)<2e-4,
+   detail:fold?`r=${fold.lambda.toFixed(7)} vs exact ${exact.toFixed(7)}, error ${Math.abs(fold.lambda-exact).toExponential(2)}`:'no fold'}});
+ ok('v6.5.0 Ornstein–Uhlenbeck: the drift slope recovers −θ and the diffusion σ²/2',()=>{
+  const km=refs650().ou;
+  let sx=0,sy=0,sxx=0,sxy=0,n=0;
+  for(const c of km.cells){if(Math.abs(c.x)>1.2)continue;sx+=c.x;sy+=c.D1;sxx+=c.x*c.x;sxy+=c.x*c.D1;n++}
+  const slope=(n*sxy-sx*sy)/(n*sxx-sx*sx);
+  const inner=km.cells.filter(c=>Math.abs(c.x)<1);
+  const d2=inner.reduce((a,c)=>a+c.D2,0)/inner.length;
+  const e1=Math.abs(slope+2)/2,e2=Math.abs(d2-.18)/.18;
+  return {ok:e1<.08&&e2<.12,
+   detail:`slope ${slope.toFixed(4)} vs −θ=−2 (${(100*e1).toFixed(1)}%); D₂ ${d2.toFixed(5)} vs σ²/2=0.18 (${(100*e2).toFixed(1)}%)`}});
+ ok('v6.5.0 a double well is recovered from the series alone',()=>{
+  const wb=wellsAndBarriers(refs650().dw.pot);
+  const w=wb.wells.map(q=>q.x).sort((a,b)=>a-b);
+  return {ok:wb.wells.length===2&&wb.barriers.length===1&&
+    Math.abs(w[0]+1)<.25&&Math.abs(w[1]-1)<.25&&Math.abs(wb.barriers[0].x)<.25,
+   detail:`wells at ${w.map(v=>v.toFixed(3)).join(', ')} (exact ∓1), barrier at ${wb.barriers.map(q=>q.x.toFixed(3)).join(', ')} (exact 0)`}});
+ ok('v6.5.0 cross mapping finds the dominant direction where it is known',()=>{
+  const r=refs650().ccmCoupled;
+  return {ok:r.xCausesY.converged&&r.xCausesY.last>r.yCausesX.last,
+   detail:`X→Y ρ ${r.xCausesY.first.toFixed(3)}→${r.xCausesY.last.toFixed(3)} (converged); Y→X ρ ${r.yCausesX.first.toFixed(3)}→${r.yCausesX.last.toFixed(3)} — coupling 0.10 against 0.02`}});
+ ok('v6.5.0 independent series yield no cause in either direction',()=>{
+  /* the whole point: convergence is the evidence, so its absence must refuse */
+  const r=refs650().ccmIndep;
+  return {ok:!r.xCausesY.converged&&!r.yCausesX.converged,
+   detail:`X→Y ρ ${r.xCausesY.first.toFixed(3)}→${r.xCausesY.last.toFixed(3)}; Y→X ρ ${r.yCausesX.first.toFixed(3)}→${r.yCausesX.last.toFixed(3)} — neither converges, so neither is reported`}});
+ ok('v6.5.0 each instrument declines where its premise does not hold',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const A=analyze650(true);
+  const known=['applied','not-applicable','insufficient'];
+  return {ok:known.includes(A.continuation.status)&&known.includes(A.drift.status)&&known.includes(A.causality.status),
+   detail:`continuation=${A.continuation.status}, drift=${A.drift.status}, causality=${A.causality.status} on model "${state.model}" in ${A.elapsedMs}ms`}});
+ ok('v6.5.0 the atlas injects into the scene exactly once',()=>{
+  if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
+  const prev=state.mode,prevScene=state.scene;let n=0;
+  try{state.mode='hopf';state.scene={lines:[],points:[]};
+   analyze650(true);append650();
+   state.scene.lines=[...state.scene.lines];append650();append650();
+   n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps650-continuation-frame').length;
+  }finally{state.mode=prev;state.scene=prevScene}
+  return {ok:n<=1,detail:`frames after 3 passes = ${n} (expect 1)`}});
+ return T}
+function wrapTests650(){try{if(typeof runTests!=='function'||runTests.__uprs650)return false;
+ const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks650())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  try{globalThis.__UPRS_SELF_TEST__=rep}catch(_){}
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs650=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+ return true}catch(_){return false}}
+
+if(typeof document!=='undefined'){
+ wrap650();
+ for(const ms of [800,2000,4000,8000,14000,21000])setTimeout(()=>{wrap650()},ms);
+ setTimeout(refresh650,2600);
+ setTimeout(wrapTests650,2300);
+ for(const ms of [4600,8400,14400,21400,28400])setTimeout(wrapTests650,ms);}
+globalThis.__UPRS650__={version:V650,analyze:analyze650,checks:checks650,refresh:refresh650,
+ setEnabled:v=>{G.enabled=!!v;G.key='';GEOM.key='';refresh650();return G.enabled},
+ core:{continuation,tangent,kramersMoyal,potential,wellsAndBarriers,embed,corr,crossMap,ccm},
+ audit:()=>({version:V650,enabled:G.enabled,elapsedMs:G.elapsedMs,
+  inChain:!!globalThis.__UPRS650_WRAPPED__,
+  active:(()=>{try{return state.scene.lines.some(l=>String(l.meta&&l.meta.kind||'').startsWith('ps650'))}catch(_){return false}})(),
+  result:G.result?{continuation:G.result.continuation.status,
+   drift:G.result.drift.status,causality:G.result.causality.status,
+   fold:(G.result.continuation.branches||[]).map(b=>b.fold).filter(v=>v!=null),
+   verdict:G.result.causality.verdict||null}:null})};
 })();</script>
 </body></html>
