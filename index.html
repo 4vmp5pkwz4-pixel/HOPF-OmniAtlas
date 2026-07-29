@@ -13572,7 +13572,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const V580='5.8.0';
 const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
  '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
- '__UPRS570__','__UPRS580__','__UPRS590__'];
+ '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__'];
 function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
  for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
 function highestVersion580(){let best='0.0.0';
@@ -13608,7 +13608,7 @@ function stampVersion580(){try{
  if(!el){el=document.createElement('div');el.id=STAMP_ID580;
   el.setAttribute('aria-label','build version');
   if(small&&small.nextSibling)host.insertBefore(el,small.nextSibling);else host.appendChild(el)}
- const text='v'+v+' · BIFURCATION ATLAS';
+ const text='v'+v+' · ADAPTIVE ATLAS';
  if(el.textContent!==text)el.textContent=text;
  force580(el,STAMP580);
  return true}catch(_){return false}}
@@ -13632,7 +13632,16 @@ const HEAD580=[
  /* the grid tracks are what pinned the action column to one button's width */
  ['grid-template-rows','none'],['grid-template-columns','none']];
 function force580(el,pairs){if(!el)return;for(const [k,v] of pairs){try{el.style.setProperty(k,v,'important')}catch(_){}}}
+/* v6.1.0 does this job properly - it MEASURES the result and shrinks until the
+   controls fit, instead of pinning one clamp() size and letting the row count
+   run away. Both writing inline !important to the same nodes just meant the
+   last timer won: v5.8.0 kept restoring min-width:0 on .top-actions, which is
+   exactly what let it collapse to 7px in landscape. So when the newer fitter is
+   present this one stands down, and it stays as the fallback if that module
+   ever fails to install. */
+function superseded580(){return !!(globalThis.__UPRS610__&&typeof __UPRS610__.apply==='function')}
 function enforce580(){try{
+ if(superseded580())return true;
  const top=document.querySelector('header.top');if(!top)return false;
  force580(top,HEAD580);
  const brand=top.querySelector('.brand');
@@ -13654,6 +13663,7 @@ function enforce580(){try{
 
 let ro580=null,mo580=null,last580=-1;
 function measure580(){try{
+ if(superseded580())return true;
  const top=document.querySelector('header.top');if(!top)return false;
  const h=Math.round(top.getBoundingClientRect().height);
  if(!(h>0))return false;
@@ -13967,7 +13977,7 @@ function feigenbaum590(doublings){
   universal:Math.abs(delta-FEIGENBAUM)/FEIGENBAUM<.25}}
 
 /* ================================================================ app layer */
-const G={enabled:true,diagram:null,key:'',param:null,steps:96,elapsedMs:0};
+const G={enabled:true,diagram:null,key:'',rev:0,param:null,steps:96,elapsedMs:0};
 /* The parameter the user is already steering, else the first with a real range.
    Both selectors need decoding, and neither did: driveParam encodes physical
    parameters as "param:<key>" and is never empty (it defaults to "axis"), so
@@ -14039,10 +14049,30 @@ function key590(){try{return [state.model,state.mode,state.samples,
  axisBounds590(),steeredParamKeys590().join('+')].join('|')}catch(_){return ''}}
 function diagram590(force){const k=key590();
  if(!force&&G.diagram&&k===G.key)return G.diagram;
- G.diagram=build590();G.key=k;return G.diagram}
+ /* the revision distinguishes a forced rebuild from a cache hit on the same key,
+    so the geometry cache below cannot serve points from a superseded diagram */
+ G.diagram=build590();G.key=k;G.rev=(G.rev+1)>>>0;return G.diagram}
 
 /* ------------------------------------------------------- scene construction */
 const MODES590=['sphere','hopf','hopfion','spectral'];
+/* The atlas is a companion surface, not the subject. Emitting one polyline per
+   value bin across every parameter column put ~4500 extra segments into a scene
+   that buildScene() rebuilds on every drag and parameter edit, which is felt
+   directly as lag. Two things fix that without losing the surface: a segment
+   budget that scales with the canvas, and caching the built geometry so a
+   rebuild replays finished arrays instead of recomputing thousands of points.
+   Ridges are chosen by how much density they actually carry, so thinning drops
+   empty bins first and the shape of the surface survives. */
+function budget590(){
+ const w=(typeof innerWidth==='number'&&innerWidth>0)?innerWidth:1440;
+ const h=(typeof innerHeight==='number'&&innerHeight>0)?innerHeight:900;
+ const small=Math.min(w,h)<560||w<820;
+ return {ridges:small?10:18,columns:small?8:14,along:small?32:52}}
+const GEOM590={key:'',lines:[],points:[],segments:0};
+function sampleAlong590(n,cap){ /* evenly spaced indices, endpoints included */
+ if(n<=cap)return Array.from({length:n},(_,i)=>i);
+ const out=[];for(let i=0;i<cap;i++)out.push(Math.round(i*(n-1)/(cap-1)));
+ return [...new Set(out)]}
 function append590(){
  if(!G.enabled)return false;
  if(typeof state==='undefined'||!state.scene)return false;
@@ -14052,9 +14082,26 @@ function append590(){
  const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps590');
  if(state.scene.lines.some(mine))state.scene.lines=state.scene.lines.filter(e=>!mine(e));
  if(state.scene.points.some(mine))state.scene.points=state.scene.points.filter(e=>!mine(e));
- const B=diagram590();if(!B)return false;
+ const g=geometry590();if(!g)return false;
+ for(const l of g.lines)L(l.pts,l.color,l.width,l.meta);
+ for(const q of g.points)P(q.p,q.color,q.size,q.label,q.meta);
+ return true}
+function geometry590(){
+ const B=diagram590();if(!B)return null;
+ const bud=budget590();
+ const cacheKey=G.key+'|r'+G.rev+'|'+bud.ridges+'x'+bud.columns+'x'+bud.along;
+ if(GEOM590.key===cacheKey&&(GEOM590.lines.length||GEOM590.points.length))return GEOM590;
+ const built=buildGeometry590(B,bud);
+ if(!built)return null;
+ GEOM590.key=cacheKey;GEOM590.lines=built.lines;GEOM590.points=built.points;
+ GEOM590.segments=built.lines.reduce((n,l)=>n+Math.max(0,l.pts.length-1),0);
+ return GEOM590}
+function buildGeometry590(B,bud){
+ const lines=[],points=[];
+ const L=(pts,color,width,meta)=>lines.push({pts,color,width,meta});
+ const P=(p,color,size,label,meta)=>points.push({p,color,size,label,meta});
  const {grid,bins}=B.diagram,cols=B.diagram.columns.length;
- if(!grid||!cols)return false;
+ if(!grid||!cols)return null;
  /* the vocabulary follows the verdict: "attractor" and "branch" are claims
     about a trajectory and are not used for a static response curve */
  const setWord=B.dynamical?'аттрактора':'отклика';
@@ -14062,19 +14109,23 @@ function append590(){
  /* the diagram is placed as a panel standing beside the hologram */
  const W=2.1,H=1.15,X0=-W/2,Y0=-H/2-1.55,Z=-.35;
  const at=(u,v,h)=>[X0+u*W,Y0+v*H,Z+h*.34];
- /* ridges along the parameter axis: one polyline per value bin that is visited */
- const bStep=Math.max(1,Math.floor(bins/40));
- for(let b=0;b<bins;b+=bStep){
-  const pts=[];let any=false;
-  for(let c=0;c<cols;c++){const h=grid[c][b]||0;if(h>.02)any=true;
-   pts.push(at(c/(cols-1),b/(bins-1),h))}
-  if(any&&pts.length>2)L(pts,`rgba(126,231,193,${.10+.32*(b/bins)})`,1,
+ /* ridges along the parameter axis, ranked by the density they carry so the
+    budget spends its polylines on bins the response actually visits */
+ const weight=[];
+ for(let b=0;b<bins;b++){let s=0;for(let c=0;c<cols;c++)s+=grid[c][b]||0;weight.push([b,s])}
+ const live=weight.filter(w=>w[1]>.02*cols*.05).sort((a,b)=>b[1]-a[1])
+  .slice(0,bud.ridges).map(w=>w[0]).sort((a,b)=>a-b);
+ const colIdx=sampleAlong590(cols,bud.along);
+ for(const b of live){
+  const pts=[];
+  for(const c of colIdx)pts.push(at(c/(cols-1),b/(bins-1),grid[c][b]||0));
+  if(pts.length>2)L(pts,`rgba(126,231,193,${.12+.34*(b/bins)})`,1,
    {kind:'ps590-ridge',bin:b,label:`Плотность ${setWord} · уровень ${b+1}/${bins}`,priority:22})}
  /* columns: the set the response occupies at individual parameter values */
- const cStep=Math.max(1,Math.floor(cols/28));
- for(let c=0;c<cols;c+=cStep){
+ const binIdx=sampleAlong590(bins,bud.along);
+ for(const c of sampleAlong590(cols,bud.columns)){
   const pts=[];
-  for(let b=0;b<bins;b++)pts.push(at(c/(cols-1),b/(bins-1),grid[c][b]||0));
+  for(const b of binIdx)pts.push(at(c/(cols-1),b/(bins-1),grid[c][b]||0));
   L(pts,'rgba(152,232,255,.18)',.8,
    {kind:'ps590-column',column:c,
     label:`${B.paramLabel} = ${fmt590(B.diagram.columns[c].param)} ${B.unit} · ${branchWord}: ${B.diagram.columns[c].branchCount}`,
@@ -14107,7 +14158,7 @@ function append590(){
    L([at(Math.min(1,u),0,0),at(Math.min(1,u),1,.1)],'rgba(255,157,157,.75)',1.8,
     {kind:'ps590-accumulation',
      label:`Точка накопления каскада (начало хаоса) ≈ ${fmt590(fe.accumulation)} ${B.unit} · δ=${fe.delta.toFixed(4)} (Фейгенбаум ${FEIGENBAUM.toFixed(4)})`,priority:130})}}
- return true}
+ return {lines,points}}
 function paramU590(B,p){try{const c=B.diagram.columns,lo=c[0].param,hi=c[c.length-1].param;
  if(B.log&&lo>0&&hi>0&&p>0)return (Math.log(p)-Math.log(lo))/(Math.log(hi)-Math.log(lo));
  return (p-lo)/((hi-lo)||1)}catch(_){return 0}}
@@ -14314,5 +14365,522 @@ globalThis.__UPRS590__={version:V590,diagram:diagram590,checks:checks590,refresh
    maxBranches:G.diagram.maxBranches,doublings:G.diagram.doublings.length,
    delta:G.diagram.feigenbaum?G.diagram.feigenbaum.delta:null,
    elapsedMs:G.diagram.elapsedMs}:null})};
+})();</script>
+<script id="uprs600TestEconomy">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius-Hopf OmniAtlas · v6.0.0 · SELF-TEST ECONOMY
+   ----------------------------------------------------------------------------
+   Measured, not guessed: the full self-test suite costs ~5.7 s on a phone
+   viewport (938 checks; a CPU profile puts ~39% in the v5.5.0 phase-space
+   analytics - RQA, false nearest neighbours, Rosenstein, correlation dimension
+   - ~24% in the v5.4.0 symbolic regression, ~13% in the v5.9.0 cascade). The
+   silent scheduler re-ran the whole thing every 6 s, so three runs landed in
+   every thirty-second window and the main thread was busy essentially always:
+   1.8 fps at idle, and every drag competing with a multi-second synchronous
+   task. That is the whole of "everything got slow".
+
+   Nothing about the verification is dropped, and the runTests chain is not
+   touched. Only WHEN the background run happens changes, on two facts:
+
+   1. THE SUITE IS A PURE FUNCTION of the experiment plus the code, and the code
+      cannot change at runtime. Re-running it on an unchanged state can only
+      reproduce the previous report, so the scheduler compares a signature of
+      everything a check can read - model, mode, cursor, parameters, axis
+      bounds, sample count, language, and a fingerprint of the sweep itself -
+      and simply does not run when nothing has moved.
+
+   2. VERIFICATION IS NOT URGENT. It exists to catch a broken build, not to race
+      the user's finger, so a run waits until interaction has actually stopped
+      and the floor between runs rises from 6 s to 45 s.
+
+   The explicit Self-test button is untouched and still runs everything
+   synchronously - when someone asks for the report, they get a real one.
+
+   An earlier attempt here memoised the report by wrapping runTests, and two
+   things went wrong that are worth recording: modules install their own
+   wrappers on timers out to ~36 s, so a report captured early froze a suite
+   that was still being assembled (433 checks instead of 938); and re-wrapping
+   to stay outermost added a layer per tick. Controlling the scheduler alone
+   gets the entire win with none of that.
+   ========================================================================== */
+const V600='6.0.0';
+const now600=()=>(typeof performance!=='undefined'?performance.now():Date.now());
+
+/* ------------------------------------------------- state signature */
+function sweepPrint600(){const a=(typeof state!=='undefined'&&state.sweep)||[];
+ if(!a.length)return '0';
+ let h=2166136261>>>0;
+ const step=Math.max(1,Math.floor(a.length/12));
+ const mix=v=>{h=(h^((Math.round((Number(v)||0)*1e6)|0)>>>0))>>>0;h=Math.imul(h,16777619)>>>0};
+ for(let i=0;i<a.length;i+=step){const r=a[i];mix(r&&r.x);mix(r&&r.gamma&&r.gamma.re);mix(r&&r.gamma&&r.gamma.im)}
+ const z=a[a.length-1];mix(z&&z.x);mix(z&&z.gamma&&z.gamma.re);mix(z&&z.gamma&&z.gamma.im);
+ return a.length+':'+h.toString(36)}
+function sig600(){try{
+ const el=id=>{try{const e=document.getElementById(id);return e?e.value:''}catch(_){return ''}};
+ return [state.model,state.mode,state.index,state.samples,state.lang,state.log?1:0,
+  state.driveParam,state.quickParam,el('xmin'),el('xmax'),
+  JSON.stringify(state.params&&state.params[state.model]||{}),
+  sweepPrint600()].join('|')}catch(_){return 'nostate:'+Math.random()}}
+
+/* --------------------------------------- interaction-aware scheduling */
+const IDLE_MS=2500,FLOOR_MS=45000;
+const S={lastTouch:0,lastRunAt:-1e9,lastSig:'',pending:false,runs:0,skipped:0,
+ deferrals:0,lastMs:0,installed:false};
+function touched600(){S.lastTouch=now600()}
+function quiet600(){return now600()-S.lastTouch>=IDLE_MS}
+function cached600(){return globalThis.__UPRS_SELF_TEST__||{passed:0,total:0,failed:[],tests:[]}}
+function install600(){try{
+ if(S.installed||typeof document==='undefined'||typeof addEventListener!=='function')return false;
+ for(const ev of ['pointerdown','pointermove','pointerup','wheel','keydown','input','change','touchstart','touchmove'])
+  addEventListener(ev,touched600,{passive:true,capture:true});
+ const run=()=>{S.pending=false;
+  if(!quiet600()){S.deferrals++;schedule(900);return}          /* still busy: come back */
+  const sg=sig600();
+  if(sg===S.lastSig&&globalThis.__UPRS_SELF_TEST__){S.skipped++;return}
+  const t0=now600();
+  try{globalThis.runTests&&globalThis.runTests(false)}catch(e){console.warn('UPRS600 silent test',e)}
+  S.lastMs=Math.round(now600()-t0);S.lastRunAt=now600();S.lastSig=sg;S.runs++};
+ const schedule=delay=>{
+  if(S.pending)return;S.pending=true;
+  setTimeout(()=>{
+   if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:5000});else setTimeout(run,0)
+  },Math.max(0,delay||0))};
+ globalThis.scheduleSilentTests393=function(){
+  if(S.pending)return cached600();
+  if(sig600()===S.lastSig&&globalThis.__UPRS_SELF_TEST__){S.skipped++;return cached600()}
+  if(now600()-S.lastRunAt<FLOOR_MS&&globalThis.__UPRS_SELF_TEST__)return cached600();
+  schedule(quiet600()?0:IDLE_MS);
+  return cached600()};
+ S.installed=true;return true}catch(_){return false}}
+
+/* ---------------------------------------------------------- self-checks */
+function checks600(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!(r&&r.ok);detail=(r&&r.detail)||''}catch(e){detail=String((e&&e.message)||e)}
+ T.push({name,pass,detail})};
+ ok('v6.0.0 the signature moves when the experiment moves',()=>{
+  if(typeof state==='undefined'||!(state.sweep&&state.sweep.length))return {ok:true,detail:'headless'};
+  const prev=state.index,a=sig600();
+  try{state.index=(state.index+7)%state.sweep.length;const b=sig600();
+   return {ok:a!==b,detail:'cursor change alters the signature'}}
+  finally{state.index=prev}});
+ ok('v6.0.0 reverting the experiment restores the signature exactly',()=>{
+  if(typeof state==='undefined'||!(state.sweep&&state.sweep.length))return {ok:true,detail:'headless'};
+  const prev=state.index,a=sig600();
+  try{state.index=(state.index+7)%state.sweep.length;state.index=prev;
+   return {ok:sig600()===a,detail:'signature is a function of state, not of history'}}
+  finally{state.index=prev}});
+ ok('v6.0.0 the signature covers the sweep contents, not just its length',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const prev=state.sweep;
+  try{state.sweep=[{x:1,gamma:{re:.1,im:.2}},{x:2,gamma:{re:.3,im:.4}}];const a=sweepPrint600();
+   state.sweep=[{x:1,gamma:{re:.9,im:.2}},{x:2,gamma:{re:.3,im:.4}}];const b=sweepPrint600();
+   return {ok:a!==b,detail:`same length, different values → ${a} vs ${b}`}}
+  finally{state.sweep=prev}});
+ ok('v6.0.0 background verification yields to the user and does not spin',()=>
+  ({ok:IDLE_MS>=1500&&FLOOR_MS>=30000&&S.installed,
+    detail:`idle gate ${IDLE_MS}ms, floor ${FLOOR_MS/1000}s (was 6s), runs=${S.runs}, skipped=${S.skipped}, last=${S.lastMs}ms`}));
+ ok('v6.0.0 the self-test chain is left alone',()=>{
+  /* this module schedules; it must not wrap runTests, or it would freeze a
+     suite that later modules are still adding checks to */
+  const f=globalThis.runTests;
+  return {ok:typeof f==='function'&&!f.__uprs600,
+   detail:'scheduler-only: runTests carries no v6.0.0 wrapper'}});
+ return T}
+function wrapTests600(){try{if(typeof runTests!=='function'||runTests.__uprs600checks)return false;
+ const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks600())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  try{globalThis.__UPRS_SELF_TEST__=rep}catch(_){}
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs600checks=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+ return true}catch(_){return false}}
+
+if(typeof document!=='undefined'){
+ const boot=()=>{install600()};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ setTimeout(wrapTests600,1600);
+ for(const ms of [3800,7600,13600,20600,27600])setTimeout(wrapTests600,ms);}
+globalThis.__UPRS600__={version:V600,checks:checks600,signature:sig600,
+ audit:()=>({version:V600,runs:S.runs,skipped:S.skipped,deferrals:S.deferrals,
+  lastRunMs:S.lastMs,idleGateMs:IDLE_MS,floorMs:FLOOR_MS,installed:S.installed,
+  wrapsRunTests:typeof runTests==='function'&&!!runTests.__uprs600})};
+})();</script>
+<script id="uprs610AdaptiveChrome">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius-Hopf OmniAtlas · v6.1.0 · CHROME THAT FITS ITS BOX
+   ----------------------------------------------------------------------------
+   v5.8.0 stopped the header controls from hiding, which was right, but it left
+   them at one fixed clamp() size and simply let the row count grow. Measured on
+   real viewports that produced a 160 px header on a 390x844 phone and 165 px on
+   320x568 - a fifth to a third of the screen spent on chrome - while in
+   844x390 landscape the modes row spilled straight out of the header and over
+   the canvas. Two lower strips were never addressed at all: the parameter
+   chips (.dph291-strip) are pinned to a four-column grid that clips its labels
+   below ~420 px, and the rail tools pack fifteen buttons into a 220 px
+   scroller, so most of them sit off-screen.
+
+   The rule everywhere here is the same, and it is the one that was asked for:
+   controls SHRINK and TAKE MORE ROWS, and never leave their box. What v5.8.0
+   was missing is that shrinking has to be MEASURED, not guessed - a fixed
+   clamp() cannot know how many rows it will cost. So each strip is fitted:
+   a scale is searched downward until the strip fits its height budget and
+   nothing overflows sideways, then held there. If even the smallest legible
+   scale will not fit, visibility wins and the strip keeps its extra row -
+   a control you cannot see is worse than one that is small.
+   ========================================================================== */
+const V610='6.1.0';
+const R=(el)=>el?el.getBoundingClientRect():{width:0,height:0,left:0,right:0};
+function css610(el,pairs){if(!el)return;for(const [k,v] of pairs){try{el.style.setProperty(k,v,'important')}catch(_){}}}
+function vw610(){return Math.max(1,document.documentElement.clientWidth||innerWidth||1)}
+function vh610(){return Math.max(1,document.documentElement.clientHeight||innerHeight||1)}
+
+/* --------------------------------------------------------- the fit engine */
+/* A scale is applied to font-size and padding together, because shrinking type
+   without shrinking the box it sits in buys almost nothing. Steps go downward
+   from 1; the first that satisfies the budget wins, so a wide screen pays
+   nothing and only a cramped one is scaled. */
+const STEPS610=[1,.94,.88,.82,.76,.70,.65,.60,.56,.52,.48,.44];
+function applyScale610(items,s,base){
+ for(const el of items){
+  css610(el,[
+   ['font-size',(base.font*s).toFixed(2)+'px'],
+   ['padding',(base.padY*s).toFixed(2)+'px '+(base.padX*s).toFixed(2)+'px'],
+   ['line-height','1.12'],
+   ['min-height','0'],['height','auto'],['max-height','none'],
+   ['min-width','0'],['max-width','100%'],
+   /* out-of-flow controls contribute no height to their container, so the
+      header measured 43px while its buttons rendered down to 70px and the fit
+      loop could never satisfy containment - it just shrank to the floor */
+   ['position','static'],['inset','auto'],['float','none'],
+   ['visibility','visible'],['pointer-events','auto'],
+   ['white-space','nowrap'],['box-sizing','border-box']]);
+  /* icon-only children must not force the button wider than its text */
+  for(const kid of el.children)css610(kid,[['max-width','100%'],['min-width','0']]);
+ }}
+/* Containment on ALL FOUR edges. Checking only the horizontal ones is what let
+   the landscape header pass while broken: the header measured a tidy 56px and
+   reported no sideways overflow, but .top-actions had been squeezed to 7px and
+   its fourteen buttons hung out below the header, over the canvas. A control
+   that sits outside its own container is out of bounds whichever edge it
+   crossed. */
+function outside610(host,items){return !!firstOutside610(host,items)}
+/* Containment is decided on MEASURED geometry, not on what the container claims
+   its height is. Chasing that through the stylesheet was a dead end: with
+   height:auto !important inline, .top-actions still computed to 0px while its
+   buttons laid out 13px tall inside it, so the header reported 43px forever and
+   the fit loop shrank to its floor on a 1600px screen with room to spare. The
+   union of the item rectangles is the honest answer to "how much room do these
+   controls need", and the host is then told that height explicitly. */
+function union610(items){
+ let top=Infinity,bottom=-Infinity,left=Infinity,right=-Infinity,n=0;
+ for(const el of items){const r=R(el);
+  if(r.width<1||r.height<1)continue;
+  n++;
+  if(r.top<top)top=r.top;if(r.bottom>bottom)bottom=r.bottom;
+  if(r.left<left)left=r.left;if(r.right>right)right=r.right}
+ return n?{top,bottom,left,right,height:bottom-top,width:right-left,n}:null}
+function need610(host,items,pad){
+ const u=union610(items);if(!u)return {height:R(host).height,wide:false,u:null};
+ const h=R(host);
+ return {height:Math.ceil(u.bottom-h.top+(pad||0)),
+  wide:u.right>h.right+1.5||u.left<h.left-1.5,u}}
+function fit610(host,items,budget,base){
+ if(!host||!items.length)return {scale:1,height:R(host).height,fitted:false,trace:[]};
+ const PAD=4;
+ let chosen=STEPS610[STEPS610.length-1],best=null,trace=[];
+ for(const s of STEPS610){
+  applyScale610(items,s,base);
+  const nd=need610(host,items,PAD);
+  trace.push(s+':'+nd.height+(nd.wide?'w':''));
+  if(!best||nd.height<best.height)best={scale:s,height:nd.height};
+  if(nd.height<=budget&&!nd.wide){chosen=s;best={scale:s,height:nd.height};break}
+  chosen=s;
+ }
+ applyScale610(items,chosen,base);
+ const nd=need610(host,items,PAD);
+ /* size the host to what the controls actually occupy, so nothing renders
+    outside it whatever the stylesheet believes */
+ const h=Math.max(1,nd.height);
+ css610(host,[['height',h+'px'],['min-height',h+'px'],['max-height','none']]);
+ return {scale:chosen,height:h,fitted:h<=budget&&!nd.wide,trace}}
+function outside610(host,items){const nd=need610(host,items,0);
+ return !!(nd.wide||nd.height>R(host).height+1.5)}
+
+/* ------------------------------------------------------------- the header */
+const HEAD610=[['display','flex'],['flex-wrap','wrap'],['align-items','center'],
+ ['gap','4px'],['height','auto'],['min-height','0'],['max-height','none'],
+ ['overflow','visible'],['box-sizing','border-box'],['row-gap','3px'],
+ ['grid-template-rows','none'],['grid-template-columns','none'],
+ ['padding','3px 5px'],['align-content','flex-start']];
+/* min-width:0 belongs on the BUTTONS, never on the groups that hold them: a
+   greedy .modes took 652 of 670 available pixels and left .top-actions seven,
+   so its buttons rendered outside their own box. A floor of 240px (or the whole
+   row, whichever is smaller) means a group that cannot share the line wraps
+   onto its own line instead of being crushed off the edge. */
+const BOX610=[['display','flex'],['flex-wrap','wrap'],['align-items','center'],
+ ['gap','3px'],['row-gap','3px'],['min-width','min(100%,240px)'],['max-width','100%'],
+ ['width','auto'],['height','auto'],['overflow','visible'],['box-sizing','border-box'],
+ /* a rule clamps .top-actions to min-height:42px AND max-height:42px while its
+    wrapped content needs 149px, so it could never grow and its buttons simply
+    rendered outside it - height:auto alone does nothing against a max-height */
+ ['min-height','0'],['max-height','none'],
+ ['flex','1 1 auto'],['align-content','flex-start'],
+ /* a media query lifts .top-actions out of the flow with position:absolute and
+    pins it to right:7px, where it collapsed to a 7px box while its fourteen
+    buttons rendered outside it. Flex sizing cannot reach an absolutely
+    positioned box at all, so it goes back into the flow first. */
+ ['position','static'],['inset','auto'],['float','none'],['transform','none']];
+function headerItems610(top){
+ const out=[];
+ for(const sel of ['.modes','.top-actions']){
+  const box=top.querySelector(sel);if(!box)continue;
+  css610(box,BOX610);
+  /* the modes row may claim the slack, the action row must keep its floor */
+  /* size to content, not to the slack: a greedy .modes took the whole line and
+     forced .top-actions down to its floor, so the action buttons wrapped into
+     four rows on a 1600px screen that had room for two */
+  css610(box,[['flex','0 1 auto'],
+   ['justify-content',sel==='.modes'?'flex-start':'flex-end']]);
+  for(const el of box.children){
+   css610(el,[['display',el.tagName==='BUTTON'?'inline-flex':'inline-block'],
+    ['visibility','visible'],['pointer-events','auto'],['position','static'],
+    ['flex','0 1 auto'],['align-items','center'],['justify-content','center']]);
+   out.push(el)}
+ }
+ return out}
+function headerBudget610(){
+ /* chrome may cost a fifth of a tall screen and a quarter of a short one, and
+    never more than 148px - past that the canvas stops being the subject */
+ const h=vh610();
+ return Math.min(148,Math.max(52,h*(h<520?.26:.20)))}
+/* The header is a grid item of .app, whose first row track is pinned from
+   --top-h. Letting the header be height:auto is not enough: the track still
+   clipped it at 56px, so a third row of action buttons rendered under the
+   header border and over the canvas, and the measurement fed itself - measure
+   56, write --top-h:56, stay 56. The tracks are therefore content-sized, which
+   is what makes the fit loop below able to see the real height at all. */
+function freeTracks610(){
+ const app=document.querySelector('.app');if(!app)return false;
+ if(getComputedStyle(app).display.indexOf('grid')<0)return false;
+ const n=app.children.length;
+ if(n<2)return false;
+ css610(app,[['grid-template-rows',
+  n>=3?'auto minmax(0,1fr) auto':'auto minmax(0,1fr)'],
+  ['align-items','stretch']]);
+ return true}
+function fitHeader610(){
+ const top=document.querySelector('header.top');if(!top)return null;
+ freeTracks610();
+ css610(top,HEAD610);
+ const brand=top.querySelector('.brand');
+ css610(brand,[['flex','0 1 auto'],['min-width','0'],['max-width','100%'],
+  ['overflow','hidden'],['gap','7px']]);
+ /* the legacy branding line and the version stamp said two different things on
+    two lines; the stamp is derived from what is actually loaded, so it stays
+    and the legacy line goes - one row of a phone header back */
+ const legacy=top.querySelector('.brand small');
+ if(legacy&&document.getElementById('uprsVersionStamp580'))
+  css610(legacy,[['display','none']]);
+ const seal=top.querySelector('.seal');
+ if(seal&&vw610()<560)css610(seal,[['width','24px'],['height','24px'],['flex','0 0 24px']]);
+ const chip=document.getElementById('currentModeChip');
+ const modes=top.querySelector('.modes');
+ if(chip&&modes&&modes.children.length)css610(chip,[['display','none']]);
+ const items=headerItems610(top);
+ const res=fit610(top,items,headerBudget610(),{font:12,padY:6,padX:10});
+ const h=Math.round(R(top).height);
+ if(h>0)document.documentElement.style.setProperty('--top-h',h+'px','important');
+ return {...res,height:h,items:items.length}}
+
+/* ------------------------------------------- the parameter chips, in rows */
+/* Pinned to repeat(4,minmax(0,1fr)) with !important, so on a 390px phone four
+   chips share ~300px and every label is cut. The column count is now derived
+   from the width a chip actually needs to stay readable, and the rest wraps -
+   which is the two rows that were asked for. */
+function fitParams610(){
+ const strip=document.querySelector('.dph291-strip');if(!strip)return null;
+ const kids=[...strip.children];if(!kids.length)return null;
+ const avail=R(strip).width||R(strip.parentElement).width||vw610();
+ const MIN=118;
+ const cols=Math.max(1,Math.min(kids.length,Math.floor((avail+6)/MIN)))||1;
+ css610(strip,[['display','grid'],
+  ['grid-template-columns','repeat('+cols+',minmax(0,1fr))'],
+  ['grid-auto-rows','minmax(0,auto)'],['gap','4px'],
+  ['overflow','visible'],['min-width','0'],['width','100%'],
+  ['padding','0'],['flex','1 1 auto']]);
+ const rows=Math.ceil(kids.length/cols);
+ for(const el of kids)css610(el,[['min-width','0'],['width','100%'],
+  ['min-height',(rows>1?36:44)+'px'],['overflow','hidden'],
+  ['padding','4px 5px'],['box-sizing','border-box']]);
+ /* the shell around it is a fixed 34px | 1fr | 34px grid: let it grow in height */
+ const shell=strip.closest('.dph291-shell');
+ if(shell)css610(shell,[['align-items','stretch'],['height','auto'],['min-height','0']]);
+ const hud=document.getElementById('diagramParamHUD291');
+ if(hud)css610(hud,[['height','auto'],['min-height','0'],['max-height','38vh'],['overflow','visible']]);
+ return {chips:kids.length,cols,rows,width:Math.round(avail)}}
+
+/* ------------------------------------------------ the rail tools, in rows */
+/* The rail is fitted as a whole, not tool-group by tool-group. Fitting only
+   .railTools left .railSystem untouched, which is why "LIVE OFF" still read
+   "LIVE OF" - clipped inside its own group while the group next door had
+   already been shrunk. Every leaf control in the footer is one population
+   measured against one budget. */
+function railItems610(rail){
+ const out=[];
+ for(const sel of ['.railTools','.railMetrics','.railSystem']){
+  const box=rail.querySelector(sel);if(!box)continue;
+  css610(box,[['display','flex'],['flex-wrap','wrap'],['align-items','center'],
+   ['justify-content','center'],['gap','3px'],['row-gap','3px'],
+   ['overflow','visible'],['min-width','0'],['max-width','100%'],
+   ['flex','0 1 auto'],['align-content','center']]);
+  for(const el of box.children){
+   /* a <select> renders its own text and arrow and reports no scroll overflow
+      when it truncates, so the clipping check cannot see it: "RU" came out as
+      "R." once the rail was scaled. Form controls therefore keep a floor wide
+      enough for their content instead of being squeezed like a button. */
+   const form=el.tagName==='SELECT'||el.tagName==='INPUT';
+   css610(el,[['flex','0 1 auto'],['max-width','100%'],
+    ['min-width',form?'4.2em':'0'],
+    ['overflow',form?'visible':'hidden'],
+    ['text-overflow',form?'clip':'ellipsis'],
+    ['text-align',form?'center':'']]);
+   out.push(el)}
+ }
+ return out}
+function fitRail610(){
+ const rail=document.querySelector('.telemetryRail');if(!rail)return null;
+ css610(rail,[['display','flex'],['flex-wrap','wrap'],['align-items','center'],
+  ['justify-content','center'],['gap','4px'],['row-gap','2px'],
+  ['height','auto'],['min-height','0'],['max-height','none'],
+  ['overflow','visible'],['grid-template-columns','none'],['grid-template-rows','none'],
+  ['padding','3px 5px calc(3px + env(safe-area-inset-bottom,0px))']]);
+ const items=railItems610(rail);
+ if(!items.length)return null;
+ const budget=Math.max(44,Math.min(140,vh610()*.17));
+ const res=fit610(rail,items,budget,{font:10,padY:5,padX:7});
+ const h=Math.round(R(rail).height);
+ if(h>0){document.documentElement.style.setProperty('--telemetry-h',h+'px','important');
+  document.documentElement.style.setProperty('--uprs322-rail',h+'px','important')}
+ return {...res,height:h,items:items.length,budget:Math.round(budget)}}
+
+/* ------------------------------------------------------------ orchestration */
+let raf610=0;const LAST={header:null,params:null,rail:null,at:0};
+function applyAll610(){try{
+ LAST.header=fitHeader610();
+ LAST.rail=fitRail610();
+ LAST.params=fitParams610();
+ LAST.at=Date.now();
+ return true}catch(e){console.warn('UPRS610',e);return false}}
+function schedule610(){if(raf610)return;
+ raf610=requestAnimationFrame(()=>{raf610=0;applyAll610()})}
+function install610(){try{
+ if(!document.querySelector('header.top'))return false;
+ applyAll610();
+ addEventListener('resize',schedule610,{passive:true});
+ addEventListener('orientationchange',()=>setTimeout(applyAll610,140),{passive:true});
+ if(typeof ResizeObserver==='function'){
+  const ro=new ResizeObserver(schedule610);
+  for(const sel of ['header.top','.telemetryRail','#diagramParamHUD291'])
+   {const el=document.querySelector(sel);if(el)ro.observe(el)}}
+ /* chips are rebuilt when the model changes, and new rail buttons keep landing
+    from later modules; restyle what appears instead of waiting for a resize */
+ if(typeof MutationObserver==='function'){
+  for(const sel of ['.dph291-strip','.railTools','.top-actions','.modes']){
+   const el=document.querySelector(sel);if(!el)continue;
+   new MutationObserver(schedule610).observe(el,{childList:true})}}
+ return true}catch(_){return false}}
+
+/* ---------------------------------------------------------- self-checks */
+function clipped610(host){if(!host)return false;
+ return host.scrollWidth-host.clientWidth>2}
+function offscreen610(sel){const out=[];const vw=vw610();
+ for(const el of document.querySelectorAll(sel)){
+  const cs=getComputedStyle(el);if(cs.display==='none'||cs.visibility==='hidden')continue;
+  const r=R(el);if(r.width<1)continue;
+  if(r.right>vw+1||r.left<-1)out.push((el.id||el.textContent.trim().slice(0,14))+'@'+Math.round(r.left)+'..'+Math.round(r.right))}
+ return out}
+function checks610(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!(r&&r.ok);detail=(r&&r.detail)||''}catch(e){detail=String((e&&e.message)||e)}
+ T.push({name,pass,detail})};
+ const dom=typeof document!=='undefined'&&!!document.querySelector('header.top');
+ ok('v6.1.0 the header keeps to its share of the screen',()=>{
+  if(!dom)return {ok:true,detail:'headless'};
+  const top=document.querySelector('header.top'),h=R(top).height,b=headerBudget610();
+  /* a hard failure only if it also could have shrunk further */
+  return {ok:h<=b+1||LAST.header&&LAST.header.scale<=STEPS610[STEPS610.length-1]+1e-9,
+   detail:`header ${Math.round(h)}px of budget ${Math.round(b)}px at scale ${LAST.header?LAST.header.scale:'?'} (viewport ${vw610()}x${vh610()})`}});
+ ok('v6.1.0 no header control is pushed outside the viewport',()=>{
+  if(!dom)return {ok:true,detail:'headless'};
+  const o=offscreen610('.top-actions .btn, .top-actions button, .modes .mode');
+  return {ok:o.length===0,detail:o.length?('off-screen: '+o.join(', ')):'all within bounds'}});
+ ok('v6.1.0 the parameter chips wrap into rows instead of being clipped',()=>{
+  if(!dom)return {ok:true,detail:'headless'};
+  const strip=document.querySelector('.dph291-strip');
+  if(!strip||!strip.children.length)return {ok:true,detail:'no chips in this mode'};
+  const p=LAST.params;
+  return {ok:!clipped610(strip),
+   detail:p?`${p.chips} chips → ${p.cols} columns × ${p.rows} rows in ${p.width}px, clipped=${clipped610(strip)}`:'not fitted'}});
+ ok('v6.1.0 every rail control is reachable, in every rail group',()=>{
+  if(!dom)return {ok:true,detail:'headless'};
+  const rail=document.querySelector('.telemetryRail');
+  if(!rail)return {ok:true,detail:'no rail'};
+  const bad=[];
+  for(const sel of ['.railTools','.railMetrics','.railSystem']){
+   const box=rail.querySelector(sel);if(!box||!box.children.length)continue;
+   if(clipped610(box))bad.push(sel+' ('+box.scrollWidth+'px in '+box.clientWidth+'px)');
+   /* a label cut mid-word is the symptom this guards: "LIVE OFF" read "LIVE OF" */
+   for(const el of box.children){
+    if(el.scrollWidth-el.clientWidth>2)
+     bad.push((el.id||el.textContent.trim().slice(0,12))+' text clipped');
+    /* a select truncates silently; require room for its longest option */
+    if(el.tagName==='SELECT'&&el.options&&el.options.length){
+     let longest=0;for(const o of el.options)longest=Math.max(longest,(o.textContent||'').trim().length);
+     const per=parseFloat(getComputedStyle(el).fontSize)*.62||6;
+     if(el.getBoundingClientRect().width<Math.min(longest,3)*per)
+      bad.push((el.id||'select')+' too narrow for its options');}}}
+  return {ok:bad.length===0,
+   detail:bad.length?bad.join('; '):`all groups fit at scale ${LAST.rail?LAST.rail.scale:'?'} in ${LAST.rail?LAST.rail.height:'?'}px`}});
+ ok('v6.1.0 the page never scrolls sideways',()=>{
+  if(!dom)return {ok:true,detail:'headless'};
+  const de=document.documentElement;
+  return {ok:de.scrollWidth-de.clientWidth<=1,
+   detail:`scrollWidth=${de.scrollWidth} clientWidth=${de.clientWidth}`}});
+ ok('v6.1.0 the version is stated once, not twice',()=>{
+  if(!dom)return {ok:true,detail:'headless'};
+  const stamp=document.getElementById('uprsVersionStamp580');
+  const legacy=document.querySelector('.brand small');
+  const legacyShown=!!legacy&&getComputedStyle(legacy).display!=='none';
+  return {ok:!!stamp&&!legacyShown,
+   detail:stamp?`stamp "${stamp.textContent}", legacy line hidden=${!legacyShown}`:'no stamp'}});
+ ok('v6.1.0 shrinking is measured, not assumed',()=>{
+  const asc=STEPS610.every((v,i)=>i===0||v<STEPS610[i-1]);
+  return {ok:asc&&STEPS610[0]===1&&STEPS610[STEPS610.length-1]<=.5,
+   detail:`${STEPS610.length} steps from ${STEPS610[0]} down to ${STEPS610[STEPS610.length-1]}; a wide screen pays nothing`}});
+ return T}
+function wrapTests610(){try{if(typeof runTests!=='function'||runTests.__uprs610)return false;
+ const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks610())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  try{globalThis.__UPRS_SELF_TEST__=rep}catch(_){}
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs610=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+ return true}catch(_){return false}}
+
+if(typeof document!=='undefined'){
+ const boot=()=>{if(!install610())setTimeout(boot,220)};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ for(const ms of [500,1400,3200,7200,13200,20200,27200])setTimeout(applyAll610,ms);
+ setTimeout(wrapTests610,1700);
+ for(const ms of [3900,7700,13700,20700,27700])setTimeout(wrapTests610,ms);}
+globalThis.__UPRS610__={version:V610,apply:applyAll610,checks:checks610,
+ audit:()=>({version:V610,header:LAST.header,params:LAST.params,rail:LAST.rail,
+  viewport:[vw610(),vh610()],budget:Math.round(headerBudget610()),
+  topH:getComputedStyle(document.documentElement).getPropertyValue('--top-h').trim(),
+  offscreen:offscreen610('.top-actions .btn, .top-actions button, .modes .mode'),
+  horizontalOverflow:document.documentElement.scrollWidth-document.documentElement.clientWidth>1})};
 })();</script>
 </body></html>
