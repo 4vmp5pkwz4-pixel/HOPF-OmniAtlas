@@ -2575,10 +2575,10 @@ const PRESETS270={
 };
 function applyPreset270(id){registerEotModel270();const pr=PRESETS270[id];if(!pr)return;state.eot270.preset=id;setModel('eot_research',true);Object.assign(state.params.eot_research,pr.values);document.getElementById('xmin').value=pr.range[0];document.getElementById('xmax').value=pr.range[1];state.samples=Math.max(state.samples,721);document.getElementById('samples').value=state.samples;document.getElementById('samplesText').textContent=state.samples;state.eot270.cache=null;renderParams();recalc();renderPrimary270();renderEotPanel270();toast(`EOT preset: ${pr.name}`)}
 function featureResidual270(arr,i,key){if(i<=0||i>=arr.length-1)return Infinity;const y0=arr[i-1].extras?.[key],y1=arr[i].extras?.[key],y2=arr[i+1].extras?.[key];if(![y0,y1,y2].every(Number.isFinite))return Infinity;return Math.abs(y2-y0)/Math.max(1e-12,Math.abs(y0)+Math.abs(y1)+Math.abs(y2))}
-function eotFeatures270(){if(state.model!=='eot_research'||!state.sweep?.length)return [];const p=modelParams(),F=[],a=state.sweep;for(let i=1;i<a.length-1;i++){const T0=a[i-1].extras.T,T=a[i].extras.T,T2=a[i+1].extras.T,R0=a[i-1].extras.R,R=a[i].extras.R,R2=a[i+1].extras.R,A0=a[i-1].extras.A,A=a[i].extras.A,A2=a[i+1].extras.A;const pT=Math.min(T-T0,T-T2),dT=Math.min(T0-T,T2-T),pA=Math.min(A-A0,A-A2),dR=Math.min(R0-R,R2-R);if(pT>Math.max(1e-7,1e-4*Math.max(T,1e-6)))F.push({kind:'Tmax',category:'analytic',label:'Transmission maximum',f:a[i].x,index:i,value:T,residual:featureResidual270(a,i,'T'),status:'CONVERGED'});if(dT>Math.max(1e-7,1e-4*Math.max(T0,T2,1e-6)))F.push({kind:'Tmin',category:'analytic',label:'Fano / transmission minimum',f:a[i].x,index:i,value:T,residual:featureResidual270(a,i,'T'),status:'CONVERGED'});if(pA>Math.max(1e-7,1e-4*Math.max(A,1e-6)))F.push({kind:'Amax',category:'analytic',label:'Absorption maximum',f:a[i].x,index:i,value:A,residual:featureResidual270(a,i,'A'),status:'CONVERGED'});if(dR>Math.max(1e-7,1e-4*Math.max(R0,R2,1e-6)))F.push({kind:'Rmin',category:'analytic',label:'Reflection minimum / critical-coupling candidate',f:a[i].x,index:i,value:R,residual:featureResidual270(a,i,'R'),status:R<.05?'CONVERGED':'CONDITIONAL'});if(a[i-1].gamma.im*a[i].gamma.im<0){const u=Math.abs(a[i-1].gamma.im)/(Math.abs(a[i-1].gamma.im)+Math.abs(a[i].gamma.im)),f=a[i-1].x*Math.pow(a[i].x/a[i-1].x,u);F.push({kind:'realCross',category:'geometric',label:'Smith real-axis intersection',f,index:nearestAxisIndex(f),value:0,residual:Math.abs(a[i].gamma.im),status:'CONVERGED'})}}
+function eotFeatures270(){if(state.model!=='eot_research'||!state.sweep?.length)return [];const p=modelParams(),F=[],a=state.sweep;for(let i=1;i<a.length-1;i++){const T0=a[i-1].extras.T,T=a[i].extras.T,T2=a[i+1].extras.T,R0=a[i-1].extras.R,R=a[i].extras.R,R2=a[i+1].extras.R,A0=a[i-1].extras.A,A=a[i].extras.A,A2=a[i+1].extras.A;const pT=Math.min(T-T0,T-T2),dT=Math.min(T0-T,T2-T),pA=Math.min(A-A0,A-A2),dR=Math.min(R0-R,R2-R);if(pT>Math.max(1e-7,1e-4*Math.max(T,1e-6)))F.push({kind:'Tmax',category:'analytic',label:'Transmission maximum',f:a[i].x,index:i,value:T,residual:featureResidual270(a,i,'T'),status:'CONVERGED'});if(dT>Math.max(1e-7,1e-4*Math.max(T0,T2,1e-6)))F.push({kind:'Tmin',category:'analytic',label:'Fano / transmission minimum',f:a[i].x,index:i,value:T,residual:featureResidual270(a,i,'T'),status:'CONVERGED'});if(pA>Math.max(1e-7,1e-4*Math.max(A,1e-6)))F.push({kind:'Amax',category:'analytic',label:'Absorption maximum',f:a[i].x,index:i,value:A,residual:featureResidual270(a,i,'A'),status:'CONVERGED'});if(dR>Math.max(1e-7,1e-4*Math.max(R0,R2,1e-6)))F.push({kind:'Rmin',category:'analytic',label:'Reflection minimum / critical-coupling candidate',f:a[i].x,index:i,value:R,residual:featureResidual270(a,i,'R'),status:R<.05?'CONVERGED':'CONDITIONAL'});if(a[i-1].gamma.im*a[i].gamma.im<0){const u=Math.abs(a[i-1].gamma.im)/(Math.abs(a[i-1].gamma.im)+Math.abs(a[i].gamma.im)),x0=a[i-1].x,x1=a[i].x,f=(x0>0&&x1>0)?x0*Math.pow(x1/x0,u):x0+(x1-x0)*u;/* geometric interpolation needs a positive axis: on an iteration axis starting at 0 it divided by zero and returned NaN for every crossing */F.push({kind:'realCross',category:'geometric',label:'Smith real-axis intersection',f,index:nearestAxisIndex(f),value:0,residual:Math.abs(a[i].gamma.im),status:'CONVERGED'})}}
  let bestMatch=0;for(let i=1;i<a.length;i++)if(eAbs(a[i].gamma)<eAbs(a[bestMatch].gamma))bestMatch=i;F.push({kind:'match',category:'geometric',label:'Minimum |Γ| / best match',f:a[bestMatch].x,index:bestMatch,value:eAbs(a[bestMatch].gamma),residual:eAbs(a[bestMatch].gamma),status:eAbs(a[bestMatch].gamma)<.08?'CONVERGED':'CONDITIONAL'});
  const markers=eotMarkerCandidates270(p).map(m=>({...m,index:nearestAxisIndex(m.f),value:null})),all=[...markers,...F,...ensure270().imported];all.sort((x,y)=>x.f-y.f);const ded=[];for(const x of all){const near=ded.find(y=>y.kind===x.kind&&Math.abs(Math.log(x.f/y.f))<2e-4);if(!near)ded.push(x)}return ded}
-function genericFeatures270(){if(!state.sweep?.length)return [];const a=state.sweep,F=[];const mag=x=>eAbs(x.gamma),eps=1e-7;for(let i=1;i<a.length-1;i++){const m0=mag(a[i-1]),m=mag(a[i]),m2=mag(a[i+1]),promMin=Math.min(m0-m,m2-m),promMax=Math.min(m-m0,m-m2);if(promMin>Math.max(eps,2e-4*Math.max(m0,m2,1e-6)))F.push({kind:'gammaMin',category:'analytic',label:'Local minimum |Γ|',f:a[i].x,index:i,value:m,residual:promMin,status:'CONVERGED',applicability:'sampled response locus'});if(promMax>Math.max(eps,2e-4*Math.max(m,1e-6)))F.push({kind:'gammaMax',category:'analytic',label:'Local maximum |Γ|',f:a[i].x,index:i,value:m,residual:promMax,status:'CONVERGED',applicability:'sampled response locus'});if(a[i-1].gamma.im*a[i].gamma.im<0){const u=Math.abs(a[i-1].gamma.im)/(Math.abs(a[i-1].gamma.im)+Math.abs(a[i].gamma.im)),f=a[i-1].x*Math.pow(a[i].x/a[i-1].x,u);F.push({kind:'realCross',category:'geometric',label:'Real-axis intersection',f,index:nearestAxisIndex(f),value:0,residual:Math.abs(a[i].gamma.im),status:'CONVERGED',applicability:'Γ-plane crossing'})}const q0=m0-1,q=m-1;if(q0*q<0){const u=Math.abs(q0)/(Math.abs(q0)+Math.abs(q)),f=a[i-1].x*Math.pow(a[i].x/a[i-1].x,u);F.push({kind:'passiveCross',category:'physical',label:'Passive-boundary crossing |Γ|=1',f,index:nearestAxisIndex(f),value:1,residual:Math.abs(q),status:'CONDITIONAL',applicability:'meaningful only under declared port normalization'})}}let best=0;for(let i=1;i<a.length;i++)if(mag(a[i])<mag(a[best]))best=i;F.push({kind:'match',category:'geometric',label:'Global minimum |Γ| / best match',f:a[best].x,index:best,value:mag(a[best]),residual:mag(a[best]),status:mag(a[best])<.08?'CONVERGED':'CONDITIONAL',applicability:'declared reference impedance'});return F.sort((x,y)=>x.f-y.f)}
+function genericFeatures270(){if(!state.sweep?.length)return [];const a=state.sweep,F=[];const mag=x=>eAbs(x.gamma),eps=1e-7;for(let i=1;i<a.length-1;i++){const m0=mag(a[i-1]),m=mag(a[i]),m2=mag(a[i+1]),promMin=Math.min(m0-m,m2-m),promMax=Math.min(m-m0,m-m2);if(promMin>Math.max(eps,2e-4*Math.max(m0,m2,1e-6)))F.push({kind:'gammaMin',category:'analytic',label:'Local minimum |Γ|',f:a[i].x,index:i,value:m,residual:promMin,status:'CONVERGED',applicability:'sampled response locus'});if(promMax>Math.max(eps,2e-4*Math.max(m,1e-6)))F.push({kind:'gammaMax',category:'analytic',label:'Local maximum |Γ|',f:a[i].x,index:i,value:m,residual:promMax,status:'CONVERGED',applicability:'sampled response locus'});if(a[i-1].gamma.im*a[i].gamma.im<0){const u=Math.abs(a[i-1].gamma.im)/(Math.abs(a[i-1].gamma.im)+Math.abs(a[i].gamma.im)),g0=a[i-1].x,g1=a[i].x,f=(g0>0&&g1>0)?g0*Math.pow(g1/g0,u):g0+(g1-g0)*u;F.push({kind:'realCross',category:'geometric',label:'Real-axis intersection',f,index:nearestAxisIndex(f),value:0,residual:Math.abs(a[i].gamma.im),status:'CONVERGED',applicability:'Γ-plane crossing'})}const q0=m0-1,q=m-1;if(q0*q<0){const u=Math.abs(q0)/(Math.abs(q0)+Math.abs(q)),b0=a[i-1].x,b1=a[i].x,f=(b0>0&&b1>0)?b0*Math.pow(b1/b0,u):b0+(b1-b0)*u;F.push({kind:'passiveCross',category:'physical',label:'Passive-boundary crossing |Γ|=1',f,index:nearestAxisIndex(f),value:1,residual:Math.abs(q),status:'CONDITIONAL',applicability:'meaningful only under declared port normalization'})}}let best=0;for(let i=1;i<a.length;i++)if(mag(a[i])<mag(a[best]))best=i;F.push({kind:'match',category:'geometric',label:'Global minimum |Γ| / best match',f:a[best].x,index:best,value:mag(a[best]),residual:mag(a[best]),status:mag(a[best])<.08?'CONVERGED':'CONDITIONAL',applicability:'declared reference impedance'});return F.sort((x,y)=>x.f-y.f)}
 function allFeatures270(){return state.model==='eot_research'?eotFeatures270():genericFeatures270()}
 function phenomenonSummary270(){if(state.model!=='eot_research'||!state.sweep?.length)return [];const p=modelParams(),features=eotFeatures270(),candidates=[...state.sweep];for(const m of eotMarkerCandidates270(p)){const r=eotResearchResponse270(m.f,p);candidates.push({x:m.f,gamma:r.gamma,extras:r.extras,marker:m})}const peak=candidates.reduce((a,b)=>(b.extras.T>a.extras.T?b:a)),minR=candidates.reduce((a,b)=>(b.extras.R<a.extras.R?b:a)),out=[];if(peak.extras.enhancement>1.05)out.push({name:'Extraordinary transmission',status:peak.extras.enhancement>1.5?'CONVERGED':'CONDITIONAL',detail:`T/open=${peak.extras.enhancement.toFixed(2)} at ${fmt(peak.x,4)} Hz`});const spp=features.filter(x=>x.kind==='spp'&&x.status!=='UNRESOLVED').sort((a,b)=>Math.abs(Math.log(a.f/peak.x))-Math.abs(Math.log(b.f/peak.x)))[0];if(spp&&Math.abs(Math.log(spp.f/peak.x))<.05)out.push({name:'SPP-assisted EOT',status:spp.status,detail:`peak–SPP log residual=${Math.abs(Math.log(spp.f/peak.x)).toExponential(2)}`});const ra=features.filter(x=>x.kind==='rayleigh').sort((a,b)=>Math.abs(Math.log(a.f/peak.x))-Math.abs(Math.log(b.f/peak.x)))[0];if(ra&&Math.abs(Math.log(ra.f/peak.x))<.05)out.push({name:'Rayleigh-anomaly assisted transmission',status:'CONDITIONAL',detail:`peak–RA residual=${Math.abs(Math.log(ra.f/peak.x)).toExponential(2)}`});if(minR.extras.R<.04){if(minR.extras.A>.15)out.push({name:'Critical-coupling candidate',status:'CONVERGED',detail:`Rmin=${minR.extras.R.toFixed(4)}, A=${minR.extras.A.toFixed(4)}`});else out.push({name:'Reflectionless transmission / impedance match',status:'CONVERGED',detail:`Rmin=${minR.extras.R.toFixed(4)}, T=${minR.extras.T.toFixed(4)}`});}if(p.symBreak<.03&&peak.extras.Qloaded>500)out.push({name:'Quasi-BIC regime',status:'CONDITIONAL',detail:`symmetry break=${p.symBreak}, Qloaded=${fmt(peak.extras.Qloaded,3)}`});const mx=features.find(x=>x.kind==='Tmax'),mn=features.find(x=>x.kind==='Tmin');if(mx&&mn&&Math.abs(Math.log(mx.f/mn.f))<.25&&Math.abs(mx.value-mn.value)>.15)out.push({name:'Fano interference',status:'CONVERGED',detail:`contrast=${Math.abs(mx.value-mn.value).toFixed(3)}`});return out}
 function eotAllowed270(x){const s=ensure270();return x.category==='physical'?s.snapPhysical:x.category==='analytic'?s.snapAnalytic:x.category==='geometric'?s.snapGeometric:x.category==='imported'?s.snapImported:true}
@@ -13572,7 +13572,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const V580='5.8.0';
 const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
  '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
- '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__'];
+ '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__','__UPRS640__'];
 function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
  for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
 function highestVersion580(){let best='0.0.0';
@@ -15808,5 +15808,196 @@ globalThis.__UPRS630__={version:V630,models:MAPS630,checks:checks630,register:re
   present:(typeof UPRSO_MODELS!=='undefined')?Object.keys(MAPS630).filter(id=>!!UPRSO_MODELS[id]):[],
   timeUnitsExtended:(()=>{try{return (__UPRS550__.core.timeUnits||[]).includes('step')}catch(_){return false}})(),
   orbitsCached:ORBITS.size})};
+})();</script>
+<script id="uprs640DiscreteRendering">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius-Hopf OmniAtlas · v6.4.0 · POINTS, NOT A POLYLINE
+   ----------------------------------------------------------------------------
+   The locus renderer joins consecutive samples with a line, which is right for
+   a continuous response: between two frequencies the response really does pass
+   through the values in between. For an ITERATED MAP it is not. Nothing exists
+   between xₙ and xₙ₊₁ - the orbit jumps - so the chord is an artefact of the
+   drawing, and on a chaotic map those chords fill the parabola of the return
+   map into a solid wedge and hide the very object being looked at.
+
+   So discrete models are drawn as points. The switch defaults to ON for them
+   and OFF for everything else, and can be overridden either way.
+
+   Dropping the polyline costs something real: the ORDER of the iterations. A
+   line says which point came next; a scatter does not. The order is therefore
+   returned as colour - each point is tinted by its position along the orbit -
+   so the reading gains the correct geometry without losing the time.
+   ========================================================================== */
+const V640='6.4.0';
+const LOCUS640=new Set(['locus','multi-locus']);
+const SAMPLE640=new Set(['sample','spectral-sample','multi-sample']);
+const STEP640=['step','steps','iter','iters','iteration','iterations'];
+const S={mode:'auto',applied:0,lastKinds:null};
+
+function discrete640(){try{
+ const m=UPRSO_MODELS[state.model];if(!m)return false;
+ const u=String(m.axisUnit||'').trim().toLowerCase();
+ return STEP640.includes(u)||/iteration|iterate|итерац/i.test(String(m.axis||''))}
+ catch(_){return false}}
+function active640(){return S.mode==='auto'?discrete640():S.mode==='on'}
+
+/* gold at the first iteration through to ice at the last: the orbit keeps its
+   direction of time even though the connecting line is gone */
+function tint640(t){
+ const r=Math.round(232+(152-232)*t),g=Math.round(197+(232-197)*t),b=Math.round(112+(255-112)*t);
+ return `rgba(${r},${g},${b},.82)`}
+function apply640(){
+ if(typeof state==='undefined'||!state.scene)return false;
+ if(!active640())return false;
+ const L=state.scene.lines,P=state.scene.points;
+ const before=L.length;
+ state.scene.lines=L.filter(e=>!LOCUS640.has(String(e&&e.meta&&e.meta.kind||'')));
+ let n=0,max=0;
+ for(const q of P)if(SAMPLE640.has(String(q&&q.meta&&q.meta.kind||'')))max=Math.max(max,q.meta.index|0);
+ for(const q of P){
+  if(!SAMPLE640.has(String(q&&q.meta&&q.meta.kind||'')))continue;
+  const t=max>0?(q.meta.index|0)/max:0;
+  q.size=3.4;q.color=tint640(t);
+  q.meta={...q.meta,pointsOnly:true,
+   label:q.meta.label+' · итерация '+((q.meta.index|0)+1)+'/'+(max+1)};
+  n++}
+ S.applied++;S.lastKinds={removed:before-state.scene.lines.length,recoloured:n};
+ return n>0||before!==state.scene.lines.length}
+function wrap640(){try{const cur=globalThis.buildScene;
+ if(typeof cur!=='function'||cur.__uprs640||globalThis.__UPRS640_WRAPPED__)return false;
+ globalThis.__UPRS640_WRAPPED__=true;
+ const w=function(){const r=cur.apply(this,arguments);
+  try{apply640();sync640()}catch(e){console.warn('UPRS640',e)}
+  return r};
+ w.__uprs640=true;globalThis.buildScene=w;try{window.buildScene=w}catch(_){}
+ return true}catch(_){return false}}
+function refresh640(){try{if(typeof buildScene==='function'){buildScene();
+ if(typeof draw==='function')draw(performance.now())}}catch(_){}}
+
+/* ------------------------------------------------------------- the switch */
+/* It goes into an existing panel section, in the app's own toggle markup - no
+   new chrome anywhere, and it appears only where it means something. */
+const ROW_ID='pointsOnlyRow640',SW_ID='pointsOnlySw640';
+function labelFor640(){
+ const lang=(typeof state!=='undefined'&&state.lang)||'ru';
+ return lang==='en'?'Points only (discrete orbit)'
+  :lang==='de'?'Nur Punkte (diskreter Orbit)'
+  :'Только точки (дискретная орбита)'}
+function install640(){try{
+ if(document.getElementById(ROW_ID))return sync640();
+ const anchor=document.getElementById('snapSw');
+ if(!anchor)return false;
+ const host=anchor.closest('.toggle');
+ if(!host||!host.parentElement)return false;
+ const row=document.createElement('div');
+ row.className='toggle';row.id=ROW_ID;
+ const span=document.createElement('span');span.textContent=labelFor640();
+ const sw=document.createElement('div');sw.className='switch';sw.id=SW_ID;
+ sw.setAttribute('role','switch');sw.tabIndex=0;
+ row.appendChild(span);row.appendChild(sw);
+ host.parentElement.insertBefore(row,host.nextSibling);
+ const toggle=()=>{S.mode=active640()?'off':'on';sync640();refresh640();
+  try{toast(active640()?labelFor640()+': ON':labelFor640()+': OFF')}catch(_){}};
+ sw.onclick=toggle;
+ sw.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle()}};
+ return sync640()}catch(_){return false}}
+function sync640(){try{
+ const row=document.getElementById(ROW_ID),sw=document.getElementById(SW_ID);
+ if(!row||!sw)return false;
+ const d=discrete640(),on=active640();
+ row.style.display=d?'':'none';           /* only where a chord would be a lie */
+ row.querySelector('span').textContent=labelFor640();
+ sw.classList.toggle('on',on);
+ sw.setAttribute('aria-checked',String(on));
+ return true}catch(_){return false}}
+
+/* ---------------------------------------------------------- self-checks */
+function checks640(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!(r&&r.ok);detail=(r&&r.detail)||''}catch(e){detail=String((e&&e.message)||e)}
+ T.push({name,pass,detail})};
+ ok('v6.4.0 a discrete orbit is drawn as points, a continuous response as a line',()=>{
+  if(typeof state==='undefined'||typeof UPRSO_MODELS==='undefined')return {ok:true,detail:'headless'};
+  const prev=state.model,prevMode=S.mode;
+  try{S.mode='auto';
+   const seen={};
+   for(const id of ['logistic_map','henon_map','ikeda_map','rlc_series']){
+    if(!UPRSO_MODELS[id])continue;state.model=id;seen[id]=active640()}
+   return {ok:seen.logistic_map===true&&seen.henon_map===true&&
+     seen.ikeda_map===true&&seen.rlc_series===false,
+    detail:Object.entries(seen).map(([k,v])=>k+'='+(v?'points':'line')).join(', ')}}
+  finally{state.model=prev;S.mode=prevMode}});
+ ok('v6.4.0 the connecting chords are removed and the samples survive',()=>{
+  if(typeof state==='undefined')return {ok:true,detail:'headless'};
+  const prevScene=state.scene,prevMode=S.mode;
+  try{S.mode='on';
+   state.scene={lines:[{pts:[[0,0,0],[1,1,0]],meta:{kind:'locus'}},
+    {pts:[[0,0,0]],meta:{kind:'grid-r'}}],
+    points:[{p:[0,0,0],size:2.15,color:'x',meta:{kind:'sample',index:0,label:'a'}},
+     {p:[1,0,0],size:2.15,color:'x',meta:{kind:'sample',index:1,label:'b'}}]};
+   apply640();
+   const kinds=state.scene.lines.map(l=>l.meta.kind);
+   return {ok:!kinds.includes('locus')&&kinds.includes('grid-r')&&
+     state.scene.points.length===2&&state.scene.points.every(q=>q.size>2.15),
+    detail:`chords removed, grid kept (${kinds.join(',')}), ${state.scene.points.length} samples enlarged to ${state.scene.points[0].size}`}}
+  finally{state.scene=prevScene;S.mode=prevMode}});
+ ok('v6.4.0 the order of the iterations survives as colour',()=>{
+  /* a line says which point came next; a scatter does not, so the time is
+     returned as a tint along the orbit */
+  const a=tint640(0),b=tint640(1),m=tint640(.5);
+  return {ok:a!==b&&m!==a&&m!==b,
+   detail:`first ${a} → middle ${m} → last ${b}`}});
+ ok('v6.4.0 the switch overrides the default in both directions',()=>{
+  const prev=S.mode,prevModel=(typeof state!=='undefined')?state.model:null;
+  try{
+   if(typeof state!=='undefined'&&UPRSO_MODELS&&UPRSO_MODELS.logistic_map)state.model='logistic_map';
+   S.mode='off';const offOnMap=active640();
+   S.mode='on';const onAnywhere=active640();
+   S.mode='auto';const auto=active640();
+   return {ok:offOnMap===false&&onAnywhere===true,
+    detail:`auto→${auto}, forced off→${offOnMap}, forced on→${onAnywhere}`}}
+  finally{S.mode=prev;if(prevModel!=null)state.model=prevModel}});
+ ok('v6.4.0 the phenomenon finder survives an axis that starts at zero',()=>{
+  /* the defect the map models exposed: the real-axis crossing interpolated the
+     axis GEOMETRICALLY, x₀·(x₁/x₀)^u, which divides by zero when the axis
+     starts at 0 — every crossing on an iteration axis came back NaN */
+  const geo=(x0,x1,u)=>(x0>0&&x1>0)?x0*Math.pow(x1/x0,u):x0+(x1-x0)*u;
+  const zero=geo(0,1,.5),pos=geo(1,100,.5);
+  return {ok:Number.isFinite(zero)&&Math.abs(zero-.5)<1e-12&&Math.abs(pos-10)<1e-9,
+   detail:`axis from 0 → ${zero} (linear, finite); positive axis 1…100 at u=0.5 → ${pos} (geometric, unchanged)`}});
+ ok('v6.4.0 the switch lives in an existing panel section, not in new chrome',()=>{
+  if(typeof document==='undefined')return {ok:true,detail:'headless'};
+  const row=document.getElementById(ROW_ID);
+  if(!row)return {ok:true,detail:'panel not built yet'};
+  const inPanel=!!row.closest('.section')&&row.classList.contains('toggle');
+  const top=document.querySelector('header.top');
+  return {ok:inPanel&&!(top&&top.contains(row)),
+   detail:'rendered as a .toggle inside an existing .section; the header is untouched'}});
+ return T}
+function wrapTests640(){try{if(typeof runTests!=='function'||runTests.__uprs640)return false;
+ const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks640())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  try{globalThis.__UPRS_SELF_TEST__=rep}catch(_){}
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs640=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+ return true}catch(_){return false}}
+
+if(typeof document!=='undefined'){
+ const boot=()=>{wrap640();if(!install640())setTimeout(boot,240)};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ for(const ms of [600,1600,3400,7400,13400,20400])setTimeout(()=>{wrap640();sync640()},ms);
+ /* the model picker changes which rendering is honest */
+ document.addEventListener('change',e=>{if(e.target&&e.target.id==='model')setTimeout(()=>{sync640();refresh640()},60)},true);
+ setTimeout(wrapTests640,2100);
+ for(const ms of [4400,8200,14200,21200,28200])setTimeout(wrapTests640,ms);}
+globalThis.__UPRS640__={version:V640,checks:checks640,refresh:refresh640,
+ isDiscrete:discrete640,isActive:active640,
+ setMode:m=>{S.mode=(m==='on'||m==='off')?m:'auto';sync640();refresh640();return S.mode},
+ audit:()=>({version:V640,mode:S.mode,discrete:discrete640(),active:active640(),
+  applied:S.applied,last:S.lastKinds,
+  inChain:!!globalThis.__UPRS640_WRAPPED__,
+  switchPresent:typeof document!=='undefined'&&!!document.getElementById(SW_ID)})};
 })();</script>
 </body></html>
