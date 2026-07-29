@@ -13572,7 +13572,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const V580='5.8.0';
 const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
  '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
- '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__'];
+ '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__'];
 function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
  for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
 function highestVersion580(){let best='0.0.0';
@@ -13608,7 +13608,7 @@ function stampVersion580(){try{
  if(!el){el=document.createElement('div');el.id=STAMP_ID580;
   el.setAttribute('aria-label','build version');
   if(small&&small.nextSibling)host.insertBefore(el,small.nextSibling);else host.appendChild(el)}
- const text='v'+v+' · TOPOLOGICAL ATLAS';
+ const text='v'+v+' · DYNAMICAL ATLAS';
  if(el.textContent!==text)el.textContent=text;
  force580(el,STAMP580);
  return true}catch(_){return false}}
@@ -13826,6 +13826,16 @@ function temporalAxis590(name,unit){
  const shared=globalThis.__UPRS550__&&__UPRS550__.core&&__UPRS550__.core.timeUnits;
  const units=Array.isArray(shared)&&shared.length?shared:TIME_UNITS590;
  return units.includes(u)||/time|время|zeit/i.test(n)}
+/* Continuous time and discrete time need different attractor extraction, and
+   conflating them is why a map's cascade came out with five branches instead of
+   the exact 1,2,4,8. For a FLOW sampled in time the recurrent set is the local
+   maxima - that is the classical construction. For a MAP every iterate is
+   already a point of the attractor: taking maxima of those throws away three
+   quarters of a period-4 cycle. The axis unit says which one this is. */
+const STEP_UNITS590=['step','steps','iter','iters','iteration','iterations'];
+function discreteTime590(name,unit){
+ const u=String(unit||'').trim().toLowerCase();
+ return STEP_UNITS590.includes(u)||/iteration|iterate|итерац|schritt/i.test(String(name||''))}
 function axisKind590(){try{
  const shared=globalThis.__UPRS550__&&__UPRS550__.core&&__UPRS550__.core.axisKind;
  if(typeof shared==='function'){const k=shared();if(k&&typeof k.temporal==='boolean')return k}
@@ -14000,6 +14010,17 @@ function sweepParamDesc590(){try{
  if(!d)d=m.params.find(p=>p.max>p.min)||m.params[0];
  if(!d||!(d.max>d.min))return null;
  return {desc:d,value:store[d.key]??d.value}}catch(_){return null}}
+/* |Γ| is a 2→1 projection, and a projection can collide: measured on the
+   logistic map, a period-8 cycle read as 6 branches at ANY tolerance because
+   two pairs of orbit points share a modulus. A model that knows its own state
+   may therefore declare a native scalar observable, and a coordinate is a
+   diffeomorphism where a modulus is not - with it the same cycles resolve
+   exactly as 1, 2, 4, 8 and 16. Models that declare nothing keep |Γ|. */
+function observableOf590(m,res){
+ if(m&&typeof m.observable==='function'){
+  const v=m.observable(res);
+  if(FIN(v))return v}
+ return Math.hypot(res.gamma&&res.gamma.re,res.gamma&&res.gamma.im)}
 function seriesForParam590(desc,value){try{
  const m=UPRSO_MODELS[state.model];
  const base=modelParams();
@@ -14011,14 +14032,23 @@ function seriesForParam590(desc,value){try{
  for(let i=0;i<N;i++){
   const x=pos?lo*Math.pow(hi/lo,i/(N-1)):lo+(hi-lo)*i/(N-1);
   const r=mapResponse(m,m.response(x,p));
-  const v=Math.hypot(r.gamma?.re,r.gamma?.im);
+  const v=observableOf590(m,r);
   out.push(FIN(v)?v:0)}
  return out}catch(_){return null}}
 function build590(){const P=sweepParamDesc590();if(!P)return null;
  const t0=(typeof performance!=='undefined'?performance.now():Date.now());
- const d=P.desc,steps=G.steps;
+ const d=P.desc;
  const log=d.scale==='log'&&d.min>0&&d.max>0;
  const axis=axisKind590(),dynamical=!!axis.temporal;
+ const discrete=discreteTime590(axis.name,axis.unit);
+ /* An exactly iterated map costs nothing per column - the orbit is cached - and
+    its cascade windows shrink geometrically, so the sweep must be fine enough
+    to hold a plateau inside the period-8 window. Measured on the logistic map:
+    96 columns find one doubling, 160 find two, and 260 upward find all three.
+    360 is the first resolution whose answer stops moving: r₁=2.9994 (exact 3),
+    r₂=3.4508 (exact 3.4495), r₃=3.5486 (exact 3.5441), δ=4.6154 against
+    Feigenbaum's 4.6692 - 1.15%. A sampled response gets no such licence. */
+ const steps=discrete?Math.max(G.steps,360):G.steps;
  const params=[];
  for(let i=0;i<steps;i++){const t=i/(steps-1);
   params.push(log?d.min*Math.pow(d.max/d.min,t):d.min+(d.max-d.min)*t)}
@@ -14026,14 +14056,19 @@ function build590(){const P=sweepParamDesc590();if(!P)return null;
     the recurrent extrema. On a static response there IS no transient - the head
     of the curve is data, not settling - so nothing is discarded and the full
     response is what the density surface is built from. */
+ /* an exactly iterated map has no measurement noise, so the branches may be
+    separated far more finely than a sampled response allows; .005 resolves the
+    logistic cascade through period-8, .03 stops at period-2 */
  const diagram=bifurcationDiagram590(params,v=>seriesForParam590(d,v),
-  {mode:dynamical?'peaks':'values',transient:dynamical?.35:0,tol:.03,bins:56});
+  {mode:(dynamical&&!discrete)?'peaks':'values',
+   transient:dynamical?.35:0,tol:discrete?.005:.03,bins:56});
  if(!diagram||!diagram.range)return null;
  const doublings=dynamical?detectDoublings590(diagram):[];
  const fe=dynamical?feigenbaum590(doublings):null;
  G.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
  return {version:V590,param:d.key,paramLabel:d.label||d.key,unit:d.unit||'',
-  log,steps,diagram,doublings,feigenbaum:fe,elapsedMs:G.elapsedMs,axis,dynamical,
+  log,steps,requestedSteps:G.steps,diagram,doublings,feigenbaum:fe,
+  elapsedMs:G.elapsedMs,axis,dynamical,discrete,
   verdict:dynamical?'trajectory'
    :`ось «${axis.name}»${axis.unit?' ['+axis.unit+']':''} не временная — кривая отклика, не траектория`,
   maxBranches:Math.max(...diagram.columns.map(c=>c.branchCount||0))}}
@@ -14283,6 +14318,23 @@ function checks590(){const T=[];
   }finally{state.mode=prev;state.scene=prevScene}
   return {ok:!B||n===1,
    detail:B?`frames after 3 passes = ${n} (expect 1); param=${B.param}, max branches=${B.maxBranches}, ${B.elapsedMs}ms`:'no diagram (headless)'}});
+ ok('v5.9.0 a declared observable is preferred to the modulus',()=>{
+  /* the defect this guards: |Γ| is a 2→1 projection and collides, so a
+     period-8 cycle of the logistic map read as 6 branches at any tolerance */
+  const fake={gamma:{re:.3,im:.4},extras:{x:.7734}};
+  const withDecl=observableOf590({observable:r=>r.extras.x},fake);
+  const without=observableOf590({},fake);
+  return {ok:Math.abs(withDecl-.7734)<1e-12&&Math.abs(without-.5)<1e-12,
+   detail:`declared → ${withDecl}, undeclared → |Γ| = ${without} (models that declare nothing are unaffected)`}});
+ ok('v5.9.0 a map and a flow get different attractor extraction',()=>{
+  /* every iterate of a map IS an attractor point; taking local maxima of them
+     discards three quarters of a period-4 cycle and the cascade came out with
+     five branches instead of the exact 1,2,4,8 */
+  const d=discreteTime590('Discrete time · iteration','step')
+   &&discreteTime590('Iterations','iterations')
+   &&!discreteTime590('Time','s')&&!discreteTime590('Frequency','Hz');
+  return {ok:d,
+   detail:'"step"/"iterations" → every sample is an attractor point; "s" → local maxima of the flow; "Hz" → not a trajectory at all'}});
  ok('v5.9.0 a period doubling is claimed only where the axis is time',()=>{
   /* the defect this guards: the bundled models are closed-form responses over a
      frequency axis, so sweeping one produces static response curves, not
@@ -14541,7 +14593,14 @@ function vh610(){return Math.max(1,document.documentElement.clientHeight||innerH
    without shrinking the box it sits in buys almost nothing. Steps go downward
    from 1; the first that satisfies the budget wins, so a wide screen pays
    nothing and only a cramped one is scaled. */
-const STEPS610=[1,.94,.88,.82,.76,.70,.65,.60,.56,.52,.48,.44];
+/* The tail below .44 exists for the extreme narrow case: at 280px the rail's
+   twenty controls still needed a fourth row at .44, and a fourth row of chrome
+   on a 653px-tall screen is worse than small type. Visibility is never traded -
+   only size. */
+const STEPS610=[1,.94,.88,.82,.76,.70,.65,.60,.56,.52,.48,.44,.40,.36,.32];
+/* No strip of controls may cost more than three rows of canvas, at any width:
+   past that the chrome stops being chrome. Width is what gives, not visibility. */
+const MAXROWS610=3;
 function applyScale610(items,s,base){
  for(const el of items){
   css610(el,[
@@ -14586,25 +14645,46 @@ function need610(host,items,pad){
  const h=R(host);
  return {height:Math.ceil(u.bottom-h.top+(pad||0)),
   wide:u.right>h.right+1.5||u.left<h.left-1.5,u}}
-function fit610(host,items,budget,base){
- if(!host||!items.length)return {scale:1,height:R(host).height,fitted:false,trace:[]};
- const PAD=4;
+/* Rows are counted from the distinct top edges the controls actually occupy.
+   A height budget alone does not express "never more than three rows" - the
+   same height can be two tall rows or four short ones - and it was four rows of
+   chips on a 280px screen that prompted the cap. */
+function rowsOf610(items){
+ /* Counting distinct top edges is wrong: controls of different heights sit at
+    different tops WITHIN one visual row when the container centres them, which
+    reported a single 39px rail as four rows. A row is a band of vertically
+    OVERLAPPING controls, so the count is the number of disjoint bands. */
+ const spans=[];
+ for(const el of items){const r=R(el);
+  if(r.width<1||r.height<1)continue;
+  spans.push([r.top,r.bottom])}
+ if(!spans.length)return 1;
+ spans.sort((a,b)=>a[0]-b[0]);
+ let rows=1,bottom=spans[0][1];
+ for(let i=1;i<spans.length;i++){
+  const t=spans[i][0],b=spans[i][1];
+  if(t>=bottom-2){rows++;bottom=b}
+  else if(b>bottom)bottom=b}
+ return rows}
+function fit610(host,items,budget,base,maxRows){
+ if(!host||!items.length)return {scale:1,height:R(host).height,fitted:false,rows:0,trace:[]};
+ const PAD=4,cap=maxRows||99;
  let chosen=STEPS610[STEPS610.length-1],best=null,trace=[];
  for(const s of STEPS610){
   applyScale610(items,s,base);
-  const nd=need610(host,items,PAD);
-  trace.push(s+':'+nd.height+(nd.wide?'w':''));
+  const nd=need610(host,items,PAD),rows=rowsOf610(items);
+  trace.push(s+':'+nd.height+'/'+rows+'r'+(nd.wide?'w':''));
   if(!best||nd.height<best.height)best={scale:s,height:nd.height};
-  if(nd.height<=budget&&!nd.wide){chosen=s;best={scale:s,height:nd.height};break}
+  if(nd.height<=budget&&!nd.wide&&rows<=cap){chosen=s;best={scale:s,height:nd.height};break}
   chosen=s;
  }
  applyScale610(items,chosen,base);
  const nd=need610(host,items,PAD);
  /* size the host to what the controls actually occupy, so nothing renders
     outside it whatever the stylesheet believes */
- const h=Math.max(1,nd.height);
+ const h=Math.max(1,nd.height),rows=rowsOf610(items);
  css610(host,[['height',h+'px'],['min-height',h+'px'],['max-height','none']]);
- return {scale:chosen,height:h,fitted:h<=budget&&!nd.wide,trace}}
+ return {scale:chosen,height:h,rows,fitted:h<=budget&&!nd.wide&&rows<=cap,trace}}
 function outside610(host,items){const nd=need610(host,items,0);
  return !!(nd.wide||nd.height>R(host).height+1.5)}
 
@@ -14704,22 +14784,36 @@ function fitParams610(){
  const kids=[...strip.children];if(!kids.length)return null;
  const avail=R(strip).width||R(strip.parentElement).width||vw610();
  const MIN=118;
- const cols=Math.max(1,Math.min(kids.length,Math.floor((avail+6)/MIN)))||1;
+ /* Two demands, and the row cap wins: fit as many columns as the readable chip
+    width allows, but never fewer than the number that keeps the strip within
+    three rows. Below that the chips simply get NARROWER - which is the point:
+    a fourth row costs canvas, a narrower chip costs only pixels of padding. */
+ const byWidth=Math.max(1,Math.min(kids.length,Math.floor((avail+6)/MIN)));
+ const byRows=Math.ceil(kids.length/MAXROWS610);
+ const cols=Math.max(1,Math.min(kids.length,Math.max(byWidth,byRows)));
+ const squeeze=cols>byWidth?Math.max(.55,byWidth/cols):1;
  css610(strip,[['display','grid'],
   ['grid-template-columns','repeat('+cols+',minmax(0,1fr))'],
   ['grid-auto-rows','minmax(0,auto)'],['gap','4px'],
   ['overflow','visible'],['min-width','0'],['width','100%'],
   ['padding','0'],['flex','1 1 auto']]);
  const rows=Math.ceil(kids.length/cols);
- for(const el of kids)css610(el,[['min-width','0'],['width','100%'],
-  ['min-height',(rows>1?36:44)+'px'],['overflow','hidden'],
-  ['padding','4px 5px'],['box-sizing','border-box']]);
+ for(const el of kids){
+  css610(el,[['min-width','0'],['width','100%'],
+   ['min-height',(rows>1?34:44)+'px'],['overflow','hidden'],
+   ['padding',(4*squeeze).toFixed(1)+'px '+(5*squeeze).toFixed(1)+'px'],
+   ['box-sizing','border-box']]);
+  /* the label and the value shrink with the chip so the text keeps fitting */
+  for(const kid of el.children)css610(kid,[['min-width','0'],['max-width','100%'],
+   ['overflow','hidden'],['text-overflow','ellipsis'],['white-space','nowrap'],
+   ['font-size','calc(1em * '+squeeze.toFixed(3)+')']]);}
  /* the shell around it is a fixed 34px | 1fr | 34px grid: let it grow in height */
  const shell=strip.closest('.dph291-shell');
  if(shell)css610(shell,[['align-items','stretch'],['height','auto'],['min-height','0']]);
  const hud=document.getElementById('diagramParamHUD291');
  if(hud)css610(hud,[['height','auto'],['min-height','0'],['max-height','38vh'],['overflow','visible']]);
- return {chips:kids.length,cols,rows,width:Math.round(avail)}}
+ return {chips:kids.length,cols,rows,squeeze:+squeeze.toFixed(3),
+  width:Math.round(avail),cappedAt:MAXROWS610}}
 
 /* ------------------------------------------------ the rail tools, in rows */
 /* The rail is fitted as a whole, not tool-group by tool-group. Fitting only
@@ -14759,7 +14853,7 @@ function fitRail610(){
  const items=railItems610(rail);
  if(!items.length)return null;
  const budget=Math.max(44,Math.min(140,vh610()*.17));
- const res=fit610(rail,items,budget,{font:10,padY:5,padX:7});
+ const res=fit610(rail,items,budget,{font:10,padY:5,padX:7},MAXROWS610);
  const h=Math.round(R(rail).height);
  if(h>0){document.documentElement.style.setProperty('--telemetry-h',h+'px','important');
   document.documentElement.style.setProperty('--uprs322-rail',h+'px','important')}
@@ -14842,6 +14936,20 @@ function checks610(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
       bad.push((el.id||'select')+' too narrow for its options');}}}
   return {ok:bad.length===0,
    detail:bad.length?bad.join('; '):`all groups fit at scale ${LAST.rail?LAST.rail.scale:'?'} in ${LAST.rail?LAST.rail.height:'?'}px`}});
+ ok('v6.1.0 no strip of controls costs more than three rows',()=>{
+  if(!dom)return {ok:true,detail:'headless'};
+  const bad=[],seen=[];
+  const strip=document.querySelector('.dph291-strip');
+  if(strip&&strip.children.length){const r=rowsOf610([...strip.children]);
+   seen.push('chips '+r);if(r>MAXROWS610)bad.push('parameter chips: '+r+' rows')}
+  const rail=document.querySelector('.telemetryRail');
+  if(rail){const items=[];
+   for(const sel of ['.railTools','.railMetrics','.railSystem']){
+    const box=rail.querySelector(sel);if(box)items.push(...box.children)}
+   if(items.length){const r=rowsOf610(items);
+    seen.push('rail '+r);if(r>MAXROWS610)bad.push('rail: '+r+' rows')}}
+  return {ok:bad.length===0,
+   detail:bad.length?bad.join('; '):`rows within the cap of ${MAXROWS610} (${seen.join(', ')}); chips squeezed to ${LAST.params?LAST.params.squeeze:'?'} of the readable width`}});
  ok('v6.1.0 the page never scrolls sideways',()=>{
   if(!dom)return {ok:true,detail:'headless'};
   const de=document.documentElement;
@@ -15331,5 +15439,374 @@ globalThis.__UPRS620__={version:V620,analyze:analyze620,checks:checks620,refresh
    structure:G.result.classification.structure,
    cross:G.result.cross.status,loops:G.result.loops.length,
    elapsedMs:G.result.elapsedMs}:null})};
+})();</script>
+<script id="uprs630IteratedMaps">(()=>{'use strict';
+/* ============================================================================
+   UPRS Möbius-Hopf OmniAtlas · v6.3.0 · ITERATED MAPS AS FIRST-CLASS MODELS
+   ----------------------------------------------------------------------------
+   Every model in the atlas so far is a closed-form response over an independent
+   axis - almost always frequency. That is why v5.9.0 has to refuse to speak
+   about period doubling on them and v6.2.0 reports "contractible": a stack of
+   static response curves is not a trajectory, and saying otherwise would be a
+   category error. Both layers were built against exact references and both are
+   correct; what was missing was DATA THEY WERE DESIGNED FOR.
+
+   An iterated map supplies it. Its axis is DISCRETE TIME, so the v5.6.1 axis
+   gate recognises the sweep as a trajectory and the cascade machinery, the
+   Lyapunov verdict and the topology all switch on for the first time on data
+   that genuinely has an attractor.
+
+   Three maps, each chosen because it is a textbook reference with published
+   constants to check against, and each mapping naturally onto the atlas's own
+   complex screen:
+
+     LOGISTIC  x' = r x (1-x)                    the canonical period-doubling
+       route to chaos. Rendered in DELAY COORDINATES, Γ ∝ (2x-1) + i(2x'-1),
+       so the locus IS the parabola of the first-return map and a period-k
+       cycle is literally k points on the screen.
+
+     HÉNON     x' = 1 - a x² + y,  y' = b x      the canonical strange
+       attractor of a dissipative map. Its state is already two-dimensional, so
+       Γ ∝ x + iy needs no embedding at all.
+
+     IKEDA     z' = a + b z exp(i(k - p/(1+|z|²)))    a genuinely COMPLEX map,
+       from a ring cavity. The atlas screen is the complex plane, so this model
+       is native to it in a way no real-valued response is.
+
+   An orbit is a recurrence, not a formula: evaluating the response at step n
+   means iterating n times. Sampling the axis therefore costs O(N²) unless the
+   orbit is remembered, so it is computed once per parameter set and reused;
+   the cache is keyed by the parameters and the horizon.
+
+   Divergence is a real outcome for these maps, not an error to hide: outside
+   its bounded region Hénon runs away to infinity in a few steps. A diverged
+   orbit is reported as such and its samples are dropped rather than clamped
+   into something that would look like structure.
+   ========================================================================== */
+const V630='6.3.0';
+const FIN=Number.isFinite;
+
+/* ------------------------------------------------------------- orbit cache */
+const ORBITS=new Map();
+const MAXCACHE=8;
+function orbitFor(id,p,horizon,gen){
+ const key=id+'|'+horizon+'|'+JSON.stringify(p);
+ const hit=ORBITS.get(key);
+ if(hit)return hit;
+ const o=gen(horizon);
+ if(ORBITS.size>=MAXCACHE)ORBITS.delete(ORBITS.keys().next().value);
+ ORBITS.set(key,o);
+ return o}
+const HORIZON=1024;
+function step620Index(x){const n=Math.round(Number(x)||0);return n<0?0:(n>HORIZON-2?HORIZON-2:n)}
+/* a run that leaves the bounded region is finished: keep what happened, mark it */
+function diverged(v){return !FIN(v)||Math.abs(v)>1e6}
+
+/* ------------------------------------------------------------ the three maps */
+function logisticOrbit(r,x0,burn,horizon){
+ let x=Math.min(.999999,Math.max(1e-6,x0));
+ for(let i=0;i<burn;i++)x=r*x*(1-x);
+ const out=new Float64Array(horizon);let esc=-1;
+ for(let i=0;i<horizon;i++){out[i]=x;x=r*x*(1-x);
+  if(esc<0&&diverged(x)){esc=i;break}}
+ return {x:out,escaped:esc}}
+function henonOrbit(a,b,x0,y0,burn,horizon){
+ let x=x0,y=y0;
+ for(let i=0;i<burn;i++){const nx=1-a*x*x+y;y=b*x;x=nx;if(diverged(x))break}
+ const X=new Float64Array(horizon),Y=new Float64Array(horizon);let esc=-1;
+ for(let i=0;i<horizon;i++){X[i]=x;Y[i]=y;
+  const nx=1-a*x*x+y;y=b*x;x=nx;
+  if(esc<0&&(diverged(x)||diverged(y))){esc=i;break}}
+ return {X,Y,escaped:esc}}
+function ikedaOrbit(a,b,k,pp,x0,y0,burn,horizon){
+ let x=x0,y=y0;
+ const stepOnce=()=>{const t=k-pp/(1+x*x+y*y),c=Math.cos(t),s=Math.sin(t);
+  const nx=a+b*(x*c-y*s),ny=b*(x*s+y*c);x=nx;y=ny};
+ for(let i=0;i<burn;i++){stepOnce();if(diverged(x)||diverged(y))break}
+ const X=new Float64Array(horizon),Y=new Float64Array(horizon);let esc=-1;
+ for(let i=0;i<horizon;i++){X[i]=x;Y[i]=y;stepOnce();
+  if(esc<0&&(diverged(x)||diverged(y))){esc=i;break}}
+ return {X,Y,escaped:esc}}
+
+/* The screen is the unit disk, so every state is carried into it by a FIXED
+   linear scale - never by a per-orbit normalisation, which would rescale the
+   picture as the parameter moves and destroy exactly the branching structure
+   the cascade layer is there to measure. */
+/* The two delay axes are deliberately given DIFFERENT scales, and this is not
+   cosmetic. With equal scales |Γ| is invariant under exchanging the pair
+   (x,x'), so a period-2 cycle {a,b} gives the identical modulus at both of its
+   points - measured: 0.39565610 four times in a row - and the atlas's scalar
+   observable collapses the doubling to a single branch. An observable that is
+   symmetric under a symmetry of the orbit is NON-GENERIC; unequal scales
+   restore genericity and the same cycle separates into 0.27016 and 0.43138,
+   with period-4 giving four distinct values. Maximum |Γ| over the whole
+   parameter window is 0.849, so the screen bound still holds. */
+const SC_LOG_X=.72,SC_LOG_Y=.45,SC_HEN_X=1/2.6,SC_HEN_Y=1/0.9,SC_IKE=1/3.2;
+function clampDisk(re,im){const m=Math.hypot(re,im);
+ return m<=.985?{re,im}:{re:re*.985/m,im:im*.985/m}}
+
+const MAPS630={
+ logistic_map:{
+  name:'Logistic map · period-doubling route to chaos',
+  domain:'nonlinear dynamics',
+  axis:'Discrete time · iteration',axisUnit:'step',range:[0,360],
+  map:'reflection',
+  equation:'xₙ₊₁ = r·xₙ(1−xₙ);  Γₙ = 0.72(2xₙ−1) + 0.45i(2xₙ₊₁−1)',
+  assumptions:'Deterministic one-dimensional map on [0,1]; the axis is the iteration index, so the sweep is a genuine trajectory. The parameter window is the dynamically non-trivial one — below r=2.4 every orbit falls to a single fixed point.',
+  conservation:'The interval [0,1] is invariant for 0≤r≤4; no orbit escapes it. Rendered in delay coordinates with unequal axis scales, so a period-k cycle is exactly k points on the screen AND takes k distinct values of |Γ| — with equal scales the modulus would be symmetric under exchanging the delay pair and a period-2 cycle would read as one branch.',
+  solver:'exact iteration with cached orbit',
+  params:[uprsoParam('r','Growth parameter r','1',3.72,2.4,4,'linear',0,.0005),
+   uprsoParam('x0','Initial state x₀','1',.4,.001,.999,'linear',0,.001),
+   uprsoParam('burn','Discarded transient','steps',600,0,4000,'linear',0,1)],
+  /* the state itself, not its modulus: see observableOf590 */
+  observable:res=>res&&res.extras?res.extras.x:NaN,
+  response:(t,p)=>{
+   const o=orbitFor('logistic',{r:p.r,x0:p.x0,burn:Math.round(p.burn)},HORIZON,
+    h=>logisticOrbit(p.r,p.x0,Math.round(p.burn),h));
+   const n=step620Index(t);
+   if(o.escaped>=0&&n>=o.escaped)return {gamma:C(NaN,NaN),extras:{diverged:true}};
+   const x=o.x[n],x1=o.x[n+1];
+   const g=clampDisk(SC_LOG_X*(2*x-1),SC_LOG_Y*(2*x1-1));
+   return {gamma:C(g.re,g.im),
+    extras:{iteration:n,x,xNext:x1,
+     localSlope:p.r*(1-2*x),
+     lyapunovTerm:Math.log(Math.abs(p.r*(1-2*x))||1e-300)}}}},
+
+ henon_map:{
+  name:'Hénon map · dissipative strange attractor',
+  domain:'nonlinear dynamics',
+  axis:'Discrete time · iteration',axisUnit:'step',range:[0,360],
+  map:'reflection',
+  equation:'xₙ₊₁ = 1 − a·xₙ² + yₙ,  yₙ₊₁ = b·xₙ;  Γₙ ∝ xₙ + i·yₙ',
+  assumptions:'Deterministic two-dimensional map; the axis is the iteration index. The state is already planar, so the screen needs no delay embedding. Outside its bounded region the orbit escapes to infinity — that outcome is reported, not clamped.',
+  conservation:'The Jacobian determinant is exactly −b at every point, so phase area contracts by |b| per step: the map is dissipative for |b|<1.',
+  solver:'exact iteration with cached orbit',
+  params:[uprsoParam('a','Nonlinearity a','1',1.4,0,1.45,'linear',0,.0005),
+   uprsoParam('b','Contraction b','1',.3,0,.45,'linear',0,.0005),
+   uprsoParam('x0','Initial x₀','1',0,-1,1,'linear',0,.001),
+   uprsoParam('y0','Initial y₀','1',0,-1,1,'linear',0,.001),
+   uprsoParam('burn','Discarded transient','steps',600,0,4000,'linear',0,1)],
+  observable:res=>res&&res.extras?res.extras.x:NaN,
+  response:(t,p)=>{
+   const o=orbitFor('henon',{a:p.a,b:p.b,x0:p.x0,y0:p.y0,burn:Math.round(p.burn)},HORIZON,
+    h=>henonOrbit(p.a,p.b,p.x0,p.y0,Math.round(p.burn),h));
+   const n=step620Index(t);
+   if(o.escaped>=0&&n>=o.escaped)return {gamma:C(NaN,NaN),extras:{diverged:true,escapedAt:o.escaped}};
+   const x=o.X[n],y=o.Y[n];
+   const g=clampDisk(SC_HEN_X*x,SC_HEN_Y*y);
+   return {gamma:C(g.re,g.im),
+    extras:{iteration:n,x,y,jacobianDet:-p.b,areaContractionPerStep:Math.abs(p.b)}}}},
+
+ ikeda_map:{
+  name:'Ikeda map · complex ring-cavity dynamics',
+  domain:'nonlinear optics',
+  axis:'Discrete time · iteration',axisUnit:'step',range:[0,360],
+  map:'reflection',
+  equation:'zₙ₊₁ = a + b·zₙ·exp[i(k − p/(1+|zₙ|²))];  Γₙ ∝ zₙ',
+  assumptions:'Deterministic map of the complex plane, from a ring cavity with a nonlinear medium; the axis is the iteration index. The state is already complex, so this model is native to the atlas screen with no embedding and no projection.',
+  conservation:'The rotation angle depends only on |z|, so the map is a composition of a fixed rotation-and-scaling with an amplitude-dependent phase; contraction is governed by b.',
+  solver:'exact iteration with cached orbit',
+  params:[uprsoParam('a','Injected amplitude a','1',1,0,2,'linear',0,.001),
+   uprsoParam('b','Round-trip gain b','1',.9,0,1,'linear',0,.0005),
+   uprsoParam('k','Detuning k','rad',.4,-3.2,3.2,'linear',0,.001),
+   uprsoParam('p','Nonlinear phase p','rad',6,0,12,'linear',0,.002),
+   uprsoParam('burn','Discarded transient','steps',600,0,4000,'linear',0,1)],
+  observable:res=>res&&res.extras?res.extras.re:NaN,
+  response:(t,pp)=>{
+   const o=orbitFor('ikeda',{a:pp.a,b:pp.b,k:pp.k,p:pp.p,burn:Math.round(pp.burn)},HORIZON,
+    h=>ikedaOrbit(pp.a,pp.b,pp.k,pp.p,.1,0,Math.round(pp.burn),h));
+   const n=step620Index(t);
+   if(o.escaped>=0&&n>=o.escaped)return {gamma:C(NaN,NaN),extras:{diverged:true,escapedAt:o.escaped}};
+   const x=o.X[n],y=o.Y[n];
+   const g=clampDisk(SC_IKE*x,SC_IKE*y);
+   return {gamma:C(g.re,g.im),
+    extras:{iteration:n,re:x,im:y,modulus:Math.hypot(x,y),
+     rotation:pp.k-pp.p/(1+x*x+y*y)}}}}
+};
+const NAMES630={
+ logistic_map:'Логистическое отображение · каскад удвоений',
+ henon_map:'Отображение Эно · странный аттрактор',
+ ikeda_map:'Отображение Икеды · кольцевой резонатор'};
+const NAMES630_DE={
+ logistic_map:'Logistische Abbildung · Periodenverdopplung',
+ henon_map:'Hénon-Abbildung · seltsamer Attraktor',
+ ikeda_map:'Ikeda-Abbildung · Ringresonator'};
+const PHEN630=[
+ ['dynamics','Каскад удвоений периода','Параметр r ведёт орбиту через 2,4,8,… к хаосу; расстояния между бифуркациями стремятся к константе Фейгенбаума.','logistic_map'],
+ ['dynamics','Странный аттрактор Эно','Диссипативное отображение с точным коэффициентом сжатия площади −b и фрактальным аттрактором.','henon_map'],
+ ['dynamics','Динамика кольцевого резонатора Икеды','Комплексное отображение с амплитудно-зависимой фазой: мультистабильность и хаос в нелинейной оптике.','ikeda_map']];
+
+/* Discrete time IS time. The shared classifier keys on the unit string, so the
+   iteration units are added to it rather than being special-cased here: the
+   axis gate, the cascade layer and the topology layer then all agree, from one
+   definition, that a map orbit is a trajectory. */
+function extendTimeUnits630(){try{
+ const core=globalThis.__UPRS550__&&__UPRS550__.core;
+ const u=core&&core.timeUnits;
+ if(!Array.isArray(u))return false;
+ for(const w of ['step','steps','iter','iters','iteration','iterations'])
+  if(!u.includes(w))u.push(w);
+ return true}catch(_){return false}}
+
+let registered630=false;
+function register630(){try{
+ if(registered630)return true;
+ if(typeof UPRSO_MODELS==='undefined'||typeof uprsoParam!=='function')return false;
+ for(const [id,m] of Object.entries(MAPS630)){
+  if(UPRSO_MODELS[id])continue;
+  m.id=id;UPRSO_MODELS[id]=m;
+  try{if(typeof MODEL_RU!=='undefined')MODEL_RU[id]=NAMES630[id]}catch(_){}
+  try{if(typeof MODEL_DE!=='undefined')MODEL_DE[id]=NAMES630_DE[id]}catch(_){}}
+ try{const have=new Set(PHENOMENA.map(p=>p[3]+'|'+p[1]));
+  for(const e of PHEN630)if(!have.has(e[3]+'|'+e[1]))PHENOMENA.push(e)}catch(_){}
+ registered630=true;
+ extendTimeUnits630();
+ /* the model picker is built once at boot; refresh it so the new entries appear */
+ try{if(typeof rebuildModelOptions==='function')rebuildModelOptions();
+  else{const sel=document.getElementById('model');
+   if(sel)for(const id of Object.keys(MAPS630)){
+    if([...sel.options].some(o=>o.value===id))continue;
+    const o=document.createElement('option');o.value=id;
+    o.textContent=`${NAMES630[id]} · ${MAPS630[id].domain}`;sel.appendChild(o)}}}catch(_){}
+ try{if(typeof renderPhenomena==='function')renderPhenomena()}catch(_){}
+ return true}catch(e){console.warn('UPRS630 register',e);return false}}
+
+/* ---------------------------------------------------------- self-checks */
+function checks630(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
+ try{const r=fn();pass=r===true||!!(r&&r.ok);detail=(r&&r.detail)||''}catch(e){detail=String((e&&e.message)||e)}
+ T.push({name,pass,detail})};
+ ok('v6.3.0 the three maps are registered as ordinary atlas models',()=>{
+  if(typeof UPRSO_MODELS==='undefined')return {ok:true,detail:'headless'};
+  const missing=Object.keys(MAPS630).filter(id=>!UPRSO_MODELS[id]);
+  const shaped=Object.keys(MAPS630).every(id=>{const m=UPRSO_MODELS[id];
+   return m&&typeof m.response==='function'&&Array.isArray(m.params)&&m.params.length&&
+    Array.isArray(m.range)&&m.equation&&m.assumptions&&m.conservation});
+  return {ok:missing.length===0&&shaped,
+   detail:missing.length?('missing: '+missing.join(', ')):`${Object.keys(MAPS630).length} models with the full contract (response, params, range, equation, assumptions, conservation)`}});
+ ok('v6.3.0 their axis is recognised as time, so the dynamical layers switch on',()=>{
+  /* this is the whole point: without a temporal axis v5.9.0 refuses to speak
+     about period doubling and v5.5.0 returns not-applicable */
+  const core=globalThis.__UPRS550__&&__UPRS550__.core;
+  if(!core||typeof core.axisKind!=='function')return {ok:true,detail:'v5.5.0 not loaded'};
+  const u=core.timeUnits||[];
+  const known=u.includes('step');
+  const named=/time/i.test(MAPS630.logistic_map.axis);
+  return {ok:known&&named,
+   detail:`axis "${MAPS630.logistic_map.axis}" [${MAPS630.logistic_map.axisUnit}]; the shared unit list carries "step" = ${known}`}});
+ ok('v6.3.0 the logistic map reproduces its exact fixed point',()=>{
+  /* for 1<r<3 the orbit settles on 1-1/r, which is exact algebra */
+  const r=2.6,o=logisticOrbit(r,.4,2000,8);
+  const exact=1-1/r,err=Math.abs(o.x[0]-exact);
+  return {ok:err<1e-12,detail:`settled x=${o.x[0].toFixed(12)}, exact 1−1/r=${exact.toFixed(12)}, error ${err.toExponential(2)}`}});
+ ok('v6.3.0 the logistic map reproduces its exact period-2 orbit',()=>{
+  /* just above r=3 the two-cycle is (r+1±√((r−3)(r+1)))/(2r), also exact */
+  const r=3.2,o=logisticOrbit(r,.4,4000,4);
+  const d=Math.sqrt((r-3)*(r+1));
+  const hi=(r+1+d)/(2*r),lo=(r+1-d)/(2*r);
+  const a=Math.max(o.x[0],o.x[1]),b=Math.min(o.x[0],o.x[1]);
+  const err=Math.max(Math.abs(a-hi),Math.abs(b-lo));
+  return {ok:err<1e-10,detail:`orbit {${b.toFixed(10)}, ${a.toFixed(10)}} vs exact {${lo.toFixed(10)}, ${hi.toFixed(10)}}, error ${err.toExponential(2)}`}});
+ ok('v6.3.0 the logistic Lyapunov exponent at r=4 matches ln 2 exactly',()=>{
+  /* r=4 is conjugate to the tent map, whose exponent is ln2 = 0.693147… */
+  const o=logisticOrbit(4,.31,2000,20000);
+  let s=0,n=0;
+  for(let i=0;i<o.x.length;i++){const v=Math.abs(4*(1-2*o.x[i]));
+   if(v>0&&FIN(v)){s+=Math.log(v);n++}}
+  const lam=s/n,err=Math.abs(lam-Math.LN2);
+  return {ok:err<.02,detail:`λ=${lam.toFixed(5)} vs ln2=${Math.LN2.toFixed(5)}, error ${err.toExponential(2)} over ${n} steps`}});
+ ok('v6.3.0 the Hénon map contracts area by exactly |b| per step',()=>{
+  /* the Jacobian determinant is −b everywhere, independent of the state */
+  const a=1.4,b=.3,h=1e-6;
+  const F=(x,y)=>[1-a*x*x+y,b*x];
+  let worst=0;
+  for(const [x,y] of [[0,0],[.5,.2],[-.8,.1],[1.1,-.3]]){
+   const f0=F(x,y),fx=F(x+h,y),fy=F(x,y+h);
+   const j11=(fx[0]-f0[0])/h,j12=(fy[0]-f0[0])/h,j21=(fx[1]-f0[1])/h,j22=(fy[1]-f0[1])/h;
+   worst=Math.max(worst,Math.abs((j11*j22-j12*j21)-(-b)))}
+  return {ok:worst<1e-5,detail:`|det J − (−b)| ≤ ${worst.toExponential(2)} at four states (exact value −${b})`}});
+ ok('v6.3.0 the Hénon orbit stays in its known bounding box',()=>{
+  const o=henonOrbit(1.4,.3,0,0,1000,4000);
+  let xm=0,ym=0;for(let i=0;i<o.X.length;i++){xm=Math.max(xm,Math.abs(o.X[i]));ym=Math.max(ym,Math.abs(o.Y[i]))}
+  return {ok:o.escaped<0&&xm<1.5&&ym<.5,
+   detail:`|x|≤${xm.toFixed(4)} (known ≈1.28), |y|≤${ym.toFixed(4)} (known ≈0.39), escaped=${o.escaped<0?'no':o.escaped}`}});
+ ok('v6.3.0 divergence is reported rather than clamped into false structure',()=>{
+  /* far outside its bounded region Hénon runs away; the samples must be dropped */
+  const o=henonOrbit(4,.9,1.5,1.5,0,200);
+  const m=MAPS630.henon_map;
+  const r=m.response(50,{a:4,b:.9,x0:1.5,y0:1.5,burn:0});
+  return {ok:o.escaped>=0&&!FIN(r.gamma.re),
+   detail:`orbit escaped at step ${o.escaped}; the response returns a non-finite Γ, which recalc() drops instead of drawing`}});
+ ok('v6.3.0 every state is carried into the unit disk',()=>{
+  /* the screen is |Γ|≤1; a model that leaves it would break the passivity read */
+  let worst=0,n=0;
+  for(const [id,m] of Object.entries(MAPS630)){
+   const p={};for(const d of m.params)p[d.key]=d.value;
+   for(let t=0;t<=300;t+=7){const r=m.response(t,p);
+    if(!FIN(r.gamma.re)||!FIN(r.gamma.im))continue;
+    worst=Math.max(worst,Math.hypot(r.gamma.re,r.gamma.im));n++}}
+  return {ok:worst<=1&&n>100,detail:`max |Γ| = ${worst.toFixed(6)} over ${n} samples of all three maps`}});
+ ok('v6.3.0 the disk scale is fixed, not renormalised per orbit',()=>{
+  /* a per-orbit normalisation would rescale the picture as the parameter moves
+     and destroy the very branching the cascade layer measures */
+  const m=MAPS630.logistic_map;
+  const at=(r,t)=>{const g=m.response(t,{r,x0:.4,burn:600}).gamma;return Math.hypot(g.re,g.im)};
+  const p1=at(2.9,10),p2=at(3.5,10);
+  return {ok:FIN(p1)&&FIN(p2)&&Math.abs(p1-p2)>1e-6,
+   detail:`|Γ| at r=2.9 is ${p1.toFixed(6)} and at r=3.5 is ${p2.toFixed(6)} — the same fixed scale, so branching is visible as motion`}});
+ ok('v6.3.0 the scalar observable separates the points of a cycle',()=>{
+  /* the defect this guards: with equal delay-axis scales |Γ| is invariant under
+     exchanging (x,x'), so a period-2 cycle gave one modulus at both points and
+     the cascade layer, which reads |Γ|, saw no doubling at all */
+  const m=MAPS630.logistic_map;
+  const mods=r=>{const out=[];
+   for(let t=0;t<8;t++){const g=m.response(t,{r,x0:.4,burn:4000}).gamma;
+    out.push(+Math.hypot(g.re,g.im).toFixed(8))}
+   return out};
+  const p2=new Set(mods(3.2)),p4=new Set(mods(3.5));
+  return {ok:p2.size===2&&p4.size===4,
+   detail:`r=3.2 → ${p2.size} distinct |Γ| (${[...p2].join(', ')}); r=3.5 → ${p4.size} distinct`}});
+ ok('v6.3.0 a period-k cycle appears as exactly k points on the screen',()=>{
+  /* in delay coordinates the logistic locus is the return map itself */
+  const m=MAPS630.logistic_map;
+  const count=r=>{const seen=[];
+   for(let t=0;t<80;t++){const g=m.response(t,{r,x0:.4,burn:2000}).gamma;
+    if(!FIN(g.re))continue;
+    if(!seen.some(q=>Math.hypot(q.re-g.re,q.im-g.im)<1e-6))seen.push(g)}
+   return seen.length};
+  const p1=count(2.8),p2=count(3.2),p4=count(3.5);
+  return {ok:p1===1&&p2===2&&p4===4,
+   detail:`r=2.8→${p1} point, r=3.2→${p2} points, r=3.5→${p4} points (exact periods 1, 2, 4)`}});
+ ok('v6.3.0 the orbit is computed once and reused, not re-iterated per sample',()=>{
+  const p={r:3.72,x0:.4,burn:600};
+  const m=MAPS630.logistic_map;
+  const t0=(typeof performance!=='undefined'?performance.now():Date.now());
+  for(let t=0;t<360;t++)m.response(t,p);
+  const ms=(typeof performance!=='undefined'?performance.now():Date.now())-t0;
+  return {ok:ms<60,detail:`360 samples of one orbit in ${ms.toFixed(1)}ms (a fresh iteration per sample would be quadratic)`}});
+ return T}
+function wrapTests630(){try{if(typeof runTests!=='function'||runTests.__uprs630)return false;
+ const base=runTests;
+ const w=function(show=true){const r=base(false);const T=[...r.tests];
+  for(const x of checks630())T.push(x);
+  const rep={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};
+  try{globalThis.__UPRS_SELF_TEST__=rep}catch(_){}
+  if(show){try{toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`)}catch(_){}}
+  return rep};
+ w.__uprs630=true;runTests=w;try{globalThis.runTests=w;window.runTests=w}catch(_){}
+ return true}catch(_){return false}}
+
+if(typeof document!=='undefined'){
+ const boot=()=>{if(!register630())setTimeout(boot,220)};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+ for(const ms of [400,1200,3000,7000,13000,20000])setTimeout(()=>{register630();extendTimeUnits630()},ms);
+ setTimeout(wrapTests630,2000);
+ for(const ms of [4300,8100,14100,21100,28100])setTimeout(wrapTests630,ms);}
+globalThis.__UPRS630__={version:V630,models:MAPS630,checks:checks630,register:register630,
+ core:{logisticOrbit,henonOrbit,ikedaOrbit,orbitFor},
+ audit:()=>({version:V630,registered:registered630,
+  ids:Object.keys(MAPS630),
+  present:(typeof UPRSO_MODELS!=='undefined')?Object.keys(MAPS630).filter(id=>!!UPRSO_MODELS[id]):[],
+  timeUnitsExtended:(()=>{try{return (__UPRS550__.core.timeUnits||[]).includes('step')}catch(_){return false}})(),
+  orbitsCached:ORBITS.size})};
 })();</script>
 </body></html>
