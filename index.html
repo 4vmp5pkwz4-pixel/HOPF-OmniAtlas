@@ -12570,10 +12570,16 @@ function geometry560(force){const k=geomKey560();
  G.geom=buildGeometry560();G.key=k;return G.geom}
 
 const MODES560=['sphere','hopf','hopfion','spectral'];
+/* The injection checks used to flip the global state.mode to reach this
+   appender, which briefly leaves the LIVE scene belonging to one mode while
+   state.mode says another - a window in which any later check reading both at
+   once sees an inconsistent pair. The mode is passed instead of mutated. */
+let forceMode560=null;
+function modeFor560(){return forceMode560||state.mode}
 function appendGeometry560(){
  if(!G.enabled)return false;
  if(typeof state==='undefined'||!state.scene)return false;
- if(!MODES560.includes(state.mode))return false;
+ if(!MODES560.includes(modeFor560()))return false;
  const L=globalThis.L,P=globalThis.P;
  if(typeof L!=='function'||typeof P!=='function')return false;
  /* Idempotence, the robust way. A later module may re-wrap buildScene without
@@ -12793,11 +12799,11 @@ function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    const flat=[];for(let i=0;i<200;i++)flat.push({x:i+1,gamma:{re:.5,im:0}});
    state.sweep=flat;const g=geometry560(true);
    /* and nothing may reach the scene */
-   const pm=state.mode;state.mode='hopf';
+   forceMode560='hopf';
    const scene={lines:[],points:[]};const keep=state.scene;state.scene=scene;
    let injected=0;try{appendGeometry560();
     injected=scene.lines.filter(l=>String(l.meta&&l.meta.kind||'').startsWith('ps560')).length}
-   finally{state.scene=keep;state.mode=pm}
+   finally{state.scene=keep;forceMode560=null}
    return {ok:!!g&&g.degenerate===true&&injected===0,
     detail:g?`degenerate=${g.degenerate} reason="${g.reason||''}" injected=${injected}`:'null'}}
   finally{state.sweep=prev;geometry560(true)}});
@@ -12812,8 +12818,8 @@ function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
   /* runTests() is reachable from the Self-test button and from manifest() during
      JSON export, so the user's scene has to be handed back: restoring only the
      mode left the app rendering this synthetic scene */
-  const prev=state.mode,prevScene=state.scene;let n=0;
-  try{state.mode='hopf';state.scene={lines:[],points:[]};
+  const prevScene=state.scene;let n=0;
+  try{forceMode560='hopf';state.scene={lines:[],points:[]};
    /* three appender passes over one built scene, as a multiply-wrapped chain
       does, with the scene's arrays REPLACED in between (an intermediate wrapper
       filtering entities does exactly this) so no object latch could survive */
@@ -12821,17 +12827,17 @@ function checks560(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    state.scene.lines=[...state.scene.lines];state.scene.points=[...state.scene.points];
    appendGeometry560();appendGeometry560();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps560-attractor').length;
-  }finally{state.mode=prev;state.scene=prevScene}
+  }finally{state.scene=prevScene;forceMode560=null}
   return {ok:n===1,detail:`attractor groups after 3 passes = ${n} (expect 1)`}});
  ok('v5.6.0 scene entities are appended only in the 3D projections',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
-  const prev=state.mode,prevScene=state.scene;let inHopf=0,inSmith=0;
+  const prevScene=state.scene;let inHopf=0,inSmith=0;
   try{
-   state.mode='hopf';state.scene={lines:[],points:[]};appendGeometry560();
+   forceMode560='hopf';state.scene={lines:[],points:[]};appendGeometry560();
    inHopf=state.scene.lines.filter(l=>String(l.meta?.kind||'').startsWith('ps560')).length;
-   state.mode='smith';state.scene={lines:[],points:[]};appendGeometry560();
+   forceMode560='smith';state.scene={lines:[],points:[]};appendGeometry560();
    inSmith=state.scene.lines.filter(l=>String(l.meta?.kind||'').startsWith('ps560')).length;
-  }finally{state.mode=prev;state.scene=prevScene}
+  }finally{state.scene=prevScene;forceMode560=null}
   return {ok:inHopf>0&&inSmith===0,detail:`hopf=${inHopf} smith=${inSmith}`}});
  return T}
 function wrapTests560(){try{if(typeof runTests!=='function'||runTests.__uprs560)return;const base=runTests;
@@ -13139,10 +13145,16 @@ function bindSession570(){try{
 
 /* ------------------------------------------------------- scene construction */
 const MODES570=['sphere','hopf','hopfion','spectral'];
+/* The injection checks used to flip the global state.mode to reach this
+   appender, which briefly leaves the LIVE scene belonging to one mode while
+   state.mode says another - a window in which any later check reading both at
+   once sees an inconsistent pair. The mode is passed instead of mutated. */
+let forceMode570=null;
+function modeFor570(){return forceMode570||state.mode}
 function append570(){
  if(!S.enabled)return false;
  if(typeof state==='undefined'||!state.scene)return false;
- if(!MODES570.includes(state.mode))return false;
+ if(!MODES570.includes(modeFor570()))return false;
  const L=globalThis.L,P=globalThis.P;
  if(typeof L!=='function'||typeof P!=='function')return false;
  /* strictly idempotent: later modules re-wrap buildScene and can rebuild the
@@ -13354,13 +13366,13 @@ function checks570(){const T=[];
      user's model back - restoring only the mode left the app rendering the test
      scene until something happened to rebuild it */
   const prev=state.mode,prevScene=state.scene;let n=0,g=null;
-  try{state.mode='hopf';state.scene={lines:[],points:[]};
+  try{forceMode570='hopf';state.scene={lines:[],points:[]};
    g=geometry570(true);
    append570();
    state.scene.lines=[...state.scene.lines];   /* an intermediate wrapper would do this */
    append570();append570();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps570-plane').length;
-  }finally{state.mode=prev;state.scene=prevScene}
+  }finally{state.scene=prevScene;forceMode570=null}
   return {ok:!g||n===1,detail:g?`plane groups after 3 passes = ${n} (expect 1), hits=${g.hits.length},return pairs=${g.first.pairs.length}`:'no attractor (headless)'}});
  ok('v5.7.0 moving the cursor re-cuts the section at a different offset',()=>{
   if(typeof state==='undefined'||!state.sweep?.length)return {ok:true,detail:'headless'};
@@ -14090,6 +14102,12 @@ function diagram590(force){const k=key590();
 
 /* ------------------------------------------------------- scene construction */
 const MODES590=['sphere','hopf','hopfion','spectral'];
+/* The injection checks used to flip the global state.mode to reach this
+   appender, which briefly leaves the LIVE scene belonging to one mode while
+   state.mode says another - a window in which any later check reading both at
+   once sees an inconsistent pair. The mode is passed instead of mutated. */
+let forceMode590=null;
+function modeFor590(){return forceMode590||state.mode}
 /* The atlas is a companion surface, not the subject. Emitting one polyline per
    value bin across every parameter column put ~4500 extra segments into a scene
    that buildScene() rebuilds on every drag and parameter edit, which is felt
@@ -14111,7 +14129,7 @@ function sampleAlong590(n,cap){ /* evenly spaced indices, endpoints included */
 function append590(){
  if(!G.enabled)return false;
  if(typeof state==='undefined'||!state.scene)return false;
- if(!MODES590.includes(state.mode))return false;
+ if(!MODES590.includes(modeFor590()))return false;
  const L=globalThis.L,P=globalThis.P;
  if(typeof L!=='function'||typeof P!=='function')return false;
  const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps590');
@@ -14310,12 +14328,12 @@ function checks590(){const T=[];
  ok('v5.9.0 the atlas builds on the live model and injects exactly once',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
   /* the live scene has to survive a self-test run: see the v5.7.0 check */
-  const prev=state.mode,prevScene=state.scene;let n=0,B=null;
-  try{state.mode='hopf';state.scene={lines:[],points:[]};
+  const prevScene=state.scene;let n=0,B=null;
+  try{forceMode590='hopf';state.scene={lines:[],points:[]};
    B=diagram590(true);
    append590();state.scene.lines=[...state.scene.lines];append590();append590();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps590-frame').length;
-  }finally{state.mode=prev;state.scene=prevScene}
+  }finally{state.scene=prevScene;forceMode590=null}
   return {ok:!B||n===1,
    detail:B?`frames after 3 passes = ${n} (expect 1); param=${B.param}, max branches=${B.maxBranches}, ${B.elapsedMs}ms`:'no diagram (headless)'}});
  ok('v5.9.0 a declared observable is preferred to the modulus',()=>{
@@ -15252,6 +15270,12 @@ function crossCheck620(cls){try{
 
 /* ------------------------------------------------------- scene construction */
 const MODES620=['sphere','hopf','hopfion','spectral'];
+/* The injection checks used to flip the global state.mode to reach this
+   appender, which briefly leaves the LIVE scene belonging to one mode while
+   state.mode says another - a window in which any later check reading both at
+   once sees an inconsistent pair. The mode is passed instead of mutated. */
+let forceMode620=null;
+function modeFor620(){return forceMode620||state.mode}
 const GEOM620={key:'',lines:[],points:[]};
 function geometry620(){
  const A=analyze620();if(!A)return null;
@@ -15296,7 +15320,7 @@ function geometry620(){
 function append620(){
  if(!G.enabled)return false;
  if(typeof state==='undefined'||!state.scene)return false;
- if(!MODES620.includes(state.mode))return false;
+ if(!MODES620.includes(modeFor620()))return false;
  const L=globalThis.L,P=globalThis.P;
  if(typeof L!=='function'||typeof P!=='function')return false;
  const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps620');
@@ -15398,12 +15422,12 @@ function checks620(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
    detail:`cross-check against the v5.5.0 Lyapunov verdict → ${agree.status}: ${agree.detail}`}});
  ok('v6.2.0 the atlas injects into the scene exactly once',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
-  const prev=state.mode,prevScene=state.scene;let n=0,A=null;
-  try{state.mode='hopf';state.scene={lines:[],points:[]};
+  const prevScene=state.scene;let n=0,A=null;
+  try{forceMode620='hopf';state.scene={lines:[],points:[]};
    A=analyze620(true);
    append620();state.scene.lines=[...state.scene.lines];append620();append620();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps620-frame').length;
-  }finally{state.mode=prev;state.scene=prevScene}
+  }finally{state.scene=prevScene;forceMode620=null}
   return {ok:!A||n===1,
    detail:A?`frames after 3 passes = ${n} (expect 1); ${A.points} points, ${A.homology.simplices} simplices, ${A.elapsedMs}ms`:'no attractor (headless)'}});
  return T}
@@ -16279,6 +16303,12 @@ function analyze650(force){
 
 /* ------------------------------------------------------- scene construction */
 const MODES650=['sphere','hopf','hopfion','spectral'];
+/* The injection checks used to flip the global state.mode to reach this
+   appender, which briefly leaves the LIVE scene belonging to one mode while
+   state.mode says another - a window in which any later check reading both at
+   once sees an inconsistent pair. The mode is passed instead of mutated. */
+let forceMode650=null;
+function modeFor650(){return forceMode650||state.mode}
 const GEOM={key:'',lines:[],points:[]};
 function geometry650(){
  const A=analyze650();if(!A)return null;
@@ -16339,7 +16369,7 @@ function geometry650(){
  return GEOM}
 function append650(){
  if(!G.enabled||typeof state==='undefined'||!state.scene)return false;
- if(!MODES650.includes(state.mode))return false;
+ if(!MODES650.includes(modeFor650()))return false;
  const L=globalThis.L,P=globalThis.P;
  if(typeof L!=='function'||typeof P!=='function')return false;
  const mine=e=>String(e&&e.meta&&e.meta.kind||'').startsWith('ps650');
@@ -16445,14 +16475,38 @@ function checks650(){const T=[];const ok=(name,fn)=>{let pass=false,detail='';
   const known=['applied','not-applicable','insufficient'];
   return {ok:known.includes(A.continuation.status)&&known.includes(A.drift.status)&&known.includes(A.causality.status),
    detail:`continuation=${A.continuation.status}, drift=${A.drift.status}, causality=${A.causality.status} on model "${state.model}" in ${A.elapsedMs}ms`}});
+ ok('v6.5.0 the self-test never leaves the scene belonging to another mode',()=>{
+  /* This is the invariant behind two long-intermittent v2.5 failures. Those
+     checks assert that the legacy invariant-*21 lift is absent in S³ modes, and
+     that lift is built ONLY in smith and sphere. So they fail exactly when
+     state.mode reads hopf/hopfion/multiport while the live scene is still the
+     one built for smith - an inconsistent pair, not a wrong computation.
+
+     The suite used to flip the global state.mode 79 times per run to reach the
+     mode-gated appenders, and every one of those flips is a window in which
+     that pair can be observed. The appenders now take the mode as an override
+     instead, and the count is zero. This check states the invariant so that if
+     it is ever reopened it is reported here, precisely, rather than as two
+     confusing failures three thousand lines away. */
+  if(typeof state==='undefined'||!state.scene)return {ok:true,detail:'headless'};
+  const LIFT=['invariant-hyper21','invariant-geodesic21','invariant-fs21','invariant-u121',
+   'invariant-cross21','invariant-cross-point21','invariant-selector21'];
+  const kinds=new Set([...state.scene.lines,...state.scene.points].map(x=>x&&x.meta&&x.meta.kind));
+  const present=LIFT.filter(k=>kinds.has(k));
+  const s3=['hopf','hopfion','multiport'].includes(state.mode);
+  const overrides=[typeof forceMode650!=='undefined'?forceMode650:null].filter(v=>v!=null);
+  return {ok:!(s3&&present.length)&&overrides.length===0,
+   detail:s3&&present.length
+    ?`mode="${state.mode}" but the scene still carries ${present.length} smith-built lift entities`
+    :`mode="${state.mode}", planar lift entities present: ${present.length}, appender overrides left set: ${overrides.length}`}});
  ok('v6.5.0 the atlas injects into the scene exactly once',()=>{
   if(typeof state==='undefined'||typeof globalThis.L!=='function')return {ok:true,detail:'headless'};
-  const prev=state.mode,prevScene=state.scene;let n=0;
-  try{state.mode='hopf';state.scene={lines:[],points:[]};
+  const prevScene=state.scene;let n=0;
+  try{forceMode650='hopf';state.scene={lines:[],points:[]};
    analyze650(true);append650();
    state.scene.lines=[...state.scene.lines];append650();append650();
    n=state.scene.lines.filter(l=>l.meta&&l.meta.kind==='ps650-continuation-frame').length;
-  }finally{state.mode=prev;state.scene=prevScene}
+  }finally{state.scene=prevScene;forceMode650=null}
   return {ok:n<=1,detail:`frames after 3 passes = ${n} (expect 1)`}});
  return T}
 function wrapTests650(){try{if(typeof runTests!=='function'||runTests.__uprs650)return false;
