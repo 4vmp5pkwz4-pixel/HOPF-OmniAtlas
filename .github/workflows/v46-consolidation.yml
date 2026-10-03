@@ -1,13 +1,17 @@
-name: v4.6.1 Quest 3 XR Hotfix
+name: Current Atlas Release Verification
 
 on:
   push:
     branches:
       - main
+      - codex/v6.6-s3-link-topology
       - codex/v4.6-core-consolidation
       - codex/v4.6.1-quest-xr-startup-recovery
       - codex/v4.6.1-quest3-xr-hotfix
     paths:
+      - index.html
+      - tests/**
+      - tools/verify-atlas.mjs
       - tools/consolidate-v46.mjs
       - tools/apply-v461-quest-xr-hotfix.mjs
       - _includes/uprs460-core-authority.html
@@ -19,6 +23,8 @@ on:
     branches:
       - main
     paths:
+      - tests/**
+      - tools/verify-atlas.mjs
       - index.html
       - app-v4.5.0.html
       - UPRS_v4.6.*_consolidation_report.json
@@ -34,7 +40,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   consolidate:
@@ -46,29 +52,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build deterministic v4.6.1 baseline
+      - name: Verify mathematical and XR regression tests
         shell: bash
         run: |
-          set +e
-          node tools/consolidate-v46.mjs > build-v46.log 2>&1
-          code=$?
-          cat build-v46.log
-          exit $code
+          node --test tests/*.test.mjs
 
-      - name: Apply Quest 3 requestSession-first XR hotfix
+      - name: Verify and preserve current single-file release
         shell: bash
         run: |
-          set +e
-          node tools/apply-v461-quest-xr-hotfix.mjs > build-v461-hotfix.log 2>&1
-          code=$?
-          cat build-v461-hotfix.log
-          exit $code
+          node tools/verify-atlas.mjs --output build
 
       - name: Verify generated artifact
         shell: bash
         run: |
           set -euo pipefail
-          report="$(find build -maxdepth 1 -name 'UPRS_v4.6.1_consolidation_report.json' -print -quit)"
+          report=build/UPRS_v6.6.0_report.json
           test -s build/index.html
           test -n "$report"
           test -s "$report"
@@ -76,53 +74,22 @@ jobs:
           grep -q 'uprs460Consolidation' build/index.html
           grep -q 'uprs461QuestXRRecovery' build/index.html
           grep -q '__UPRS461__' build/index.html
-          grep -q 'requestSession-first+first-frame-watchdog' build/index.html
+          grep -q 'continuous-bootstrap+watchdog+capture-authority' build/index.html
           grep -q '__UPRS450__' build/index.html
           grep -q 'asml_euv_lpp' build/index.html
-          grep -q 'webgl1' build/index.html
-          grep -q 'requestSessionTimeoutMs": 0' "$report"
-          grep -q 'firstFrameBeforeHeavySetup": true' "$report"
-          grep -q 'webgl1RequiredForGLSL100": true' "$report"
           grep -q '"sourceSha256"' "$report"
           grep -q '"outputSha256"' "$report"
+          grep -q 'uprs660FibreTopology' build/index.html
+          cmp index.html build/index.html
           echo "REPORT=$report" >> "$GITHUB_ENV"
-
-      - name: Publish verified index into Quest hotfix branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/v4.6.1-quest3-xr-hotfix'
-        shell: bash
-        run: |
-          set -euo pipefail
-          cp build/index.html index.html
-          report_name="$(basename "$REPORT")"
-          cp "$REPORT" "$report_name"
-          if git diff --quiet -- index.html "$report_name"; then
-            echo 'Generated production files are current.'
-            exit 0
-          fi
-          git config user.name 'UPRS Quest XR Hotfix Bot'
-          git config user.email 'actions@users.noreply.github.com'
-          git add index.html "$report_name"
-          git commit -m 'v4.6.1: publish verified Quest 3 XR hotfix'
-          git push origin HEAD:codex/v4.6.1-quest3-xr-hotfix
-
-      - name: Upload diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: UPRS-v4.6.1-quest-xr-build-diagnostics
-          path: |
-            build-v46.log
-            build-v461-hotfix.log
-          if-no-files-found: error
-          retention-days: 14
 
       - name: Upload standalone release candidate
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: UPRS-v4.6.1-quest3-xr-hotfix
+          name: UPRS-v6.6.0-current-atlas
           path: |
             build/index.html
-            build/UPRS_v4.6.1_consolidation_report.json
+            build/UPRS_v6.6.0_report.json
           if-no-files-found: error
           retention-days: 14
