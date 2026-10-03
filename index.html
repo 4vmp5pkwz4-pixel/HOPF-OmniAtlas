@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="ru">
 <head><script id="uprs460CoreAuthority">(()=>{'use strict';
-const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const VERSION='6.6.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
+A.releaseVersion=VERSION;
 A.version=VERSION;
 A.release='quest-xr-startup-recovery';
 A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6.1-transforms';
@@ -38,7 +39,7 @@ A.claimVersion=()=>{
 <meta name="theme-color" content="#05070b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery</title>
+<title>UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links</title>
 <style>
 :root{--bg:#030507;--panel:rgba(10,14,21,.88);--panel2:rgba(16,21,31,.82);--gold:#d7b76e;--gold2:#fff0bd;--ice:#98e8ff;--violet:#c3adff;--green:#8ce9bd;--red:#ff9d9d;--text:#edf1f6;--muted:#96a2b5;--line:rgba(215,183,110,.24);--shadow:0 24px 80px rgba(0,0,0,.5)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 54% 18%,#141c2d 0,#070b12 36%,#020305 78%);color:var(--text);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}button,input,select{font:inherit}button{color:inherit}.app{height:100%;display:grid;grid-template-rows:auto 1fr;position:relative}.top{min-height:68px;display:flex;align-items:center;gap:12px;padding:9px 14px calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(3,5,8,.96),rgba(3,5,8,.78));backdrop-filter:blur(20px);z-index:20}.brand{display:flex;align-items:center;gap:10px;min-width:262px}.seal{width:40px;height:40px;border:1px solid rgba(255,240,189,.65);border-radius:50%;position:relative;box-shadow:0 0 26px rgba(215,183,110,.18),inset 0 0 18px rgba(152,232,255,.08)}.seal:before,.seal:after{content:"";position:absolute;border-radius:50%;border:1px solid}.seal:before{inset:7px;border-color:rgba(152,232,255,.72);transform:rotate(58deg)}.seal:after{inset:13px;border-color:rgba(195,173,255,.9)}.brand b{display:block;font-size:13px;letter-spacing:.2em;color:var(--gold2)}.brand small{display:block;margin-top:3px;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}.modes{display:flex;gap:6px;flex:1;overflow:auto;scrollbar-width:none}.modes::-webkit-scrollbar{display:none}.mode,.btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);padding:8px 11px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.18s}.mode:hover,.btn:hover{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.08)}.mode.on{color:#080a0d;background:linear-gradient(135deg,var(--gold2),var(--gold));border-color:transparent;box-shadow:0 8px 24px rgba(215,183,110,.18)}.top-actions{display:flex;gap:6px}.layout{min-height:0;display:grid;grid-template-columns:310px 1fr 330px;gap:11px;padding:11px}.panel{min-height:0;overflow:auto;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:var(--shadow);backdrop-filter:blur(20px)}.panel::-webkit-scrollbar{width:7px}.panel::-webkit-scrollbar-thumb{background:rgba(215,183,110,.2);border-radius:9px}.left,.right{padding:14px}.section{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.065)}.section:last-child{border-bottom:0}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--gold);font-size:9px;letter-spacing:.17em;text-transform:uppercase;margin-bottom:9px}.badge{font-size:8px;letter-spacing:.09em;padding:3px 7px;border:1px solid;border-radius:999px}.tierA{color:var(--green);border-color:rgba(140,233,189,.35)}.tierB{color:var(--gold2);border-color:rgba(215,183,110,.42)}.tierC{color:var(--violet);border-color:rgba(195,173,255,.38)}.field{margin:8px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10.5px;margin-bottom:5px}.field label span:last-child{color:var(--gold2)}input,select{width:100%;min-width:0;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.25);color:var(--text);padding:8px 9px;border-radius:9px;outline:none}input:focus,select:focus{border-color:rgba(152,232,255,.45);box-shadow:0 0 0 3px rgba(152,232,255,.05)}input[type=range]{padding:0;accent-color:var(--gold)}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.toggle{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 0;color:var(--muted);font-size:10.5px}.switch{width:38px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:#1a2230;position:relative;cursor:pointer}.switch:after{content:"";position:absolute;left:3px;top:2px;width:16px;height:16px;border-radius:50%;background:#748196;transition:.18s}.switch.on{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.23)}.switch.on:after{left:18px;background:var(--gold2)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.grid2 .btn{border-radius:10px;padding:8px 8px}.viewport{min-width:0;min-height:0;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 50% 44%,rgba(22,30,44,.85),rgba(4,6,10,.98) 70%);box-shadow:var(--shadow)}#fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.72;transition:opacity .35s;pointer-events:none}body.ready #fallback{opacity:.06}#view,#xrCanvas,#camera{position:absolute;inset:0;width:100%;height:100%}#view{touch-action:none}#xrCanvas{display:none}#camera{display:none;object-fit:cover;filter:saturate(.7) contrast(1.1) brightness(.45)}.vignette{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 110px rgba(0,0,0,.68)}.viewtop{position:absolute;left:14px;right:14px;top:13px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.titlecard,.statecard{padding:9px 11px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(4,7,11,.65);backdrop-filter:blur(12px)}.titlecard b{display:block;color:var(--gold2);font-size:11px;letter-spacing:.13em;text-transform:uppercase}.titlecard span{display:block;color:var(--muted);font-size:9.5px;margin-top:3px}.statecard{align-self:flex-start;color:var(--green);font-size:9px;letter-spacing:.08em;border-color:rgba(140,233,189,.25)}.metrics{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:repeat(6,minmax(80px,1fr));gap:6px;pointer-events:none}.metric{padding:8px 9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(4,7,11,.68);backdrop-filter:blur(12px);min-width:0}.metric label{display:block;color:var(--muted);font-size:8px;letter-spacing:.09em;text-transform:uppercase}.metric b{display:block;margin-top:3px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric:nth-child(2n) b{color:var(--ice)}.metric:nth-child(3n) b{color:var(--gold2)}.card{border:1px solid rgba(255,255,255,.08);border-radius:13px;background:rgba(0,0,0,.15);padding:10px;margin:8px 0}.card h3{margin:0 0 7px;color:var(--gold2);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:10.5px}.kv div:nth-child(odd){color:var(--muted)}.kv div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;max-width:190px;overflow-wrap:anywhere}.formula{font:10px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#dce8f2;white-space:pre-wrap;overflow-wrap:anywhere}.note{color:var(--muted);font-size:10.5px;line-height:1.55}.note strong{color:var(--text)}details{border-top:1px solid rgba(255,255,255,.06);padding:7px 0}summary{cursor:pointer;color:var(--gold);font-size:10px}.search{margin-bottom:8px}.list{display:flex;flex-direction:column;gap:5px}.item{padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(0,0,0,.12);cursor:pointer}.item:hover{border-color:rgba(215,183,110,.35)}.item b{font-size:10.5px}.item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}.boot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 13px;border:1px solid rgba(215,183,110,.35);border-radius:999px;background:rgba(4,7,11,.82);color:var(--gold2);font-size:10px;letter-spacing:.1em;z-index:3;transition:.35s}body.ready .boot{opacity:0;pointer-events:none}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);opacity:0;z-index:100;padding:10px 14px;max-width:88vw;border:1px solid rgba(215,183,110,.36);border-radius:12px;background:rgba(4,7,11,.95);box-shadow:var(--shadow);transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}.fatal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);padding:20px}.fatal.show{display:flex}.fatal>div{max-width:720px;border:1px solid rgba(255,157,157,.45);border-radius:16px;background:#130a0c;padding:18px}.fatal h2{color:var(--red);margin:0 0 8px}.fatal pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#ffd8d8;font-size:11px}.mobileTabs{display:none}
@@ -1040,7 +1041,7 @@ function bindCanvasInteraction(){
  const pointers=state.activePointers;
  const local=e=>{const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,cx:e.clientX,cy:e.clientY}};
  const updateGesture=()=>{if(pointers.size===2&&!state.gesture)state.gesture=gestureSnapshot();if(pointers.size<2)state.gesture=null;updateTouchChannels(pointers)};
- canvas.addEventListener('pointerdown',e=>{e.preventDefault();const q=local(e),h=smartGestureTarget(q.x,q.y),meta=h?.meta||{};let role='rotate';if(safeCursorKind(meta.kind))role='cursor';else if(['torus-knot','knot-point','physical-hopfion25','knot-point25'].includes(meta.kind))role='phase-drag';else if(['fiber','selected-fiber','hopfion-fiber','physical-selected-fibre25','physical-hopf-fibre25'].includes(meta.kind))role='fiber-pending';else if(meta.kind==='bridge-node')role='destructive';else if(h)role='inspect';if(pointers.size)role='secondary';
+ canvas.addEventListener('pointerdown',e=>{e.preventDefault();const q=local(e),h=smartGestureTarget(q.x,q.y),meta=h?.meta||{};let role='rotate';if(safeCursorKind(meta.kind))role='cursor';else if(['torus-knot','knot-point','physical-hopfion25','knot-point25','topo660-fibre','topo660-cursor'].includes(meta.kind))role='phase-drag';else if(['fiber','selected-fiber','hopfion-fiber','physical-selected-fibre25','physical-hopf-fibre25'].includes(meta.kind))role='fiber-pending';else if(meta.kind==='bridge-node')role='destructive';else if(h)role='inspect';if(pointers.size)role='secondary';
   const rec={id:e.pointerId,x:q.x,y:q.y,cx:q.cx,cy:q.cy,startX:q.x,startY:q.y,lastX:q.x,lastY:q.y,moved:false,role,target:h,startTime:performance.now()};pointers.set(e.pointerId,rec);try{canvas.setPointerCapture(e.pointerId)}catch{}
   if(role==='cursor'&&h){selectTarget(h,q.x,q.y);state.activeEntity=h}else if(role==='phase-drag'&&h){selectTarget(h,q.x,q.y);state.activeEntity=h}else if(role==='inspect'&&h){inspectTarget14(h)}else if(role==='destructive'&&h&&!state.editLocked){selectTarget(h,q.x,q.y);state.activeEntity=h}
   canvas.classList.add('grabbing');updateGesture();
@@ -7041,7 +7042,7 @@ for(const ms of[2600,4800,8000,13000])setTimeout(()=>{registerModel380();registe
 (()=>{
 'use strict';
 const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
 const ASML_ID='asml_euv_lpp';
 const CLAUDE_IDS=['lorentz_dielectric','cole_cole','havriliak_negami','skin_effect_line','superconductor_surface','ferro_kittel','fabry_perot','quantum_rtd','qnm_ringdown','magnetoplasma_cyclotron','piezo_bvd','thermal_semiinfinite'];
@@ -7956,7 +7957,7 @@ function ensureTestChain398(){try{
 }catch(_){}}
 ensureTestChain398();
 /* ---------- install ---------- */
-const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const TITLE398='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 function claimTitle398(){try{
  const te=document.querySelector('title');
  if(te&&!te.dataset.uprs398){const nt=document.createElement('title');nt.dataset.uprs398='1';nt.dataset.uprs370='1';nt.textContent=TITLE398;te.remove();document.head.appendChild(nt);
@@ -8376,7 +8377,7 @@ body.uprs400 #obsFab398,body.uprs400 #obsBtn398{display:none!important}
 (()=>{
 'use strict';
 const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
 const $=id=>document.getElementById(id);
 const obs=()=>$('obsPanel398');
@@ -10088,7 +10089,7 @@ function checks(){
   const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
   const p=globalThis.__UPRS450__?.startupPolicy;
   return [
-    {name:'v4.6.1 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
+    {name:'v4.6.1 single version authority',pass:A.version===(A.releaseVersion||V)&&document.title.includes('v'+(A.releaseVersion||V))&&document.documentElement.dataset.uprsVersion===(A.releaseVersion||V),detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
     {name:'v4.6.1 Quest-safe XR entry',pass:A.xrOwner==='461'&&typeof globalThis.__UPRS461__?.enter==='function'&&globalThis.__UPRS450__?.enter===globalThis.__UPRS461__?.enter},
     {name:'v4.6.1 v4.4 retained as fallback API',pass:typeof globalThis.__UPRS440__?.enter==='function'},
     {name:'v4.6.1 scene signature detects geometry change',pass:stamp1!==stamp2},
@@ -10168,7 +10169,7 @@ function pick(frame,src){const c=core();if(!c||!X.pointData?.length)return;const
 function clearXR(gl,layer){gl.bindFramebuffer(gl.FRAMEBUFFER,layer.framebuffer);gl.clearColor(X.mode==='immersive-ar'?0:.008,X.mode==='immersive-ar'?0:.012,X.mode==='immersive-ar'?0:.024,X.mode==='immersive-ar'?0:1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.flush();X.lastFrameAt=performance.now()}
 function frame(t,xrFrame){const session=X.session;if(!session)return;try{session.requestAnimationFrame(frame);const gl=X.gl,layer=X.layer;if(!gl||!layer)return;clearXR(gl,layer);if(!X.ready||!X.ref)return;const pose=xrFrame.getViewerPose(X.ref),c=core();if(!pose||!c)return;uploadScene(false);updateGrab(xrFrame);c.composeTRS(X.worldMat,X.world.pos,X.world.quat,X.world.scale);gl.useProgram(X.program);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.enableVertexAttribArray(X.loc.aP);gl.enableVertexAttribArray(X.loc.aC);for(const view of pose.views){const vp=layer.getViewport(view);gl.viewport(vp.x,vp.y,vp.width,vp.height);c.m4Mul(X.mv,view.transform.inverse.matrix,X.worldMat);drawSet(gl,X.loc,view.projectionMatrix,X.mv,X.buffers.lp,X.buffers.lc,X.counts.line,gl.LINES,1);drawSet(gl,X.loc,view.projectionMatrix,X.mv,X.buffers.pp,X.buffers.pc,X.counts.point,gl.POINTS,56)}X.frameErrors=0}catch(e){X.frameErrors++;X.error=errorText(e);rec('frame-error',{count:X.frameErrors,error:X.error});console.error('UPRS461 frame',e);if(X.frameErrors===1)toastXR('XR render issue (session kept alive): '+X.error);/* Do not end the session on render exceptions: the next frame is already scheduled at the top of try and clearXR keeps feeding the compositor, so transient warm-up errors self-heal instead of bouncing the user out of VR. A real frame stall is still caught by the watchdog. */}}
 function beginBootstrapLoop(session,gl,layer){let resolved=false,resolveFirst,rejectFirst;const first=new Promise((res,rej)=>{resolveFirst=res;rejectFirst=rej});const boot=(t,xrFrame)=>{if(X.session!==session)return;try{clearXR(gl,layer);if(!resolved){resolved=true;X.firstFrame=true;rec('first-frame');resolveFirst()}if(X.ready){session.requestAnimationFrame(frame);return}session.requestAnimationFrame(boot)}catch(e){if(!resolved){resolved=true;rejectFirst(e)}else{X.error=errorText(e);rec('bootstrap-frame-error',{error:X.error});toastXR('XR warm-up issue (session kept alive): '+X.error);try{X.ready?session.requestAnimationFrame(frame):session.requestAnimationFrame(boot)}catch(_){}}}};session.requestAnimationFrame(boot);return first}
-async function requestImmersive(mode,init,token){let timedOut=false;const raw=navigator.xr.requestSession(mode,init);raw.then(s=>{if(timedOut||token!==X.requestToken){rec('late-session-cleanup',{mode});try{s.end()}catch(_){}}},()=>{});try{return await timeout(raw,12000,'requestSession timeout')}catch(e){timedOut=true;throw e}}
+async function requestImmersive(mode,init,token){const raw=navigator.xr.requestSession(mode,init);const reminder=setTimeout(()=>{if(token===X.requestToken&&X.starting&&!X.session){setStage('waiting-for-headset-permission');toastXR('Confirm the XR request inside the headset')}},8000);try{const session=await raw;if(token!==X.requestToken){rec('late-session-cleanup',{mode});try{await session.end()}catch(_){}throw Object.assign(new Error('XR request superseded'),{name:'AbortError'})}return session}finally{clearTimeout(reminder)}}
 async function start(mode='immersive-vr',profile='safe'){
  if(X.session){await endSession(X.session,'user-exit');return false}if(X.starting)return false;if(!navigator.xr){X.error='WebXR API unavailable';setStage('unavailable',X.error);toastXR('WebXR API is unavailable in this browser');return false}if(!isSecureContext){X.error='HTTPS required';setStage('blocked',X.error);toastXR('WebXR requires direct HTTPS opening');return false}if(!policyAllowed()){X.error='xr-spatial-tracking policy blocked';setStage('blocked',X.error);toastXR('WebXR is blocked by xr-spatial-tracking policy');return false}
  X.starting=true;X.mode=mode;X.profile=profile;X.ready=false;X.firstFrame=false;X.error='';const token=++X.requestToken;setStage('request-session');syncButtons();let session=null;
@@ -10192,9 +10193,9 @@ let API461=null;
    that maps a controller pose onto scene coordinates has to undo it - pick()
    below already does - so it is reported read-only rather than left private. */
 function diagnostics(){return {version:VERSION,active:!!X.session,starting:X.starting,ready:X.ready,firstFrame:X.firstFrame,stage:X.stage,error:X.error,mode:X.mode,profile:X.profile,features:[...X.support.features],support:{...X.support},secure:isSecureContext,focused:document.hasFocus(),visibility:document.visibilityState,policyAllowed:policyAllowed(),userAgent:navigator.userAgent,frameErrors:X.frameErrors,lastFrameAge:X.lastFrameAt?Math.round(performance.now()-X.lastFrameAt):null,world:{pos:[...X.world.pos],quat:[...X.world.quat],scale:X.world.scale},requestLog:[...X.requestLog],events:[...X.events]}}
-function bindAuthority(){if(!API461)return;A.xrOwner='461';A.version=VERSION;globalThis.__UPRS450__=globalThis.__UPRS450__||old450;Object.assign(globalThis.__UPRS450__,{enter:API461.enter,enterVR:API461.enterVR,enterAR:API461.enterAR,enterAREnhanced:API461.enterAREnhanced,enterARDepth:API461.enterARDepth,exit:API461.exit,audit:API461.audit});globalThis.enterXR=API461.enter;window.enterXR=API461.enter;const btn=document.getElementById('xrBtn');if(btn){btn.onclick=e=>{e.preventDefault();API461.enterVR()};btn.textContent='🥽 VR'}syncButtons()}
+function bindAuthority(){if(!API461)return;A.xrOwner='461';A.version=A.releaseVersion||VERSION;globalThis.__UPRS450__=globalThis.__UPRS450__||old450;Object.assign(globalThis.__UPRS450__,{enter:API461.enter,enterVR:API461.enterVR,enterAR:API461.enterAR,enterAREnhanced:API461.enterAREnhanced,enterARDepth:API461.enterARDepth,exit:API461.exit,audit:API461.audit});globalThis.enterXR=API461.enter;window.enterXR=API461.enter;const btn=document.getElementById('xrBtn');if(btn){btn.onclick=e=>{e.preventDefault();API461.enterVR()};btn.textContent='🥽 VR'}syncButtons()}
 function captureXRClick(e){const el=e.target instanceof Element?e.target.closest('#xrBtn,#xrMRBtn461,[data-command="xr"]'):null;if(!el)return;e.preventDefault();e.stopImmediatePropagation();if(el.id==='xrMRBtn461')API461?.enterAR();else API461?.enterVR()}
-function install(){A.version=VERSION;A.xrOwner='461';A.xrRecovery='requestSession-first+continuous-bootstrap+watchdog+capture-authority';A.claimVersion?.();const api={version:VERSION,enter:()=>start('immersive-vr','safe'),enterVR:()=>start('immersive-vr','safe'),enterAR:()=>start('immersive-ar','safe'),enterAREnhanced:()=>start('immersive-ar','enhanced'),enterARDepth:()=>start('immersive-ar','depth'),exit:()=>endSession(X.session,'user-exit'),audit:diagnostics,copyDiagnostics:async()=>{const s=JSON.stringify(diagnostics(),null,2);try{await navigator.clipboard.writeText(s)}catch(_){}return s}};API461=api;globalThis.__UPRS461__=api;old450.legacyEnter=oldEnter;old450.legacyExit=oldExit;old450.legacyAudit=oldAudit;const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('xrMRBtn461')){const b=document.createElement('button');b.id='xrMRBtn461';b.className='btn';b.textContent='◉ MR';acts.appendChild(b);const s=document.createElement('span');s.id='xrStatus461';s.style.cssText='font:600 10px/1.2 system-ui;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.72';acts.appendChild(s)}if(!document.documentElement.dataset.uprs461Capture){document.documentElement.dataset.uprs461Capture='1';document.addEventListener('click',captureXRClick,true)}bindAuthority();for(const ms of [260,700,1600,5200,12500,19000,24500,27000,33000])setTimeout(bindAuthority,ms);probe();try{navigator.xr?.addEventListener?.('devicechange',probe)}catch(_){}addEventListener('pagehide',()=>{if(X.session)try{X.session.end()}catch(_){}},{once:true});syncButtons()}
+function install(){A.version=A.releaseVersion||VERSION;A.xrOwner='461';A.xrRecovery='requestSession-first+continuous-bootstrap+watchdog+capture-authority';A.claimVersion?.();const api={version:VERSION,enter:()=>start('immersive-vr','safe'),enterVR:()=>start('immersive-vr','safe'),enterAR:()=>start('immersive-ar','safe'),enterAREnhanced:()=>start('immersive-ar','enhanced'),enterARDepth:()=>start('immersive-ar','depth'),exit:()=>endSession(X.session,'user-exit'),audit:diagnostics,copyDiagnostics:async()=>{const s=JSON.stringify(diagnostics(),null,2);try{await navigator.clipboard.writeText(s)}catch(_){}return s}};API461=api;globalThis.__UPRS461__=api;old450.legacyEnter=oldEnter;old450.legacyExit=oldExit;old450.legacyAudit=oldAudit;const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('xrMRBtn461')){const b=document.createElement('button');b.id='xrMRBtn461';b.className='btn';b.textContent='◉ MR';acts.appendChild(b);const s=document.createElement('span');s.id='xrStatus461';s.style.cssText='font:600 10px/1.2 system-ui;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.72';acts.appendChild(s)}if(!document.documentElement.dataset.uprs461Capture){document.documentElement.dataset.uprs461Capture='1';document.addEventListener('click',captureXRClick,true)}bindAuthority();for(const ms of [260,700,1600,5200,12500,19000,24500,27000,33000])setTimeout(bindAuthority,ms);probe();try{navigator.xr?.addEventListener?.('devicechange',probe)}catch(_){}addEventListener('pagehide',()=>{if(X.session)try{X.session.end()}catch(_){}},{once:true});syncButtons()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();</script>
 <script id="uprs460HandsPersistence">(()=>{
@@ -13584,7 +13585,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const V580='5.8.0';
 const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
  '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
- '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__','__UPRS640__','__UPRS650__'];
+ '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__','__UPRS640__','__UPRS650__','__UPRS660__'];
 function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
  for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
 function highestVersion580(){let best='0.0.0';
@@ -16536,5 +16537,253 @@ globalThis.__UPRS650__={version:V650,analyze:analyze650,checks:checks650,refresh
    drift:G.result.drift.status,causality:G.result.causality.status,
    fold:(G.result.continuation.branches||[]).map(b=>b.fold).filter(v=>v!=null),
    verdict:G.result.causality.verdict||null}:null})};
+})();</script>
+<script id="uprs660FibreTopology">(()=>{'use strict';
+/* v6.6.0 — complete constant-phase fibres on a Clifford torus in S³.
+   Φ=qα−pβ; d=gcd(|p|,|q|). Each of d components winds (p/d,q/d).
+   Two complete fibres have signed linking pq, not merely one traced knot.
+   Reference: arXiv:2608.15499 (2026), equations (7)–(11), preprint.
+   This is reference geometry, not a simulated acoustic/magnetic field. */
+const VERSION='6.6.0',TAU=Math.PI*2;
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const r=a%b;a=b;b=r}return a}
+function winding(p,q){return Number.isInteger(p)&&Number.isInteger(q)&&p!==0&&q!==0&&Math.abs(p)<=8&&Math.abs(q)<=8}
+function phasePoint(p,q,phase,component,t,eta=Math.PI/4){
+ const d=gcd(p,q),a=p/d*t,b=q/d*t+(TAU*component-phase)/p;
+ return [Math.cos(eta)*Math.cos(a),Math.cos(eta)*Math.sin(a),Math.sin(eta)*Math.cos(b),Math.sin(eta)*Math.sin(b)]}
+function phaseFibre(p,q,phase=0,n=160,eta=Math.PI/4){
+ if(!winding(p,q)||!Number.isFinite(phase)||!Number.isInteger(n)||n<16||n>2048||!Number.isFinite(eta)||eta<=0||eta>=Math.PI/2)
+  return {status:'invalid',components:[],reason:'Nonzero integer windings |p|,|q|≤8; 16≤N≤2048; 0<η<π/2 required'};
+ const d=gcd(p,q),components=[];
+ for(let k=0;k<d;k++){const c=[];for(let i=0;i<n;i++)c.push(phasePoint(p,q,phase,k,TAU*i/n,eta));c.push([...c[0]]);components.push(c)}
+ return {status:'ok',components,count:d,reduced:[p/d,q/d],phase,p,q,n,eta}}
+function stereo(s,scale=1){
+ if(!Array.isArray(s)||s.length!==4||!s.every(Number.isFinite)||!Number.isFinite(scale)||scale<=0||Math.abs(Math.hypot(...s)-1)>1e-8)return null;
+ const d=1-s[3];if(d<=1e-10)return null;
+ return [scale*s[0]/d,scale*s[1]/d,scale*s[2]/d]}
+/* Ericson's closest-points construction: detect intersecting polygon edges
+   before evaluating a topological invariant. Translation/scale are removed. */
+function segmentDistance(a,b,c,d){
+ const u=sub(b,a),v=sub(d,c),r=sub(a,c),A=dot(u,u),E=dot(v,v),F=dot(v,r);
+ let s=0,t=0;
+ if(A<=1e-24&&E<=1e-24)return Math.hypot(...r);
+ if(A<=1e-24)t=clamp(F/E,0,1);
+ else {const C=dot(u,r);if(E<=1e-24)s=clamp(-C/A,0,1);
+  else {const B=dot(u,v),den=A*E-B*B;s=den>1e-24?clamp((B*F-C*E)/den,0,1):0;t=(B*s+F)/E;
+   if(t<0){t=0;s=clamp(-C/A,0,1)}else if(t>1){t=1;s=clamp((B-C)/A,0,1)}}}
+ return Math.hypot(r[0]+s*u[0]-t*v[0],r[1]+s*u[1]-t*v[1],r[2]+s*u[2]-t*v[2])}
+function solidAngle(a,b,c){
+ const la=Math.hypot(...a),lb=Math.hypot(...b),lc=Math.hypot(...c);
+ if(Math.min(la,lb,lc)<1e-12)return null;
+ const u=a.map(v=>v/la),v=b.map(w=>w/lb),w=c.map(z=>z/lc);
+ const num=dot(u,cross(v,w)),den=1+dot(u,v)+dot(v,w)+dot(w,u);
+ if(Math.abs(num)+Math.abs(den)<1e-14)return null;
+ return 2*Math.atan2(num,den)}
+/* Exact Gauss integral for polygonal curves, using oriented spherical
+   quadrilaterals of endpoint differences. No midpoint quadrature, no rounding.
+   r(s,t)=a(s)−b(t) reverses the t orientation, hence the leading minus sign. */
+function linking(curveA,curveB){
+ const fail=reason=>({status:'unresolved',value:null,reason});
+ const valid=c=>Array.isArray(c)&&c.length>=4&&c.length<=2049&&c.every(p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite));
+ if(!valid(curveA)||!valid(curveB))return fail('Finite 3D polygons with 3–2048 edges required');
+ const origin=curveA[0];let scale=0;
+ for(const c of [curveA,curveB])for(const p of c)scale=Math.max(scale,Math.hypot(...sub(p,origin)));
+ if(!(scale>0))return fail('Degenerate polygons');
+ const A=curveA.map(p=>sub(p,origin).map(v=>v/scale)),B=curveB.map(p=>sub(p,origin).map(v=>v/scale));
+ if(Math.hypot(...sub(A[0],A.at(-1)))>1e-10||Math.hypot(...sub(B[0],B.at(-1)))>1e-10)return fail('Open polygon: linking requires exact closure');
+ for(const c of [A,B])for(let i=1;i<c.length;i++)if(Math.hypot(...sub(c[i],c[i-1]))<1e-12)return fail('Degenerate polygon edge');
+ for(const c of [A,B])for(let i=1;i<c.length;i++)for(let j=i+2;j<c.length;j++){
+  if(i===1&&j===c.length-1)continue;
+  if(segmentDistance(c[i-1],c[i],c[j-1],c[j])<1e-9)return fail('Self-intersecting polygon');
+ }
+ let sum=0,correction=0,minSeparation=Infinity;
+ for(let i=1;i<A.length;i++)for(let j=1;j<B.length;j++){
+  const a=A[i-1],b=A[i],c=B[j-1],d=B[j],sep=segmentDistance(a,b,c,d);
+  minSeparation=Math.min(minSeparation,sep);
+  if(sep<1e-9)return fail('Intersecting or numerically inseparable polygons');
+  const r0=sub(a,c),r1=sub(b,c),r2=sub(b,d),r3=sub(a,d);
+  const diag02=dot(r0,r2)/(Math.hypot(...r0)*Math.hypot(...r2)),diag13=dot(r1,r3)/(Math.hypot(...r1)*Math.hypot(...r3));
+  const t1=diag02>=diag13?solidAngle(r0,r1,r2):solidAngle(r0,r1,r3);
+  const t2=diag02>=diag13?solidAngle(r0,r2,r3):solidAngle(r1,r2,r3);
+  if(t1===null||t2===null)return fail('Ambiguous spherical triangle; refine polygons');
+  const y=-(t1+t2)-correction,next=sum+y;correction=(next-sum)-y;sum=next;
+ }
+ const value=sum/(4*Math.PI),integerResidual=Math.abs(value-Math.round(value));
+ if(!Number.isFinite(value)||integerResidual>1e-7)return fail('Solid-angle sum is unresolved; refine polygons');
+ return {status:'ok',value,integerResidual,minSeparation:minSeparation*scale,segments:[A.length-1,B.length-1],method:'oriented polygon solid angles'}}
+
+const sceneCache=new Map();
+const own=e=>String(e?.meta?.id||'').startsWith('topo660:');
+function appendScene(scene,opt={}){
+ if(!scene||!Array.isArray(scene.lines)||!Array.isArray(scene.points))return 0;
+ scene.lines=scene.lines.filter(e=>!own(e));scene.points=scene.points.filter(e=>!own(e));
+ if(!opt.enabled||!['hopf','hopfion'].includes(opt.mode)||!winding(opt.p,opt.q))return 0;
+ const p=opt.p,q=opt.q,d=gcd(p,q),eta=opt.eta??Math.PI/4,n=opt.n??Math.max(128,48*Math.max(Math.abs(p/d),Math.abs(q/d))),scale=opt.scale??.6;
+ const key=[p,q,eta,n,scale].join('|');let curves=sceneCache.get(key);
+ if(!curves){const fibres=[phaseFibre(p,q,0,n,eta),phaseFibre(p,q,Math.PI,n,eta)];if(fibres.some(f=>f.status!=='ok'))return 0;
+  curves=fibres.map(f=>f.components.map(c=>c.map(s=>stereo(s,scale))));
+  if(curves.some(f=>f.some(c=>c.some(p=>!p))))return 0;
+  if(sceneCache.size>=16)sceneCache.delete(sceneCache.keys().next().value);sceneCache.set(key,curves)}
+ const oldKinds=new Set(['physical-hopfion25','torus-knot','reference-hopfion20','reference-hopfion23','knot-point25','knot-point']);
+ scene.lines=scene.lines.filter(e=>!oldKinds.has(e.meta?.kind));scene.points=scene.points.filter(e=>!oldKinds.has(e.meta?.kind));
+ if(opt.focus){scene.lines=[];scene.points=[]}
+ const colors=['rgba(120,231,255,.96)','rgba(255,164,142,.96)'];
+ curves.forEach((f,group)=>f.forEach((pts,component)=>scene.lines.push({pts,color:colors[group],width:2.9,
+  meta:{id:`topo660:fibre:${group}:${component}`,kind:'topo660-fibre',group,component,phase:group*Math.PI,
+   label:`S³ reference T(${p},${q}) · Φ=${group?'π':'0'} · ${component+1}/${d}`,priority:104,draggable:true}})));
+ if(opt.wireframe){const cs=Math.cos(eta),sn=Math.sin(eta);
+  for(let ax=0;ax<2;ax++)for(let k=0;k<14;k++){const pts=[];for(let i=0;i<=80;i++){
+   const a=ax===0?TAU*i/80:TAU*k/14,b=ax===0?TAU*k/14:TAU*i/80;
+   pts.push(stereo([cs*Math.cos(a),cs*Math.sin(a),sn*Math.cos(b),sn*Math.sin(b)],scale))}
+   scene.lines.push({pts,color:'rgba(160,181,212,.15)',width:.7,meta:{id:`topo660:torus:${ax}:${k}`,kind:'topo660-envelope',label:'Clifford torus in S³',priority:5}})}}
+ const group=opt.group===1?1:0,component=clamp(Math.trunc(opt.component||0),0,d-1),t=Number.isFinite(opt.cursor)?opt.cursor:0;
+ const point=stereo(phasePoint(p,q,group*Math.PI,component,t,eta),scale);
+ scene.points.push({p:point,color:colors[group],size:7.5,label:'',meta:{id:'topo660:cursor',kind:'topo660-cursor',group,component,
+  label:`S³ reference phase cursor · Φ=${group?'π':'0'} · ${component+1}/${d}`,priority:154,draggable:true}});
+ return 2*d}
+
+const G={enabled:true,eta:Math.PI/4,wireframe:true,focus:false,group:0,component:0,cursor:0,verification:null,job:0,progress:'',cache:new Map()};
+const TX={
+ ru:{title:'Узлы и зацепления S³',reference:'Геометрический эталон',enable:'Показывать волокна',wire:'Clifford-тор',focus:'Только эталон',components:'Компонент в волокне',pair:'Зацепление пары',total:'Полное зацепление',verify:'Проверить численно',unverified:'Численная проверка не выполнена',verified:'Проверено на двух сетках',unresolved:'Проверка не разрешена',residual:'Невязка',phase:'Курсор фазы',source:'Источник · препринт 2026',note:'Эталон фазовых волокон. Физическое поле выбранной модели здесь не измеряется.',export:'Снимок JSON',invalid:'Нужны целые p и q от 1 до 8'},
+ en:{title:'S³ knots and links',reference:'Reference geometry',enable:'Show phase fibres',wire:'Clifford torus',focus:'Reference only',components:'Components per fibre',pair:'Pairwise linking',total:'Complete-fibre linking',verify:'Verify numerically',unverified:'Numerical verification pending',verified:'Verified at two resolutions',unresolved:'Verification unresolved',residual:'Residual',phase:'Phase cursor',source:'Source · 2026 preprint',note:'Reference phase fibres. The selected model’s physical field is not measured here.',export:'JSON snapshot',invalid:'Integer p and q from 1 to 8 required'},
+ de:{title:'S³-Knoten und Verschlingungen',reference:'Referenzgeometrie',enable:'Phasenfasern anzeigen',wire:'Clifford-Torus',focus:'Nur Referenz',components:'Komponenten je Faser',pair:'Paarweise Verschlingung',total:'Gesamtverschlingung',verify:'Numerisch prüfen',unverified:'Numerische Prüfung ausstehend',verified:'Auf zwei Gittern geprüft',unresolved:'Prüfung unaufgelöst',residual:'Residuum',phase:'Phasencursor',source:'Quelle · Preprint 2026',note:'Referenz der Phasenfasern. Das physikalische Feld des Modells wird hier nicht gemessen.',export:'JSON-Schnappschuss',invalid:'Ganze p und q von 1 bis 8 erforderlich'}
+};
+const tx=()=>TX[(typeof state!=='undefined'&&state.lang)||'ru']||TX.en;
+function active(){return typeof state!=='undefined'&&['hopf','hopfion'].includes(state.mode)&&!!(state.mode==='hopfion'||state.layers20?.hopfion)}
+function parameters(){return typeof state!=='undefined'?{p:state.p,q:state.q,eta:G.eta}:{p:2,q:3,eta:G.eta}}
+function analysisKey(){const x=parameters();return [x.p,x.q,x.eta].join('|')}
+function invalidate(){G.job++;G.progress='';G.verification=G.cache.get(analysisKey())||null}
+function analysis(){const {p,q,eta}=parameters(),d=gcd(p,q);return {status:G.verification?.status||'unverified',p,q,eta,
+ components:d,reduced:[p/d,q/d],expected:winding(p,q)?p*q:null,pairwise:winding(p,q)?p*q/(d*d):null,
+ verification:G.verification,reference:true,phaseEquation:'Φ=qα−pβ (mod 2π)',source:'https://arxiv.org/abs/2608.15499'}}
+async function verify(){
+ const key=analysisKey();if(G.cache.has(key)){G.verification=G.cache.get(key);syncUI();return G.verification}
+ const {p,q,eta}=parameters();if(!winding(p,q))return {status:'unresolved',measured:null,reason:'Invalid winding'};
+ const job=++G.job,d=gcd(p,q),low=Math.max(64,24*Math.max(Math.abs(p/d),Math.abs(q/d))),high=2*low;
+ const make=n=>[0,Math.PI].map(phase=>phaseFibre(p,q,phase,n,eta).components.map(c=>c.map(s=>stereo(s,1))));
+ const coarse=make(low),fine=make(high),matrix=[];let measured=0,coarseTotal=0,minSeparation=Infinity,delta=0,reason='';
+ const started=typeof performance!=='undefined'?performance.now():Date.now();
+ for(let i=0;i<d;i++){matrix.push([]);for(let j=0;j<d;j++){
+  G.progress=`${i*d+j+1}/${d*d}`;syncUI();await new Promise(resolve=>setTimeout(resolve,0));
+  if(job!==G.job||key!==analysisKey())return {status:'cancelled',measured:null};
+  const a=linking(coarse[0][i],coarse[1][j]),b=linking(fine[0][i],fine[1][j]);
+  if(a.status!=='ok'||b.status!=='ok'){reason=a.reason||b.reason;break}
+  matrix[i].push(b.value);measured+=b.value;coarseTotal+=a.value;delta=Math.max(delta,Math.abs(a.value-b.value));
+  minSeparation=Math.min(minSeparation,b.minSeparation);
+ }if(reason)break}
+ if(job!==G.job||key!==analysisKey())return {status:'cancelled',measured:null};
+ const error=reason?null:Math.abs(measured-p*q);
+ const result={status:!reason&&error<1e-7&&delta<1e-7?'verified':'unresolved',expected:p*q,measured:reason?null:measured,
+  coarseMeasured:reason?null:coarseTotal,matrix,residual:error,convergenceError:reason?null:delta,minSeparation:reason?null:minSeparation,
+  resolutions:[low,high],method:'signed polygon Gauss integral via solid angles',reason:reason||null,
+  elapsedMs:Math.round((typeof performance!=='undefined'?performance.now():Date.now())-started)};
+ G.progress='';G.verification=result;if(G.cache.size>=16)G.cache.delete(G.cache.keys().next().value);G.cache.set(key,result);syncUI();return result}
+function sceneOptions(){return {mode:state.mode,enabled:G.enabled&&active(),...parameters(),scale:(state.layers20?.scale||.54)*.78,
+ wireframe:G.wireframe,focus:G.focus,group:G.group,component:G.component,cursor:G.cursor}}
+function refresh(){if(typeof document==='undefined'||typeof state==='undefined')return;try{buildScene();updateUI();draw(performance.now())}catch(e){console.warn('UPRS660 refresh',e)}syncUI()}
+function setWinding(p,q){if(!winding(p,q)||p<1||q<1)return false;state.p=p;state.q=q;G.component=Math.min(G.component,gcd(p,q)-1);
+ for(const [id,v] of [['pWind',p],['qWind',q]]){const el=document.getElementById(id);if(el){el.max='8';el.value=v}}
+ invalidate();refresh();return true}
+function setPreset(p,q){if(!setWinding(p,q))return false;G.enabled=true;if(state.layers20)state.layers20.hopfion=true;setMode('hopfion');refresh();return true}
+function setEnabled(v){G.enabled=!!v;if(state.layers20)state.layers20.hopfion=!!v;if(!v)invalidate();refresh();return G.enabled}
+function setCursor(t,group=G.group,component=G.component){if(!Number.isFinite(t))return false;G.cursor=((t%TAU)+TAU)%TAU;
+ G.group=group===1?1:0;G.component=clamp(Math.trunc(component||0),0,gcd(state.p,state.q)-1);state.knotPhase=G.cursor;refresh();return true}
+function snapshot(){return {schema:'uprs-s3-phase-fibres/1',version:VERSION,...analysis(),
+  view:{wireframe:G.wireframe,focus:G.focus},cursor:{phase:G.cursor,group:G.group,component:G.component},
+  evidence:'Geometric reference on a Clifford torus; not experimental or simulated field data',accessed:'2026-10-03'}}
+function syncUI(){if(typeof document==='undefined'||typeof state==='undefined')return;
+ const dock=document.getElementById('topologyDock660');if(!dock)return;
+ dock.hidden=!['hopf','hopfion'].includes(state.mode);const t=tx(),a=analysis();
+ document.getElementById('topologySummary660').textContent=`T(${a.p},${a.q}) · d=${a.components} · Qlink=${a.expected}`;
+ document.getElementById('topologyTitle660').textContent=t.title;
+ for(const e of dock.querySelectorAll('[data-t660]'))e.textContent=t[e.dataset.t660];
+ const row=(k,v)=>`<div>${k}</div><div>${v}</div>`;
+ const r=G.verification;
+ document.getElementById('topologyNumbers660').innerHTML=row(t.components,a.components)+row(t.pair,a.pairwise)+row(t.total,r?.measured==null?`${a.expected} (theory)`:r.measured.toFixed(9))+row(t.residual,r?.residual==null?'—':r.residual.toExponential(2));
+ const status=document.getElementById('topologyStatus660');status.textContent=G.progress?`${t.verify} · ${G.progress}`:r?.status==='verified'?`${t.verified} · N=${r.resolutions.join(' / ')}`:r?.status==='unresolved'?`${t.unresolved}: ${r.reason||''}`:t.unverified;
+ status.dataset.status=r?.status||'unverified';document.getElementById('topologyVerify660').disabled=!!G.progress;
+ document.getElementById('topologyEnabled660').checked=active()&&G.enabled;
+ document.getElementById('topologyWire660').checked=G.wireframe;document.getElementById('topologyFocus660').checked=G.focus;
+ for(const [id,v] of [['topologyP660',a.p],['topologyQ660',a.q],['topologyCursor660',G.cursor]]){const e=document.getElementById(id);if(document.activeElement!==e)e.value=v}
+ const comp=document.getElementById('topologyComponent660');const ck=`${a.components}:${G.group}:${G.component}`;
+ if(comp.dataset.key!==ck){comp.innerHTML=Array.from({length:a.components},(_,i)=>`<option value="${i}">${i+1}/${a.components}</option>`).join('');comp.value=G.component;comp.dataset.key=ck}
+ document.getElementById('topologyGroup660').value=G.group;
+ document.getElementById('topologySource660').textContent=t.source;
+}
+function ensureUI(){if(typeof document==='undefined')return;
+ if(!document.getElementById('topologyDock660')){const host=document.getElementById('viewport');if(!host)return;
+  const style=document.createElement('style');style.id='topologyStyle660';style.textContent=`
+  #topologyDock660{position:absolute;z-index:72;right:12px;top:88px;width:258px;max-width:calc(100% - 24px);color:var(--text,#eef4ff);background:var(--panel,#0a0e16);border:1px solid rgba(152,232,255,.28);border-radius:12px;font:11px/1.5 system-ui;box-sizing:border-box;box-shadow:0 10px 32px #0005;pointer-events:auto}
+  #topologyDock660[hidden]{display:none!important}#topologyDock660 summary{padding:10px 12px;cursor:pointer;color:#98e8ff;font-weight:650;list-style-position:inside;overflow-wrap:anywhere}
+  #topologyBody660{padding:0 12px 12px;max-height:min(470px,var(--topology-height,65vh));overflow:auto}#topologyDock660 h3{font-size:13px;margin:0 0 5px}#topologyDock660 .t660-row{display:flex;align-items:center;gap:7px;margin:7px 0;flex-wrap:wrap}
+  #topologyDock660 input[type=number]{width:64px;min-width:0;padding:4px}#topologyDock660 select{max-width:100%;min-width:0;padding:5px}#topologyDock660 input[type=range]{width:100%}#topologyDock660 label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:normal;margin:0}#topologyDock660 input[type=checkbox]{width:13px;height:13px;margin:0;flex:none}#topologyDock660 button{min-height:30px;padding:5px 8px}
+  #topologyNumbers660{display:grid;grid-template-columns:1fr auto;gap:3px 8px;margin:9px 0}#topologyNumbers660 div:nth-child(even){font-variant-numeric:tabular-nums;color:#98e8ff}#topologyStatus660{overflow-wrap:anywhere;color:var(--muted,#aab7c9);margin:7px 0}#topologyStatus660[data-status=verified]{color:#8ce9bd}
+  #topologyDock660 small{display:block;font-size:10px;color:var(--muted,#aab7c9)}#topologyDock660 a{color:#98e8ff}
+  @media(max-width:640px){#topologyDock660{top:72px;right:8px;width:225px}}
+  `;document.head.appendChild(style);
+  const dock=document.createElement('details');dock.id='topologyDock660';dock.hidden=true;
+  dock.innerHTML=`<summary id="topologySummary660"></summary><div id="topologyBody660"><h3 id="topologyTitle660"></h3><small data-t660="reference"></small>
+  <div class="t660-row"><label><input type="checkbox" id="topologyEnabled660"> <span data-t660="enable"></span></label></div>
+  <div class="t660-row"><select id="topologyPreset660" aria-label="Topology preset"><option value="">T(p,q)</option><option value="1,1">Hopf · (1,1)</option><option value="2,2">2 + 2 · (2,2)</option><option value="2,3">Trefoil · (2,3)</option><option value="3,4">T(3,4)</option><option value="4,6">2 + 2 · (4,6)</option></select><label>p <input id="topologyP660" type="number" min="1" max="8" step="1"></label><label>q <input id="topologyQ660" type="number" min="1" max="8" step="1"></label></div>
+  <small>Φ = qα − pβ (mod 2π) · S³ → ℝ³</small><div class="t660-row"><label><input id="topologyWire660" type="checkbox"> <span data-t660="wire"></span></label><label><input id="topologyFocus660" type="checkbox"> <span data-t660="focus"></span></label></div>
+  <div id="topologyNumbers660"></div><div class="t660-row"><select id="topologyGroup660" aria-label="Phase fibre"><option value="0">Φ = 0 · cyan</option><option value="1">Φ = π · coral</option></select><select id="topologyComponent660" aria-label="Fibre component"></select></div>
+  <label for="topologyCursor660" data-t660="phase"></label><input id="topologyCursor660" type="range" min="0" max="6.283185307179586" step="0.005"><div id="topologyStatus660" role="status"></div>
+  <div class="t660-row"><button id="topologyVerify660" class="btn" data-t660="verify"></button><button id="topologyExport660" class="btn" data-t660="export"></button></div>
+  <small data-t660="note"></small><a id="topologySource660" href="https://arxiv.org/abs/2608.15499" target="_blank" rel="noopener noreferrer"></a></div>`;
+  host.appendChild(dock);dock.addEventListener('pointerdown',e=>e.stopPropagation());dock.addEventListener('keydown',e=>e.stopPropagation());
+  const el=id=>document.getElementById(id);
+  el('topologyEnabled660').onchange=e=>setEnabled(e.target.checked);
+  el('topologyPreset660').onchange=e=>{if(e.target.value){const [p,q]=e.target.value.split(',').map(Number);setPreset(p,q);e.target.value=''}};
+  for(const id of ['topologyP660','topologyQ660'])el(id).onchange=()=>{if(!setWinding(Number(el('topologyP660').value),Number(el('topologyQ660').value))){el(id).value=id==='topologyP660'?state.p:state.q;el('topologyStatus660').textContent=tx().invalid}};
+  el('topologyWire660').onchange=e=>{G.wireframe=e.target.checked;refresh()};el('topologyFocus660').onchange=e=>{G.focus=e.target.checked;refresh()};
+  el('topologyGroup660').onchange=e=>setCursor(G.cursor,Number(e.target.value));el('topologyComponent660').onchange=e=>setCursor(G.cursor,G.group,Number(e.target.value));
+  el('topologyCursor660').oninput=e=>setCursor(Number(e.target.value));el('topologyVerify660').onclick=()=>verify().catch(e=>{G.progress='';console.error('UPRS660 verification',e);syncUI()});
+  el('topologyExport660').onclick=()=>{const blob=new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`s3-topology-${state.p}-${state.q}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+ }const dock=document.getElementById('topologyDock660'),host=document.getElementById('viewport');
+ if(dock&&host)dock.style.setProperty('--topology-height',Math.max(100,host.clientHeight-(innerWidth<=640?72:88)-100)+'px');syncUI()}
+function appendApp(){if(typeof state==='undefined'||!state.scene)return;const selected=state.activeEntity?.meta?.id;
+ const key=analysisKey();if(G.verification&&G.verificationKey!==key){G.verification=G.cache.get(key)||null;G.verificationKey=key}
+ appendScene(state.scene,sceneOptions());if(selected?.startsWith('topo660:'))state.activeEntity=[...state.scene.lines,...state.scene.points].find(e=>e.meta?.id===selected)||null;
+ syncUI()}
+function wrap(){if(typeof document==='undefined')return;
+ const cur=globalThis.buildScene;if(typeof cur==='function'&&!cur.__uprs660){const w=function(){const selected=state.activeEntity?.meta?.id,r=cur.apply(this,arguments);appendApp();if(selected?.startsWith('topo660:'))state.activeEntity=[...state.scene.lines,...state.scene.points].find(e=>e.meta?.id===selected)||null;return r};w.__uprs660=true;globalThis.buildScene=w}
+ const ui=globalThis.updateUI;if(typeof ui==='function'&&!ui.__uprs660){const w=function(){const r=ui.apply(this,arguments);ensureUI();return r};w.__uprs660=true;globalThis.updateUI=w}
+ const phase=globalThis.phaseOnlyKind;if(typeof phase==='function'&&!phase.__uprs660){const w=k=>k==='topo660-fibre'||k==='topo660-cursor'||phase(k);w.__uprs660=true;globalThis.phaseOnlyKind=w}
+ const select=globalThis.selectTarget;if(typeof select==='function'&&!select.__uprs660){const w=function(h,x,y){if(own(h)){const m=h.meta;if(m.kind==='topo660-fibre'||m.kind==='topo660-cursor'){state.activeEntity=h;setCursor(m.kind==='topo660-fibre'?TAU*(h.segment||0)/Math.max(1,h.segmentCount||1):G.cursor,m.group,m.component);return}}return select.apply(this,arguments)};w.__uprs660=true;globalThis.selectTarget=w}
+ const drag=globalThis.dragInteraction;if(typeof drag==='function'&&!drag.__uprs660){const w=function(x,y){if(own(state.activeEntity)){let best=G.cursor,dist=Infinity;const {p,q,eta}=parameters(),scale=(state.layers20?.scale||.54)*.78;for(let i=0;i<480;i++){const t=TAU*i/480,point=stereo(phasePoint(p,q,G.group*Math.PI,G.component,t,eta),scale),screen=proj(point,state.renderYaw,state.renderPitch),d=Math.hypot(screen[0]-x,screen[1]-y);if(d<dist){dist=d;best=t}}setCursor(best);return}return drag.apply(this,arguments)};w.__uprs660=true;globalThis.dragInteraction=w}
+ const manifest=globalThis.manifest;if(typeof manifest==='function'&&!manifest.__uprs660){const w=function(){const r=manifest.apply(this,arguments);r.topology660=snapshot();return r};w.__uprs660=true;globalThis.manifest=w}
+}
+let testCache=null;
+function checks(){if(testCache)return testCache;const T=[],ok=(name,fn)=>{try{const x=fn();T.push({name:'v6.6.0 '+name,pass:!!x,detail:''})}catch(e){T.push({name:'v6.6.0 '+name,pass:false,detail:String(e.message)})}};
+ ok('complete T(2,2) has two distinct components',()=>{const f=phaseFibre(2,2,0,64);return f.count===2&&Math.hypot(...f.components[0][0].map((x,i)=>x-f.components[1][0][i]))>.1});
+ ok('phase equation holds on every component',()=>phaseFibre(4,6,.73,64).components.every(c=>c.every(s=>Math.abs(Math.cos(6*Math.atan2(s[1],s[0])-4*Math.atan2(s[3],s[2]))-Math.cos(.73))<1e-10)));
+ ok('S³ unit norm and exact closure',()=>phaseFibre(2,3,0,64).components.every(c=>c.every(s=>Math.abs(Math.hypot(...s)-1)<1e-12)&&c[0].every((v,i)=>v===c.at(-1)[i])));
+ const curves=phase=>phaseFibre(1,1,phase,64).components[0].map(s=>stereo(s,1));const a=curves(0),b=curves(Math.PI);
+ ok('independent polygon linking of Hopf fibres is +1',()=>Math.abs(linking(a,b).value-1)<1e-9);
+ ok('reversing orientation changes linking sign',()=>Math.abs(linking([...a].reverse(),b).value+1)<1e-9);
+ ok('coincident and open curves are refused',()=>linking(a,a).value===null&&linking(a.slice(0,-1),b).value===null);
+ ok('zero winding and projection pole are refused',()=>phaseFibre(0,1).status==='invalid'&&stereo([0,0,0,1])===null);
+ ok('scene injection is idempotent with unique IDs',()=>{const s={lines:[],points:[]},o={mode:'hopf',enabled:true,p:2,q:2};appendScene(s,o);appendScene(s,o);return s.lines.length===4&&new Set([...s.lines,...s.points].map(e=>e.meta.id)).size===5});
+ ok('Smith chart never receives topology geometry',()=>{const s={lines:[],points:[]};appendScene(s,{mode:'smith',enabled:true,p:2,q:2});return s.lines.length===0});
+ testCache=T;return T}
+function wrapTests(){const cur=globalThis.runTests;if(typeof cur!=='function'||cur.__uprs660)return;
+ const w=function(show=true){const r=cur(false),tests=[...r.tests.filter(t=>!t.name.startsWith('v6.6.0 ')),...checks()];
+ const rep={passed:tests.filter(t=>t.pass).length,total:tests.length,failed:tests.filter(t=>!t.pass),tests};globalThis.__UPRS_SELF_TEST__=rep;
+ if(show&&typeof toast==='function')toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`);return rep};w.__uprs660=true;globalThis.runTests=w}
+function claim(){const A=globalThis.__UPRS_APP__;if(A){A.version=VERSION;A.release='s3-phase-fibre-topology';A.buildPolicy='current-index+verified-artifact'}
+ document.title=`UPRS Möbius–Hopf OmniAtlas v${VERSION} · S³ Knots & Links`;document.documentElement.dataset.uprsVersion=VERSION}
+globalThis.__UPRS660__={version:VERSION,core:{gcd,phasePoint,phaseFibre,stereo,linking,segmentDistance,solidAngle,appendScene},
+ analysis,verify,snapshot,checks,setWinding,setPreset,setCursor,setEnabled,
+ setFocus:v=>{G.focus=!!v;refresh()},setWireframe:v=>{G.wireframe=!!v;refresh()},
+ audit:()=>({version:VERSION,active:active(),...analysis(),sceneLines:typeof state!=='undefined'?state.scene?.lines.filter(own).length:0})};
+if(typeof document!=='undefined'){
+ const A=globalThis.__UPRS_APP__;if(A)A.claimVersion=claim;
+ const install=()=>{claim();wrap();wrapTests();ensureUI();refresh()};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+ for(const ms of [1000,4000,9000,16000,24000,31000])setTimeout(install,ms);
+}
 })();</script>
 </body></html>
