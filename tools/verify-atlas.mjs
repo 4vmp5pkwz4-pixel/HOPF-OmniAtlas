@@ -12,7 +12,7 @@ if(outputArg>=0&&!output)throw new Error('--output requires a directory');
 const bytes=fs.readFileSync(source),html=bytes.toString('utf8');
 const required=['uprs461QuestXRRecovery','uprs530ScientificIntegrity',
   'uprs550PhaseSpaceEngine','uprs560PhaseGeometryS3','uprs620TopologicalAtlas',
-  'uprs650PredictiveMethods','uprs660FibreTopology'];
+  'uprs650PredictiveMethods','uprs660FibreTopology','uprs660AtelierRenderer'];
 const scripts=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
 let parsed=0;
 for(const [i,m] of scripts.entries()){

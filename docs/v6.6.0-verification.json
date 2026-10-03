@@ -1,20 +1,20 @@
 {
-  "schema": "uprs-v660-verification/1",
+  "schema": "uprs-v660-verification/2",
   "checkedAt": "2026-10-03",
   "node": {
     "command": "node --test tests/*.test.mjs",
-    "passed": 20,
-    "total": 20,
+    "passed": 29,
+    "total": 29,
     "failed": 0
   },
   "release": {
     "schema": "uprs-current-release/1",
     "version": "6.6.0",
     "source": "index.html",
-    "bytes": 2169721,
-    "sourceSha256": "0f3208e13c4085372072f54d6a59931b0c11d0aca3ab8e88b1ca9e22586c504f",
-    "outputSha256": "0f3208e13c4085372072f54d6a59931b0c11d0aca3ab8e88b1ca9e22586c504f",
-    "inlineScripts": 89,
+    "bytes": 2204440,
+    "sourceSha256": "7de6369ca7ea41f65f050fb4373c59fa37cdb7fc4ae4749a63d2407ec99f9b3a",
+    "outputSha256": "7de6369ca7ea41f65f050fb4373c59fa37cdb7fc4ae4749a63d2407ec99f9b3a",
+    "inlineScripts": 90,
     "requiredModules": [
       "uprs461QuestXRRecovery",
       "uprs530ScientificIntegrity",
@@ -22,7 +22,8 @@
       "uprs560PhaseGeometryS3",
       "uprs620TopologicalAtlas",
       "uprs650PredictiveMethods",
-      "uprs660FibreTopology"
+      "uprs660FibreTopology",
+      "uprs660AtelierRenderer"
     ],
     "xrModuleSha256": "406682dfea0bc8b55d88d03dab1acb12c67faade16cc0ad476a535c50b5a854a",
     "checks": {
@@ -36,6 +37,11 @@
     "passed": 1278,
     "total": 1278,
     "failed": []
+  },
+  "boot": {
+    "events": [],
+    "mode": "smith",
+    "obsolete": 0
   },
   "version": {
     "title": "UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links",
@@ -73,7 +79,7 @@
     ],
     "method": "signed polygon Gauss integral via solid angles",
     "reason": null,
-    "elapsedMs": 391
+    "elapsedMs": 218
   },
   "scene": {
     "fibres": 4,
@@ -106,56 +112,237 @@
       "width": 1920,
       "height": 1080,
       "overflow": false,
-      "left": 1649,
-      "right": 1907,
-      "bottom": 730,
+      "left": 1650,
+      "right": 1895,
+      "bottom": 718,
       "hostBottom": 1035
     },
     {
       "width": 1440,
       "height": 900,
       "overflow": false,
-      "left": 1169,
-      "right": 1427,
-      "bottom": 730,
+      "left": 1170,
+      "right": 1415,
+      "bottom": 718,
       "hostBottom": 855
     },
     {
       "width": 1024,
       "height": 768,
       "overflow": false,
-      "left": 753,
-      "right": 1011,
-      "bottom": 673,
+      "left": 754,
+      "right": 999,
+      "bottom": 698,
       "hostBottom": 723
     },
     {
       "width": 768,
       "height": 1024,
       "overflow": false,
-      "left": 498,
-      "right": 756,
-      "bottom": 745,
+      "left": 534,
+      "right": 754,
+      "bottom": 735,
       "hostBottom": 954
     },
     {
       "width": 390,
       "height": 844,
       "overflow": false,
-      "left": 157,
-      "right": 382,
-      "bottom": 699,
+      "left": 173,
+      "right": 378,
+      "bottom": 696.5,
       "hostBottom": 748
     },
     {
       "width": 320,
       "height": 568,
       "overflow": false,
-      "left": 87,
-      "right": 312,
-      "bottom": 443,
+      "left": 103,
+      "right": 308,
+      "bottom": 467.5,
       "hostBottom": 492
     }
   ],
-  "errors": []
+  "errors": [],
+  "atelier": {
+    "gpu": {
+      "active": true,
+      "enabled": true,
+      "ready": true,
+      "lost": false,
+      "error": "",
+      "hdr": true,
+      "samples": 4,
+      "width": 1438,
+      "height": 833,
+      "frames": 2,
+      "submitMs": 115.1399999987334,
+      "drawCalls": 4,
+      "triangles": 52032,
+      "radius": 0.015484278692919351,
+      "centreLineSamples": 288,
+      "camera": {
+        "yaw": 0.55,
+        "pitch": 0.36,
+        "roll": 0,
+        "distance": 4.4,
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "glError": 0
+    },
+    "pixels": {
+      "visible": 50618,
+      "bright": 4494,
+      "width": 1438,
+      "height": 833
+    },
+    "source": {
+      "p": 2,
+      "q": 3,
+      "expected": 6
+    },
+    "study": {
+      "p": 4,
+      "q": 6,
+      "components": 2,
+      "linking": 24
+    },
+    "focus": {
+      "target": [
+        0.4,
+        0.2,
+        0
+      ],
+      "error": 0,
+      "changed": true,
+      "enabledHitError": 0,
+      "targetHitError": 0,
+      "disabledHitError": 0
+    },
+    "lineFallback": {
+      "reference": {
+        "hash": 2882880810,
+        "opaque": 41231
+      },
+      "volume": {
+        "hash": 3263282959,
+        "opaque": 10654
+      },
+      "lines": {
+        "hash": 2882880810,
+        "opaque": 41231
+      }
+    },
+    "fallback": {
+      "lost": true,
+      "active": false,
+      "pixels": {
+        "hash": 2882880810,
+        "opaque": 41231
+      }
+    },
+    "restored": {
+      "active": true,
+      "glError": 0
+    },
+    "mobile": {
+      "overflow": false,
+      "gpu": {
+        "active": true,
+        "enabled": true,
+        "ready": true,
+        "lost": false,
+        "error": "",
+        "hdr": true,
+        "samples": 4,
+        "width": 390,
+        "height": 622,
+        "frames": 10,
+        "submitMs": 67.25899887551302,
+        "drawCalls": 4,
+        "triangles": 92128,
+        "radius": 0.01973865980227619,
+        "centreLineSamples": 256,
+        "camera": {
+          "yaw": 0.1,
+          "pitch": 0.18,
+          "roll": 0,
+          "distance": 4.4,
+          "target": [
+            0,
+            0,
+            0
+          ]
+        },
+        "glError": 0
+      }
+    },
+    "errors": []
+  },
+  "delayedLegacyBoot": {
+    "tests": {
+      "passed": 1278,
+      "total": 1278,
+      "failed": []
+    },
+    "boot": {
+      "events": [
+        {
+          "name": "installLate25",
+          "legacyReady": false
+        },
+        {
+          "name": "installLate25",
+          "legacyReady": false
+        },
+        {
+          "name": "init21",
+          "legacyReady": false
+        },
+        {
+          "name": "installLate25",
+          "legacyReady": true
+        }
+      ],
+      "mode": "smith",
+      "obsolete": 0
+    },
+    "errors": []
+  },
+  "browser": {
+    "engine": "Chromium 151.0.7922.173",
+    "headless": true,
+    "hardwareBenchmark": false,
+    "timingScope": "CPU command preparation/submission including initial resource creation, not GPU timer or device FPS"
+  },
+  "screenshots": [
+    {
+      "file": "v6.6.0-topology-preview.png",
+      "width": 1440,
+      "height": 1000,
+      "p": 2,
+      "q": 3,
+      "sha256": "4b8264187fe63c86a9938291bc4007ea6b3c5f71c84149d732463dd9b3abca48"
+    },
+    {
+      "file": "v6.6.0-atelier-mobile.png",
+      "width": 390,
+      "height": 844,
+      "p": 2,
+      "q": 2,
+      "sha256": "b7585e819edbc021d9f2951b29183b1e416a7834e9e945f2feabb0db4f8f7c9c"
+    },
+    {
+      "file": "v6.6.0-atelier-paper.png",
+      "width": 1440,
+      "height": 1000,
+      "p": 2,
+      "q": 2,
+      "sha256": "7fff98814abae07b2f48b355492d95e57e7204e7c7d1bc5a618ed5e0dc64eab7"
+    }
+  ]
 }

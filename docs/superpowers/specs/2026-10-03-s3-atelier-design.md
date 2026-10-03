@@ -4,7 +4,8 @@ The user rejects the schematic new topology layer and asks for artistic
 refinement consistent with the original premium Obsidian Atelier. The goal
 is an interactive scientific sculpture: volume, material, light and spatial
 legibility, with discreet typography and controls. Use the existing main
-design system as the reference unless the user supplies a different version.
+design system as a foundation. The user explicitly delegates the final
+art direction, including creation of a new version, to the implementer.
 
 Implement a dependency-free WebGL2 presentation module inside index.html.
 Build closed tubes around the exact v6.6 phase-fibre centre lines using

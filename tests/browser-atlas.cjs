@@ -8,11 +8,20 @@ let browser;
  browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox']});
  const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];
  page.on('pageerror',e=>errors.push(String(e)));
+ if(process.env.ATLAS_DELAY_LEGACY_INIT==='1')await page.addInitScript(()=>{
+   const original=window.setTimeout;window.atlasBootOrder=[];
+   window.setTimeout=function(fn,delay,...args){const name=fn?.name;
+     if(name==='init21')delay+=2400;
+     if(name==='init21'||name==='installLate25'){const callback=fn;fn=function(){atlasBootOrder.push({name,legacyReady:!!window.__UPRS_V21_INIT__});return callback(...args)}}
+     return original(fn,delay,...args);
+   };
+ });
  await page.goto((process.env.ATLAS_URL||'http://127.0.0.1:8766')+'/index.html');
  // Existing installers intentionally run for 31 seconds; verify their final state.
  await page.waitForTimeout(32500);
  const tests=await page.evaluate(()=>{const r=runTests(false);return {passed:r.passed,total:r.total,failed:r.failed}});
- assert.equal(tests.failed.length,0,JSON.stringify(tests.failed));
+ const boot=await page.evaluate(()=>({events:window.atlasBootOrder||[],mode:state.mode,obsolete:[...state.scene.lines,...state.scene.points].filter(e=>['invariant-clifford21','invariant-hopf-link21','invariant-skyrmion21'].includes(e.meta?.kind)).length}));
+ assert.equal(tests.failed.length,0,JSON.stringify({failed:tests.failed,boot}));
  const version=await page.evaluate(()=>({title:document.title,version:__UPRS_APP__.version,html:document.documentElement.dataset.uprsVersion,stamp:document.getElementById('uprsVersionStamp580')?.textContent}));
  assert.equal(version.version,'6.6.0');assert.equal(version.html,'6.6.0');assert.match(version.title,/v6\.6\.0/);assert.match(version.stamp,/v6\.6\.0/);
  // Native winding inputs may change independently of the new controls.
@@ -56,7 +65,7 @@ let browser;
  await page.evaluate(()=>setMode('smith'));assert.equal(await page.locator('#topologyDock660').isVisible(),false);
  assert.equal(await page.evaluate(()=>state.scene.lines.filter(e=>e.meta.kind==='topo660-fibre').length),0);
  assert.deepEqual(errors,[]);
- const report={tests,version,cancelled,linking:result,scene:count,drag,pointerDrag,viewports,errors};
+ const report={tests,boot,version,cancelled,linking:result,scene:count,drag,pointerDrag,viewports,errors};
  if(process.env.ATLAS_REPORT)fs.writeFileSync(process.env.ATLAS_REPORT,JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify(report,null,2));await browser.close();
 })().catch(async e=>{console.error(e);process.exitCode=1;await browser?.close()});

@@ -21,6 +21,11 @@ test('nonplanar tube frames are finite and close without a material seam',()=>{
  const ring=17*8;for(let k=0;k<ring;k++)assert.equal(m.vertices[k],m.vertices[192*ring+k]);
  for(let i=0;i<m.vertices.length;i+=8){assert.ok(Math.abs(Math.hypot(...m.vertices.slice(i+3,i+6))-1)<1e-6)}
 });
+test('tube triangle winding agrees with the outward surface normal',()=>{
+ const m=core().tubeMesh(circle(),.017,12),v=m.vertices,ix=m.indices;
+ const p=i=>Array.from(v.slice(i*8,i*8+3)),sub=(a,b)=>a.map((x,j)=>x-b[j]),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ for(let i=0;i<ix.length;i+=6){const a=p(ix[i]),b=p(ix[i+1]),c=p(ix[i+2]),n=v.slice(ix[i]*8+3,ix[i]*8+6),face=cross(sub(b,a),sub(c,a));assert.ok(face.reduce((sum,x,j)=>sum+x*n[j],0)>0)}
+});
 test('open, zero-length and nonfinite tube inputs are rejected',()=>{
  const c=core();for(const p of [circle().slice(0,-1),[[0,0,0],[0,0,0],[1,0,0],[0,0,0]],[[0,0,0],[1,0,0],[NaN,1,0],[0,0,0]]])assert.notEqual(c.tubeMesh(p,.01,12).status,'ok');
  for(const r of [0,-.1,Infinity])assert.notEqual(c.tubeMesh(circle(),r,12).status,'ok');
@@ -32,6 +37,11 @@ test('GPU camera uses the exact native yaw pitch roll and zoom projection',()=>{
  let x=cy*p[0]+sy*p[2],z=-sy*p[0]+cy*p[2],y=cp*p[1]-sp*z;z=sp*p[1]+cp*z;const xx=cr*x-sr*y,yy=sr*x+cr*y,d=cam.distance-z,f=Math.min(w,h)*1.38;
  const q=c.projectPoint(p,cam,w,h);assert.ok(Math.abs(q[0]-(w/2+xx*f/d))<1e-9);assert.ok(Math.abs(q[1]-(h/2-yy*f/d))<1e-9);assert.ok(Math.abs(q[2]-d)<1e-9);
  }
+});
+test('focus camera translates the world before rotation and projection',()=>{
+ const c=core(),cam={yaw:.39,pitch:-.2,roll:.17,distance:3.8,target:[.4,.2,-.1]},p=[.5,.2,.1];
+ const shifted=p.map((v,i)=>v-cam.target[i]),expected=c.projectPoint(shifted,{...cam,target:[0,0,0]},1440,700),actual=c.projectPoint(p,cam,1440,700);
+ actual.forEach((v,i)=>assert.ok(Math.abs(v-expected[i])<1e-9));
 });
 test('presentation tube radius stays below the analytic inter-fibre clearance bound',()=>{
  const c=core(),scale=.4212,eta=Math.PI/4;for(const [p,q] of [[1,1],[2,2],[2,3],[4,6],[8,7],[8,8]]){
