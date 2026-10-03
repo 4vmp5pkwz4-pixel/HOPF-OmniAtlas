@@ -1,0 +1,67 @@
+// ATLAS_URL=http://127.0.0.1:8766 node tests/browser-atelier.cjs
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs');
+let browser;
+(async()=>{
+ browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox']});
+ const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
+ page.on('pageerror',e=>errors.push(String(e)));
+ await page.goto((process.env.ATLAS_URL||'http://127.0.0.1:8766')+'/index.html');
+ await page.waitForFunction(()=>globalThis.__UPRS660_ATELIER__?.setEnabled);
+ await page.evaluate(()=>state.rotate=false);
+ // Test the final app, including the native scheduler installed at seven seconds.
+ await page.waitForTimeout(32500);
+ assert.equal(await page.evaluate(()=>typeof __UPRS660_ATELIER__?.setEnabled),'function','Atelier provides a real volumetric renderer');
+ assert.equal(await page.locator('[data-study660]').count(),3,'the sculpture exposes three meaningful studies');
+ await page.evaluate(()=>{state.rotate=false;__UPRS660__.setPreset(2,3);__UPRS660__.setFocus(true);__UPRS660_ATELIER__.setEnabled(true);state.yaw=.55;state.pitch=.36;draw(performance.now())});
+ const gpu=await page.evaluate(()=>__UPRS660_ATELIER__.audit());
+ assert.equal(gpu.active,true,JSON.stringify(gpu));assert.equal(gpu.glError,0);assert.ok(gpu.triangles>10000);assert.ok(gpu.samples>=1);
+ const repeated=await page.evaluate(()=>{const before=__UPRS660_ATELIER__.audit().frames;draw(performance.now());draw(performance.now());return __UPRS660_ATELIER__.audit().frames-before});
+ assert.equal(repeated,0,'unchanged native redraws reuse the finished GPU image');
+ const pixels=await page.evaluate(()=>__UPRS660_ATELIER__.readback());
+ assert.ok(pixels.visible>5000,JSON.stringify(pixels));assert.ok(pixels.bright>100,JSON.stringify(pixels));
+ if(process.env.ATELIER_SCREENSHOT)await page.screenshot({path:process.env.ATELIER_SCREENSHOT});
+ const source=await page.evaluate(()=>{const r=__UPRS660__.snapshot();return {p:r.p,q:r.q,expected:r.expected}});
+ assert.deepEqual(source,{p:2,q:3,expected:6});
+ const focus=await page.evaluate(()=>{
+   const c=state.cameraFocus20;c.enabled=true;c.targetMode='anchor';c.anchor=[.4,.2,0];c.target=[...c.anchor];buildScene();draw(performance.now());
+   const cam=__UPRS660_ATELIER__.audit().camera,p=[.5,.2,.1],native=proj(p,state.renderYaw,state.renderPitch),gpu=__UPRS660_ATELIER__.core.projectPoint(p,cam,W,H);
+   const hitError=()=>{const point=state.scene.points.find(e=>e.meta.kind==='topo660-cursor'),hit=state.hitTargets.find(e=>e.type==='point'&&e.meta?.kind==='topo660-cursor'),xy=proj(point.p,state.renderYaw,state.renderPitch);return hit?Math.hypot(hit.x-xy[0],hit.y-xy[1]):Infinity};
+   const enabledHitError=hitError(),before=__UPRS660_ATELIER__.audit().frames;c.target=c.anchor=[.1,.4,.1];draw(performance.now());const changed=__UPRS660_ATELIER__.audit().frames>before,targetHitError=hitError();
+   c.enabled=false;draw(performance.now());return {target:cam.target,error:Math.hypot(native[0]-gpu[0],native[1]-gpu[1]),changed,enabledHitError,targetHitError,disabledHitError:hitError()};
+ });
+ assert.deepEqual(focus.target,[.4,.2,0]);assert.ok(focus.error<1e-8,JSON.stringify(focus));assert.equal(focus.changed,true,'moving the camera target invalidates the GPU image');
+ for(const key of ['enabledHitError','targetHitError','disabledHitError'])assert.ok(focus[key]<1e-8,JSON.stringify(focus));
+ const lineFallback=await page.evaluate(()=>{
+   globalThis.atelierNativePixels=()=>{const c=document.getElementById('view'),v=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let hash=2166136261,opaque=0;for(let i=0;i<v.length;i++){hash=Math.imul(hash^v[i],16777619);if(i%4===3&&v[i]>8)opaque++}return {hash:hash>>>0,opaque}};
+   __UPRS660_ATELIER__.setEnabled(false);buildScene();draw(performance.now());globalThis.atelierLineReference=atelierNativePixels();
+   __UPRS660_ATELIER__.setEnabled(true);const volume=atelierNativePixels();__UPRS660_ATELIER__.setEnabled(false);const lines=atelierNativePixels();
+   __UPRS660_ATELIER__.setEnabled(true);return {reference:atelierLineReference,volume,lines};
+ });
+ assert.ok(lineFallback.reference.opaque>5000);assert.notEqual(lineFallback.volume.hash,lineFallback.reference.hash,'Canvas yields owned fibres to the GPU');assert.deepEqual(lineFallback.lines,lineFallback.reference,'Lines restores actual Canvas fibres with rotation stopped');
+ const gl=await page.evaluate(()=>{const g=document.getElementById('atelierCanvas660').getContext('webgl2');globalThis.atelierTestLoss=g.getExtension('WEBGL_lose_context');atelierTestLoss.loseContext();return true});
+ assert.equal(gl,true);await page.waitForFunction(()=>__UPRS660_ATELIER__.audit().lost);
+ const fallback=await page.evaluate(()=>__UPRS660_ATELIER__.audit());assert.equal(fallback.active,false);
+ const lossPixels=await page.evaluate(()=>atelierNativePixels());assert.deepEqual(lossPixels,lineFallback.reference,'context loss immediately restores actual Canvas fibres');
+ await page.waitForTimeout(300);await page.evaluate(()=>atelierTestLoss.restoreContext());
+ await page.waitForFunction(()=>__UPRS660_ATELIER__.active(),{},{timeout:10000});
+ const restored=await page.evaluate(()=>__UPRS660_ATELIER__.audit());assert.equal(restored.glError,0);
+ await page.evaluate(()=>__UPRS660_ATELIER__.setEnabled(false));assert.equal(await page.evaluate(()=>__UPRS660_ATELIER__.active()),false);
+ await page.evaluate(()=>__UPRS660_ATELIER__.setEnabled(true));
+ await page.evaluate(()=>setMode('smith'));assert.equal(await page.evaluate(()=>__UPRS660_ATELIER__.active()),false);assert.equal(await page.locator('#atelierCaption660').isVisible(),false);
+ await page.evaluate(()=>__UPRS660__.setPreset(2,2));
+ await page.setViewportSize({width:390,height:844});await page.waitForTimeout(300);
+ await page.waitForFunction(()=>{const g=__UPRS660_ATELIER__.audit(),v=document.getElementById('viewport');return g.width===v.clientWidth&&g.height===v.clientHeight&&W===v.clientWidth&&H===v.clientHeight},{},{timeout:10000});
+ const mobile=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth,gpu:__UPRS660_ATELIER__.audit()}));assert.equal(mobile.overflow,false);assert.equal(mobile.gpu.active,true);
+ if(process.env.ATELIER_MOBILE_SCREENSHOT)await page.screenshot({path:process.env.ATELIER_MOBILE_SCREENSHOT});
+ await page.setViewportSize({width:1440,height:1000});await page.evaluate(()=>{document.body.classList.add('paper328');draw(performance.now())});
+ assert.equal(await page.evaluate(()=>getComputedStyle(document.getElementById('view')).opacity),'0','paper theme retains the gallery composition');
+ if(process.env.ATELIER_PAPER_SCREENSHOT)await page.screenshot({path:process.env.ATELIER_PAPER_SCREENSHOT});
+ await page.click('[data-study660="4,6"]');
+ const study=await page.evaluate(()=>{const a=__UPRS660__.analysis();return {p:a.p,q:a.q,components:a.components,linking:a.expected}});
+ assert.deepEqual(study,{p:4,q:6,components:2,linking:24});
+ assert.deepEqual(errors,[]);
+ const report={gpu,pixels,source,study,focus,lineFallback,fallback:{lost:fallback.lost,active:fallback.active,pixels:lossPixels},restored:{active:restored.active,glError:restored.glError},mobile,errors};
+ if(process.env.ATELIER_REPORT)fs.writeFileSync(process.env.ATELIER_REPORT,JSON.stringify(report,null,2)+'\n');
+ console.log(JSON.stringify(report,null,2));await browser.close();
+})().catch(async e=>{console.error(e);process.exitCode=1;await browser?.close()});

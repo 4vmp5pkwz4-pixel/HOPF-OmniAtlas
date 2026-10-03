@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="ru">
 <head><script id="uprs460CoreAuthority">(()=>{'use strict';
-const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const VERSION='6.6.0';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 const A=globalThis.__UPRS_APP__||(globalThis.__UPRS_APP__={});
+A.releaseVersion=VERSION;
 A.version=VERSION;
 A.release='quest-xr-startup-recovery';
 A.buildPolicy='immutable-v4.5-baseline+deterministic-v4.6.1-transforms';
@@ -38,7 +39,7 @@ A.claimVersion=()=>{
 <meta name="theme-color" content="#05070b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery</title>
+<title>UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links</title>
 <style>
 :root{--bg:#030507;--panel:rgba(10,14,21,.88);--panel2:rgba(16,21,31,.82);--gold:#d7b76e;--gold2:#fff0bd;--ice:#98e8ff;--violet:#c3adff;--green:#8ce9bd;--red:#ff9d9d;--text:#edf1f6;--muted:#96a2b5;--line:rgba(215,183,110,.24);--shadow:0 24px 80px rgba(0,0,0,.5)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 54% 18%,#141c2d 0,#070b12 36%,#020305 78%);color:var(--text);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}button,input,select{font:inherit}button{color:inherit}.app{height:100%;display:grid;grid-template-rows:auto 1fr;position:relative}.top{min-height:68px;display:flex;align-items:center;gap:12px;padding:9px 14px calc(9px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(3,5,8,.96),rgba(3,5,8,.78));backdrop-filter:blur(20px);z-index:20}.brand{display:flex;align-items:center;gap:10px;min-width:262px}.seal{width:40px;height:40px;border:1px solid rgba(255,240,189,.65);border-radius:50%;position:relative;box-shadow:0 0 26px rgba(215,183,110,.18),inset 0 0 18px rgba(152,232,255,.08)}.seal:before,.seal:after{content:"";position:absolute;border-radius:50%;border:1px solid}.seal:before{inset:7px;border-color:rgba(152,232,255,.72);transform:rotate(58deg)}.seal:after{inset:13px;border-color:rgba(195,173,255,.9)}.brand b{display:block;font-size:13px;letter-spacing:.2em;color:var(--gold2)}.brand small{display:block;margin-top:3px;color:var(--muted);font-size:9px;letter-spacing:.11em;text-transform:uppercase}.modes{display:flex;gap:6px;flex:1;overflow:auto;scrollbar-width:none}.modes::-webkit-scrollbar{display:none}.mode,.btn{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);padding:8px 11px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.18s}.mode:hover,.btn:hover{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.08)}.mode.on{color:#080a0d;background:linear-gradient(135deg,var(--gold2),var(--gold));border-color:transparent;box-shadow:0 8px 24px rgba(215,183,110,.18)}.top-actions{display:flex;gap:6px}.layout{min-height:0;display:grid;grid-template-columns:310px 1fr 330px;gap:11px;padding:11px}.panel{min-height:0;overflow:auto;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:var(--shadow);backdrop-filter:blur(20px)}.panel::-webkit-scrollbar{width:7px}.panel::-webkit-scrollbar-thumb{background:rgba(215,183,110,.2);border-radius:9px}.left,.right{padding:14px}.section{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.065)}.section:last-child{border-bottom:0}.head{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--gold);font-size:9px;letter-spacing:.17em;text-transform:uppercase;margin-bottom:9px}.badge{font-size:8px;letter-spacing:.09em;padding:3px 7px;border:1px solid;border-radius:999px}.tierA{color:var(--green);border-color:rgba(140,233,189,.35)}.tierB{color:var(--gold2);border-color:rgba(215,183,110,.42)}.tierC{color:var(--violet);border-color:rgba(195,173,255,.38)}.field{margin:8px 0}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10.5px;margin-bottom:5px}.field label span:last-child{color:var(--gold2)}input,select{width:100%;min-width:0;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.25);color:var(--text);padding:8px 9px;border-radius:9px;outline:none}input:focus,select:focus{border-color:rgba(152,232,255,.45);box-shadow:0 0 0 3px rgba(152,232,255,.05)}input[type=range]{padding:0;accent-color:var(--gold)}.two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.toggle{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:7px 0;color:var(--muted);font-size:10.5px}.switch{width:38px;height:22px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:#1a2230;position:relative;cursor:pointer}.switch:after{content:"";position:absolute;left:3px;top:2px;width:16px;height:16px;border-radius:50%;background:#748196;transition:.18s}.switch.on{border-color:rgba(215,183,110,.5);background:rgba(215,183,110,.23)}.switch.on:after{left:18px;background:var(--gold2)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.grid2 .btn{border-radius:10px;padding:8px 8px}.viewport{min-width:0;min-height:0;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:radial-gradient(circle at 50% 44%,rgba(22,30,44,.85),rgba(4,6,10,.98) 70%);box-shadow:var(--shadow)}#fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.72;transition:opacity .35s;pointer-events:none}body.ready #fallback{opacity:.06}#view,#xrCanvas,#camera{position:absolute;inset:0;width:100%;height:100%}#view{touch-action:none}#xrCanvas{display:none}#camera{display:none;object-fit:cover;filter:saturate(.7) contrast(1.1) brightness(.45)}.vignette{position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 110px rgba(0,0,0,.68)}.viewtop{position:absolute;left:14px;right:14px;top:13px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.titlecard,.statecard{padding:9px 11px;border:1px solid rgba(255,255,255,.09);border-radius:12px;background:rgba(4,7,11,.65);backdrop-filter:blur(12px)}.titlecard b{display:block;color:var(--gold2);font-size:11px;letter-spacing:.13em;text-transform:uppercase}.titlecard span{display:block;color:var(--muted);font-size:9.5px;margin-top:3px}.statecard{align-self:flex-start;color:var(--green);font-size:9px;letter-spacing:.08em;border-color:rgba(140,233,189,.25)}.metrics{position:absolute;left:12px;right:12px;bottom:12px;display:grid;grid-template-columns:repeat(6,minmax(80px,1fr));gap:6px;pointer-events:none}.metric{padding:8px 9px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:rgba(4,7,11,.68);backdrop-filter:blur(12px);min-width:0}.metric label{display:block;color:var(--muted);font-size:8px;letter-spacing:.09em;text-transform:uppercase}.metric b{display:block;margin-top:3px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric:nth-child(2n) b{color:var(--ice)}.metric:nth-child(3n) b{color:var(--gold2)}.card{border:1px solid rgba(255,255,255,.08);border-radius:13px;background:rgba(0,0,0,.15);padding:10px;margin:8px 0}.card h3{margin:0 0 7px;color:var(--gold2);font-size:10px;letter-spacing:.1em;text-transform:uppercase}.kv{display:grid;grid-template-columns:1fr auto;gap:6px 10px;font-size:10.5px}.kv div:nth-child(odd){color:var(--muted)}.kv div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;max-width:190px;overflow-wrap:anywhere}.formula{font:10px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#dce8f2;white-space:pre-wrap;overflow-wrap:anywhere}.note{color:var(--muted);font-size:10.5px;line-height:1.55}.note strong{color:var(--text)}details{border-top:1px solid rgba(255,255,255,.06);padding:7px 0}summary{cursor:pointer;color:var(--gold);font-size:10px}.search{margin-bottom:8px}.list{display:flex;flex-direction:column;gap:5px}.item{padding:7px 8px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(0,0,0,.12);cursor:pointer}.item:hover{border-color:rgba(215,183,110,.35)}.item b{font-size:10.5px}.item small{display:block;color:var(--muted);font-size:9px;margin-top:2px}.boot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 13px;border:1px solid rgba(215,183,110,.35);border-radius:999px;background:rgba(4,7,11,.82);color:var(--gold2);font-size:10px;letter-spacing:.1em;z-index:3;transition:.35s}body.ready .boot{opacity:0;pointer-events:none}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,18px);opacity:0;z-index:100;padding:10px 14px;max-width:88vw;border:1px solid rgba(215,183,110,.36);border-radius:12px;background:rgba(4,7,11,.95);box-shadow:var(--shadow);transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}.fatal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);padding:20px}.fatal.show{display:flex}.fatal>div{max-width:720px;border:1px solid rgba(255,157,157,.45);border-radius:16px;background:#130a0c;padding:18px}.fatal h2{color:var(--red);margin:0 0 8px}.fatal pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#ffd8d8;font-size:11px}.mobileTabs{display:none}
@@ -672,7 +673,7 @@ function rotate3(p,yaw,pitch){const cy=Math.cos(yaw),sy=Math.sin(yaw),cx=Math.co
 function proj(p,yaw,pitch){if(state.mode==='smith'){const a=state.roll||0,c=Math.cos(a),s=Math.sin(a),x=p[0]*c-p[1]*s,y=p[0]*s+p[1]*c;return [W/2+x*Math.min(W,H)*.36,H/2-y*Math.min(W,H)*.36,1]}const q=rotate3(p,yaw,pitch),d=state.distance-q[2],f=Math.min(W,H)*1.38;return [W/2+q[0]*f/d,H/2-q[1]*f/d,d]}
 function pointSegDistance(px,py,a,b){const vx=b[0]-a[0],vy=b[1]-a[1],wx=px-a[0],wy=py-a[1],vv=vx*vx+vy*vy||1,t=clamp((wx*vx+wy*vy)/vv,0,1),x=a[0]+t*vx,y=a[1]+t*vy;return {d:Math.hypot(px-x,py-y),t,x,y}}
 function sameEntity(a,b){return !!a&&!!b&&a.meta?.id===b.meta?.id}
-function hitCandidates(x,y,maxDist=18){const out=[];for(const h of state.hitTargets){let d;if(h.type==='point')d=Math.max(0,Math.hypot(x-h.x,y-h.y)-h.radius);else d=pointSegDistance(x,y,h.a,h.b).d;if(d<=maxDist)out.push({h,d,score:d-(h.priority||0)*.015})}out.sort((a,b)=>a.score-b.score||a.d-b.d);return out}
+function hitCandidates(x,y,maxDist=18){const out=[],referenceOnly=globalThis.__UPRS660_ATELIER__?.active()&&globalThis.__UPRS660__?.snapshot().view.focus;for(const h of state.hitTargets){if(referenceOnly&&!String(h.meta?.id||'').startsWith('topo660:'))continue;let d;if(h.type==='point')d=Math.max(0,Math.hypot(x-h.x,y-h.y)-h.radius);else d=pointSegDistance(x,y,h.a,h.b).d;if(d<=maxDist)out.push({h,d,score:d-(h.priority||0)*.015})}out.sort((a,b)=>a.score-b.score||a.d-b.d);return out}
 function hitTest(x,y,maxDist=18){const c=hitCandidates(x,y,maxDist);if(!c.length)return null;const best=c[0],ties=c.filter(v=>v.d<=best.d+.8&&(v.h.priority||0)>=(best.h.priority||0)-8);let chosen=best;if(ties.length>1){const indexed=ties.filter(v=>Number.isFinite(v.h.meta?.index));if(indexed.length)chosen=indexed.reduce((a,b)=>Math.abs((a.h.meta.index??state.index)-state.index)<=Math.abs((b.h.meta.index??state.index)-state.index)?a:b)}chosen.h.stackCount=ties.length;return chosen.h}
 function pickTarget(x,y,maxDist=22){const c=hitCandidates(x,y,maxDist);if(!c.length)return null;const best=c[0],ties=c.filter(v=>v.d<=best.d+1.15&&(v.h.priority||0)>=(best.h.priority||0)-10),key=`${Math.round(x/3)}:${Math.round(y/3)}:${ties.map(v=>v.h.meta?.id).slice(0,12).join('|')}`,now=performance.now();if(key===state.stackKey&&now-state.lastPickTime<1400)state.stackCycle=(state.stackCycle+1)%ties.length;else{state.stackKey=key;let bi=0,bd=Infinity;ties.forEach((v,i)=>{const ix=v.h.meta?.index;if(Number.isFinite(ix)&&Math.abs(ix-state.index)<bd){bd=Math.abs(ix-state.index);bi=i}});state.stackCycle=bi}state.lastPickTime=now;const h=ties[state.stackCycle].h;h.stackCount=ties.length;h.stackPosition=state.stackCycle+1;return h}
 function entityDescription(h){if(!h)return null;const m=h.meta||{},unit=UPRSO_MODELS[state.model].axisUnit;if(['sample','spectral-sample','multi-sample','fiber-anchor'].includes(m.kind)){const s=state.sweep[m.index];return {title:m.label||'Вычисленная точка',detail:s?`x=${fmt(s.x,6)} ${unit} · Γ=${ctext(s.gamma)}${h.stackCount>1?` · наложено ${h.stackCount}, повторный клик переключает`:''}`:''}}if(m.kind==='selected'){const s=selectedState();return {title:m.label||'Рабочая точка',detail:s?`${fmt(s.x,6)} ${unit} · Γ=${ctext(s.gamma)}`:''}}if(m.kind==='locus'||m.kind==='multi-locus'){const i=clamp(h.segment||0,0,state.sweep.length-1),s=state.sweep[i];return {title:m.label||'Локус',detail:s?`ближайшая точка ${i+1} · ${fmt(s.x,6)} ${unit}`:''}}if(m.kind.includes('fiber'))return {title:m.label||'Hopf-волокно',detail:`фаза α=${fmt((h.segment||0)/(h.segmentCount||1)*360,2)}°`};if(m.kind==='torus-knot'||m.kind==='knot-point')return {title:m.label||'Торический узел',detail:`p=${state.p}, q=${state.q}, t=${fmt(state.knotPhase,4)} rad`};if(m.kind==='bridge-node')return {title:m.label,detail:'Тяните узел, чтобы изменить геометрическое расположение; физический порт остаётся типизированным.'};if(m.kind==='bridge-edge')return {title:m.label,detail:'Клик открывает тип преобразования и его конститутивный закон.'};if(m.kind==='uncertainty')return {title:m.label,detail:`Γ=${ctext(m.gamma)}`};return {title:m.label||m.kind||'Геометрический объект',detail:m.value!==undefined?`значение ${m.value}`:'Интерактивный элемент схемы'}}
@@ -707,6 +708,7 @@ function draw(t=0){
  }
  packets.sort((a,b)=>b.depth-a.depth);ctx.lineCap='round';ctx.lineJoin='round';
  for(const p of packets){
+  if(globalThis.__UPRS660_ATELIER__?.owns(p.meta))continue;
   const hot=state.hoverTarget?.meta?.id===p.meta?.id||state.activeEntity?.meta?.id===p.meta?.id;
   ctx.beginPath();let started=false;
   for(const q of p.projected){if(!q){started=false;continue}if(!started){ctx.moveTo(q[0],q[1]);started=true}else ctx.lineTo(q[0],q[1])}
@@ -716,6 +718,7 @@ function draw(t=0){
  for(const p of points){
   const q=proj(p.p,yaw,pitch);if(!q||q[2]<=.05||!Number.isFinite(q[0])||!Number.isFinite(q[1]))continue;
   const priority=p.meta?.priority||80;state.hitTargets.push({type:'point',x:q[0],y:q[1],radius:Math.max(10,p.size+5),meta:p.meta,world:p.p,priority});
+  if(globalThis.__UPRS660_ATELIER__?.owns(p.meta))continue;
   const hot=state.hoverTarget?.meta?.id===p.meta?.id||state.activeEntity?.meta?.id===p.meta?.id;
   const major=hot||!!p.label||p.size>=5||priority>=130;
   if(major)special.push({p,q,hot});
@@ -1040,7 +1043,7 @@ function bindCanvasInteraction(){
  const pointers=state.activePointers;
  const local=e=>{const r=canvas.getBoundingClientRect();return {x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height,cx:e.clientX,cy:e.clientY}};
  const updateGesture=()=>{if(pointers.size===2&&!state.gesture)state.gesture=gestureSnapshot();if(pointers.size<2)state.gesture=null;updateTouchChannels(pointers)};
- canvas.addEventListener('pointerdown',e=>{e.preventDefault();const q=local(e),h=smartGestureTarget(q.x,q.y),meta=h?.meta||{};let role='rotate';if(safeCursorKind(meta.kind))role='cursor';else if(['torus-knot','knot-point','physical-hopfion25','knot-point25'].includes(meta.kind))role='phase-drag';else if(['fiber','selected-fiber','hopfion-fiber','physical-selected-fibre25','physical-hopf-fibre25'].includes(meta.kind))role='fiber-pending';else if(meta.kind==='bridge-node')role='destructive';else if(h)role='inspect';if(pointers.size)role='secondary';
+ canvas.addEventListener('pointerdown',e=>{e.preventDefault();const q=local(e),h=smartGestureTarget(q.x,q.y),meta=h?.meta||{};let role='rotate';if(safeCursorKind(meta.kind))role='cursor';else if(['torus-knot','knot-point','physical-hopfion25','knot-point25','topo660-fibre','topo660-cursor'].includes(meta.kind))role='phase-drag';else if(['fiber','selected-fiber','hopfion-fiber','physical-selected-fibre25','physical-hopf-fibre25'].includes(meta.kind))role='fiber-pending';else if(meta.kind==='bridge-node')role='destructive';else if(h)role='inspect';if(pointers.size)role='secondary';
   const rec={id:e.pointerId,x:q.x,y:q.y,cx:q.cx,cy:q.cy,startX:q.x,startY:q.y,lastX:q.x,lastY:q.y,moved:false,role,target:h,startTime:performance.now()};pointers.set(e.pointerId,rec);try{canvas.setPointerCapture(e.pointerId)}catch{}
   if(role==='cursor'&&h){selectTarget(h,q.x,q.y);state.activeEntity=h}else if(role==='phase-drag'&&h){selectTarget(h,q.x,q.y);state.activeEntity=h}else if(role==='inspect'&&h){inspectTarget14(h)}else if(role==='destructive'&&h&&!state.editLocked){selectTarget(h,q.x,q.y);state.activeEntity=h}
   canvas.classList.add('grabbing');updateGesture();
@@ -1881,7 +1884,7 @@ function correctedInvariant25(){if(!state.scene||['bridges','spatial'].includes(
  const R=.65,ring=[];for(let i=0;i<=220;i++){const a=TAU*i/220,z=c25(R*Math.cos(a),R*Math.sin(a));ring.push(state.anchor24?.clipPassive&&!passive25(z)?null:modeProjectZ25(z))}segmented25(ring,'rgba(255,157,157,.38)',1.05,{kind:'invariant-skyrmion25',label:'Skyrmion equatorial contour on physical z-plane',priority:14},1.6)}}}
 function scatteringMultiport25(){if(state.mode!=='multiport'||!state.touchstone2p?.length)return;removeKinds25(['invariant-eigplus21','invariant-eigminus21','invariant-det21']);const ep=[],em=[],det=[];for(const r of state.touchstone2p){const a=r.s11,b=r.s12,c=r.s21,d=r.s22,tr=c25(a.re+d.re,a.im+d.im),D=c25(a.re*d.re-a.im*d.im-(b.re*c.re-b.im*c.im),a.re*d.im+a.im*d.re-(b.re*c.im+b.im*c.re)),disc=c25(tr.re*tr.re-tr.im*tr.im-4*D.re,2*tr.re*tr.im-4*D.im),mag=Math.hypot(disc.re,disc.im),root=c25(Math.sqrt(Math.max(0,(mag+disc.re)/2)),Math.sign(disc.im||1)*Math.sqrt(Math.max(0,(mag-disc.re)/2)));ep.push(c25((tr.re+root.re)/2,(tr.im+root.im)/2));em.push(c25((tr.re-root.re)/2,(tr.im-root.im)/2));det.push(D)}L(ep.map(g=>[g.re*.78,g.im*.78,-.65]),'rgba(255,203,95,.82)',1.6,{kind:'invariant-eigplus25',channel:'even',label:'S eigenvalue λ+ · even plane',priority:50});L(em.map(g=>[g.re*.78,g.im*.78,.65]),'rgba(195,173,255,.82)',1.6,{kind:'invariant-eigminus25',channel:'odd',label:'S eigenvalue λ− · odd plane',priority:50});L(det.map(g=>[g.re*.78,g.im*.78,0]),'rgba(140,233,189,.62)',1.25,{kind:'invariant-det25',channel:'det',label:'det S · central invariant plane',priority:45})}
 function finalPost25(a,b){overlayCompatible25();correctedDiskInvariants25();correctedInvariant25();scatteringMultiport25();state.activeEntity=remapEntity25(a);state.secondaryEntity=remapEntity25(b);patchTopology25();syncUI25();window.__UPRS_SYNC_AUDIT__=validateScene25()}
-function installLate25(){if(window.__UPRS_V25_LATE__)return;if(!V25.entitySnapshot25){console.warn('v2.5 late layer: base helpers unavailable');return}window.__UPRS_V25_LATE__=true;const pre=buildScene;buildScene=function(){const a=entitySnapshot25(state.activeEntity),b=entitySnapshot25(state.secondaryEntity);resetIds25();pre();try{finalPost25(a,b)}catch(e){console.warn('v2.5 late synchronization',e)}};const preTests=runTests;runTests=function(show=true){const r=preTests(false),T=[...r.tests],q=validateScene25(),kinds=[...state.scene.lines,...state.scene.points].map(x=>x.meta?.kind),ok=(n,p,d='')=>T.push({name:n,pass:!!p,detail:d});ok('v2.5 final build order authoritative',window.__UPRS_V25_LATE__===true);ok('v2.5 corrected invariant S3 frame',!kinds.includes('invariant-clifford21')&&!kinds.includes('invariant-hopf-link21')&&!kinds.includes('invariant-skyrmion21'));ok('v2.5 final scene IDs unique after invariant layer',q.uniqueIds,q);ok('v2.5 no RF overlay in incompatible modes',q.rfCompatible,q);ok('v2.5 legacy Γ-based RF lift suppressed in S3/Hopf',!(['hopf','hopfion'].includes(state.mode)&&kinds.some(k=>String(k||'').startsWith('rf-'))));ok('v2.5 legacy Γ-based invariant lift removed in S3/Hopf/Multiport',!(['hopf','hopfion','multiport'].includes(state.mode)&&kinds.some(k=>['invariant-hyper21','invariant-geodesic21','invariant-fs21','invariant-u121','invariant-cross21','invariant-cross-point21','invariant-selector21'].includes(k))));const tm=targetMatrixAudit25();ok('v2.5 advanced sensor target families persist',tm.families&&tm.unique,tm);ok('v2.5 camera yaw sensor mapping unit round-trip',tm.yawRoundTrip,tm);ok('v2.5 responsive viewport/canvas resynchronizer',window.__UPRS_LAYOUT_RESYNC25__===true);const out={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=out;if(show)toast(out.failed.length?`Self-test: ${out.failed.length} failed`:`Self-test: ${out.passed}/${out.total}`);return out};fixPrecisionIcons25();installTargetMatrix25();installLayoutResync25();buildScene();updateUI();draw(performance.now());syncUI25();stamp25();setTimeout(()=>{fixPrecisionIcons25();installTargetMatrix25();stamp25();buildScene();scheduleSilentTests393()},3200)}
+function installLate25(){if(window.__UPRS_V25_LATE__)return;/* v2.1 hooks are deferred from DOMContentLoaded; absolute boot timers can overtake them. */if(!window.__UPRS_V21_INIT__){setTimeout(installLate25,100);return}if(!V25.entitySnapshot25){console.warn('v2.5 late layer: base helpers unavailable');return}window.__UPRS_V25_LATE__=true;const pre=buildScene;buildScene=function(){const a=entitySnapshot25(state.activeEntity),b=entitySnapshot25(state.secondaryEntity);resetIds25();pre();try{finalPost25(a,b)}catch(e){console.warn('v2.5 late synchronization',e)}};const preTests=runTests;runTests=function(show=true){const r=preTests(false),T=[...r.tests],q=validateScene25(),kinds=[...state.scene.lines,...state.scene.points].map(x=>x.meta?.kind),ok=(n,p,d='')=>T.push({name:n,pass:!!p,detail:d});ok('v2.5 final build order authoritative',window.__UPRS_V25_LATE__===true);ok('v2.5 corrected invariant S3 frame',!kinds.includes('invariant-clifford21')&&!kinds.includes('invariant-hopf-link21')&&!kinds.includes('invariant-skyrmion21'));ok('v2.5 final scene IDs unique after invariant layer',q.uniqueIds,q);ok('v2.5 no RF overlay in incompatible modes',q.rfCompatible,q);ok('v2.5 legacy Γ-based RF lift suppressed in S3/Hopf',!(['hopf','hopfion'].includes(state.mode)&&kinds.some(k=>String(k||'').startsWith('rf-'))));ok('v2.5 legacy Γ-based invariant lift removed in S3/Hopf/Multiport',!(['hopf','hopfion','multiport'].includes(state.mode)&&kinds.some(k=>['invariant-hyper21','invariant-geodesic21','invariant-fs21','invariant-u121','invariant-cross21','invariant-cross-point21','invariant-selector21'].includes(k))));const tm=targetMatrixAudit25();ok('v2.5 advanced sensor target families persist',tm.families&&tm.unique,tm);ok('v2.5 camera yaw sensor mapping unit round-trip',tm.yawRoundTrip,tm);ok('v2.5 responsive viewport/canvas resynchronizer',window.__UPRS_LAYOUT_RESYNC25__===true);const out={passed:T.filter(x=>x.pass).length,total:T.length,failed:T.filter(x=>!x.pass),tests:T};window.__UPRS_SELF_TEST__=out;if(show)toast(out.failed.length?`Self-test: ${out.failed.length} failed`:`Self-test: ${out.passed}/${out.total}`);return out};fixPrecisionIcons25();installTargetMatrix25();installLayoutResync25();buildScene();updateUI();draw(performance.now());syncUI25();stamp25();setTimeout(()=>{fixPrecisionIcons25();installTargetMatrix25();stamp25();buildScene();scheduleSilentTests393()},3200)}
 
 const ADV_TARGETS25={camera25:[['camera20.yaw','Camera focus · yaw'],['camera20.pitch','Camera focus · pitch'],['camera20.roll','Camera focus · roll'],['camera20.radius','Camera focus · orbit radius'],['camera20.path','Camera focus · path position']],selector25:[['selector20.Rcar','S³ selector · Rcar'],['selector20.T','S³ selector · T'],['selector20.epsilon','S³ selector · ε'],['selector20.q','S³ selector · q'],['selector20.screenR','S³ selector · screen R'],['selector20.E','S³ selector · E']],invariant25:[['invariant21.density','Invariant orbits · density'],['invariant21.scale','Invariant orbits · scale'],['invariant21.phase','Invariant orbits · phase'],['invariant21.centerIndex','Invariant orbits · centre index']]};
 function advancedFamilyLabels25(){const ru={camera25:'Камера / фокус',selector25:'S³ Selector',invariant25:'Инварианты / орбиты'},de={camera25:'Kamera / Fokus',selector25:'S³ Selector',invariant25:'Invarianten / Orbits'},en={camera25:'Camera / focus',selector25:'S³ Selector',invariant25:'Invariants / orbits'};return state.lang==='de'?de:state.lang==='en'?en:ru}
@@ -1901,7 +1904,7 @@ setTimeout(installLate25,3400);setTimeout(()=>{fixPrecisionIcons25();stamp25()},
 <script>
 (()=>{
 'use strict';
-function installRenderScheduler25(){if(window.__UPRS_RENDER_SCHEDULER25__)return;window.__UPRS_RENDER_SCHEDULER25__=true;window.__UPRS_ANNOTATE_FRAME__=()=>{};let revision=0,lastSig='',lastT=0,frames=0,skipped=0;const preBuild=buildScene;buildScene=function(){revision++;return preBuild()};const preDraw=draw;draw=function(t=performance.now()){const c=state.cameraFocus20,dynamic=!!(state.rotate&&state.mode!=='smith')||!!state.motionActive||!!c?.enabled||!!state.drag||!!state.activePointers?.size,hover=state.hoverTarget?.meta?.id||'',active=state.activeEntity?.meta?.id||'',sig=[revision,state.mode,state.yaw.toFixed(5),state.pitch.toFixed(5),(state.roll||0).toFixed(5),state.distance.toFixed(5),hover,active,W,H,state.annotationLevel,state.annotationDensity,state.annotationAxes,state.annotationPhase,state.annotationCallout,state.annotationGridLabels,state.lang,document.body.classList.contains('light'),document.body.classList.contains('focusMode')].join('|');if(sig===lastSig){if(!dynamic){skipped++;return}const segN=state.scene?.lines?.reduce((n,l)=>n+Math.max(0,(l.pts?.length||0)-1),0)||0,mobile=matchMedia('(max-width:1100px)').matches,minFrame=mobile?(segN>14000?66:segN>9000?45:33):33;if(t-lastT<minFrame){skipped++;return}}lastSig=sig;lastT=t;frames++;const r=preDraw(t);window.__UPRS_RENDER_STATS__={frames,skipped,lastT,dynamic,revision};return r};buildScene();draw(performance.now())}
+function installRenderScheduler25(){if(window.__UPRS_RENDER_SCHEDULER25__)return;window.__UPRS_RENDER_SCHEDULER25__=true;window.__UPRS_ANNOTATE_FRAME__=()=>{};let revision=0,lastSig='',lastT=0,frames=0,skipped=0;const preBuild=buildScene;buildScene=function(){revision++;return preBuild()};const preDraw=draw;draw=function(t=performance.now()){const c=state.cameraFocus20,dynamic=!!(state.rotate&&state.mode!=='smith')||!!state.motionActive||!!c?.enabled||!!state.drag||!!state.activePointers?.size,hover=state.hoverTarget?.meta?.id||'',active=state.activeEntity?.meta?.id||'',sig=[revision,state.mode,state.yaw.toFixed(5),state.pitch.toFixed(5),(state.roll||0).toFixed(5),state.distance.toFixed(5),hover,active,W,H,state.annotationLevel,state.annotationDensity,state.annotationAxes,state.annotationPhase,state.annotationCallout,state.annotationGridLabels,state.lang,!!c?.enabled,...(c?.enabled?(c.target||[0,0,0]):[0,0,0]),globalThis.__UPRS660_ATELIER__?.active(),document.body.classList.contains('light'),document.body.classList.contains('focusMode')].join('|');if(sig===lastSig){if(!dynamic){skipped++;return}const segN=state.scene?.lines?.reduce((n,l)=>n+Math.max(0,(l.pts?.length||0)-1),0)||0,mobile=matchMedia('(max-width:1100px)').matches,minFrame=mobile?(segN>14000?66:segN>9000?45:33):33;if(t-lastT<minFrame){skipped++;return}}lastSig=sig;lastT=t;frames++;const r=preDraw(t);window.__UPRS_RENDER_STATS__={frames,skipped,lastT,dynamic,revision};return r};buildScene();draw(performance.now())}
 setTimeout(installRenderScheduler25,7000);
 })();
 </script>
@@ -7041,7 +7044,7 @@ for(const ms of[2600,4800,8000,13000])setTimeout(()=>{registerModel380();registe
 (()=>{
 'use strict';
 const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
 const ASML_ID='asml_euv_lpp';
 const CLAUDE_IDS=['lorentz_dielectric','cole_cole','havriliak_negami','skin_effect_line','superconductor_surface','ferro_kittel','fabry_perot','quantum_rtd','qnm_ringdown','magnetoplasma_cyclotron','piezo_bvd','thermal_semiinfinite'];
@@ -7956,7 +7959,7 @@ function ensureTestChain398(){try{
 }catch(_){}}
 ensureTestChain398();
 /* ---------- install ---------- */
-const TITLE398='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const TITLE398='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 function claimTitle398(){try{
  const te=document.querySelector('title');
  if(te&&!te.dataset.uprs398){const nt=document.createElement('title');nt.dataset.uprs398='1';nt.dataset.uprs370='1';nt.textContent=TITLE398;te.remove();document.head.appendChild(nt);
@@ -8376,7 +8379,7 @@ body.uprs400 #obsFab398,body.uprs400 #obsBtn398{display:none!important}
 (()=>{
 'use strict';
 const VERSION='4.6.1';
-const TITLE='UPRS Möbius–Hopf OmniAtlas v4.6.1 · Quest-safe WebXR Recovery';
+const TITLE='UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links';
 const BRAND='UNIFIED S³ · QUEST-SAFE WEBXR · IMMERSIVE LAB · v4.6.1';
 const $=id=>document.getElementById(id);
 const obs=()=>$('obsPanel398');
@@ -10088,7 +10091,7 @@ function checks(){
   const s=annotateModels(),stamp1=A.sceneStamp({points:[{p:[0,0,0]}],lines:[]}),stamp2=A.sceneStamp({points:[{p:[1,0,0]}],lines:[]});
   const p=globalThis.__UPRS450__?.startupPolicy;
   return [
-    {name:'v4.6.1 single version authority',pass:A.version===V&&document.title.includes('v'+V)&&document.documentElement.dataset.uprsVersion===V,detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
+    {name:'v4.6.1 single version authority',pass:A.version===(A.releaseVersion||V)&&document.title.includes('v'+(A.releaseVersion||V))&&document.documentElement.dataset.uprsVersion===(A.releaseVersion||V),detail:document.title+' · data='+document.documentElement.dataset.uprsVersion},
     {name:'v4.6.1 Quest-safe XR entry',pass:A.xrOwner==='461'&&typeof globalThis.__UPRS461__?.enter==='function'&&globalThis.__UPRS450__?.enter===globalThis.__UPRS461__?.enter},
     {name:'v4.6.1 v4.4 retained as fallback API',pass:typeof globalThis.__UPRS440__?.enter==='function'},
     {name:'v4.6.1 scene signature detects geometry change',pass:stamp1!==stamp2},
@@ -10154,7 +10157,7 @@ function sessionInit(mode,profile){const optional=['local-floor'];if(profile==='
 function stopWatchdog(){if(X.watchdog){clearInterval(X.watchdog);X.watchdog=0}}
 function disposeGL(){const gl=X.gl;try{for(const b of Object.values(X.buffers||{}))if(b)gl?.deleteBuffer?.(b);if(X.program)gl?.deleteProgram?.(X.program);gl?.getExtension?.('WEBGL_lose_context')?.loseContext?.()}catch(_){}try{X.canvas?.remove()}catch(_){}X.gl=null;X.canvas=null;X.layer=null;X.program=null;X.loc=null;X.buffers={}}
 function clearRuntime(reason='idle'){stopWatchdog();disposeGL();X.session=null;X.ref=null;X.starting=false;X.ready=false;X.firstFrame=false;X.frameErrors=0;X.sceneKey='';X.grab=null;setStage(reason);try{state.xrSession=null}catch(_){}syncButtons()}
-async function endSession(session=X.session,reason='ended'){if(!session){clearRuntime(reason);return}rec('session-end-request',{reason});try{await timeout(session.end(),2200,'session.end timeout')}catch(e){rec('session-end-error',{error:errorText(e)})}if(X.session===session)clearRuntime(reason)}
+async function endSession(session=X.session,reason='ended'){if(!session){X.requestToken++;clearRuntime(reason);return}if(X.session===session)X.requestToken++;rec('session-end-request',{reason});try{await timeout(session.end(),2200,'session.end timeout')}catch(e){rec('session-end-error',{error:errorText(e)})}if(X.session===session)clearRuntime(reason)}
 function startWatchdog(session){stopWatchdog();X.watchdog=setInterval(()=>{if(X.session!==session||!X.ready||!X.lastFrameAt)return;const age=performance.now()-X.lastFrameAt;if(age>6500){const msg='No XR frames for '+Math.round(age)+' ms';console.error('UPRS461 XR frame watchdog',age);rec('watchdog',{age:Math.round(age)});X.error=msg;toastXR('XR stopped: no frames from headset');endSession(session,'frame-timeout')}},1800)}
 const VS='attribute vec3 aP;attribute vec4 aC;uniform mat4 uP;uniform mat4 uMV;uniform float uSize;uniform float uPoint;varying vec4 vC;void main(){vec4 p=uMV*vec4(aP,1.);gl_Position=uP*p;gl_PointSize=uSize/max(.2,gl_Position.w);vC=aC;}';
 const FS='precision mediump float;uniform float uPoint;varying vec4 vC;void main(){vec4 c=vC;if(uPoint>.5){vec2 d=gl_PointCoord-vec2(.5);float r=length(d);if(r>.5)discard;c.a*=smoothstep(.5,.3,r);}if(c.a<.01)discard;gl_FragColor=c;}';
@@ -10168,7 +10171,7 @@ function pick(frame,src){const c=core();if(!c||!X.pointData?.length)return;const
 function clearXR(gl,layer){gl.bindFramebuffer(gl.FRAMEBUFFER,layer.framebuffer);gl.clearColor(X.mode==='immersive-ar'?0:.008,X.mode==='immersive-ar'?0:.012,X.mode==='immersive-ar'?0:.024,X.mode==='immersive-ar'?0:1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.flush();X.lastFrameAt=performance.now()}
 function frame(t,xrFrame){const session=X.session;if(!session)return;try{session.requestAnimationFrame(frame);const gl=X.gl,layer=X.layer;if(!gl||!layer)return;clearXR(gl,layer);if(!X.ready||!X.ref)return;const pose=xrFrame.getViewerPose(X.ref),c=core();if(!pose||!c)return;uploadScene(false);updateGrab(xrFrame);c.composeTRS(X.worldMat,X.world.pos,X.world.quat,X.world.scale);gl.useProgram(X.program);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.enableVertexAttribArray(X.loc.aP);gl.enableVertexAttribArray(X.loc.aC);for(const view of pose.views){const vp=layer.getViewport(view);gl.viewport(vp.x,vp.y,vp.width,vp.height);c.m4Mul(X.mv,view.transform.inverse.matrix,X.worldMat);drawSet(gl,X.loc,view.projectionMatrix,X.mv,X.buffers.lp,X.buffers.lc,X.counts.line,gl.LINES,1);drawSet(gl,X.loc,view.projectionMatrix,X.mv,X.buffers.pp,X.buffers.pc,X.counts.point,gl.POINTS,56)}X.frameErrors=0}catch(e){X.frameErrors++;X.error=errorText(e);rec('frame-error',{count:X.frameErrors,error:X.error});console.error('UPRS461 frame',e);if(X.frameErrors===1)toastXR('XR render issue (session kept alive): '+X.error);/* Do not end the session on render exceptions: the next frame is already scheduled at the top of try and clearXR keeps feeding the compositor, so transient warm-up errors self-heal instead of bouncing the user out of VR. A real frame stall is still caught by the watchdog. */}}
 function beginBootstrapLoop(session,gl,layer){let resolved=false,resolveFirst,rejectFirst;const first=new Promise((res,rej)=>{resolveFirst=res;rejectFirst=rej});const boot=(t,xrFrame)=>{if(X.session!==session)return;try{clearXR(gl,layer);if(!resolved){resolved=true;X.firstFrame=true;rec('first-frame');resolveFirst()}if(X.ready){session.requestAnimationFrame(frame);return}session.requestAnimationFrame(boot)}catch(e){if(!resolved){resolved=true;rejectFirst(e)}else{X.error=errorText(e);rec('bootstrap-frame-error',{error:X.error});toastXR('XR warm-up issue (session kept alive): '+X.error);try{X.ready?session.requestAnimationFrame(frame):session.requestAnimationFrame(boot)}catch(_){}}}};session.requestAnimationFrame(boot);return first}
-async function requestImmersive(mode,init,token){let timedOut=false;const raw=navigator.xr.requestSession(mode,init);raw.then(s=>{if(timedOut||token!==X.requestToken){rec('late-session-cleanup',{mode});try{s.end()}catch(_){}}},()=>{});try{return await timeout(raw,12000,'requestSession timeout')}catch(e){timedOut=true;throw e}}
+async function requestImmersive(mode,init,token){const raw=navigator.xr.requestSession(mode,init);const reminder=setTimeout(()=>{if(token===X.requestToken&&X.starting&&!X.session){setStage('waiting-for-headset-permission');toastXR('Confirm the XR request inside the headset')}},8000);try{const session=await raw;if(token!==X.requestToken){rec('late-session-cleanup',{mode});try{await session.end()}catch(_){}throw Object.assign(new Error('XR request superseded'),{name:'AbortError'})}return session}finally{clearTimeout(reminder)}}
 async function start(mode='immersive-vr',profile='safe'){
  if(X.session){await endSession(X.session,'user-exit');return false}if(X.starting)return false;if(!navigator.xr){X.error='WebXR API unavailable';setStage('unavailable',X.error);toastXR('WebXR API is unavailable in this browser');return false}if(!isSecureContext){X.error='HTTPS required';setStage('blocked',X.error);toastXR('WebXR requires direct HTTPS opening');return false}if(!policyAllowed()){X.error='xr-spatial-tracking policy blocked';setStage('blocked',X.error);toastXR('WebXR is blocked by xr-spatial-tracking policy');return false}
  X.starting=true;X.mode=mode;X.profile=profile;X.ready=false;X.firstFrame=false;X.error='';const token=++X.requestToken;setStage('request-session');syncButtons();let session=null;
@@ -10178,23 +10181,23 @@ async function start(mode='immersive-vr',profile='safe'){
   session=await requestImmersive(mode,init,token);if(token!==X.requestToken){try{await session.end()}catch(_){}return false}X.session=session;try{state.xrSession=session}catch(_){}X.support.features=Array.from(session.enabledFeatures||[]);setStage('session-created');
   session.addEventListener('end',()=>{rec('session-ended');if(X.session===session)clearRuntime('ended')},{once:true});session.addEventListener('visibilitychange',()=>rec('visibility',{value:session.visibilityState}));
   const canvas=Object.assign(document.createElement('canvas'),{id:'xr461Canvas',width:2,height:2});canvas.style.cssText='position:fixed;width:2px;height:2px;opacity:0;pointer-events:none';document.body.appendChild(canvas);X.canvas=canvas;
-  const attrs={xrCompatible:true,alpha:mode==='immersive-ar',antialias:false,depth:true,stencil:false,preserveDrawingBuffer:false,powerPreference:'high-performance'};const gl=canvas.getContext('webgl',attrs)||canvas.getContext('webgl2',attrs);if(!gl)throw Error('WebGL unavailable');X.gl=gl;canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();X.error='WebGL context lost';rec('context-lost');toastXR('XR ended: WebGL context lost');endSession(session,'context-lost')},{once:true});if(typeof gl.makeXRCompatible==='function')await timeout(gl.makeXRCompatible(),6000,'makeXRCompatible timeout');
+  const attrs={xrCompatible:true,alpha:mode==='immersive-ar',antialias:false,depth:true,stencil:false,preserveDrawingBuffer:false,powerPreference:'high-performance'};const gl=canvas.getContext('webgl',attrs)||canvas.getContext('webgl2',attrs);if(!gl)throw Error('WebGL unavailable');X.gl=gl;canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();if(X.session!==session)return;X.error='WebGL context lost';rec('context-lost');toastXR('XR ended: WebGL context lost');endSession(session,'context-lost')},{once:true});if(typeof gl.makeXRCompatible==='function')await timeout(gl.makeXRCompatible(),6000,'makeXRCompatible timeout');if(token!==X.requestToken||X.session!==session)return false;
   const scale=quest()?.70:.88;const layer=new XRWebGLLayer(session,gl,{alpha:mode==='immersive-ar',antialias:false,framebufferScaleFactor:scale});try{layer.fixedFoveation=.5}catch(_){}session.updateRenderState({baseLayer:layer,depthNear:.05,depthFar:80});X.layer=layer;rec('layer',{scale,webgl:gl instanceof WebGL2RenderingContext?'webgl2':'webgl'});setStage('first-frame');
-  const first=beginBootstrapLoop(session,gl,layer);await timeout(first,8000,'first XR frame timeout');
-  setStage('reference-space');let ref=null,last=null;for(const type of ['local-floor','local','viewer']){try{ref=await timeout(session.requestReferenceSpace(type),3500,type+' reference-space timeout');if(ref){rec('reference-space',{type});break}}catch(e){last=e;rec('reference-space-error',{type,error:errorText(e)})}}if(!ref)throw last||Error('No reference space');X.ref=ref;
+  const first=beginBootstrapLoop(session,gl,layer);await timeout(first,8000,'first XR frame timeout');if(token!==X.requestToken||X.session!==session)return false;
+  setStage('reference-space');let ref=null,last=null;for(const type of ['local-floor','local','viewer']){try{ref=await timeout(session.requestReferenceSpace(type),3500,type+' reference-space timeout');if(token!==X.requestToken||X.session!==session)return false;if(ref){rec('reference-space',{type});break}}catch(e){if(token!==X.requestToken||X.session!==session)return false;last=e;rec('reference-space-error',{type,error:errorText(e)})}}if(!ref)throw last||Error('No reference space');X.ref=ref;
   setStage('resources');X.program=program(gl);X.loc={aP:gl.getAttribLocation(X.program,'aP'),aC:gl.getAttribLocation(X.program,'aC'),uP:gl.getUniformLocation(X.program,'uP'),uMV:gl.getUniformLocation(X.program,'uMV'),uSize:gl.getUniformLocation(X.program,'uSize'),uPoint:gl.getUniformLocation(X.program,'uPoint')};for(const k of ['lp','lc','pp','pc'])X.buffers[k]=gl.createBuffer();uploadScene(true);
   session.addEventListener('select',e=>pick(e.frame,e.inputSource));session.addEventListener('squeezestart',e=>{const p=controllerPose(e.frame,e.inputSource);if(p)X.grab={src:e.inputSource,start:p,world:[...X.world.pos]}});session.addEventListener('squeezeend',()=>{X.grab=null});
   X.starting=false;X.ready=true;X.frameErrors=0;setStage('running');startWatchdog(session);toastXR((mode==='immersive-ar'?'MR':'VR')+' started');return true
- }catch(e){X.error=errorText(e);rec('start-error',{stage:X.stage,error:X.error});console.error('UPRS461 start',e);if(session){await endSession(session,'failed');X.starting=false;setStage('failed',X.error)}else{X.starting=false;setStage('failed',X.error)}syncButtons();toastXR('XR start failed: '+X.error);return false}
+ }catch(e){if(token!==X.requestToken)return false;X.error=errorText(e);rec('start-error',{stage:X.stage,error:X.error});console.error('UPRS461 start',e);if(session){const ending=endSession(session,'failed'),failureToken=X.requestToken;await ending;if(X.requestToken!==failureToken)return false;X.starting=false;setStage('failed',X.error)}else{X.starting=false;setStage('failed',X.error)}syncButtons();toastXR('XR start failed: '+X.error);return false}
 }
 let API461=null;
 /* X.world is the transform this renderer draws state.scene through. Anything
    that maps a controller pose onto scene coordinates has to undo it - pick()
    below already does - so it is reported read-only rather than left private. */
 function diagnostics(){return {version:VERSION,active:!!X.session,starting:X.starting,ready:X.ready,firstFrame:X.firstFrame,stage:X.stage,error:X.error,mode:X.mode,profile:X.profile,features:[...X.support.features],support:{...X.support},secure:isSecureContext,focused:document.hasFocus(),visibility:document.visibilityState,policyAllowed:policyAllowed(),userAgent:navigator.userAgent,frameErrors:X.frameErrors,lastFrameAge:X.lastFrameAt?Math.round(performance.now()-X.lastFrameAt):null,world:{pos:[...X.world.pos],quat:[...X.world.quat],scale:X.world.scale},requestLog:[...X.requestLog],events:[...X.events]}}
-function bindAuthority(){if(!API461)return;A.xrOwner='461';A.version=VERSION;globalThis.__UPRS450__=globalThis.__UPRS450__||old450;Object.assign(globalThis.__UPRS450__,{enter:API461.enter,enterVR:API461.enterVR,enterAR:API461.enterAR,enterAREnhanced:API461.enterAREnhanced,enterARDepth:API461.enterARDepth,exit:API461.exit,audit:API461.audit});globalThis.enterXR=API461.enter;window.enterXR=API461.enter;const btn=document.getElementById('xrBtn');if(btn){btn.onclick=e=>{e.preventDefault();API461.enterVR()};btn.textContent='🥽 VR'}syncButtons()}
+function bindAuthority(){if(!API461)return;A.xrOwner='461';A.version=A.releaseVersion||VERSION;globalThis.__UPRS450__=globalThis.__UPRS450__||old450;Object.assign(globalThis.__UPRS450__,{enter:API461.enter,enterVR:API461.enterVR,enterAR:API461.enterAR,enterAREnhanced:API461.enterAREnhanced,enterARDepth:API461.enterARDepth,exit:API461.exit,audit:API461.audit});globalThis.enterXR=API461.enter;window.enterXR=API461.enter;const btn=document.getElementById('xrBtn');if(btn){btn.onclick=e=>{e.preventDefault();API461.enterVR()};btn.textContent='🥽 VR'}syncButtons()}
 function captureXRClick(e){const el=e.target instanceof Element?e.target.closest('#xrBtn,#xrMRBtn461,[data-command="xr"]'):null;if(!el)return;e.preventDefault();e.stopImmediatePropagation();if(el.id==='xrMRBtn461')API461?.enterAR();else API461?.enterVR()}
-function install(){A.version=VERSION;A.xrOwner='461';A.xrRecovery='requestSession-first+continuous-bootstrap+watchdog+capture-authority';A.claimVersion?.();const api={version:VERSION,enter:()=>start('immersive-vr','safe'),enterVR:()=>start('immersive-vr','safe'),enterAR:()=>start('immersive-ar','safe'),enterAREnhanced:()=>start('immersive-ar','enhanced'),enterARDepth:()=>start('immersive-ar','depth'),exit:()=>endSession(X.session,'user-exit'),audit:diagnostics,copyDiagnostics:async()=>{const s=JSON.stringify(diagnostics(),null,2);try{await navigator.clipboard.writeText(s)}catch(_){}return s}};API461=api;globalThis.__UPRS461__=api;old450.legacyEnter=oldEnter;old450.legacyExit=oldExit;old450.legacyAudit=oldAudit;const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('xrMRBtn461')){const b=document.createElement('button');b.id='xrMRBtn461';b.className='btn';b.textContent='◉ MR';acts.appendChild(b);const s=document.createElement('span');s.id='xrStatus461';s.style.cssText='font:600 10px/1.2 system-ui;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.72';acts.appendChild(s)}if(!document.documentElement.dataset.uprs461Capture){document.documentElement.dataset.uprs461Capture='1';document.addEventListener('click',captureXRClick,true)}bindAuthority();for(const ms of [260,700,1600,5200,12500,19000,24500,27000,33000])setTimeout(bindAuthority,ms);probe();try{navigator.xr?.addEventListener?.('devicechange',probe)}catch(_){}addEventListener('pagehide',()=>{if(X.session)try{X.session.end()}catch(_){}},{once:true});syncButtons()}
+function install(){A.version=A.releaseVersion||VERSION;A.xrOwner='461';A.xrRecovery='requestSession-first+continuous-bootstrap+watchdog+capture-authority';A.claimVersion?.();const api={version:VERSION,enter:()=>start('immersive-vr','safe'),enterVR:()=>start('immersive-vr','safe'),enterAR:()=>start('immersive-ar','safe'),enterAREnhanced:()=>start('immersive-ar','enhanced'),enterARDepth:()=>start('immersive-ar','depth'),exit:()=>endSession(X.session,'user-exit'),audit:diagnostics,copyDiagnostics:async()=>{const s=JSON.stringify(diagnostics(),null,2);try{await navigator.clipboard.writeText(s)}catch(_){}return s}};API461=api;globalThis.__UPRS461__=api;old450.legacyEnter=oldEnter;old450.legacyExit=oldExit;old450.legacyAudit=oldAudit;const acts=document.querySelector('.top-actions');if(acts&&!document.getElementById('xrMRBtn461')){const b=document.createElement('button');b.id='xrMRBtn461';b.className='btn';b.textContent='◉ MR';acts.appendChild(b);const s=document.createElement('span');s.id='xrStatus461';s.style.cssText='font:600 10px/1.2 system-ui;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.72';acts.appendChild(s)}if(!document.documentElement.dataset.uprs461Capture){document.documentElement.dataset.uprs461Capture='1';document.addEventListener('click',captureXRClick,true)}bindAuthority();for(const ms of [260,700,1600,5200,12500,19000,24500,27000,33000])setTimeout(bindAuthority,ms);probe();try{navigator.xr?.addEventListener?.('devicechange',probe)}catch(_){}addEventListener('pagehide',()=>{if(X.session)try{X.session.end()}catch(_){}},{once:true});syncButtons()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();</script>
 <script id="uprs460HandsPersistence">(()=>{
@@ -13584,7 +13587,7 @@ html,body{max-width:100%;overflow-x:hidden}
 const V580='5.8.0';
 const MODULES580=['__UPRS398__','__UPRS440__','__UPRS450__','__UPRS460__','__UPRS461__',
  '__UPRS470__','__UPRS490__','__UPRS530__','__UPRS540__','__UPRS550__','__UPRS560__',
- '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__','__UPRS640__','__UPRS650__'];
+ '__UPRS570__','__UPRS580__','__UPRS590__','__UPRS600__','__UPRS610__','__UPRS620__','__UPRS630__','__UPRS640__','__UPRS650__','__UPRS660__'];
 function cmpSemver580(a,b){const pa=String(a).split('.').map(Number),pb=String(b).split('.').map(Number);
  for(let i=0;i<3;i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x-y}return 0}
 function highestVersion580(){let best='0.0.0';
@@ -16537,4 +16540,498 @@ globalThis.__UPRS650__={version:V650,analyze:analyze650,checks:checks650,refresh
    fold:(G.result.continuation.branches||[]).map(b=>b.fold).filter(v=>v!=null),
    verdict:G.result.causality.verdict||null}:null})};
 })();</script>
+<script id="uprs660FibreTopology">(()=>{'use strict';
+/* v6.6.0 — complete constant-phase fibres on a Clifford torus in S³.
+   Φ=qα−pβ; d=gcd(|p|,|q|). Each of d components winds (p/d,q/d).
+   Two complete fibres have signed linking pq, not merely one traced knot.
+   Reference: arXiv:2608.15499 (2026), equations (7)–(11), preprint.
+   This is reference geometry, not a simulated acoustic/magnetic field. */
+const VERSION='6.6.0',TAU=Math.PI*2;
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const r=a%b;a=b;b=r}return a}
+function winding(p,q){return Number.isInteger(p)&&Number.isInteger(q)&&p!==0&&q!==0&&Math.abs(p)<=8&&Math.abs(q)<=8}
+function phasePoint(p,q,phase,component,t,eta=Math.PI/4){
+ const d=gcd(p,q),a=p/d*t,b=q/d*t+(TAU*component-phase)/p;
+ return [Math.cos(eta)*Math.cos(a),Math.cos(eta)*Math.sin(a),Math.sin(eta)*Math.cos(b),Math.sin(eta)*Math.sin(b)]}
+function phaseFibre(p,q,phase=0,n=160,eta=Math.PI/4){
+ if(!winding(p,q)||!Number.isFinite(phase)||!Number.isInteger(n)||n<16||n>2048||!Number.isFinite(eta)||eta<=0||eta>=Math.PI/2)
+  return {status:'invalid',components:[],reason:'Nonzero integer windings |p|,|q|≤8; 16≤N≤2048; 0<η<π/2 required'};
+ const d=gcd(p,q),components=[];
+ for(let k=0;k<d;k++){const c=[];for(let i=0;i<n;i++)c.push(phasePoint(p,q,phase,k,TAU*i/n,eta));c.push([...c[0]]);components.push(c)}
+ return {status:'ok',components,count:d,reduced:[p/d,q/d],phase,p,q,n,eta}}
+function stereo(s,scale=1){
+ if(!Array.isArray(s)||s.length!==4||!s.every(Number.isFinite)||!Number.isFinite(scale)||scale<=0||Math.abs(Math.hypot(...s)-1)>1e-8)return null;
+ const d=1-s[3];if(d<=1e-10)return null;
+ return [scale*s[0]/d,scale*s[1]/d,scale*s[2]/d]}
+/* Ericson's closest-points construction: detect intersecting polygon edges
+   before evaluating a topological invariant. Translation/scale are removed. */
+function segmentDistance(a,b,c,d){
+ const u=sub(b,a),v=sub(d,c),r=sub(a,c),A=dot(u,u),E=dot(v,v),F=dot(v,r);
+ let s=0,t=0;
+ if(A<=1e-24&&E<=1e-24)return Math.hypot(...r);
+ if(A<=1e-24)t=clamp(F/E,0,1);
+ else {const C=dot(u,r);if(E<=1e-24)s=clamp(-C/A,0,1);
+  else {const B=dot(u,v),den=A*E-B*B;s=den>1e-24?clamp((B*F-C*E)/den,0,1):0;t=(B*s+F)/E;
+   if(t<0){t=0;s=clamp(-C/A,0,1)}else if(t>1){t=1;s=clamp((B-C)/A,0,1)}}}
+ return Math.hypot(r[0]+s*u[0]-t*v[0],r[1]+s*u[1]-t*v[1],r[2]+s*u[2]-t*v[2])}
+function solidAngle(a,b,c){
+ const la=Math.hypot(...a),lb=Math.hypot(...b),lc=Math.hypot(...c);
+ if(Math.min(la,lb,lc)<1e-12)return null;
+ const u=a.map(v=>v/la),v=b.map(w=>w/lb),w=c.map(z=>z/lc);
+ const num=dot(u,cross(v,w)),den=1+dot(u,v)+dot(v,w)+dot(w,u);
+ if(Math.abs(num)+Math.abs(den)<1e-14)return null;
+ return 2*Math.atan2(num,den)}
+/* Exact Gauss integral for polygonal curves, using oriented spherical
+   quadrilaterals of endpoint differences. No midpoint quadrature, no rounding.
+   r(s,t)=a(s)−b(t) reverses the t orientation, hence the leading minus sign. */
+function linking(curveA,curveB){
+ const fail=reason=>({status:'unresolved',value:null,reason});
+ const valid=c=>Array.isArray(c)&&c.length>=4&&c.length<=2049&&c.every(p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite));
+ if(!valid(curveA)||!valid(curveB))return fail('Finite 3D polygons with 3–2048 edges required');
+ const origin=curveA[0];let scale=0;
+ for(const c of [curveA,curveB])for(const p of c)scale=Math.max(scale,Math.hypot(...sub(p,origin)));
+ if(!(scale>0))return fail('Degenerate polygons');
+ const A=curveA.map(p=>sub(p,origin).map(v=>v/scale)),B=curveB.map(p=>sub(p,origin).map(v=>v/scale));
+ if(Math.hypot(...sub(A[0],A.at(-1)))>1e-10||Math.hypot(...sub(B[0],B.at(-1)))>1e-10)return fail('Open polygon: linking requires exact closure');
+ for(const c of [A,B])for(let i=1;i<c.length;i++)if(Math.hypot(...sub(c[i],c[i-1]))<1e-12)return fail('Degenerate polygon edge');
+ for(const c of [A,B])for(let i=0,n=c.length-1;i<n;i++){
+  const u=sub(c[i],c[(i+n-1)%n]),v=sub(c[i+1],c[i]);
+  if(dot(u,v)<0&&Math.hypot(...cross(u,v))<=1e-12*Math.hypot(...u)*Math.hypot(...v))return fail('Adjacent polygon edges retrace');
+ }
+ for(const c of [A,B])for(let i=1;i<c.length;i++)for(let j=i+2;j<c.length;j++){
+  if(i===1&&j===c.length-1)continue;
+  if(segmentDistance(c[i-1],c[i],c[j-1],c[j])<1e-9)return fail('Self-intersecting polygon');
+ }
+ let sum=0,correction=0,minSeparation=Infinity;
+ for(let i=1;i<A.length;i++)for(let j=1;j<B.length;j++){
+  const a=A[i-1],b=A[i],c=B[j-1],d=B[j],sep=segmentDistance(a,b,c,d);
+  minSeparation=Math.min(minSeparation,sep);
+  if(sep<1e-9)return fail('Intersecting or numerically inseparable polygons');
+  const r0=sub(a,c),r1=sub(b,c),r2=sub(b,d),r3=sub(a,d);
+  const diag02=dot(r0,r2)/(Math.hypot(...r0)*Math.hypot(...r2)),diag13=dot(r1,r3)/(Math.hypot(...r1)*Math.hypot(...r3));
+  const t1=diag02>=diag13?solidAngle(r0,r1,r2):solidAngle(r0,r1,r3);
+  const t2=diag02>=diag13?solidAngle(r0,r2,r3):solidAngle(r1,r2,r3);
+  if(t1===null||t2===null)return fail('Ambiguous spherical triangle; refine polygons');
+  const y=-(t1+t2)-correction,next=sum+y;correction=(next-sum)-y;sum=next;
+ }
+ const value=sum/(4*Math.PI),integerResidual=Math.abs(value-Math.round(value));
+ if(!Number.isFinite(value)||integerResidual>1e-7)return fail('Solid-angle sum is unresolved; refine polygons');
+ return {status:'ok',value,integerResidual,minSeparation:minSeparation*scale,segments:[A.length-1,B.length-1],method:'oriented polygon solid angles'}}
+
+const sceneCache=new Map();
+const own=e=>String(e?.meta?.id||'').startsWith('topo660:');
+function appendScene(scene,opt={}){
+ if(!scene||!Array.isArray(scene.lines)||!Array.isArray(scene.points))return 0;
+ scene.lines=scene.lines.filter(e=>!own(e));scene.points=scene.points.filter(e=>!own(e));
+ if(!opt.enabled||!['hopf','hopfion'].includes(opt.mode)||!winding(opt.p,opt.q))return 0;
+ const p=opt.p,q=opt.q,d=gcd(p,q),eta=opt.eta??Math.PI/4,n=opt.n??Math.max(128,48*Math.max(Math.abs(p/d),Math.abs(q/d))),scale=opt.scale??.6;
+ const key=[p,q,eta,n,scale].join('|');let curves=sceneCache.get(key);
+ if(!curves){const fibres=[phaseFibre(p,q,0,n,eta),phaseFibre(p,q,Math.PI,n,eta)];if(fibres.some(f=>f.status!=='ok'))return 0;
+  curves=fibres.map(f=>f.components.map(c=>c.map(s=>stereo(s,scale))));
+  if(curves.some(f=>f.some(c=>c.some(p=>!p))))return 0;
+  if(sceneCache.size>=16)sceneCache.delete(sceneCache.keys().next().value);sceneCache.set(key,curves)}
+ const oldKinds=new Set(['physical-hopfion25','torus-knot','reference-hopfion20','reference-hopfion23','knot-point25','knot-point']);
+ scene.lines=scene.lines.filter(e=>!oldKinds.has(e.meta?.kind));scene.points=scene.points.filter(e=>!oldKinds.has(e.meta?.kind));
+ if(opt.focus){scene.lines=[];scene.points=[]}
+ const colors=['rgba(120,231,255,.96)','rgba(255,164,142,.96)'];
+ curves.forEach((f,group)=>f.forEach((pts,component)=>scene.lines.push({pts,color:colors[group],width:2.9,
+  meta:{id:`topo660:fibre:${group}:${component}`,kind:'topo660-fibre',group,component,phase:group*Math.PI,
+   label:`S³ reference T(${p},${q}) · Φ=${group?'π':'0'} · ${component+1}/${d}`,priority:104,draggable:true}})));
+ if(opt.wireframe){const cs=Math.cos(eta),sn=Math.sin(eta);
+  for(let ax=0;ax<2;ax++)for(let k=0;k<14;k++){const pts=[];for(let i=0;i<=80;i++){
+   const a=ax===0?TAU*i/80:TAU*k/14,b=ax===0?TAU*k/14:TAU*i/80;
+   pts.push(stereo([cs*Math.cos(a),cs*Math.sin(a),sn*Math.cos(b),sn*Math.sin(b)],scale))}
+   scene.lines.push({pts,color:'rgba(160,181,212,.15)',width:.7,meta:{id:`topo660:torus:${ax}:${k}`,kind:'topo660-envelope',label:'Clifford torus in S³',priority:5}})}}
+ const group=opt.group===1?1:0,component=clamp(Math.trunc(opt.component||0),0,d-1),t=Number.isFinite(opt.cursor)?opt.cursor:0;
+ const point=stereo(phasePoint(p,q,group*Math.PI,component,t,eta),scale);
+ scene.points.push({p:point,color:colors[group],size:7.5,label:'',meta:{id:'topo660:cursor',kind:'topo660-cursor',group,component,
+  label:`S³ reference phase cursor · Φ=${group?'π':'0'} · ${component+1}/${d}`,priority:154,draggable:true}});
+ return 2*d}
+
+const G={enabled:true,eta:Math.PI/4,wireframe:true,focus:true,group:0,component:0,cursor:0,verification:null,verificationKey:null,job:0,progress:'',cache:new Map()};
+const TX={
+ ru:{title:'Узлы и зацепления S³',reference:'Геометрический эталон',enable:'Показывать волокна',wire:'Clifford-тор',focus:'Только эталон',components:'Компонент в волокне',pair:'Зацепление пары',total:'Полное зацепление',verify:'Проверить численно',unverified:'Численная проверка не выполнена',verified:'Проверено на двух сетках',unresolved:'Проверка не разрешена',residual:'Невязка',phase:'Курсор фазы',source:'Источник · препринт 2026',note:'Эталон фазовых волокон. Физическое поле выбранной модели здесь не измеряется.',export:'Снимок JSON',invalid:'Нужны целые p и q от 1 до 8'},
+ en:{title:'S³ knots and links',reference:'Reference geometry',enable:'Show phase fibres',wire:'Clifford torus',focus:'Reference only',components:'Components per fibre',pair:'Pairwise linking',total:'Complete-fibre linking',verify:'Verify numerically',unverified:'Numerical verification pending',verified:'Verified at two resolutions',unresolved:'Verification unresolved',residual:'Residual',phase:'Phase cursor',source:'Source · 2026 preprint',note:'Reference phase fibres. The selected model’s physical field is not measured here.',export:'JSON snapshot',invalid:'Integer p and q from 1 to 8 required'},
+ de:{title:'S³-Knoten und Verschlingungen',reference:'Referenzgeometrie',enable:'Phasenfasern anzeigen',wire:'Clifford-Torus',focus:'Nur Referenz',components:'Komponenten je Faser',pair:'Paarweise Verschlingung',total:'Gesamtverschlingung',verify:'Numerisch prüfen',unverified:'Numerische Prüfung ausstehend',verified:'Auf zwei Gittern geprüft',unresolved:'Prüfung unaufgelöst',residual:'Residuum',phase:'Phasencursor',source:'Quelle · Preprint 2026',note:'Referenz der Phasenfasern. Das physikalische Feld des Modells wird hier nicht gemessen.',export:'JSON-Schnappschuss',invalid:'Ganze p und q von 1 bis 8 erforderlich'}
+};
+const tx=()=>TX[(typeof state!=='undefined'&&state.lang)||'ru']||TX.en;
+function active(){return typeof state!=='undefined'&&['hopf','hopfion'].includes(state.mode)&&!!(state.mode==='hopfion'||state.layers20?.hopfion)}
+function parameters(){return typeof state!=='undefined'?{p:state.p,q:state.q,eta:G.eta}:{p:2,q:3,eta:G.eta}}
+function analysisKey(){const x=parameters();return [x.p,x.q,x.eta].join('|')}
+function invalidate(){G.job++;G.progress='';G.verificationKey=analysisKey();G.verification=G.cache.get(G.verificationKey)||null;const {p,q}=parameters();G.component=clamp(G.component,0,Math.max(0,gcd(p,q)-1))}
+function analysis(){const {p,q,eta}=parameters(),d=gcd(p,q);return {status:G.verification?.status||'unverified',p,q,eta,
+ components:d,reduced:[p/d,q/d],expected:winding(p,q)?p*q:null,pairwise:winding(p,q)?p*q/(d*d):null,
+ verification:G.verification,reference:true,phaseEquation:'Φ=qα−pβ (mod 2π)',source:'https://arxiv.org/abs/2608.15499'}}
+async function verify(){
+ const key=analysisKey();if(G.verificationKey!==key)invalidate();if(G.cache.has(key)){G.verification=G.cache.get(key);syncUI();return G.verification}
+ const {p,q,eta}=parameters();if(!winding(p,q))return {status:'unresolved',measured:null,reason:'Invalid winding'};
+ const job=++G.job,d=gcd(p,q),low=Math.max(64,24*Math.max(Math.abs(p/d),Math.abs(q/d))),high=2*low;
+ const cancelled=()=>{if(job===G.job){G.progress='';syncUI()}return {status:'cancelled',measured:null}};
+ const make=n=>[0,Math.PI].map(phase=>phaseFibre(p,q,phase,n,eta).components.map(c=>c.map(s=>stereo(s,1))));
+ const coarse=make(low),fine=make(high),matrix=[];let measured=0,coarseTotal=0,minSeparation=Infinity,delta=0,reason='';
+ const started=typeof performance!=='undefined'?performance.now():Date.now();
+ for(let i=0;i<d;i++){matrix.push([]);for(let j=0;j<d;j++){
+  G.progress=`${i*d+j+1}/${d*d}`;syncUI();await new Promise(resolve=>setTimeout(resolve,0));
+  if(job!==G.job||key!==analysisKey())return cancelled();
+  const a=linking(coarse[0][i],coarse[1][j]),b=linking(fine[0][i],fine[1][j]);
+  if(a.status!=='ok'||b.status!=='ok'){reason=a.reason||b.reason;break}
+  matrix[i].push(b.value);measured+=b.value;coarseTotal+=a.value;delta=Math.max(delta,Math.abs(a.value-b.value));
+  minSeparation=Math.min(minSeparation,b.minSeparation);
+ }if(reason)break}
+ if(job!==G.job||key!==analysisKey())return cancelled();
+ const error=reason?null:Math.abs(measured-p*q);
+ const result={status:!reason&&error<1e-7&&delta<1e-7?'verified':'unresolved',expected:p*q,measured:reason?null:measured,
+  coarseMeasured:reason?null:coarseTotal,matrix,residual:error,convergenceError:reason?null:delta,minSeparation:reason?null:minSeparation,
+  resolutions:[low,high],method:'signed polygon Gauss integral via solid angles',reason:reason||null,
+  elapsedMs:Math.round((typeof performance!=='undefined'?performance.now():Date.now())-started)};
+ G.progress='';G.verification=result;if(G.cache.size>=16)G.cache.delete(G.cache.keys().next().value);G.cache.set(key,result);syncUI();return result}
+function sceneOptions(){return {mode:state.mode,enabled:G.enabled&&active(),...parameters(),scale:(state.layers20?.scale||.54)*.78,
+ wireframe:G.wireframe,focus:G.focus,group:G.group,component:G.component,cursor:G.cursor}}
+function refresh(){if(typeof document==='undefined'||typeof state==='undefined')return;try{buildScene();updateUI();draw(performance.now())}catch(e){console.warn('UPRS660 refresh',e)}syncUI()}
+function setWinding(p,q){if(!winding(p,q)||p<1||q<1)return false;state.p=p;state.q=q;G.component=Math.min(G.component,gcd(p,q)-1);
+ for(const [id,v] of [['pWind',p],['qWind',q]]){const el=document.getElementById(id);if(el){el.max='8';el.value=v}}
+ invalidate();refresh();return true}
+function setPreset(p,q){if(!setWinding(p,q))return false;G.enabled=true;if(state.layers20)state.layers20.hopfion=true;setMode('hopfion');refresh();return true}
+function setEnabled(v){G.enabled=!!v;if(state.layers20)state.layers20.hopfion=!!v;if(!v)invalidate();refresh();return G.enabled}
+function setCursor(t,group=G.group,component=G.component){if(!Number.isFinite(t))return false;G.cursor=((t%TAU)+TAU)%TAU;
+ G.group=group===1?1:0;G.component=clamp(Math.trunc(component||0),0,gcd(state.p,state.q)-1);state.knotPhase=G.cursor;refresh();return true}
+function snapshot(){return {schema:'uprs-s3-phase-fibres/1',version:VERSION,...analysis(),
+  view:{wireframe:G.wireframe,focus:G.focus},cursor:{phase:G.cursor,group:G.group,component:G.component},
+  evidence:'Geometric reference on a Clifford torus; not experimental or simulated field data',accessed:'2026-10-03'}}
+function syncUI(){if(typeof document==='undefined'||typeof state==='undefined')return;
+ const dock=document.getElementById('topologyDock660');if(!dock)return;
+ dock.hidden=!['hopf','hopfion'].includes(state.mode);const t=tx(),a=analysis();
+ document.getElementById('topologySummary660').textContent=`T(${a.p},${a.q}) · d=${a.components} · Qlink=${a.expected}`;
+ document.getElementById('topologyTitle660').textContent=t.title;
+ for(const e of dock.querySelectorAll('[data-t660]'))e.textContent=t[e.dataset.t660];
+ const row=(k,v)=>`<div>${k}</div><div>${v}</div>`;
+ const r=G.verification;
+ document.getElementById('topologyNumbers660').innerHTML=row(t.components,a.components)+row(t.pair,a.pairwise)+row(t.total,r?.measured==null?`${a.expected} (theory)`:r.measured.toFixed(9))+row(t.residual,r?.residual==null?'—':r.residual.toExponential(2));
+ const status=document.getElementById('topologyStatus660');status.textContent=G.progress?`${t.verify} · ${G.progress}`:r?.status==='verified'?`${t.verified} · N=${r.resolutions.join(' / ')}`:r?.status==='unresolved'?`${t.unresolved}: ${r.reason||''}`:t.unverified;
+ status.dataset.status=r?.status||'unverified';document.getElementById('topologyVerify660').disabled=!!G.progress;
+ document.getElementById('topologyEnabled660').checked=active()&&G.enabled;
+ document.getElementById('topologyWire660').checked=G.wireframe;document.getElementById('topologyFocus660').checked=G.focus;
+ for(const [id,v] of [['topologyP660',a.p],['topologyQ660',a.q],['topologyCursor660',G.cursor]]){const e=document.getElementById(id);if(document.activeElement!==e)e.value=v}
+ const comp=document.getElementById('topologyComponent660');const ck=`${a.components}:${G.group}:${G.component}`;
+ if(comp.dataset.key!==ck){comp.innerHTML=Array.from({length:a.components},(_,i)=>`<option value="${i}">${i+1}/${a.components}</option>`).join('');comp.value=G.component;comp.dataset.key=ck}
+ document.getElementById('topologyGroup660').value=G.group;
+ document.getElementById('topologySource660').textContent=t.source;
+}
+function ensureUI(){if(typeof document==='undefined')return;
+ if(!document.getElementById('topologyDock660')){const host=document.getElementById('viewport');if(!host)return;
+  const style=document.createElement('style');style.id='topologyStyle660';style.textContent=`
+  #topologyDock660{position:absolute;z-index:72;right:12px;top:88px;width:258px;max-width:calc(100% - 24px);color:var(--text,#eef4ff);background:var(--panel,#0a0e16);border:1px solid rgba(152,232,255,.28);border-radius:12px;font:11px/1.5 system-ui;box-sizing:border-box;box-shadow:0 10px 32px #0005;pointer-events:auto}
+  #topologyDock660[hidden]{display:none!important}#topologyDock660 summary{padding:10px 12px;cursor:pointer;color:#98e8ff;font-weight:650;list-style-position:inside;overflow-wrap:anywhere}
+  #topologyBody660{padding:0 12px 12px;max-height:min(470px,var(--topology-height,65vh));overflow:auto}#topologyDock660 h3{font-size:13px;margin:0 0 5px}#topologyDock660 .t660-row{display:flex;align-items:center;gap:7px;margin:7px 0;flex-wrap:wrap}
+  #topologyDock660 input[type=number]{width:64px;min-width:0;padding:4px}#topologyDock660 select{max-width:100%;min-width:0;padding:5px}#topologyDock660 input[type=range]{width:100%}#topologyDock660 label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;white-space:normal;margin:0}#topologyDock660 input[type=checkbox]{width:13px;height:13px;margin:0;flex:none}#topologyDock660 button{min-height:30px;padding:5px 8px}
+  #topologyNumbers660{display:grid;grid-template-columns:1fr auto;gap:3px 8px;margin:9px 0}#topologyNumbers660 div:nth-child(even){font-variant-numeric:tabular-nums;color:#98e8ff}#topologyStatus660{overflow-wrap:anywhere;color:var(--muted,#aab7c9);margin:7px 0}#topologyStatus660[data-status=verified]{color:#8ce9bd}
+  #topologyDock660 small{display:block;font-size:10px;color:var(--muted,#aab7c9)}#topologyDock660 a{color:#98e8ff}
+  @media(max-width:640px){#topologyDock660{top:72px;right:8px;width:225px}}
+  `;document.head.appendChild(style);
+  const dock=document.createElement('details');dock.id='topologyDock660';dock.hidden=true;
+  dock.innerHTML=`<summary id="topologySummary660"></summary><div id="topologyBody660"><h3 id="topologyTitle660"></h3><small data-t660="reference"></small>
+  <div class="t660-row"><label><input type="checkbox" id="topologyEnabled660"> <span data-t660="enable"></span></label></div>
+  <div class="t660-row"><select id="topologyPreset660" aria-label="Topology preset"><option value="">T(p,q)</option><option value="1,1">Hopf · (1,1)</option><option value="2,2">2 + 2 · (2,2)</option><option value="2,3">Trefoil · (2,3)</option><option value="3,4">T(3,4)</option><option value="4,6">2 + 2 · (4,6)</option></select><label>p <input id="topologyP660" type="number" min="1" max="8" step="1"></label><label>q <input id="topologyQ660" type="number" min="1" max="8" step="1"></label></div>
+  <small>Φ = qα − pβ (mod 2π) · S³ → ℝ³</small><div class="t660-row"><label><input id="topologyWire660" type="checkbox"> <span data-t660="wire"></span></label><label><input id="topologyFocus660" type="checkbox"> <span data-t660="focus"></span></label></div>
+  <div id="topologyNumbers660"></div><div class="t660-row"><select id="topologyGroup660" aria-label="Phase fibre"><option value="0">Φ = 0</option><option value="1">Φ = π</option></select><select id="topologyComponent660" aria-label="Fibre component"></select></div>
+  <label for="topologyCursor660" data-t660="phase"></label><input id="topologyCursor660" type="range" min="0" max="6.283185307179586" step="0.005"><div id="topologyStatus660" role="status"></div>
+  <div class="t660-row"><button id="topologyVerify660" class="btn" data-t660="verify"></button><button id="topologyExport660" class="btn" data-t660="export"></button></div>
+  <small data-t660="note"></small><a id="topologySource660" href="https://arxiv.org/abs/2608.15499" target="_blank" rel="noopener noreferrer"></a></div>`;
+  host.appendChild(dock);dock.addEventListener('pointerdown',e=>e.stopPropagation());dock.addEventListener('keydown',e=>e.stopPropagation());
+  const el=id=>document.getElementById(id);
+  el('topologyEnabled660').onchange=e=>setEnabled(e.target.checked);
+  el('topologyPreset660').onchange=e=>{if(e.target.value){const [p,q]=e.target.value.split(',').map(Number);setPreset(p,q);e.target.value=''}};
+  for(const id of ['topologyP660','topologyQ660'])el(id).onchange=()=>{if(!setWinding(Number(el('topologyP660').value),Number(el('topologyQ660').value))){el(id).value=id==='topologyP660'?state.p:state.q;el('topologyStatus660').textContent=tx().invalid}};
+  el('topologyWire660').onchange=e=>{G.wireframe=e.target.checked;refresh()};el('topologyFocus660').onchange=e=>{G.focus=e.target.checked;refresh()};
+  el('topologyGroup660').onchange=e=>setCursor(G.cursor,Number(e.target.value));el('topologyComponent660').onchange=e=>setCursor(G.cursor,G.group,Number(e.target.value));
+  el('topologyCursor660').oninput=e=>setCursor(Number(e.target.value));el('topologyVerify660').onclick=()=>verify().catch(e=>{G.progress='';console.error('UPRS660 verification',e);syncUI()});
+  el('topologyExport660').onclick=()=>{const blob=new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`s3-topology-${state.p}-${state.q}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+ }const dock=document.getElementById('topologyDock660'),host=document.getElementById('viewport');
+ if(dock&&host)dock.style.setProperty('--topology-height',Math.max(100,host.clientHeight-(innerWidth<=640?72:88)-100)+'px');syncUI()}
+function appendApp(){if(typeof state==='undefined'||!state.scene)return;const selected=state.activeEntity?.meta?.id;
+ const key=analysisKey();if(G.verificationKey!==key)invalidate();
+ appendScene(state.scene,sceneOptions());if(selected?.startsWith('topo660:'))state.activeEntity=[...state.scene.lines,...state.scene.points].find(e=>e.meta?.id===selected)||null;
+ syncUI()}
+function wrap(){if(typeof document==='undefined')return;
+ const cur=globalThis.buildScene;if(typeof cur==='function'&&!cur.__uprs660){const w=function(){const selected=state.activeEntity?.meta?.id,r=cur.apply(this,arguments);appendApp();if(selected?.startsWith('topo660:'))state.activeEntity=[...state.scene.lines,...state.scene.points].find(e=>e.meta?.id===selected)||null;return r};w.__uprs660=true;globalThis.buildScene=w}
+ const ui=globalThis.updateUI;if(typeof ui==='function'&&!ui.__uprs660){const w=function(){const r=ui.apply(this,arguments);ensureUI();return r};w.__uprs660=true;globalThis.updateUI=w}
+ const phase=globalThis.phaseOnlyKind;if(typeof phase==='function'&&!phase.__uprs660){const w=k=>k==='topo660-fibre'||k==='topo660-cursor'||phase(k);w.__uprs660=true;globalThis.phaseOnlyKind=w}
+ const select=globalThis.selectTarget;if(typeof select==='function'&&!select.__uprs660){const w=function(h,x,y){if(own(h)){const m=h.meta;if(m.kind==='topo660-fibre'||m.kind==='topo660-cursor'){state.activeEntity=h;setCursor(m.kind==='topo660-fibre'?TAU*(h.segment||0)/Math.max(1,h.segmentCount||1):G.cursor,m.group,m.component);return}}return select.apply(this,arguments)};w.__uprs660=true;globalThis.selectTarget=w}
+ const drag=globalThis.dragInteraction;if(typeof drag==='function'&&!drag.__uprs660){const w=function(x,y){if(own(state.activeEntity)){let best=G.cursor,dist=Infinity;const {p,q,eta}=parameters(),scale=(state.layers20?.scale||.54)*.78;for(let i=0;i<480;i++){const t=TAU*i/480,point=stereo(phasePoint(p,q,G.group*Math.PI,G.component,t,eta),scale),screen=proj(point,state.renderYaw,state.renderPitch),d=Math.hypot(screen[0]-x,screen[1]-y);if(d<dist){dist=d;best=t}}setCursor(best);return}return drag.apply(this,arguments)};w.__uprs660=true;globalThis.dragInteraction=w}
+ const manifest=globalThis.manifest;if(typeof manifest==='function'&&!manifest.__uprs660){const w=function(){const r=manifest.apply(this,arguments);r.topology660=snapshot();return r};w.__uprs660=true;globalThis.manifest=w}
+}
+let testCache=null;
+function checks(){if(testCache)return testCache;const T=[],ok=(name,fn)=>{try{const x=fn();T.push({name:'v6.6.0 '+name,pass:!!x,detail:''})}catch(e){T.push({name:'v6.6.0 '+name,pass:false,detail:String(e.message)})}};
+ ok('complete T(2,2) has two distinct components',()=>{const f=phaseFibre(2,2,0,64);return f.count===2&&Math.hypot(...f.components[0][0].map((x,i)=>x-f.components[1][0][i]))>.1});
+ ok('phase equation holds on every component',()=>phaseFibre(4,6,.73,64).components.every(c=>c.every(s=>Math.abs(Math.cos(6*Math.atan2(s[1],s[0])-4*Math.atan2(s[3],s[2]))-Math.cos(.73))<1e-10)));
+ ok('S³ unit norm and exact closure',()=>phaseFibre(2,3,0,64).components.every(c=>c.every(s=>Math.abs(Math.hypot(...s)-1)<1e-12)&&c[0].every((v,i)=>v===c.at(-1)[i])));
+ const curves=phase=>phaseFibre(1,1,phase,64).components[0].map(s=>stereo(s,1));const a=curves(0),b=curves(Math.PI);
+ ok('independent polygon linking of Hopf fibres is +1',()=>Math.abs(linking(a,b).value-1)<1e-9);
+ ok('reversing orientation changes linking sign',()=>Math.abs(linking([...a].reverse(),b).value+1)<1e-9);
+ ok('coincident and open curves are refused',()=>linking(a,a).value===null&&linking(a.slice(0,-1),b).value===null);
+ ok('zero winding and projection pole are refused',()=>phaseFibre(0,1).status==='invalid'&&stereo([0,0,0,1])===null);
+ ok('scene injection is idempotent with unique IDs',()=>{const s={lines:[],points:[]},o={mode:'hopf',enabled:true,p:2,q:2};appendScene(s,o);appendScene(s,o);return s.lines.length===4&&new Set([...s.lines,...s.points].map(e=>e.meta.id)).size===5});
+ ok('Smith chart never receives topology geometry',()=>{const s={lines:[],points:[]};appendScene(s,{mode:'smith',enabled:true,p:2,q:2});return s.lines.length===0});
+ testCache=T;return T}
+function wrapTests(){const cur=globalThis.runTests;if(typeof cur!=='function'||cur.__uprs660)return;
+ const w=function(show=true){const r=cur(false),tests=[...r.tests.filter(t=>!t.name.startsWith('v6.6.0 ')),...checks()];
+ const rep={passed:tests.filter(t=>t.pass).length,total:tests.length,failed:tests.filter(t=>!t.pass),tests};globalThis.__UPRS_SELF_TEST__=rep;
+ if(show&&typeof toast==='function')toast(rep.failed.length?`Self-test: ${rep.failed.length} failed`:`Self-test: ${rep.passed}/${rep.total}`);return rep};w.__uprs660=true;globalThis.runTests=w}
+function claim(){const A=globalThis.__UPRS_APP__;if(A){A.version=VERSION;A.release='s3-phase-fibre-topology';A.buildPolicy='current-index+verified-artifact'}
+ document.title=`UPRS Möbius–Hopf OmniAtlas v${VERSION} · S³ Knots & Links`;document.documentElement.dataset.uprsVersion=VERSION}
+globalThis.__UPRS660__={version:VERSION,core:{gcd,phasePoint,phaseFibre,stereo,linking,segmentDistance,solidAngle,appendScene},
+ analysis,verify,snapshot,checks,setWinding,setPreset,setCursor,setEnabled,
+ setFocus:v=>{G.focus=!!v;refresh()},setWireframe:v=>{G.wireframe=!!v;refresh()},
+ audit:()=>({version:VERSION,active:active(),...analysis(),sceneLines:typeof state!=='undefined'?state.scene?.lines.filter(own).length:0})};
+if(typeof document!=='undefined'){
+ const A=globalThis.__UPRS_APP__;if(A)A.claimVersion=claim;
+ const install=()=>{claim();wrap();wrapTests();ensureUI();refresh()};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+ for(const ms of [1000,4000,9000,16000,24000,31000])setTimeout(install,ms);
+}
+})();</script>
+<script id="uprs660AtelierRenderer">(()=>{'use strict';
+/* Obsidian Atelier: presentation only. The v6.6 phase-fibre centre lines and
+   polygon Gauss integral remain the scientific authority. */
+const TAU=Math.PI*2;
+const sub=(a,b)=>a.map((v,i)=>v-b[i]),dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const unit=a=>{const n=Math.hypot(...a);return n>1e-12?a.map(v=>v/n):null};
+function turn(v,axis,angle){const c=Math.cos(angle),s=Math.sin(angle),w=cross(axis,v),d=dot(axis,v);return v.map((x,i)=>x*c+w[i]*s+axis[i]*d*(1-c))}
+function transport(n,a,b){const ax=cross(a,b),len=Math.hypot(...ax),c=Math.max(-1,Math.min(1,dot(a,b)));
+ if(len<1e-10)return c>0?n:turn(n,unit(cross(a,n)),Math.PI);
+ return turn(n,ax.map(v=>v/len),Math.atan2(len,c))}
+function tubeMesh(points,radius=.015,sides=16){
+ const fail=reason=>({status:'invalid',reason});
+ if(!Array.isArray(points)||points.length<4||points.length>2049||!points.every(p=>Array.isArray(p)&&p.length===3&&p.every(Number.isFinite))||!(radius>0)||!Number.isFinite(radius)||!Number.isInteger(sides)||sides<6||sides>32)return fail('Finite closed polygon, positive radius and 6–32 sides required');
+ if(Math.hypot(...sub(points[0],points.at(-1)))>1e-10)return fail('Open centre line');
+ const count=points.length-1,tangents=[],normals=[];
+ for(let i=0;i<count;i++){
+  if(Math.hypot(...sub(points[i+1],points[i]))<1e-12)return fail('Zero-length centre-line edge');
+  const t=unit(sub(points[(i+1)%count],points[(i+count-1)%count]));if(!t)return fail('Ambiguous tangent');tangents.push(t);
+ }
+ const first=tangents[0],axis=[0,0,0];axis[first.map(Math.abs).indexOf(Math.min(...first.map(Math.abs)))]=1;
+ normals.push(unit(cross(first,axis)));
+ for(let i=1;i<count;i++)normals.push(unit(transport(normals[i-1],tangents[i-1],tangents[i])));
+ const end=transport(normals.at(-1),tangents.at(-1),first),twist=Math.atan2(dot(first,cross(end,normals[0])),dot(end,normals[0]));
+ const vertices=new Float32Array((count+1)*(sides+1)*8),indices=new Uint32Array(count*sides*6);
+ let v=0,k=0;
+ for(let i=0;i<count;i++){
+  const t=tangents[i],n=turn(normals[i],t,twist*i/count),b=cross(t,n);
+  for(let j=0;j<=sides;j++){
+   const a=TAU*(j%sides)/sides,c=Math.cos(a),s=Math.sin(a),normal=n.map((x,d)=>x*c+b[d]*s);
+   vertices.set([...points[i].map((x,d)=>x+radius*normal[d]),...normal,i/count,j/sides],v);v+=8;
+  }
+ }
+ vertices.set(vertices.subarray(0,(sides+1)*8),count*(sides+1)*8);
+ for(let i=0;i<count;i++)for(let j=0;j<sides;j++){
+  const a=i*(sides+1)+j,b=a+sides+1;indices.set([a,a+1,b,a+1,b+1,b],k);k+=6;
+ }
+ return {status:'ok',vertices,indices,radius,segments:count,sides};
+}
+function rotation(camera){const {yaw=0,pitch=0,roll=0}=camera,cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch),cr=Math.cos(roll),sr=Math.sin(roll);
+ const rotate=p=>{let x=cy*p[0]+sy*p[2],z=-sy*p[0]+cy*p[2],y=cp*p[1]-sp*z;z=sp*p[1]+cp*z;return [cr*x-sr*y,sr*x+cr*y,z]};
+ return [...rotate([1,0,0]),...rotate([0,1,0]),...rotate([0,0,1])];
+}
+function projectPoint(p,camera,width,height){const m=rotation(camera),v=sub(p,camera.target||[0,0,0]),q=[0,1,2].map(i=>m[i]*v[0]+m[i+3]*v[1]+m[i+6]*v[2]),d=camera.distance-q[2],f=Math.min(width,height)*1.38;return [width/2+q[0]*f/d,height/2-q[1]*f/d,d]}
+function safeRadius(p,q,scale,eta=Math.PI/4){
+ /* Angular chord inequality and |stereo(a)-stereo(b)|=|a-b|/sqrt((1-a₄)(1-b₄)).
+    Distinct phases separated by π give this conservative clearance bound. */
+ return Math.min(.028,scale*2*Math.min(Math.cos(eta),Math.sin(eta))/(1+Math.sin(eta))/Math.hypot(p,q)*.16);
+}
+const API={version:'6.6.0',core:{tubeMesh,projectPoint,rotation,safeRadius}};
+globalThis.__UPRS660_ATELIER__=API;
+if(typeof document==='undefined')return;
+const F={enabled:true,ready:false,lost:false,error:'',canvas:null,gl:null,mesh:null,target:null,width:0,height:0,frames:0,emaMs:0,drawCalls:0,triangles:0,samples:1,hdr:false};
+const tr=(ru,en,de)=>state.lang==='ru'?ru:state.lang==='de'?de:en;
+const requested=()=>F.enabled&&['hopf','hopfion'].includes(state.mode)&&!!state.scene?.lines.some(l=>l.meta?.kind==='topo660-fibre');
+const active=()=>requested()&&F.ready&&!F.lost;
+const camera=()=>({yaw:state.renderYaw??state.yaw,pitch:state.renderPitch??state.pitch,roll:state.renderRoll||0,distance:state.distance,target:state.cameraFocus20?.enabled?[...(state.cameraFocus20.target||[0,0,0])]:[0,0,0]});
+const paper=()=>document.body.classList.contains('light')||document.body.classList.contains('paper328');
+const VS=`#version 300 es
+precision highp float;
+layout(location=0) in vec3 aPosition;
+layout(location=1) in vec3 aNormal;
+layout(location=2) in vec2 aUV;
+uniform mat3 uRotation;uniform vec2 uLens;uniform float uDistance;uniform vec3 uOffset;uniform float uScale;uniform vec3 uTarget;
+out vec3 vPosition;out vec3 vNormal;out vec2 vUV;
+void main(){vPosition=uRotation*(aPosition*uScale+uOffset-uTarget);vNormal=uRotation*aNormal;vUV=aUV;
+ float d=uDistance-vPosition.z;float near=.05,far=80.;
+ gl_Position=vec4(uLens*vPosition.xy,(far+near)/(far-near)*d-2.*far*near/(far-near),d);}`;
+const FS=`#version 300 es
+precision highp float;
+in vec3 vPosition;in vec3 vNormal;in vec2 vUV;
+uniform vec3 uColour;uniform float uDistance;uniform float uOpacity;uniform float uRoughness;uniform float uMetal;
+uniform float uPaper;
+out vec4 colour;
+const float PI=3.141592653589793;
+vec3 fresnel(float h,vec3 f){return f+(1.-f)*pow(1.-h,5.);}
+vec3 light(vec3 N,vec3 V,vec3 L,vec3 radiance,vec3 base,vec3 f0,float rough,float metal){
+ vec3 H=normalize(V+L);float nv=max(dot(N,V),.001),nl=max(dot(N,L),0.),nh=max(dot(N,H),0.),vh=max(dot(V,H),0.);
+ float a=rough*rough,a2=a*a,den=nh*nh*(a2-1.)+1.;float D=a2/(PI*den*den);
+ float k=(rough+1.)*(rough+1.)/8.;float G=nv/(nv*(1.-k)+k)*nl/(nl*(1.-k)+k);
+ vec3 Fr=fresnel(vh,f0),spec=D*G*Fr/max(4.*nv*nl,.001);
+ return ((1.-Fr)*(1.-metal)*base/PI+spec)*radiance*nl;
+}
+float box(vec3 r,vec3 dir,float power){return pow(max(dot(r,normalize(dir)),0.),power);}
+void main(){
+ vec3 N=normalize(vNormal);if(!gl_FrontFacing)N=-N;
+ vec3 V=normalize(vec3(0.,0.,uDistance)-vPosition);float nv=max(dot(N,V),0.);
+ float rough=clamp(uRoughness+.009*sin(vUV.y*1005.309649),.12,.85);
+ vec3 base=uColour;vec3 f0=mix(vec3(.04),base,uMetal);
+ // Restrained opalescence is a display material, not scalar field data.
+ vec3 film=.5+.5*cos(vec3(.0,1.8,3.8)+7.5*(1.-nv));f0=mix(f0,f0*(.85+.22*film),.16);
+ vec3 c=light(N,V,normalize(vec3(-3.,4.,4.)),vec3(4.2,3.85,3.1),base,f0,rough,uMetal);
+ c+=light(N,V,normalize(vec3(4.,1.,2.)),vec3(1.5,2.0,2.25),base,f0,rough,uMetal);
+ c+=light(N,V,normalize(vec3(1.,-3.,-1.)),vec3(.6,.48,.3),base,f0,rough,uMetal);
+ vec3 R=reflect(-V,N);vec3 env=vec3(.055,.067,.082);
+ env+=vec3(1.6,1.45,1.13)*box(R,vec3(-.55,.85,.65),10.);
+ env+=vec3(.6,.95,1.2)*box(R,vec3(.9,.25,.6),18.);
+ env+=vec3(.35,.24,.13)*box(R,vec3(-.5,-.9,.2),8.);
+ c+=env*fresnel(nv,f0)*(.7+.25*(1.-rough));c+=base*(1.-uMetal)*.065;
+ c*=mix(1.,.83,uPaper);
+ colour=vec4(c,uOpacity);
+}`;
+const QVS=`#version 300 es
+precision highp float;out vec2 uv;
+void main(){vec2 p=vec2((gl_VertexID<<1)&2,gl_VertexID&2);uv=p;gl_Position=vec4(p*2.-1.,0.,1.);}`;
+const BRIGHT=`#version 300 es
+precision highp float;in vec2 uv;uniform sampler2D image;out vec4 colour;
+void main(){vec4 c=texture(image,uv);float b=max(max(c.r,c.g),c.b);colour=vec4(c.rgb*max(b-.88,0.)/max(b,.001),1.);}`;
+const BLUR=`#version 300 es
+precision highp float;in vec2 uv;uniform sampler2D image;uniform vec2 stepUV;out vec4 colour;
+void main(){vec3 c=texture(image,uv).rgb*.227027;
+ c+=(texture(image,uv+stepUV*1.384615).rgb+texture(image,uv-stepUV*1.384615).rgb)*.316216;
+ c+=(texture(image,uv+stepUV*3.230769).rgb+texture(image,uv-stepUV*3.230769).rgb)*.070270;
+ colour=vec4(c,1.);}`;
+const COMPOSITE=`#version 300 es
+precision highp float;in vec2 uv;uniform sampler2D image;uniform sampler2D bloom;uniform float uPaper;out vec4 colour;
+vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
+void main(){vec4 s=texture(image,uv);vec3 glow=texture(bloom,uv).rgb;
+ float alpha=max(s.a,clamp(max(max(glow.r,glow.g),glow.b)*.11,0.,.15));
+ if(alpha<.001){colour=vec4(0.);return;}
+ vec3 c=pow(aces(s.rgb+glow*.16),vec3(1./2.2));
+ colour=vec4(c,alpha);}`;
+function shaderProgram(vs,fs){const gl=F.gl,make=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s};
+ const a=make(gl.VERTEX_SHADER,vs),b=make(gl.FRAGMENT_SHADER,fs),p=gl.createProgram();gl.attachShader(p,a);gl.attachShader(p,b);gl.linkProgram(p);gl.deleteShader(a);gl.deleteShader(b);
+ if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));return p;
+}
+function locations(p,names){return Object.fromEntries(names.map(n=>[n,F.gl.getUniformLocation(p,n)]))}
+function deleteTarget(){if(!F.target)return;const gl=F.gl,t=F.target;for(const x of t.textures)gl.deleteTexture(x);for(const x of t.fbos)gl.deleteFramebuffer(x);for(const x of t.buffers)gl.deleteRenderbuffer(x);F.target=null}
+function deleteMesh(){if(!F.mesh)return;const gl=F.gl;for(const m of [...F.mesh.groups,F.mesh.veil]){gl.deleteBuffer(m.vertex);gl.deleteBuffer(m.index);gl.deleteVertexArray(m.vao)}F.mesh=null}
+function init(){if(F.ready||F.lost||F.error)return F.ready;
+ try{
+  if(!F.canvas){const c=document.createElement('canvas');c.id='atelierCanvas660';c.setAttribute('aria-hidden','true');document.getElementById('viewport').insertBefore(c,document.getElementById('view'));F.canvas=c;
+   c.addEventListener('webglcontextlost',e=>{e.preventDefault();F.lost=true;F.ready=false;F.mesh=null;F.target=null;F.ball=null;F.canvas.hidden=true;document.body.classList.remove('atelier660-mode');draw(performance.now())});
+   c.addEventListener('webglcontextrestored',()=>{F.lost=false;F.error='';F.ready=false;init();draw(performance.now())});
+  }
+  const gl=F.gl=F.canvas.getContext('webgl2',{alpha:true,antialias:false,premultipliedAlpha:false,preserveDrawingBuffer:false,powerPreference:'high-performance'});
+  if(!gl){F.error='WebGL2 unavailable';F.canvas.hidden=true;return false}
+  F.hdr=!!gl.getExtension('EXT_color_buffer_float');
+  F.program=shaderProgram(VS,FS);F.loc=locations(F.program,['uRotation','uLens','uDistance','uColour','uOpacity','uRoughness','uMetal','uPaper','uOffset','uScale','uTarget']);
+  F.bright=shaderProgram(QVS,BRIGHT);F.brightLoc=locations(F.bright,['image']);
+  F.blur=shaderProgram(QVS,BLUR);F.blurLoc=locations(F.blur,['image','stepUV']);
+  F.composite=shaderProgram(QVS,COMPOSITE);F.compositeLoc=locations(F.composite,['image','bloom','uPaper']);
+  F.quad=gl.createVertexArray();F.ball=upload(sphereMesh());F.renderKey='';F.ready=true;return true;
+ }catch(e){F.error=String(e.message);F.ready=false;F.canvas.hidden=true;console.warn('Atelier Canvas fallback:',F.error);return false}
+}
+function prepare(){const wanted=requested(),ready=wanted&&init();if(F.canvas)F.canvas.hidden=!ready;document.body.classList.toggle('atelier660-mode',!!ready);document.body.classList.toggle('atelier660-gallery',!!ready&&__UPRS660__.snapshot().view.focus);return !!ready}
+function targets(width,height){if(F.target&&F.width===width&&F.height===height)return;
+ deleteTarget();F.width=width;F.height=height;F.canvas.width=width;F.canvas.height=height;
+ const gl=F.gl,format=F.hdr?gl.RGBA16F:gl.RGBA8,type=F.hdr?gl.HALF_FLOAT:gl.UNSIGNED_BYTE,t={textures:[],fbos:[],buffers:[],smallW:Math.max(1,Math.round(width/4)),smallH:Math.max(1,Math.round(height/4))};
+ F.target=t;
+ const make=(w,h)=>{const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);gl.texImage2D(gl.TEXTURE_2D,0,format,w,h,0,gl.RGBA,type,null);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);const f=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,f);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);t.textures.push(tex);t.fbos.push(f);return {tex,f}};
+ t.full=make(width,height);t.a=make(t.smallW,t.smallH);t.b=make(t.smallW,t.smallH);
+ const available=gl.getInternalformatParameter(gl.RENDERBUFFER,format,gl.SAMPLES);F.samples=Math.min(4,...(available.length?[Math.max(...available)]:[1]));
+ t.msaa=gl.createFramebuffer();t.fbos.push(t.msaa);gl.bindFramebuffer(gl.FRAMEBUFFER,t.msaa);
+ const colour=gl.createRenderbuffer();gl.bindRenderbuffer(gl.RENDERBUFFER,colour);gl.renderbufferStorageMultisample(gl.RENDERBUFFER,F.samples,format,width,height);gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.RENDERBUFFER,colour);t.buffers.push(colour);
+ const depth=gl.createRenderbuffer();gl.bindRenderbuffer(gl.RENDERBUFFER,depth);gl.renderbufferStorageMultisample(gl.RENDERBUFFER,F.samples,gl.DEPTH_COMPONENT24,width,height);gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,depth);t.buffers.push(depth);
+ if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)throw Error('Incomplete Atelier framebuffer');
+}
+function join(meshes){let v=0,n=0;for(const m of meshes){v+=m.vertices.length;n+=m.indices.length}const vertices=new Float32Array(v),indices=new Uint32Array(n);let vi=0,ii=0;for(const m of meshes){vertices.set(m.vertices,vi);for(let j=0;j<m.indices.length;j++)indices[ii+j]=m.indices[j]+vi/8;vi+=m.vertices.length;ii+=m.indices.length}return {vertices,indices}}
+function sphereMesh(){const vertices=[],indices=[],rings=12,sides=20;for(let i=0;i<=rings;i++)for(let j=0;j<=sides;j++){const a=Math.PI*i/rings,b=TAU*j/sides,n=[Math.sin(a)*Math.cos(b),Math.cos(a),Math.sin(a)*Math.sin(b)];vertices.push(...n,...n,i/rings,j/sides)}for(let i=0;i<rings;i++)for(let j=0;j<sides;j++){const a=i*(sides+1)+j,b=a+sides+1;indices.push(a,a+1,b,a+1,b+1,b)}return {vertices:new Float32Array(vertices),indices:new Uint32Array(indices)}}
+function upload(m){const gl=F.gl,vao=gl.createVertexArray(),vertex=gl.createBuffer(),index=gl.createBuffer();gl.bindVertexArray(vao);gl.bindBuffer(gl.ARRAY_BUFFER,vertex);gl.bufferData(gl.ARRAY_BUFFER,m.vertices,gl.STATIC_DRAW);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,index);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,m.indices,gl.STATIC_DRAW);
+ for(const [a,size,offset] of [[0,3,0],[1,3,12],[2,2,24]]){gl.enableVertexAttribArray(a);gl.vertexAttribPointer(a,size,gl.FLOAT,false,32,offset)}
+ return {vao,vertex,index,count:m.indices.length};
+}
+function geometry(){const a=__UPRS660__.analysis(),scale=(state.layers20?.scale||.54)*.78,key=[a.p,a.q,a.eta,scale].join('|');if(F.mesh?.key===key)return;
+ deleteMesh();const c=__UPRS660__.core,d=c.gcd(a.p,a.q),n=Math.max(256,96*Math.max(a.p/d,a.q/d)),r=safeRadius(a.p,a.q,scale,a.eta),groups=[];
+ for(const phase of [0,Math.PI])groups.push(upload(join(c.phaseFibre(a.p,a.q,phase,n,a.eta).components.map(line=>tubeMesh(line.map(p=>c.stereo(p,scale)),r,20)))));
+ const veil=[],phases=24,vn=Math.max(96,36*Math.max(a.p/d,a.q/d));
+ for(let k=1;k<phases;k++){if(k===phases/2)continue;for(const line of c.phaseFibre(a.p,a.q,TAU*k/phases,vn,a.eta).components)veil.push(tubeMesh(line.map(p=>c.stereo(p,scale)),r*.045,6))}
+ F.mesh={key,groups,veil:upload(join(veil)),radius:r,centreLineSamples:n};
+}
+function drawMesh(m,colour,opacity,roughness,metal){const gl=F.gl,l=F.loc;gl.uniform3fv(l.uColour,colour);gl.uniform1f(l.uOpacity,opacity);gl.uniform1f(l.uRoughness,roughness);gl.uniform1f(l.uMetal,metal);gl.bindVertexArray(m.vao);gl.drawElements(gl.TRIANGLES,m.count,gl.UNSIGNED_INT,0);F.drawCalls++;F.triangles+=m.count/3}
+function post(p,loc,dest,texture,w,h){const gl=F.gl;gl.bindFramebuffer(gl.FRAMEBUFFER,dest);gl.viewport(0,0,w,h);gl.useProgram(p);gl.bindVertexArray(F.quad);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texture);gl.uniform1i(loc.image,0)}
+function render(force=false){if(!active())return;const started=performance.now(),gl=F.gl,vp=document.getElementById('viewport'),w=vp.clientWidth,h=vp.clientHeight,budget=innerWidth<=640?850000:1900000,ratio=Math.min(devicePixelRatio||1,1.75,Math.sqrt(budget/(w*h)));
+ const info=__UPRS660__.snapshot(),camNow=camera(),renderKey=[info.cursor.phase,info.cursor.group,info.cursor.component,w,h,ratio,info.p,info.q,info.eta,state.layers20?.scale,info.view.wireframe,paper(),camNow.yaw,camNow.pitch,camNow.roll,camNow.distance,...camNow.target].join('|');if(!force&&F.renderKey===renderKey)return;
+ try{
+  targets(Math.max(1,Math.round(w*ratio)),Math.max(1,Math.round(h*ratio)));geometry();F.drawCalls=0;F.triangles=0;
+  const t=F.target,cam=camera(),f=Math.min(w,h)*1.38,white=paper()?1:0;
+  gl.bindFramebuffer(gl.FRAMEBUFFER,t.msaa);gl.viewport(0,0,F.width,F.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);gl.useProgram(F.program);
+  gl.uniformMatrix3fv(F.loc.uRotation,false,rotation(cam));gl.uniform3fv(F.loc.uTarget,cam.target);gl.uniform2f(F.loc.uLens,2*f/w,2*f/h);gl.uniform1f(F.loc.uDistance,cam.distance);gl.uniform1f(F.loc.uPaper,white);gl.uniform3f(F.loc.uOffset,0,0,0);gl.uniform1f(F.loc.uScale,1);
+  if(__UPRS660__.snapshot().view.wireframe){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);drawMesh(F.mesh.veil,white?[.12,.16,.14]:[.20,.28,.30],white?.15:.27,.50,.55)}
+  gl.disable(gl.BLEND);gl.depthMask(true);drawMesh(F.mesh.groups[0],[.78,.52,.19],1.,.24,.87);drawMesh(F.mesh.groups[1],[.22,.52,.56],1.,.20,.82);
+  const cursor=state.scene.points.find(p=>p.meta?.kind==='topo660-cursor');if(cursor){gl.uniform3fv(F.loc.uOffset,cursor.p);gl.uniform1f(F.loc.uScale,F.mesh.radius*1.7);drawMesh(F.ball,[.94,.79,.47],1.,.17,.72)}
+  gl.bindFramebuffer(gl.READ_FRAMEBUFFER,t.msaa);gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER,t.full.f);gl.blitFramebuffer(0,0,F.width,F.height,0,0,F.width,F.height,gl.COLOR_BUFFER_BIT,gl.NEAREST);gl.disable(gl.DEPTH_TEST);
+  post(F.bright,F.brightLoc,t.a.f,t.full.tex,t.smallW,t.smallH);gl.drawArrays(gl.TRIANGLES,0,3);
+  post(F.blur,F.blurLoc,t.b.f,t.a.tex,t.smallW,t.smallH);gl.uniform2f(F.blurLoc.stepUV,1/t.smallW,0);gl.drawArrays(gl.TRIANGLES,0,3);
+  post(F.blur,F.blurLoc,t.a.f,t.b.tex,t.smallW,t.smallH);gl.uniform2f(F.blurLoc.stepUV,0,1/t.smallH);gl.drawArrays(gl.TRIANGLES,0,3);
+  post(F.composite,F.compositeLoc,null,t.full.tex,F.width,F.height);gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,t.a.tex);gl.uniform1i(F.compositeLoc.bloom,1);gl.uniform1f(F.compositeLoc.uPaper,white);gl.drawArrays(gl.TRIANGLES,0,3);gl.activeTexture(gl.TEXTURE0);
+  F.renderKey=renderKey;F.frames++;const ms=performance.now()-started;F.emaMs=F.emaMs?F.emaMs*.9+ms*.1:ms;
+ }catch(e){F.error=String(e.message);F.ready=false;prepare();draw(performance.now());console.warn('Atelier Canvas fallback:',F.error)}
+}
+function fitInspector(){const dock=document.getElementById('topologyDock660'),body=document.getElementById('topologyBody660'),host=document.getElementById('viewport');if(!dock||!body||!host||!dock.open)return;
+ const style=getComputedStyle(body),padding=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom),height=Math.max(0,Math.min(470,host.clientHeight-dock.offsetTop-dock.querySelector('summary').offsetHeight-padding-14)),value=height+'px';if(body.style.maxHeight!==value)body.style.maxHeight=value;
+}
+function ui(){fitInspector();const info=__UPRS660__.analysis(),uiKey=[active(),F.enabled,F.error,state.lang,info.p,info.q,info.components,info.expected].join('|');let caption=document.getElementById('atelierCaption660');if(F.uiKey===uiKey&&caption&&document.getElementById('atelierMode660'))return;F.uiKey=uiKey;if(!caption){
+ const style=document.createElement('style');style.id='atelierStyle660';style.textContent=`
+ #atelierCanvas660{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}#atelierCanvas660[hidden]{display:none}
+ body.atelier660-mode .top{border-bottom-color:rgba(215,183,110,.13)!important}
+ body.atelier660-mode .brand{min-width:205px!important}body.atelier660-mode .brand b{font-size:10px!important;letter-spacing:.22em!important}body.atelier660-mode .brand small{font-size:8px!important;margin-top:5px!important}body.atelier660-mode .seal{width:31px!important;height:31px!important}
+ body.atelier660-mode .viewport{background:radial-gradient(ellipse at 53% 46%,#101a23 0%,#070d13 34%,#020508 73%,#010203 100%)!important;border-color:rgba(215,183,110,.14)!important;border-radius:3px!important}
+ body.atelier660-mode #view{z-index:2}body.atelier660-mode.atelier660-gallery #view{opacity:0!important;filter:none!important}body.atelier660-gallery #modeGuide254{display:none!important}body.atelier660-mode #fallback{opacity:0!important}body.atelier660-mode .vignette{box-shadow:inset 0 0 140px #0005!important}
+ #atelierCaption660{position:absolute;left:38px;top:85px;z-index:4;pointer-events:none;max-width:300px;color:#eadebd}#atelierCaption660 .atelier-eyebrow{font:9px/1.5 system-ui;letter-spacing:.27em;color:#ab9261;text-transform:uppercase}
+ #atelierCaption660 h2{font:normal clamp(30px,3vw,46px)/1.08 Georgia,'Times New Roman',serif;letter-spacing:-.045em;margin:13px 0 14px;color:#efe9db}#atelierCaption660 p{font:11px/1.8 system-ui;color:#839096;margin:0;max-width:205px}#atelierCaption660 .atelier-rule{width:42px;height:1px;background:linear-gradient(90deg,#b59c63,transparent);margin:22px 0}
+ #atelierLegend660{position:absolute;left:38px;bottom:148px;z-index:4;pointer-events:none;color:#a9b3b5;font:10px/1.6 system-ui;letter-spacing:.05em}#atelierLegend660 .atelier-metric{display:flex;gap:35px;margin-bottom:19px}#atelierLegend660 strong{font:normal 30px/1 Georgia,serif;display:block;color:#e5dcc9;margin-bottom:7px}#atelierLegend660 small{font:8px/1.5 system-ui;letter-spacing:.17em;text-transform:uppercase;color:#78858b}#atelierLegend660 .atelier-swatch{display:inline-block;width:21px;height:2px;margin-right:9px;vertical-align:middle;background:linear-gradient(90deg,#bd8f47,#f7ddb0)}#atelierLegend660 .atelier-swatch.opal{background:linear-gradient(90deg,#426e79,#b7d9d7)}
+ body.atelier660-mode #topologyDock660{right:24px;top:84px;width:245px;padding:0;border-color:rgba(215,183,110,.16);border-radius:12px;background:linear-gradient(145deg,rgba(13,20,27,.98),rgba(4,8,12,.98));box-shadow:0 22px 60px #0006, inset 0 1px #ffffff08;backdrop-filter:blur(24px);color:#c6c9c7}
+ body.atelier660-mode #topologyDock660 summary{color:#cfb67f;padding:13px 15px;font:10px/1.5 system-ui;letter-spacing:.06em}body.atelier660-mode #topologyDock660 h3{font:normal 20px/1.3 Georgia,serif;color:#e8dfcd;margin:5px 0 10px}body.atelier660-mode #topologyNumbers660{border-block:1px solid #d7b76e18;padding:12px 0;margin:15px 0;gap:7px}body.atelier660-mode #topologyNumbers660 div:nth-child(even){color:#dbc28b}
+ body.atelier660-mode #topologyDock660 input[type=range]{accent-color:#c7ac73;box-shadow:none;background:transparent;height:20px}body.atelier660-mode #topologyDock660 input[type=checkbox]{accent-color:#b69b64}body.atelier660-mode #topologyDock660 label{color:#acb5b8}body.atelier660-mode #topologyDock660 a{color:#b69e6b}body.atelier660-mode #topologyDock660 button{border:1px solid #d7b76e25;background:linear-gradient(180deg,#d7b76e0c,#d7b76e03);border-radius:7px;color:#d0c4a9}body.atelier660-mode #topologyStatus660[data-status=verified]{color:#a3b9a2}
+ #atelierMode660{display:flex;gap:3px;margin:12px 0 9px;border:1px solid #d7b76e20;padding:3px;border-radius:8px}#atelierMode660 button{flex:1}#atelierMode660 button[aria-pressed=true]{background:#d7b76e22!important;border-color:#d7b76e45!important;color:#eed9aa!important}
+ body.atelier660-mode.paper328 .viewport,body.atelier660-mode.light .viewport{background:radial-gradient(ellipse at 53% 43%,#fffdf8,#eee8dc 70%,#ddd5c6)!important}body.paper328 #atelierCaption660,body.light #atelierCaption660{color:#5e4d30}body.paper328 #atelierCaption660 h2,body.light #atelierCaption660 h2{color:#403b32}body.paper328 #atelierLegend660 strong,body.light #atelierLegend660 strong{color:#524632}body.paper328 #atelierCaption660 p,body.light #atelierCaption660 p{color:#777367}body.atelier660-mode.paper328 #topologyDock660,body.atelier660-mode.light #topologyDock660{background:linear-gradient(145deg,#fffdf8fa,#ece4d7fa);color:#4e514e;border-color:#735b3b30}body.atelier660-mode.paper328 #topologyDock660 h3,body.atelier660-mode.light #topologyDock660 h3{color:#58472d}body.atelier660-mode.paper328 #topologyDock660 label,body.atelier660-mode.light #topologyDock660 label{color:#64675d}body.atelier660-mode.paper328 #topologyNumbers660 div:nth-child(even),body.atelier660-mode.light #topologyNumbers660 div:nth-child(even){color:#765c2c}
+ body.atelier660-mode.paper328 .vignette,body.atelier660-mode.light .vignette{box-shadow:inset 0 0 140px rgba(92,72,35,.04)!important}body.atelier660-mode.paper328 .viewport:after,body.atelier660-mode.light .viewport:after{background:radial-gradient(ellipse,transparent 40%,rgba(124,100,57,.04))!important}
+ body.paper328 #atelierLegend660,body.light #atelierLegend660{color:#5e6258}body.paper328 #atelierLegend660 small,body.light #atelierLegend660 small{color:#6e6b5e}
+ body.atelier660-mode.paper328 #topologyDock660 summary,body.atelier660-mode.light #topologyDock660 summary,body.atelier660-mode.paper328 #topologyDock660 a,body.atelier660-mode.light #topologyDock660 a{color:#765c2c}body.atelier660-mode.paper328 #topologyDock660 button,body.atelier660-mode.light #topologyDock660 button{color:#695537;border-color:#735b3b30}body.atelier660-mode.paper328 #atelierMode660 button[aria-pressed=true],body.atelier660-mode.light #atelierMode660 button[aria-pressed=true]{color:#62471d!important}
+ #atelierStudies660{position:absolute;left:50%;bottom:89px;transform:translateX(-50%);z-index:6;display:flex;gap:5px;padding:5px;border:1px solid #d7b76e24;border-radius:11px;background:linear-gradient(180deg,#101820d9,#04090de6);box-shadow:0 12px 40px #0004;backdrop-filter:blur(18px)}#atelierStudies660[hidden]{display:none}#atelierStudies660 button{border:1px solid transparent;border-radius:6px;background:transparent;color:#879397;padding:11px 14px;font:10px/1 system-ui;letter-spacing:.06em;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s,background .2s}#atelierStudies660 button span{font:normal 12px/1 Georgia,serif;color:#ac9160;margin-right:9px}#atelierStudies660 button[aria-pressed=true]{color:#e6d7b5;background:#d7b76e0a;border-color:#d7b76e25}#atelierStudies660 button:hover{color:#f1dfb6;background:#d7b76e0f}#atelierStudies660 button:focus-visible{outline:1px solid #dec289;outline-offset:2px}body.paper328 #atelierStudies660,body.light #atelierStudies660{background:linear-gradient(180deg,#fffdf4ee,#eee5d7ee);box-shadow:0 12px 35px #6c5b3c14}body.paper328 #atelierStudies660 button,body.light #atelierStudies660 button{color:#746c5b}body.paper328 #atelierStudies660 button[aria-pressed=true],body.light #atelierStudies660 button[aria-pressed=true]{color:#725429}
+ @media(max-width:1000px){#atelierCaption660{left:24px;max-width:220px;top:72px}#atelierCaption660 p{max-width:170px;font-size:10px}#atelierLegend660{left:24px}body.atelier660-mode .brand{min-width:145px!important}body.atelier660-mode #topologyDock660{right:14px;width:220px}}
+ @media(max-width:640px){#atelierCaption660{left:20px;top:68px;max-width:180px}#atelierCaption660 h2{font-size:30px;margin:10px 0}#atelierCaption660 p{font-size:9px;max-width:150px;line-height:1.6}#atelierCaption660 .atelier-rule{margin:13px 0}#atelierCaption660 .atelier-eyebrow{font-size:7px;letter-spacing:.17em}#atelierLegend660{left:20px;bottom:158px;font-size:8px}#atelierLegend660 strong{font-size:23px}#atelierLegend660 .atelier-metric{gap:22px;margin-bottom:12px}#atelierLegend660 small{font-size:6px}body.atelier660-mode #topologyDock660{top:auto;bottom:65px;right:12px;width:205px}body.atelier660-mode #topologyDock660[open]{top:65px;bottom:auto}body.atelier660-mode #topologyDock660 summary{font-size:9px;padding:10px 12px}}
+ @media(max-width:640px){#atelierStudies660{bottom:113px;width:calc(100% - 30px);padding:4px;justify-content:center}#atelierStudies660 button{padding:9px 6px;font-size:8px;letter-spacing:0;flex:1}#atelierStudies660 button span{font-size:10px;margin-right:4px}}
+ @media(max-width:640px){body.atelier660-mode #topologyDock660:not([open]){top:86px;bottom:auto;width:min(170px,calc(100% - 190px))}}
+ @media(prefers-reduced-motion:reduce){body.atelier660-mode .viewport:before{animation:none!important}}
+ `;document.head.appendChild(style);
+ const vp=document.getElementById('viewport');caption=document.createElement('div');caption.id='atelierCaption660';caption.innerHTML='<div class="atelier-eyebrow">OBSIDIAN ATELIER · S³</div><h2></h2><div class="atelier-rule"></div><p></p>';vp.appendChild(caption);
+ const legend=document.createElement('div');legend.id='atelierLegend660';legend.innerHTML='<div class="atelier-metric"><div><strong id="atelierComponents660"></strong><small id="atelierComponentLabel660"></small></div><div><strong id="atelierLink660"></strong><small id="atelierLinkLabel660"></small></div></div><div><i class="atelier-swatch"></i><span id="atelierGoldLabel660"></span></div><div><i class="atelier-swatch opal"></i><span id="atelierOpalLabel660"></span></div>';vp.appendChild(legend);
+ const studies=document.createElement('div');studies.id='atelierStudies660';studies.setAttribute('role','group');studies.setAttribute('aria-label','S³ studies');studies.innerHTML=['1,1','2,3','4,6'].map((pq,i)=>`<button data-study660="${pq}"><span>0${i+1}</span><b></b></button>`).join('');vp.appendChild(studies);studies.addEventListener('pointerdown',e=>e.stopPropagation());studies.addEventListener('keydown',e=>e.stopPropagation());for(const button of studies.children)button.onclick=()=>{const [p,q]=button.dataset.study660.split(',').map(Number);__UPRS660__.setPreset(p,q);state.yaw=.55;state.pitch=.36;state.roll=0;draw(performance.now())};
+ }
+ const on=active(),legend=document.getElementById('atelierLegend660');caption.hidden=!on;legend.hidden=!on;const studies=document.getElementById('atelierStudies660');studies.hidden=!on;for(const [i,button] of [...studies.children].entries()){button.querySelector('b').textContent=[tr('Единство','Unity','Einheit'),tr('Переплетение','Interweaving','Verflechtung'),tr('Множество','Multiplicity','Vielfalt')][i];button.setAttribute('aria-pressed',String(button.dataset.study660===info.p+','+info.q))}
+ caption.querySelector('h2').textContent=tr('Линии\nединства','Lines of\nunity','Linien der\nEinheit');caption.querySelector('h2').style.whiteSpace='pre-line';caption.querySelector('p').textContent=tr('Замкнутые пути. Неотделимые связи. Трёхмерная тень пространства S³.','Closed paths. Inseparable links. A three-dimensional shadow of S³.','Geschlossene Wege. Untrennbare Verbindungen. Ein dreidimensionaler Schatten von S³.');
+ const a=__UPRS660__.analysis();document.getElementById('atelierComponents660').textContent=String(a.components).padStart(2,'0');document.getElementById('atelierLink660').textContent=a.expected;
+ document.getElementById('atelierComponentLabel660').textContent=tr('на одну фазу','per phase','je Phase');document.getElementById('atelierLinkLabel660').textContent=tr('зацепление · теория','linking · theory','Verschlingung · Theorie');
+ document.getElementById('atelierGoldLabel660').textContent=tr('Шампань · Φ = 0','Champagne · Φ = 0','Champagner · Φ = 0');document.getElementById('atelierOpalLabel660').textContent=tr('Опал · Φ = π','Opal · Φ = π','Opal · Φ = π');
+ const body=document.getElementById('topologyBody660');if(body&&!document.getElementById('atelierMode660')){const mode=document.createElement('div');mode.id='atelierMode660';mode.innerHTML='<button id="atelierVolume660"></button><button id="atelierLines660"></button>';body.insertBefore(mode,body.children[2]);document.getElementById('atelierVolume660').onclick=()=>API.setEnabled(true);document.getElementById('atelierLines660').onclick=()=>API.setEnabled(false)}
+ const volume=document.getElementById('atelierVolume660'),lines=document.getElementById('atelierLines660');if(volume){volume.disabled=!!F.error;volume.textContent=tr('Объём','Volume','Volumen');lines.textContent=tr('Линии','Lines','Linien');volume.setAttribute('aria-pressed',String(F.enabled));lines.setAttribute('aria-pressed',String(!F.enabled))}
+}
+function wrap(){const cur=globalThis.draw;if(typeof cur!=='function'||cur.__atelier660)return;const w=function(){if(F.drawing)return cur.apply(this,arguments);F.drawing=true;try{const yes=prepare(),r=cur.apply(this,arguments);if(yes)render();ui();return r}finally{F.drawing=false}};w.__atelier660=true;globalThis.draw=w}
+Object.assign(API,{active,owns:meta=>active()&&['topo660-fibre','topo660-envelope','topo660-cursor'].includes(meta?.kind),setEnabled:v=>{F.enabled=!!v;draw(performance.now());return F.enabled},
+ audit:()=>({active:active(),enabled:F.enabled,ready:F.ready,lost:F.lost,error:F.error,hdr:F.hdr,samples:F.samples,width:F.width,height:F.height,frames:F.frames,submitMs:F.emaMs,drawCalls:F.drawCalls,triangles:F.triangles,radius:F.mesh?.radius,centreLineSamples:F.mesh?.centreLineSamples,camera:camera(),glError:F.ready?F.gl.getError():null}),
+ readback:()=>{render(true);if(!active())return {visible:0,bright:0};const gl=F.gl,pixels=new Uint8Array(F.width*F.height*4);gl.finish();gl.readPixels(0,0,F.width,F.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);let visible=0,bright=0;for(let i=0;i<pixels.length;i+=4){if(pixels[i+3]>8)visible++;if(pixels[i+3]>128&&Math.max(pixels[i],pixels[i+1],pixels[i+2])>180)bright++}return {visible,bright,width:F.width,height:F.height}}
+});
+const install=()=>{wrap();ui();draw(performance.now())};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+for(const ms of [1200,4200,10000,17000,25000,31500])setTimeout(install,ms);
+})();
+</script>
 </body></html>
