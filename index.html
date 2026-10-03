@@ -10155,7 +10155,7 @@ function sessionInit(mode,profile){const optional=['local-floor'];if(profile==='
 function stopWatchdog(){if(X.watchdog){clearInterval(X.watchdog);X.watchdog=0}}
 function disposeGL(){const gl=X.gl;try{for(const b of Object.values(X.buffers||{}))if(b)gl?.deleteBuffer?.(b);if(X.program)gl?.deleteProgram?.(X.program);gl?.getExtension?.('WEBGL_lose_context')?.loseContext?.()}catch(_){}try{X.canvas?.remove()}catch(_){}X.gl=null;X.canvas=null;X.layer=null;X.program=null;X.loc=null;X.buffers={}}
 function clearRuntime(reason='idle'){stopWatchdog();disposeGL();X.session=null;X.ref=null;X.starting=false;X.ready=false;X.firstFrame=false;X.frameErrors=0;X.sceneKey='';X.grab=null;setStage(reason);try{state.xrSession=null}catch(_){}syncButtons()}
-async function endSession(session=X.session,reason='ended'){if(!session){clearRuntime(reason);return}rec('session-end-request',{reason});try{await timeout(session.end(),2200,'session.end timeout')}catch(e){rec('session-end-error',{error:errorText(e)})}if(X.session===session)clearRuntime(reason)}
+async function endSession(session=X.session,reason='ended'){if(!session){X.requestToken++;clearRuntime(reason);return}if(X.session===session)X.requestToken++;rec('session-end-request',{reason});try{await timeout(session.end(),2200,'session.end timeout')}catch(e){rec('session-end-error',{error:errorText(e)})}if(X.session===session)clearRuntime(reason)}
 function startWatchdog(session){stopWatchdog();X.watchdog=setInterval(()=>{if(X.session!==session||!X.ready||!X.lastFrameAt)return;const age=performance.now()-X.lastFrameAt;if(age>6500){const msg='No XR frames for '+Math.round(age)+' ms';console.error('UPRS461 XR frame watchdog',age);rec('watchdog',{age:Math.round(age)});X.error=msg;toastXR('XR stopped: no frames from headset');endSession(session,'frame-timeout')}},1800)}
 const VS='attribute vec3 aP;attribute vec4 aC;uniform mat4 uP;uniform mat4 uMV;uniform float uSize;uniform float uPoint;varying vec4 vC;void main(){vec4 p=uMV*vec4(aP,1.);gl_Position=uP*p;gl_PointSize=uSize/max(.2,gl_Position.w);vC=aC;}';
 const FS='precision mediump float;uniform float uPoint;varying vec4 vC;void main(){vec4 c=vC;if(uPoint>.5){vec2 d=gl_PointCoord-vec2(.5);float r=length(d);if(r>.5)discard;c.a*=smoothstep(.5,.3,r);}if(c.a<.01)discard;gl_FragColor=c;}';
@@ -10179,14 +10179,14 @@ async function start(mode='immersive-vr',profile='safe'){
   session=await requestImmersive(mode,init,token);if(token!==X.requestToken){try{await session.end()}catch(_){}return false}X.session=session;try{state.xrSession=session}catch(_){}X.support.features=Array.from(session.enabledFeatures||[]);setStage('session-created');
   session.addEventListener('end',()=>{rec('session-ended');if(X.session===session)clearRuntime('ended')},{once:true});session.addEventListener('visibilitychange',()=>rec('visibility',{value:session.visibilityState}));
   const canvas=Object.assign(document.createElement('canvas'),{id:'xr461Canvas',width:2,height:2});canvas.style.cssText='position:fixed;width:2px;height:2px;opacity:0;pointer-events:none';document.body.appendChild(canvas);X.canvas=canvas;
-  const attrs={xrCompatible:true,alpha:mode==='immersive-ar',antialias:false,depth:true,stencil:false,preserveDrawingBuffer:false,powerPreference:'high-performance'};const gl=canvas.getContext('webgl',attrs)||canvas.getContext('webgl2',attrs);if(!gl)throw Error('WebGL unavailable');X.gl=gl;canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();X.error='WebGL context lost';rec('context-lost');toastXR('XR ended: WebGL context lost');endSession(session,'context-lost')},{once:true});if(typeof gl.makeXRCompatible==='function')await timeout(gl.makeXRCompatible(),6000,'makeXRCompatible timeout');
+  const attrs={xrCompatible:true,alpha:mode==='immersive-ar',antialias:false,depth:true,stencil:false,preserveDrawingBuffer:false,powerPreference:'high-performance'};const gl=canvas.getContext('webgl',attrs)||canvas.getContext('webgl2',attrs);if(!gl)throw Error('WebGL unavailable');X.gl=gl;canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();if(X.session!==session)return;X.error='WebGL context lost';rec('context-lost');toastXR('XR ended: WebGL context lost');endSession(session,'context-lost')},{once:true});if(typeof gl.makeXRCompatible==='function')await timeout(gl.makeXRCompatible(),6000,'makeXRCompatible timeout');if(token!==X.requestToken||X.session!==session)return false;
   const scale=quest()?.70:.88;const layer=new XRWebGLLayer(session,gl,{alpha:mode==='immersive-ar',antialias:false,framebufferScaleFactor:scale});try{layer.fixedFoveation=.5}catch(_){}session.updateRenderState({baseLayer:layer,depthNear:.05,depthFar:80});X.layer=layer;rec('layer',{scale,webgl:gl instanceof WebGL2RenderingContext?'webgl2':'webgl'});setStage('first-frame');
-  const first=beginBootstrapLoop(session,gl,layer);await timeout(first,8000,'first XR frame timeout');
-  setStage('reference-space');let ref=null,last=null;for(const type of ['local-floor','local','viewer']){try{ref=await timeout(session.requestReferenceSpace(type),3500,type+' reference-space timeout');if(ref){rec('reference-space',{type});break}}catch(e){last=e;rec('reference-space-error',{type,error:errorText(e)})}}if(!ref)throw last||Error('No reference space');X.ref=ref;
+  const first=beginBootstrapLoop(session,gl,layer);await timeout(first,8000,'first XR frame timeout');if(token!==X.requestToken||X.session!==session)return false;
+  setStage('reference-space');let ref=null,last=null;for(const type of ['local-floor','local','viewer']){try{ref=await timeout(session.requestReferenceSpace(type),3500,type+' reference-space timeout');if(token!==X.requestToken||X.session!==session)return false;if(ref){rec('reference-space',{type});break}}catch(e){if(token!==X.requestToken||X.session!==session)return false;last=e;rec('reference-space-error',{type,error:errorText(e)})}}if(!ref)throw last||Error('No reference space');X.ref=ref;
   setStage('resources');X.program=program(gl);X.loc={aP:gl.getAttribLocation(X.program,'aP'),aC:gl.getAttribLocation(X.program,'aC'),uP:gl.getUniformLocation(X.program,'uP'),uMV:gl.getUniformLocation(X.program,'uMV'),uSize:gl.getUniformLocation(X.program,'uSize'),uPoint:gl.getUniformLocation(X.program,'uPoint')};for(const k of ['lp','lc','pp','pc'])X.buffers[k]=gl.createBuffer();uploadScene(true);
   session.addEventListener('select',e=>pick(e.frame,e.inputSource));session.addEventListener('squeezestart',e=>{const p=controllerPose(e.frame,e.inputSource);if(p)X.grab={src:e.inputSource,start:p,world:[...X.world.pos]}});session.addEventListener('squeezeend',()=>{X.grab=null});
   X.starting=false;X.ready=true;X.frameErrors=0;setStage('running');startWatchdog(session);toastXR((mode==='immersive-ar'?'MR':'VR')+' started');return true
- }catch(e){X.error=errorText(e);rec('start-error',{stage:X.stage,error:X.error});console.error('UPRS461 start',e);if(session){await endSession(session,'failed');X.starting=false;setStage('failed',X.error)}else{X.starting=false;setStage('failed',X.error)}syncButtons();toastXR('XR start failed: '+X.error);return false}
+ }catch(e){if(token!==X.requestToken)return false;X.error=errorText(e);rec('start-error',{stage:X.stage,error:X.error});console.error('UPRS461 start',e);if(session){const ending=endSession(session,'failed'),failureToken=X.requestToken;await ending;if(X.requestToken!==failureToken)return false;X.starting=false;setStage('failed',X.error)}else{X.starting=false;setStage('failed',X.error)}syncButtons();toastXR('XR start failed: '+X.error);return false}
 }
 let API461=null;
 /* X.world is the transform this renderer draws state.scene through. Anything
@@ -16595,6 +16595,10 @@ function linking(curveA,curveB){
  const A=curveA.map(p=>sub(p,origin).map(v=>v/scale)),B=curveB.map(p=>sub(p,origin).map(v=>v/scale));
  if(Math.hypot(...sub(A[0],A.at(-1)))>1e-10||Math.hypot(...sub(B[0],B.at(-1)))>1e-10)return fail('Open polygon: linking requires exact closure');
  for(const c of [A,B])for(let i=1;i<c.length;i++)if(Math.hypot(...sub(c[i],c[i-1]))<1e-12)return fail('Degenerate polygon edge');
+ for(const c of [A,B])for(let i=0,n=c.length-1;i<n;i++){
+  const u=sub(c[i],c[(i+n-1)%n]),v=sub(c[i+1],c[i]);
+  if(dot(u,v)<0&&Math.hypot(...cross(u,v))<=1e-12*Math.hypot(...u)*Math.hypot(...v))return fail('Adjacent polygon edges retrace');
+ }
  for(const c of [A,B])for(let i=1;i<c.length;i++)for(let j=i+2;j<c.length;j++){
   if(i===1&&j===c.length-1)continue;
   if(segmentDistance(c[i-1],c[i],c[j-1],c[j])<1e-9)return fail('Self-intersecting polygon');
@@ -16645,7 +16649,7 @@ function appendScene(scene,opt={}){
   label:`S³ reference phase cursor · Φ=${group?'π':'0'} · ${component+1}/${d}`,priority:154,draggable:true}});
  return 2*d}
 
-const G={enabled:true,eta:Math.PI/4,wireframe:true,focus:false,group:0,component:0,cursor:0,verification:null,job:0,progress:'',cache:new Map()};
+const G={enabled:true,eta:Math.PI/4,wireframe:true,focus:false,group:0,component:0,cursor:0,verification:null,verificationKey:null,job:0,progress:'',cache:new Map()};
 const TX={
  ru:{title:'Узлы и зацепления S³',reference:'Геометрический эталон',enable:'Показывать волокна',wire:'Clifford-тор',focus:'Только эталон',components:'Компонент в волокне',pair:'Зацепление пары',total:'Полное зацепление',verify:'Проверить численно',unverified:'Численная проверка не выполнена',verified:'Проверено на двух сетках',unresolved:'Проверка не разрешена',residual:'Невязка',phase:'Курсор фазы',source:'Источник · препринт 2026',note:'Эталон фазовых волокон. Физическое поле выбранной модели здесь не измеряется.',export:'Снимок JSON',invalid:'Нужны целые p и q от 1 до 8'},
  en:{title:'S³ knots and links',reference:'Reference geometry',enable:'Show phase fibres',wire:'Clifford torus',focus:'Reference only',components:'Components per fibre',pair:'Pairwise linking',total:'Complete-fibre linking',verify:'Verify numerically',unverified:'Numerical verification pending',verified:'Verified at two resolutions',unresolved:'Verification unresolved',residual:'Residual',phase:'Phase cursor',source:'Source · 2026 preprint',note:'Reference phase fibres. The selected model’s physical field is not measured here.',export:'JSON snapshot',invalid:'Integer p and q from 1 to 8 required'},
@@ -16655,26 +16659,27 @@ const tx=()=>TX[(typeof state!=='undefined'&&state.lang)||'ru']||TX.en;
 function active(){return typeof state!=='undefined'&&['hopf','hopfion'].includes(state.mode)&&!!(state.mode==='hopfion'||state.layers20?.hopfion)}
 function parameters(){return typeof state!=='undefined'?{p:state.p,q:state.q,eta:G.eta}:{p:2,q:3,eta:G.eta}}
 function analysisKey(){const x=parameters();return [x.p,x.q,x.eta].join('|')}
-function invalidate(){G.job++;G.progress='';G.verification=G.cache.get(analysisKey())||null}
+function invalidate(){G.job++;G.progress='';G.verificationKey=analysisKey();G.verification=G.cache.get(G.verificationKey)||null;const {p,q}=parameters();G.component=clamp(G.component,0,Math.max(0,gcd(p,q)-1))}
 function analysis(){const {p,q,eta}=parameters(),d=gcd(p,q);return {status:G.verification?.status||'unverified',p,q,eta,
  components:d,reduced:[p/d,q/d],expected:winding(p,q)?p*q:null,pairwise:winding(p,q)?p*q/(d*d):null,
  verification:G.verification,reference:true,phaseEquation:'Φ=qα−pβ (mod 2π)',source:'https://arxiv.org/abs/2608.15499'}}
 async function verify(){
- const key=analysisKey();if(G.cache.has(key)){G.verification=G.cache.get(key);syncUI();return G.verification}
+ const key=analysisKey();if(G.verificationKey!==key)invalidate();if(G.cache.has(key)){G.verification=G.cache.get(key);syncUI();return G.verification}
  const {p,q,eta}=parameters();if(!winding(p,q))return {status:'unresolved',measured:null,reason:'Invalid winding'};
  const job=++G.job,d=gcd(p,q),low=Math.max(64,24*Math.max(Math.abs(p/d),Math.abs(q/d))),high=2*low;
+ const cancelled=()=>{if(job===G.job){G.progress='';syncUI()}return {status:'cancelled',measured:null}};
  const make=n=>[0,Math.PI].map(phase=>phaseFibre(p,q,phase,n,eta).components.map(c=>c.map(s=>stereo(s,1))));
  const coarse=make(low),fine=make(high),matrix=[];let measured=0,coarseTotal=0,minSeparation=Infinity,delta=0,reason='';
  const started=typeof performance!=='undefined'?performance.now():Date.now();
  for(let i=0;i<d;i++){matrix.push([]);for(let j=0;j<d;j++){
   G.progress=`${i*d+j+1}/${d*d}`;syncUI();await new Promise(resolve=>setTimeout(resolve,0));
-  if(job!==G.job||key!==analysisKey())return {status:'cancelled',measured:null};
+  if(job!==G.job||key!==analysisKey())return cancelled();
   const a=linking(coarse[0][i],coarse[1][j]),b=linking(fine[0][i],fine[1][j]);
   if(a.status!=='ok'||b.status!=='ok'){reason=a.reason||b.reason;break}
   matrix[i].push(b.value);measured+=b.value;coarseTotal+=a.value;delta=Math.max(delta,Math.abs(a.value-b.value));
   minSeparation=Math.min(minSeparation,b.minSeparation);
  }if(reason)break}
- if(job!==G.job||key!==analysisKey())return {status:'cancelled',measured:null};
+ if(job!==G.job||key!==analysisKey())return cancelled();
  const error=reason?null:Math.abs(measured-p*q);
  const result={status:!reason&&error<1e-7&&delta<1e-7?'verified':'unresolved',expected:p*q,measured:reason?null:measured,
   coarseMeasured:reason?null:coarseTotal,matrix,residual:error,convergenceError:reason?null:delta,minSeparation:reason?null:minSeparation,
@@ -16745,7 +16750,7 @@ function ensureUI(){if(typeof document==='undefined')return;
  }const dock=document.getElementById('topologyDock660'),host=document.getElementById('viewport');
  if(dock&&host)dock.style.setProperty('--topology-height',Math.max(100,host.clientHeight-(innerWidth<=640?72:88)-100)+'px');syncUI()}
 function appendApp(){if(typeof state==='undefined'||!state.scene)return;const selected=state.activeEntity?.meta?.id;
- const key=analysisKey();if(G.verification&&G.verificationKey!==key){G.verification=G.cache.get(key)||null;G.verificationKey=key}
+ const key=analysisKey();if(G.verificationKey!==key)invalidate();
  appendScene(state.scene,sceneOptions());if(selected?.startsWith('topo660:'))state.activeEntity=[...state.scene.lines,...state.scene.points].find(e=>e.meta?.id===selected)||null;
  syncUI()}
 function wrap(){if(typeof document==='undefined')return;

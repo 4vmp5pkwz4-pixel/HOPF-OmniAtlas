@@ -79,3 +79,7 @@ test('a self-intersecting curve cannot be reported as a topological link',()=>{
   const bow=[[-1,-1,0],[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0]];
   const r=core().linking(bow,circle([0,0,4]));assert.equal(r.value,null);assert.notEqual(r.status,'ok');
 });
+test('collinear retracing edges are refused, including at polygon closure',()=>{
+  const c=[[0,0,0],[1,0,0],[2,0,0],[0,0,0]],b=[[0,0,3],[1,0,3],[0,1,3],[0,0,3]];
+  for(const a of [c,[...c].reverse()]){const r=core().linking(a,b);assert.equal(r.value,null);assert.notEqual(r.status,'ok')}
+});

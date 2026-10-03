@@ -1,0 +1,161 @@
+{
+  "schema": "uprs-v660-verification/1",
+  "checkedAt": "2026-10-03",
+  "node": {
+    "command": "node --test tests/*.test.mjs",
+    "passed": 20,
+    "total": 20,
+    "failed": 0
+  },
+  "release": {
+    "schema": "uprs-current-release/1",
+    "version": "6.6.0",
+    "source": "index.html",
+    "bytes": 2169721,
+    "sourceSha256": "0f3208e13c4085372072f54d6a59931b0c11d0aca3ab8e88b1ca9e22586c504f",
+    "outputSha256": "0f3208e13c4085372072f54d6a59931b0c11d0aca3ab8e88b1ca9e22586c504f",
+    "inlineScripts": 89,
+    "requiredModules": [
+      "uprs461QuestXRRecovery",
+      "uprs530ScientificIntegrity",
+      "uprs550PhaseSpaceEngine",
+      "uprs560PhaseGeometryS3",
+      "uprs620TopologicalAtlas",
+      "uprs650PredictiveMethods",
+      "uprs660FibreTopology"
+    ],
+    "xrModuleSha256": "406682dfea0bc8b55d88d03dab1acb12c67faade16cc0ad476a535c50b5a854a",
+    "checks": {
+      "inlineSyntax": true,
+      "currentModules": true,
+      "xrInputMatches": true
+    },
+    "scope": "Static release verification; numerical and browser tests run separately"
+  },
+  "tests": {
+    "passed": 1278,
+    "total": 1278,
+    "failed": []
+  },
+  "version": {
+    "title": "UPRS Möbius–Hopf OmniAtlas v6.6.0 · S³ Knots & Links",
+    "version": "6.6.0",
+    "html": "6.6.0",
+    "stamp": "v6.6.0 · PREDICTIVE ATLAS"
+  },
+  "cancelled": {
+    "status": "cancelled",
+    "disabled": false,
+    "text": "Численная проверка не выполнена",
+    "verification": null
+  },
+  "linking": {
+    "status": "verified",
+    "expected": 4,
+    "measured": 4,
+    "coarseMeasured": 4,
+    "matrix": [
+      [
+        1,
+        1.0000000000000002
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "residual": 0,
+    "convergenceError": 2.220446049250313e-16,
+    "minSeparation": 0.46167751305943056,
+    "resolutions": [
+      64,
+      128
+    ],
+    "method": "signed polygon Gauss integral via solid angles",
+    "reason": null,
+    "elapsedMs": 391
+  },
+  "scene": {
+    "fibres": 4,
+    "total": 33,
+    "unique": 33
+  },
+  "drag": {
+    "cursor": {
+      "phase": 1.0995574287564276,
+      "group": 1,
+      "component": 1
+    },
+    "active": {
+      "id": "topo660:cursor",
+      "kind": "topo660-cursor",
+      "group": 1,
+      "component": 1,
+      "label": "S³ reference phase cursor · Φ=π · 2/2",
+      "priority": 154,
+      "draggable": true
+    }
+  },
+  "pointerDrag": {
+    "phase": 1.0995574287564276,
+    "group": 1,
+    "component": 1
+  },
+  "viewports": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "overflow": false,
+      "left": 1649,
+      "right": 1907,
+      "bottom": 730,
+      "hostBottom": 1035
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "overflow": false,
+      "left": 1169,
+      "right": 1427,
+      "bottom": 730,
+      "hostBottom": 855
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "overflow": false,
+      "left": 753,
+      "right": 1011,
+      "bottom": 673,
+      "hostBottom": 723
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "overflow": false,
+      "left": 498,
+      "right": 756,
+      "bottom": 745,
+      "hostBottom": 954
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "left": 157,
+      "right": 382,
+      "bottom": 699,
+      "hostBottom": 748
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "overflow": false,
+      "left": 87,
+      "right": 312,
+      "bottom": 443,
+      "hostBottom": 492
+    }
+  ],
+  "errors": []
+}
