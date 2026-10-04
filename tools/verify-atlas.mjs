@@ -5,14 +5,15 @@ import crypto from 'node:crypto';
 import zlib from 'node:zlib';
 
 // index.html is the current release, not the frozen v4.5 historical input.
-const source='index.html',version='6.6.0';
+const source='index.html',version='6.7.0';
 const outputArg=process.argv.indexOf('--output');
 const output=outputArg<0?null:process.argv[outputArg+1];
 if(outputArg>=0&&!output)throw new Error('--output requires a directory');
 const bytes=fs.readFileSync(source),html=bytes.toString('utf8');
 const required=['uprs461QuestXRRecovery','uprs530ScientificIntegrity',
   'uprs550PhaseSpaceEngine','uprs560PhaseGeometryS3','uprs620TopologicalAtlas',
-  'uprs650PredictiveMethods','uprs660FibreTopology','uprs660AtelierRenderer'];
+  'uprs650PredictiveMethods','uprs660FibreTopology','uprs660AtelierRenderer',
+  'uprs670LaboratoryCore','uprs670LaboratoryUI'];
 const scripts=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
 let parsed=0;
 for(const [i,m] of scripts.entries()){
@@ -28,10 +29,15 @@ const current=html.match(/<script id="uprs461QuestXRRecovery">[\s\S]*?<\/script>
 const encoded=fs.readFileSync('_includes/uprs461-quest-xr-recovery-v2.html.gz.b64','utf8');
 const decoded=zlib.gunzipSync(Buffer.from(encoded.trim(),'base64')).toString('utf8').trim();
 if(current!==decoded)throw new Error('Published XR input differs from current index.html');
+const laboratoryCore=fs.readFileSync('_includes/uprs670-laboratory-core.js','utf8').trim();
+const laboratoryUI=fs.readFileSync('_includes/uprs670-laboratory-ui.html','utf8').trim();
+const laboratoryBlock=`<!-- UPRS670:BEGIN -->\n<script id="uprs670LaboratoryCore">\n${laboratoryCore}\n</script>\n${laboratoryUI}\n<!-- UPRS670:END -->`;
+if(!html.includes(laboratoryBlock))throw new Error('Embedded laboratory differs from its numerical/UI authority');
+if(!laboratoryCore.includes(`VERSION='${version}'`))throw new Error('Laboratory release version mismatch');
 const hash=data=>crypto.createHash('sha256').update(data).digest('hex');
 const report={schema:'uprs-current-release/1',version,source,bytes:bytes.length,
   sourceSha256:hash(bytes),outputSha256:hash(bytes),inlineScripts:parsed,requiredModules:required,
-  xrModuleSha256:hash(current),checks:{inlineSyntax:true,currentModules:true,xrInputMatches:true},
+  xrModuleSha256:hash(current),laboratoryCoreSha256:hash(laboratoryCore),checks:{inlineSyntax:true,currentModules:true,xrInputMatches:true,laboratorySourcesMatch:true},
   scope:'Static release verification; numerical and browser tests run separately'};
 if(output){fs.mkdirSync(output,{recursive:true});fs.writeFileSync(path.join(output,'index.html'),bytes);
   fs.writeFileSync(path.join(output,`UPRS_v${version}_report.json`),JSON.stringify(report,null,2)+'\n')}

@@ -31,38 +31,42 @@
 **Files:** `index.html`, `tests/physical-authority.test.mjs`, `tests/discovery-authority.test.mjs`.
 **Interfaces:** preserve existing model `response(x,p)` and discovery API; adjust values and scientifically unsupported labels at their source.
 
-- [ ] Write and run independent failing physical and inference regression tests.
-- [ ] Review numeric reproductions and apply localized model/method corrections.
-- [ ] Run the new tests and existing Node suite; record original versus corrected evidence.
-- [ ] Commit the corrected authorities.
+- [x] Write and run independent failing physical and inference regression tests.
+- [x] Review numeric reproductions and apply localized model/method corrections.
+- [x] Run the new tests and existing Node suite; record original versus corrected evidence.
+- [x] Commit the corrected authorities.
 
 ### Task 2: Numerical laboratory core
 
 **Files:** `_includes/uprs670-laboratory-core.js`, `tests/laboratory-core.test.mjs`.
 **Interfaces:** `__UPRS670_CORE__`: constants; `planckNu(nu,T)`, `planckLambda(lambda,T)`, `blackbody(T)`, `blackbodyIntegral(T,n)`; `casimir(a,area,T)`; `canonical(kind,params)`, `resonance(u,Q)`; `logistic(options)`, `bifurcation(options)`, `cantorDust(depth)`, `boxDimension(points,divisions)`; `grid(options,evaluate)`; stable snapshot validation helpers.
 
-- [ ] Write failing tests for spectral Jacobian, Wien peaks, integrated exitance, T⁴ and a⁻⁴ scaling, exact canonical bridges, logistic limits, Cantor dimension and input validation.
-- [ ] Implement the pure functions with bounded sampling and explicit scope metadata.
-- [ ] Verify independent analytic cases and parameter extremes; run the full Node suite.
-- [ ] Commit the core and tests.
+- [x] Write failing tests for spectral Jacobian, Wien peaks, integrated exitance, T⁴ and a⁻⁴ scaling, exact canonical bridges, logistic limits, Cantor dimension and input validation.
+- [x] Implement the pure functions with bounded sampling and explicit scope metadata.
+- [x] Verify independent analytic cases and parameter extremes; run the full Node suite.
+- [x] Commit the core and tests.
 
 ### Task 3: Linked visual laboratory
 
 **Files:** `_includes/uprs670-laboratory-ui.html`, `tools/sync-laboratory.mjs`, `index.html`, `tests/browser-laboratory.cjs`.
 **Interfaces:** core from Task 2; native model registry and `mapResponse`; native `setModel`, `recalc`, `setMode`; S³ API `__UPRS660__`. Expose `__UPRS670__` with open/close/study/snapshot/map/apply methods for integration and browser verification.
 
-- [ ] Add a failing browser flow proving the laboratory entry, controls and actual computed plots exist.
-- [ ] Implement the six studies, equation/source/assumption readouts, linked cursor, cancellable model maps, native synchronization and JSON export.
-- [ ] Embed the exact sources and extend version ownership without repeated competing timers.
-- [ ] Verify each study, cancellation, native-state preservation, narrow layouts, modal focus and paper theme; inspect screenshots.
-- [ ] Commit the laboratory.
+- [x] Add a failing browser flow proving the laboratory entry, controls and actual computed plots exist.
+- [x] Implement the six studies, equation/source/assumption readouts, linked cursor, cancellable model maps, native synchronization and JSON export.
+- [x] Embed the exact sources and extend version ownership without repeated competing timers.
+- [x] Verify each study, cancellation, native-state preservation, narrow layouts, modal focus and paper theme; inspect screenshots.
+- [x] Commit the laboratory.
 
 ### Task 4: Release verification and publication
 
 **Files:** `tools/verify-atlas.mjs`, `.github/workflows/v46-consolidation.yml`, `README.md`, `docs/v6.7.0-parameter-observatory.md`, `docs/v6.7.0-verification.json`.
 
-- [ ] Add embedded-source and version checks; update artifact paths and module inventory.
-- [ ] Run all Node and browser regression checks and built-in scientific tests; gather visual evidence and report hashes.
-- [ ] Obtain a fresh whole-branch review, fix material findings and rerun the relevant checks.
+- [x] Add embedded-source and version checks; update artifact paths and module inventory.
+- [x] Run all Node and browser regression checks and built-in scientific tests; gather visual evidence and report hashes.
+- [x] Obtain a fresh whole-branch review, fix material findings and rerun the relevant checks.
 - [ ] Publish the branch and PR; merge after passing CI under the user's standing publication instruction.
 - [ ] Verify Pages deployment, exact source hash and live interaction; report the working link and substantive limits.
+
+## Verification record · 2026-10-04
+
+82 Node regression tests and all 1,278 built-in browser checks passed. The six laboratory studies, both spectral coordinates, Cantor reference, export, cancellation, native-control synchronization, mobile layouts and paper theme passed browser verification. A fresh independent review identified native selector/cursor/log-switch synchronization; a reproducing browser assertion failed before the correction and passed afterward. GPU rendering, context loss/recovery and the prior S³ interactions remain verified. Publication is authorized by the user; CI and live Pages verification follow this commit.

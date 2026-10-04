@@ -1,0 +1,494 @@
+{
+  "schema": "uprs-v670-verification/1",
+  "checkedAt": "2026-10-04",
+  "node": {
+    "command": "node --test tests/*.test.mjs",
+    "passed": 82,
+    "total": 82,
+    "failed": 0
+  },
+  "release": {
+    "schema": "uprs-current-release/1",
+    "version": "6.7.0",
+    "source": "index.html",
+    "bytes": 2259789,
+    "sourceSha256": "e1080e7df9cc2f338f2a67158dea3a4358604a2e47b0179a15bce56669a6bdbe",
+    "outputSha256": "e1080e7df9cc2f338f2a67158dea3a4358604a2e47b0179a15bce56669a6bdbe",
+    "inlineScripts": 92,
+    "requiredModules": [
+      "uprs461QuestXRRecovery",
+      "uprs530ScientificIntegrity",
+      "uprs550PhaseSpaceEngine",
+      "uprs560PhaseGeometryS3",
+      "uprs620TopologicalAtlas",
+      "uprs650PredictiveMethods",
+      "uprs660FibreTopology",
+      "uprs660AtelierRenderer",
+      "uprs670LaboratoryCore",
+      "uprs670LaboratoryUI"
+    ],
+    "xrModuleSha256": "406682dfea0bc8b55d88d03dab1acb12c67faade16cc0ad476a535c50b5a854a",
+    "laboratoryCoreSha256": "9e102c62127a421becbb8305599fedff7c05e99cf0455f7549f7cddf5a73bdb5",
+    "checks": {
+      "inlineSyntax": true,
+      "currentModules": true,
+      "xrInputMatches": true,
+      "laboratorySourcesMatch": true
+    },
+    "scope": "Static release verification; numerical and browser tests run separately"
+  },
+  "atlas": {
+    "tests": {
+      "passed": 1278,
+      "total": 1278,
+      "failed": []
+    },
+    "boot": {
+      "events": [],
+      "mode": "smith",
+      "obsolete": 0
+    },
+    "version": {
+      "title": "UPRS Möbius–Hopf OmniAtlas v6.7.0 · Parameter Observatory",
+      "version": "6.7.0",
+      "html": "6.7.0",
+      "stamp": "v6.7.0"
+    },
+    "cancelled": {
+      "status": "cancelled",
+      "disabled": false,
+      "text": "Численная проверка не выполнена",
+      "verification": null
+    },
+    "linking": {
+      "status": "verified",
+      "expected": 4,
+      "measured": 4,
+      "coarseMeasured": 4,
+      "matrix": [
+        [
+          1,
+          1.0000000000000002
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "residual": 0,
+      "convergenceError": 2.220446049250313e-16,
+      "minSeparation": 0.46167751305943056,
+      "resolutions": [
+        64,
+        128
+      ],
+      "method": "signed polygon Gauss integral via solid angles",
+      "reason": null,
+      "elapsedMs": 194
+    },
+    "scene": {
+      "fibres": 4,
+      "total": 33,
+      "unique": 33
+    },
+    "drag": {
+      "cursor": {
+        "phase": 1.0995574287564276,
+        "group": 1,
+        "component": 1
+      },
+      "active": {
+        "id": "topo660:cursor",
+        "kind": "topo660-cursor",
+        "group": 1,
+        "component": 1,
+        "label": "S³ reference phase cursor · Φ=π · 2/2",
+        "priority": 154,
+        "draggable": true
+      }
+    },
+    "pointerDrag": {
+      "phase": 1.0995574287564276,
+      "group": 1,
+      "component": 1
+    },
+    "viewports": [
+      {
+        "width": 1920,
+        "height": 1080,
+        "overflow": false,
+        "left": 1650,
+        "right": 1895,
+        "bottom": 718,
+        "hostBottom": 1035
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "overflow": false,
+        "left": 1170,
+        "right": 1415,
+        "bottom": 718,
+        "hostBottom": 855
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "overflow": false,
+        "left": 754,
+        "right": 999,
+        "bottom": 698,
+        "hostBottom": 723
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "overflow": false,
+        "left": 534,
+        "right": 754,
+        "bottom": 741,
+        "hostBottom": 954
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "overflow": false,
+        "left": 173,
+        "right": 378,
+        "bottom": 708.5,
+        "hostBottom": 748
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "overflow": false,
+        "left": 103,
+        "right": 308,
+        "bottom": 467.5,
+        "hostBottom": 492
+      }
+    ],
+    "errors": []
+  },
+  "laboratory": {
+    "studies": [
+      {
+        "study": "planck",
+        "result": {
+          "temperature": 5772,
+          "peakNu": 339331594731374.75,
+          "peakLambda": 5.020394932753244e-07,
+          "exitance": 62938592.470335975,
+          "energyDensity": 0.8397621860165138,
+          "radiationPressure": 0.27992072867217127,
+          "scope": "ideal equilibrium blackbody",
+          "source": "si",
+          "quadrature": {
+            "numeric": 62938592.47034665,
+            "analytic": 62938592.470335975,
+            "relativeError": 1.696364913216632e-13,
+            "intervals": 512,
+            "dimensionless": 6.493939402267931,
+            "domain": [
+              0,
+              50
+            ],
+            "method": "composite Simpson quadrature after x=t², including Jacobian 2t",
+            "tailBound": 3e-17,
+            "unit": "W/m²"
+          }
+        }
+      },
+      {
+        "study": "casimir",
+        "result": {
+          "separation": 1.0000000000000001e-07,
+          "area": 1e-10,
+          "temperature": 300,
+          "pressure": -13.001257732443651,
+          "force": -1.3001257732443652e-09,
+          "energyPerArea": -4.333752577481217e-07,
+          "thermalParameter": 0.08231662230945777,
+          "thermalLength": 1.2148214685493783e-06,
+          "radiationPressure": 2.042747977575602e-06,
+          "finiteTemperatureCorrection": false,
+          "scope": "infinite parallel perfect conductors; zero-temperature pressure",
+          "source": "casimir"
+        }
+      },
+      {
+        "study": "resonance",
+        "result": {
+          "f0": 1000,
+          "Q": 5,
+          "bridgeResidual": 7.105427357601002e-15,
+          "bridges": [
+            {
+              "kind": "electrical",
+              "id": "rlc_series",
+              "params": {
+                "R": 50,
+                "L": 0.039788735772973836,
+                "C": 6.366197723675814e-07,
+                "Z0": 50
+              }
+            },
+            {
+              "kind": "mechanical",
+              "id": "mechanical_msd",
+              "params": {
+                "m": 1,
+                "c": 1256.637061435917,
+                "k": 39478417.60435743,
+                "Z0": 1256.637061435917
+              }
+            },
+            {
+              "kind": "acoustic",
+              "id": "acoustic_helmholtz",
+              "params": {
+                "rho": 1.204,
+                "cs": 343,
+                "radius": 0.01,
+                "length": 0.02,
+                "volume": 2.530327013488972e-05,
+                "loss": 178192.00000000003,
+                "Z0": 178192.00000000003
+              }
+            }
+          ]
+        }
+      },
+      {
+        "study": "fractal",
+        "result": {
+          "r": 3.8,
+          "lyapunov": 0.41864250648310636,
+          "superstable": false,
+          "scope": "finite-time estimate",
+          "burn": 800,
+          "retained": 512
+        }
+      },
+      {
+        "study": "model",
+        "result": {
+          "model": "rlc_series",
+          "name": "Series RLC electrical port",
+          "equation": "Z(ω)=R+j(ωL−1/ωC)",
+          "assumptions": "Lumped, linear, time-invariant, sinusoidal steady state.",
+          "parameter": "R",
+          "parameterUnit": "Ω",
+          "axisUnit": "Hz",
+          "metric": "magnitude",
+          "min": 0.07793095852361524,
+          "max": 0.9999999999683378,
+          "invalid": 0,
+          "samples": 7168,
+          "frozenParameters": {
+            "R": 50,
+            "L": 1e-08,
+            "C": 2.533e-12,
+            "Z0": 50
+          }
+        }
+      },
+      {
+        "study": "topology",
+        "result": {
+          "p": 2,
+          "q": 3,
+          "components": 1,
+          "expectedLinking": 6,
+          "phaseGap": 3.141592653589793,
+          "scope": "geometric phase-fibre reference"
+        }
+      }
+    ],
+    "substudies": {
+      "frequency": {
+        "peakNu": 17636777272940.477,
+        "equation": "Bν = 2hν³ / [c²(exp(hν/kBT) − 1)]"
+      },
+      "cantor": {
+        "dimension": 1.2618595071429148,
+        "analytic": 1.2618595071429148
+      }
+    },
+    "nativeSynchronization": {
+      "model": "rlc_series",
+      "selector": "rlc_series",
+      "index": 81,
+      "cursor": 81,
+      "log": true,
+      "switch": true
+    },
+    "sizes": [
+      {
+        "width": 1440,
+        "left": 18,
+        "right": 1422,
+        "overflow": false
+      },
+      {
+        "width": 768,
+        "left": 8,
+        "right": 760,
+        "overflow": false
+      },
+      {
+        "width": 390,
+        "left": 8,
+        "right": 382,
+        "overflow": false
+      },
+      {
+        "width": 320,
+        "left": 8,
+        "right": 312,
+        "overflow": false
+      }
+    ],
+    "errors": []
+  },
+  "atelier": {
+    "gpu": {
+      "active": true,
+      "enabled": true,
+      "ready": true,
+      "lost": false,
+      "error": "",
+      "hdr": true,
+      "samples": 4,
+      "width": 1438,
+      "height": 809,
+      "frames": 2,
+      "submitMs": 156.16999999999535,
+      "drawCalls": 4,
+      "triangles": 52032,
+      "radius": 0.015484278692919351,
+      "centreLineSamples": 288,
+      "camera": {
+        "yaw": 0.55,
+        "pitch": 0.36,
+        "roll": 0,
+        "distance": 4.4,
+        "target": [
+          0,
+          0,
+          0
+        ]
+      },
+      "glError": 0
+    },
+    "pixels": {
+      "visible": 48629,
+      "bright": 4440,
+      "width": 1438,
+      "height": 809
+    },
+    "source": {
+      "p": 2,
+      "q": 3,
+      "expected": 6
+    },
+    "study": {
+      "p": 4,
+      "q": 6,
+      "components": 2,
+      "linking": 24
+    },
+    "focus": {
+      "target": [
+        0.4,
+        0.2,
+        0
+      ],
+      "error": 0,
+      "changed": true,
+      "enabledHitError": 0,
+      "targetHitError": 0,
+      "disabledHitError": 0
+    },
+    "lineFallback": {
+      "reference": {
+        "hash": 553619256,
+        "opaque": 40263
+      },
+      "volume": {
+        "hash": 3250184843,
+        "opaque": 10655
+      },
+      "lines": {
+        "hash": 553619256,
+        "opaque": 40263
+      }
+    },
+    "fallback": {
+      "lost": true,
+      "active": false,
+      "pixels": {
+        "hash": 553619256,
+        "opaque": 40263
+      }
+    },
+    "restored": {
+      "active": true,
+      "glError": 0
+    },
+    "mobile": {
+      "overflow": false,
+      "gpu": {
+        "active": true,
+        "enabled": true,
+        "ready": true,
+        "lost": false,
+        "error": "",
+        "hdr": true,
+        "samples": 4,
+        "width": 390,
+        "height": 602,
+        "frames": 10,
+        "submitMs": 95.02639712268768,
+        "drawCalls": 4,
+        "triangles": 92128,
+        "radius": 0.01973865980227619,
+        "centreLineSamples": 256,
+        "camera": {
+          "yaw": 0.1,
+          "pitch": 0.18,
+          "roll": 0,
+          "distance": 4.4,
+          "target": [
+            0,
+            0,
+            0
+          ]
+        },
+        "glError": 0
+      }
+    },
+    "errors": []
+  },
+  "review": {
+    "freshIndependentReview": true,
+    "confirmedFinding": "Native model, cursor and logarithmic controls did not reflect transferred parameters.",
+    "resolution": "Updated native controls together with state; failing browser regression now passes."
+  },
+  "browser": {
+    "engine": "Chromium",
+    "headless": true,
+    "hardwareBenchmark": false,
+    "physicalQuestTest": false
+  },
+  "screenshots": [
+    {
+      "file": "v6.7.0-laboratory-preview.png",
+      "sha256": "ea51636a4cec5bd3524f4a30ec26e5774e945cd08f1c24b24243e85dccb2529a"
+    },
+    {
+      "file": "v6.7.0-laboratory-mobile.png",
+      "sha256": "169c820389065f6927e78abac12f2f902193366e9f09cbab80b047d9d5ea316f"
+    }
+  ]
+}

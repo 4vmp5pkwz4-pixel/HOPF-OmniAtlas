@@ -8,7 +8,7 @@ const sources=Object.freeze([
  {id:'si',title:'NIST · defining SI constants (2022 CODATA)',url:'https://physics.nist.gov/cuu/Constants/'},
  {id:'casimir',title:'Klimchitskaya, Mohideen & Mostepanenko · Rev. Mod. Phys. 81, 1827 (2009)',url:'https://doi.org/10.1103/RevModPhys.81.1827'},
  {id:'logistic',title:'May · Simple mathematical models with very complicated dynamics (1976)',url:'https://doi.org/10.1038/261459a0'},
- {id:'dimension',title:'Grassberger & Procaccia · Measuring the strangeness of strange attractors (1983)',url:'https://doi.org/10.1016/0167-2789(83)90298-1'},
+ {id:'dimension',title:'Hutchinson · Fractals and self similarity (1981)',url:'https://doi.org/10.1512/iumj.1981.30.30055'},
  {id:'s3',title:'Acoustic toroidal vortices with programmable links and knots · preprint (2026)',url:'https://arxiv.org/abs/2608.15499'}
 ]);
 function finite(x,name){if(typeof x!=='number'||!Number.isFinite(x))throw new RangeError(`${name}: finite number required`);return x}
