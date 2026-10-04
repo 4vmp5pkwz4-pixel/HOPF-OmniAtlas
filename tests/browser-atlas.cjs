@@ -23,7 +23,7 @@ let browser;
  const boot=await page.evaluate(()=>({events:window.atlasBootOrder||[],mode:state.mode,obsolete:[...state.scene.lines,...state.scene.points].filter(e=>['invariant-clifford21','invariant-hopf-link21','invariant-skyrmion21'].includes(e.meta?.kind)).length}));
  assert.equal(tests.failed.length,0,JSON.stringify({failed:tests.failed,boot}));
  const version=await page.evaluate(()=>({title:document.title,version:__UPRS_APP__.version,html:document.documentElement.dataset.uprsVersion,stamp:document.getElementById('uprsVersionStamp580')?.textContent}));
- assert.equal(version.version,'6.6.0');assert.equal(version.html,'6.6.0');assert.match(version.title,/v6\.6\.0/);assert.match(version.stamp,/v6\.6\.0/);
+ assert.equal(version.version,'6.7.0');assert.equal(version.html,'6.7.0');assert.match(version.title,/v6\.7\.0/);assert.match(version.stamp,/v6\.7\.0/);
  // Native winding inputs may change independently of the new controls.
  const cancelled=await page.evaluate(async()=>{
    state.rotate=false;__UPRS660__.setPreset(2,2);const pending=__UPRS660__.verify();

@@ -4,11 +4,14 @@ on:
   push:
     branches:
       - main
+      - codex/v6.7-parameter-observatory
       - codex/v6.6-s3-link-topology
       - codex/v4.6-core-consolidation
       - codex/v4.6.1-quest-xr-startup-recovery
       - codex/v4.6.1-quest3-xr-hotfix
     paths:
+      - _includes/uprs670-*
+      - tools/sync-laboratory.mjs
       - index.html
       - tests/**
       - tools/verify-atlas.mjs
@@ -25,6 +28,8 @@ on:
     paths:
       - tests/**
       - tools/verify-atlas.mjs
+      - _includes/uprs670-*
+      - tools/sync-laboratory.mjs
       - index.html
       - app-v4.5.0.html
       - UPRS_v4.6.*_consolidation_report.json
@@ -66,7 +71,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          report=build/UPRS_v6.6.0_report.json
+          report=build/UPRS_v6.7.0_report.json
           test -s build/index.html
           test -n "$report"
           test -s "$report"
@@ -87,9 +92,9 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: UPRS-v6.6.0-current-atlas
+          name: UPRS-v6.7.0-current-atlas
           path: |
             build/index.html
-            build/UPRS_v6.6.0_report.json
+            build/UPRS_v6.7.0_report.json
           if-no-files-found: error
           retention-days: 14
