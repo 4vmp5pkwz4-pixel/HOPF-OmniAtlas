@@ -565,9 +565,9 @@ const UPRSO_MODELS={
   membrane_rc:{name:'Biological membrane impedance',domain:'biophysics',axis:'Frequency',axisUnit:'Hz',range:[1e-2,1e6],map:'impedance',equation:'Z=R_s+R_m/(1+jωR_mC_m)',assumptions:'Passive linearized membrane patch; voltage-gated nonlinear channels excluded.',conservation:'Capacitive storage plus ohmic dissipation.',solver:'closed form',
     params:[uprsoParam('Rs','Access resistance','Ω',1e6,1,1e12,'log',.05),uprsoParam('Rm','Membrane resistance','Ω',100e6,1,1e15,'log',.1),uprsoParam('Cm','Membrane capacitance','F',100e-12,1e-18,1,'log',.08),uprsoParam('Z0','Reference impedance','Ω',10e6,1,1e15,'log',0)],
     response:(x,p)=>{const w=2*Math.PI*x;return {z:UCadd(p.Rs,UCdiv(p.Rm,UC(1,w*p.Rm*p.Cm))),zref:p.Z0};}},
-  waveguide_te:{name:'Waveguide modal impedance',domain:'electromagnetic waves',axis:'Frequency',axisUnit:'Hz',range:[1e6,1e14],map:'impedance',equation:'Z_TE=η/√(1−(f_c/f)²); Z_TM=η√(1−(f_c/f)²)',assumptions:'Lossless homogeneous guide and one ideal mode; below-cutoff impedance is reactive.',conservation:'Above cutoff the ideal modal port is lossless.',solver:'closed form',
+  waveguide_te:{name:'Waveguide modal impedance',domain:'electromagnetic waves',axis:'Frequency',axisUnit:'Hz',range:[1e6,1e14],map:'impedance',equation:'Z_TE=η/√(1−(f_c/f)²); Z_TM=η√(1−(f_c/f)²)',assumptions:'Lossless homogeneous guide, one ideal mode, e^{+jωt} and forward exp(−jkz); evanescent TE is inductive and TM capacitive; TE cutoff is an infinite-impedance limit.',conservation:'Above cutoff the ideal modal port is lossless.',solver:'closed form',
     params:[uprsoParam('fc','Cutoff frequency','Hz',10e9,1,1e20,'log',.01),uprsoParam('eta','Medium wave impedance','Ω',376.730313,1e-6,1e9,'log',.001),uprsoParam('mode','TE=0, TM=1','1',0,0,1,'linear',0,1),uprsoParam('Z0','Reference impedance','Ω',376.730313,1e-6,1e9,'log',0)],
-    response:(x,p)=>{const q=UC(1-(p.fc/x)**2,0),root=uprsoSafeSqrt(q),z=p.mode>=.5?UCmul(p.eta,root):UCdiv(p.eta,root);return {z,zref:p.Z0};}},
+    response:(x,p)=>{const q=1-(p.fc/x)**2,root=q>=0?UC(Math.sqrt(q),0):UC(0,-Math.sqrt(-q)),z=p.mode>=.5?UCmul(p.eta,root):q===0?UC(Infinity,0):UCdiv(p.eta,root);return {z,zref:p.Z0,extras:{cutoff:q===0,evanescent:q<0,propagationRoot:root}};}},
   resonant_transfer:{name:'Magnetically coupled resonant transfer',domain:'electromechanical',axis:'Frequency',axisUnit:'Hz',range:[1e3,1e9],map:'impedance',equation:'Z_in=Z₁+(ωM)²/Z₂; M=k√(L₁L₂)',assumptions:'Two linear lumped resonators; sinusoidal steady state; no radiation model.',conservation:'Accepted source power = load + copper/dielectric losses in the lumped model.',solver:'closed form',
     params:[uprsoParam('R1','Primary R','Ω',.2,1e-6,1e6,'log',.05),uprsoParam('L1','Primary L','H',10e-6,1e-12,1e3,'log',.03),uprsoParam('C1','Primary C','F',253e-12,1e-18,1,'log',.03),uprsoParam('R2','Secondary+load R','Ω',10,1e-6,1e9,'log',.05),uprsoParam('L2','Secondary L','H',10e-6,1e-12,1e3,'log',.03),uprsoParam('C2','Secondary C','F',253e-12,1e-18,1,'log',.03),uprsoParam('k','Coupling coefficient','1',.12,.00001,.999,'log',.08),uprsoParam('Z0','Reference impedance','Ω',10,1e-6,1e9,'log',0)],
     response:(x,p)=>{const w=2*Math.PI*x,M=p.k*Math.sqrt(p.L1*p.L2),z1=UC(p.R1,w*p.L1-1/(w*p.C1)),z2=UC(p.R2,w*p.L2-1/(w*p.C2));return {z:UCadd(z1,UCdiv((w*M)**2,z2)),zref:p.Z0,extras:{M}};}},
@@ -617,7 +617,7 @@ function toast(s){const e=$('toast');e.textContent=s;e.classList.add('show');cle
 function fmt(v,n=4){if(!Number.isFinite(v))return '∞';const a=Math.abs(v);if(a!==0&&(a>=1e5||a<1e-3))return v.toExponential(3);let s=v.toFixed(n);s=s.replace(/0+$/,'').replace(/\.$/,'');return s}
 function ctext(z,u=''){return `${fmt(z.re)} ${z.im<0?'−':'+'} j${fmt(Math.abs(z.im))}${u?' '+u:''}`}
 function tierFor(m){if(['electrical','mechanical','acoustic','quantum'].includes(m.domain))return 'A';if(['optical','thermal','electrochemical','materials','control','biological','network'].includes(m.domain))return 'B';return 'C'}
-function mapResponse(m,res){if(m.map==='impedance'){const zref=Math.max(1e-300,Math.abs(res.zref||1)),zn=UCdiv(res.z,zref);return {gamma:UCCayley(zn),zn,z:res.z,passive:res.z.re>=-1e-10,extras:res.extras||{},meaning:'physical/generalized port impedance'}}if(m.map==='reflection')return {gamma:res.gamma,zn:UCInvCayley(res.gamma),z:null,passive:UCabs(res.gamma)<=1+1e-9,extras:res.extras||{},meaning:'native scattering amplitude'};const h=res.h,href=Math.abs(res.href||1)>1e-300?res.href:1,hn=UCdiv(h,href);return {gamma:UCCayley(hn),zn:hn,z:null,passive:null,extras:res.extras||{},meaning:'geometric Cayley compactification'}}
+function mapResponse(m,res){if(m.map==='impedance'){const zref=Math.max(1e-300,Math.abs(res.zref||1)),openLimit=res.z.re===Infinity&&res.z.im===0,zn=openLimit?C(Infinity,0):UCdiv(res.z,zref);return {gamma:openLimit?C(1,0):UCCayley(zn),zn,z:res.z,passive:res.z.re>=-1e-10,extras:res.extras||{},meaning:'physical/generalized port impedance'}}if(m.map==='reflection')return {gamma:res.gamma,zn:UCInvCayley(res.gamma),z:null,passive:UCabs(res.gamma)<=1+1e-9,extras:res.extras||{},meaning:'native scattering amplitude'};const h=res.h,href=Math.abs(res.href||1)>1e-300?res.href:1,hn=UCdiv(h,href);return {gamma:UCCayley(hn),zn:hn,z:null,passive:null,extras:res.extras||{},meaning:'geometric Cayley compactification'}}
 function modelParams(){const m=UPRSO_MODELS[state.model],p={};for(const d of m.params)p[d.key]=state.params[state.model]?.[d.key]??d.value;return p}
 function responseAt(x,p=modelParams()){const m=UPRSO_MODELS[state.model];try{return mapResponse(m,m.response(x,p))}catch(e){return {gamma:C(NaN,NaN),zn:C(NaN,NaN),z:null,passive:null,extras:{error:e.message},meaning:'error'}}}
 function nearestAxisIndex(x){if(!state.sweep.length)return 0;let bi=0,bv=Infinity;for(let i=0;i<state.sweep.length;i++){const d=Math.abs(state.sweep[i].x-x);if(d<bv){bv=d;bi=i}}return bi}
@@ -8576,11 +8576,11 @@ spp_kretschmann:{name:'Surface plasmon resonance (Kretschmann)',domain:'plasmoni
   const r=UCdiv(UCadd(r01,UCmul(r12,ph)),UCadd(1,UCmul(UCmul(r01,r12),ph)));return {gamma:rlim(r,1.0000001),extras:{R:UCabs(r)**2}}}},
 
 metamaterial_dng:{name:'Double-negative metamaterial (backward wave)',domain:'metamaterials',axis:'Frequency',axisUnit:'Hz',range:[1e9,2e10],map:'impedance',
- equation:'ε=1−f_pe²/f²,  µ=1−F f²/(f²−f₀ₘ²),  z=√(µ/ε)',
- assumptions:'Wire-medium ε plus split-ring µ (Pendry); lossless idealization with small damping.',
+ equation:'ε=1−f_pe²/(f²−jγf), µ=1−Ff²/(f²−f₀ₘ²−jγf); z=√(µ/ε), n=εz',
+ assumptions:'Local wire-medium ε and split-ring µ (Pendry), e^{+jωt}; forward waves exp(−jkz), passive damping, Re z≥0 and Im n≤0.',
  conservation:'z real & positive in the propagating band; Re(n)<0 where ε,µ<0.',solver:'effective medium',
  params:[P('fpe','Electric plasma f_pe','Hz',1e10,1e8,1e11,'log',.03),P('f0m','Magnetic resonance f₀ₘ','Hz',6e9,1e8,1e11,'log',.03),P('F','SRR filling F','1',.5,.05,.95,'linear',.03,.01),P('damp','Damping','Hz',3e7,1e5,1e9,'log',.1)],
- response:(x,p)=>{const w=x,g=p.damp,eps=UCsub(1,UCdiv(p.fpe*p.fpe,C(w*w,w*g))),mu=UCsub(1,UCdiv(p.F*w*w,C(w*w-p.f0m*p.f0m,w*g))),z=uprsoSafeSqrt(UCdiv(mu,eps)),n=uprsoSafeSqrt(UCmul(mu,eps));return {z:rlim(z,1e6),zref:1,extras:{eps,mu,n}}}},
+ response:(x,p)=>{const w=x,g=p.damp,eps=UCsub(1,UCdiv(p.fpe*p.fpe,C(w*w,-w*g))),mu=UCsub(1,UCdiv(p.F*w*w,C(w*w-p.f0m*p.f0m,-w*g))),z=uprsoSafeSqrt(UCdiv(mu,eps)),n=UCmul(eps,z);return {z:rlim(z,1e6),zref:1,extras:{eps,mu,n}}}},
 
 /* ---- NON-HERMITIAN & TOPOLOGICAL --------------------------------------- */
 pt_symmetric:{name:'PT-symmetric dimer (exceptional point)',domain:'non-Hermitian physics',axis:'Frequency',axisUnit:'Hz',range:[9e8,1.1e9],map:'transfer',
@@ -8600,12 +8600,12 @@ ssh_winding:{name:'SSH topological chain (Zak winding)',domain:'topological matt
 /* ---- QUANTUM & CONDENSED MATTER ---------------------------------------- */
 graphene_kubo:{name:'Graphene surface conductivity (Kubo)',domain:'2D quantum materials',axis:'Frequency',axisUnit:'Hz',range:[1e11,1e15],map:'impedance',
  equation:'σ=σ_intra+σ_inter;  Z_s=1/σ',
- assumptions:'Local Kubo conductivity, temperature T, chemical potential µ, momentum-relaxation time τ.',
+ assumptions:'Local graphene sheet, e^{+jωt}; finite-temperature intraband conductivity plus lifetime-broadened zero-temperature interband approximation; chemical potential µ and relaxation time τ.',
  conservation:'Re σ≥0 (passive); intraband Drude plus interband threshold near ħω=2µ.',solver:'Kubo formula',
  params:[P('mu','Chemical potential µ','eV',.3,.01,1,'log',.03),P('tau','Relaxation time τ','s',3e-13,1e-15,1e-11,'log',.1),P('T','Temperature','K',300,4,600,'linear',.02,1)],
  response:(x,p)=>{const w=TAU2*x,e=K.e,hb=K.hbar,kT=K.kB*p.T,mu=p.mu*e,g=1/Math.max(1e-18,p.tau);
-  const pre=e*e*kT/(PI2*hb*hb),brk=mu/kT+2*Math.log(1+Math.exp(-mu/kT)),sIntra=UCdiv(C(0,-pre*brk),C(w,g));
-  const num=UCsub(C(2*Math.abs(mu),0),UCmul(hb,C(w,g))),den=UCadd(C(2*Math.abs(mu),0),UCmul(hb,C(w,g))),sInter=UCmul(C(0,e*e/(4*hb)),UClog(UCdiv(num,den)));
+  const pre=e*e*kT/(PI2*hb*hb),brk=mu/kT+2*Math.log(1+Math.exp(-mu/kT)),sIntra=UCdiv(pre*brk,C(g,w));
+  const num=UCsub(C(2*Math.abs(mu),0),UCmul(hb,C(w,-g))),den=UCadd(C(2*Math.abs(mu),0),UCmul(hb,C(w,-g))),sInter=UCmul(C(0,-e*e/(4*PI2*hb)),UClog(UCdiv(num,den)));
   const s=UCadd(sIntra,sInter),Z=UCinv(rlim(s,1e12));return {z:rlim(Z,1e9),zref:377,extras:{sigma:s}}}},
 
 josephson_rcsj:{name:'Josephson junction (RCSJ small-signal)',domain:'superconducting electronics',axis:'Frequency',axisUnit:'Hz',range:[1e9,1e12],map:'impedance',
@@ -8639,11 +8639,11 @@ gw_inspiral:{name:'Compact-binary inspiral chirp (SPA)',domain:'gravitational-wa
   psi=TAU2*f*p.tc-p.phic-PI2/4+(3/128)*Math.pow(PI2*Mg*f,-5/3),h=UCmul(amp,C(Math.cos(psi),Math.sin(psi)));return {h:rlim(h,1e9),href:1,extras:{amp,psi}}}},
 
 ism_dispersion:{name:'Interstellar / pulsar dispersion',domain:'radio astronomy',axis:'Frequency',axisUnit:'MHz',range:[100,1600],map:'transfer',
- equation:'H(f)=e^{−jΦ}e^{−τ_sc},  Φ=2π·k_DM·DM/f',
+ equation:'H=e^{+jΦ}e^{−τ_sc}, Φ=2π·10⁶·k_DM·DM(1/f−1/f_ref), f in MHz; τ_g=k_DM·DM/f²',
  assumptions:'Cold-plasma column of dispersion measure DM; group delay ∝ DM/f²; optional scattering tail.',
  conservation:'|H|≤1; all-pass phase for τ_sc=0 with 1/f² group-delay signature.',solver:'plasma column',
  params:[P('DM','Dispersion measure','pc/cm³',50,1,1000,'log',.02),P('fref','Reference f','MHz',1400,100,1600,'linear',.01,1),P('sc','Scatter (f_ref)⁴','1',0,0,1,'linear',.05,.01)],
- response:(x,p)=>{const f=x,kDM=4.148808e3,Phi=TAU2*kDM*p.DM*(1/f-1/p.fref)*1e6,tau=p.sc*Math.pow(p.fref/f,4),H=UCmul(Math.exp(-Math.min(40,tau)),C(Math.cos(-Phi),Math.sin(-Phi)));return {h:H,href:1,extras:{groupDelayMs:kDM*p.DM/(f*f)*2*1e3}}}},
+ response:(x,p)=>{const f=x,kDM=4.148808e3,Phi=TAU2*kDM*p.DM*(1/f-1/p.fref)*1e6,tau=p.sc*Math.pow(p.fref/f,4),H=UCmul(Math.exp(-Math.min(40,tau)),C(Math.cos(Phi),Math.sin(Phi)));return {h:H,href:1,extras:{groupDelayMs:kDM*p.DM/(f*f)*1e3}}}},
 
 /* ---- ACOUSTICS --------------------------------------------------------- */
 duct_muffler:{name:'Expansion-chamber muffler (transmission loss)',domain:'acoustics',axis:'Frequency',axisUnit:'Hz',range:[20,2000],map:'transfer',
@@ -8712,11 +8712,11 @@ womersley_flow:{name:'Womersley pulsatile flow impedance',domain:'cardiovascular
 
 /* ---- GEOPHYSICS -------------------------------------------------------- */
 kjartansson_q:{name:'Constant-Q seismic attenuation (Kjartansson)',domain:'geophysics · seismology',axis:'Frequency',axisUnit:'Hz',range:[.5,500],map:'transfer',
- equation:'V=V₀(jω/ω₀)^γ,  γ=arctan(1/Q)/π,  H=e^{jωL/V}',
+ equation:'V=V₀(jω/ω₀)^γ, γ=arctan(1/Q)/π, H=e^{−jωL/V} (e^{+jωt})',
  assumptions:'Linear constant-Q rheology; frequency-independent Q; propagation over distance L.',
  conservation:'Causal amplitude decay with logarithmic velocity dispersion.',solver:'Kjartansson creep',
  params:[P('Q','Quality factor Q','1',50,2,1000,'log',.03),P('V0','Velocity V₀','m/s',2500,300,8000,'log',.02),P('L','Distance L','m',1000,10,1e5,'log',.02),P('f0','Reference f₀','Hz',10,.1,1e3,'log',.02)],
- response:(x,p)=>{const w=TAU2*x,w0=TAU2*p.f0,gam=Math.atan(1/p.Q)/PI2,V=UCmul(p.V0,UCpow(UCdiv(C(0,w),C(0,w0)),gam)),k=UCdiv(C(0,w),V),H=UCexp(UCmul(C(0,1),UCmul(k,p.L)));return {h:rlim(H,1e6),href:1,extras:{gamma:gam}}}},
+ response:(x,p)=>{const w=TAU2*x,w0=TAU2*p.f0,gam=Math.atan(1/p.Q)/PI2,V=UCmul(p.V0,UCpow(C(0,w/w0),gam)),k=UCdiv(w,V),H=UCexp(UCmul(C(0,-1),UCmul(k,p.L)));return {h:rlim(H,1e6),href:1,extras:{gamma:gam}}}},
 
 magnetotelluric:{name:'Magnetotelluric sounding impedance',domain:'geophysics · electromagnetics',axis:'Frequency',axisUnit:'Hz',range:[1e-3,1e3],map:'impedance',
  equation:'Z=Z₁(Z₂+Z₁tanh(γ₁h₁))/(Z₁+Z₂tanh(γ₁h₁)),  Zᵢ=√(jωµ₀ρᵢ)',
@@ -8906,12 +8906,12 @@ shg_phase_matching:{name:'Second-harmonic generation — phase-matching tuning',
  response:(x,p)=>{const dk=p.beta*(x-p.T0),a=dk*p.L*1e-3/2,A=UCmul(sinc(a),C(Math.cos(a),Math.sin(a)));return {h:A,href:1,extras:{eta:UCabs(A)**2,dk}}}},
 
 raman_gain:{name:'Stimulated Raman gain spectrum',domain:'nonlinear optics',axis:'Stokes shift',axisUnit:'Hz',range:[1e12,3e13],map:'transfer',
- equation:'H=exp(½g₀L·χ_R),  χ_R=Ω_R²/(Ω_R²−Ω²−jΩΓ_R)',
+ equation:'H=exp(−j g₀L·χ_R/2), χ_R=Ω_R²/(Ω_R²−Ω²−jΩΓ_R)',
  assumptions:'Single Lorentzian Raman resonance at Ω_R with linewidth Γ_R; undepleted pump gain-length g₀L.',
  conservation:'Gain peaks at the Raman shift; Im χ_R sets amplification, Re χ_R the nonlinear phase.',solver:'closed form',
  params:[P('OmR','Raman shift Ω_R','Hz',1.32e13,1e12,3e13,'log',.02),P('GR','Linewidth Γ_R','Hz',3e12,1e11,1e13,'log',.05),P('gL','Gain-length g₀L','1',6,0,20,'linear',.05,.05)],
  expects:[{kind:'peak',near:'OmR'}],
- response:(x,p)=>{const O=x,chi=UCdiv(p.OmR*p.OmR,C(p.OmR*p.OmR-O*O,-O*p.GR)),H=UCexp(UCmul(.5*p.gL,chi));return {h:rlim(H,1e6),href:1,extras:{chi,gain:UCabs(H)}}}},
+ response:(x,p)=>{const O=x,chi=UCdiv(p.OmR*p.OmR,C(p.OmR*p.OmR-O*O,-O*p.GR)),H=UCexp(UCmul(C(0,-.5*p.gL),chi));return {h:rlim(H,1e6),href:1,extras:{chi,gain:UCabs(H)}}}},
 
 fwm_parametric:{name:'Four-wave-mixing / OPA parametric gain',domain:'nonlinear optics',axis:'Signal detuning',axisUnit:'Hz',range:[1e10,6e12],map:'transfer',
  equation:'u=cosh(gL)−j(Δk/2g)sinh(gL),  g=√((γP)²−(Δk/2)²),  Δk=β₂Ω²',
@@ -11681,8 +11681,8 @@ globalThis.__UPRS540__={version:V540,analyze:analyze540,checks:checks540,wire:wi
    2. LARGEST LYAPUNOV EXPONENT (Rosenstein) — exponential divergence rate of
       neighbouring trajectories: λ>0 proves deterministic chaos and fixes a
       hard PREDICTABILITY HORIZON of ~1/λ samples.
-   3. CORRELATION DIMENSION (Grassberger–Procaccia) — fractal dimension D₂ of
-      the attractor; a non-integer D₂ is the signature of strange attractors.
+   3. CORRELATION DIMENSION (Grassberger–Procaccia) — finite-scale D₂ estimate.
+      A fractional fitted slope alone does not establish a strange attractor.
    4. RECURRENCE QUANTIFICATION — recurrence rate, determinism, laminarity,
       longest diagonal and Shannon entropy of the line distribution: separates
       deterministic dynamics from noise and exposes intermittency.
@@ -11871,24 +11871,31 @@ function lyapunov550(s,m,tau,dt,opt){const o=opt||{};
 
 /* ============================ 3 · correlation dimension (Grassberger–Procaccia) */
 function correlationDim550(Z,opt){const o=opt||{},N=Z.length;if(N<40)return null;
- const step=Math.max(1,Math.floor(N/(o.cap||360))),P=[];
- for(let i=0;i<N;i+=step)P.push(Z[i]);
- const M=P.length,ds=[];
- for(let i=0;i<M;i++)for(let j=i+1;j<M;j++){const d=dist550(P[i],P[j]);if(d>0&&FIN(d))ds.push(d)}
+ const cap=Math.max(40,Math.floor(o.cap||360)),step=Math.max(1,Math.ceil(N/cap)),P=[],indices=[];
+ for(let i=0;i<N;i+=step){P.push(Z[i]);indices.push(i)}
+ const M=P.length,ds=[],theiler=Math.max(0,Math.floor(o.theiler||0));let zeroPairs=0;
+ for(let i=0;i<M;i++)for(let j=i+1;j<M;j++){
+  if(indices[j]-indices[i]<=theiler)continue;
+  const d=dist550(P[i],P[j]);if(FIN(d)&&d>=0){ds.push(d);if(d===0)zeroPairs++}}
  if(ds.length<50)return null;
  ds.sort((a,b)=>a-b);
+ const base={samples:M,pairs:ds.length,zeroPairs,theiler,stride:step};
  const lo=ds[Math.floor(ds.length*.02)],hi=ds[Math.floor(ds.length*.60)];
- if(!(hi>lo&&lo>0))return null;
+ /* Repeated states are probability mass in C(r). Discarding them fabricates a
+    fractional slope for a finite periodic orbit. No positive small-scale band
+    is resolved when the lower distance quantile is atomic. */
+ if(!(lo>0))return {...base,D2:null,status:'unresolved',reason:'atomic-distances-dominate'};
+ if(!(hi>lo))return {...base,D2:null,status:'unresolved',reason:'no-distance-scaling-range'};
  const R=16,xs=[],ys=[];
  for(let k=0;k<R;k++){const r=lo*Math.pow(hi/lo,k/(R-1));
-  /* C(r) via binary search over the sorted distance list */
   let a=0,b=ds.length;while(a<b){const mid=(a+b)>>1;if(ds[mid]<r)a=mid+1;else b=mid}
   const c=a/ds.length;if(c>0){xs.push(Math.log(r));ys.push(Math.log(c))}}
- if(xs.length<6)return null;
- /* scaling region: the middle of the log–log curve */
+ if(xs.length<6)return {...base,D2:null,status:'unresolved',reason:'too-few-scales'};
  const s=Math.floor(xs.length*.2),e=Math.max(s+3,Math.floor(xs.length*.85));
  const D=slope550(xs.slice(s,e),ys.slice(s,e));
- return FIN(D)?{D2:D,samples:M,pairs:ds.length}:null}
+ return FIN(D)?{...base,D2:D,status:'finite-scale-estimate',
+  scalingRange:[Math.exp(xs[s]),Math.exp(xs[e-1])],
+  dimensionConvergenceTested:false}:null}
 
 /* ================================= 4 · recurrence quantification analysis */
 function rqa550(Z,opt){const o=opt||{},N0=Z.length;if(N0<30)return null;
@@ -11978,9 +11985,20 @@ function earlyWarning550(s,opt){const o=opt||{},n=s.length;
   score:Math.max(0,Math.min(1,(Math.max(0,tv)+Math.max(0,ta))/2))}}
 
 /* ================================== 7 · phase-portrait topology (Γ orbit) */
-function portrait550(pts){const n=pts.length;if(n<8)return null;
+function portrait550(pts,opt){const n=pts.length;if(n<8)return null;
  let cx=0,cy=0;for(const p of pts){cx+=p[0];cy+=p[1]}cx/=n;cy/=n;
- /* winding number of the orbit about its own centroid */
+ /* Closure is measured in the observed plane, never inferred from winding.
+    An omitted last sample may lie within one ordinary sampling step of the
+    first; record that geometric tolerance rather than silently closing an arc. */
+ const o=opt||{},lengths=[];
+ for(let i=1;i<n;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);if(d>0&&FIN(d))lengths.push(d)}
+ lengths.sort((a,b)=>a-b);
+ const typicalStep=lengths.length?lengths[Math.floor(lengths.length/2)]:0;
+ const scale=Math.max(...pts.map(p=>Math.hypot(p[0]-cx,p[1]-cy)),1e-300);
+ const closingGap=Math.hypot(pts[n-1][0]-pts[0][0],pts[n-1][1]-pts[0][1]);
+ const closureTolerance=FIN(o.closureTolerance)?Math.max(0,o.closureTolerance):Math.max(scale*1e-10,1.5*typicalStep);
+ const closed=closingGap<=closureTolerance;
+ /* Winding and enclosed area are defined only for a geometrically closed path. */
  let wind=0;
  for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n];
   let d=Math.atan2(b[1]-cy,b[0]-cx)-Math.atan2(a[1]-cy,a[0]-cx);
@@ -12012,9 +12030,9 @@ function portrait550(pts){const n=pts.length;if(n<8)return null;
  for(let i=1;i<n-1;i++){const a=pts[i-1],b=pts[i],c=pts[i+1];
   let d=Math.atan2(c[1]-b[1],c[0]-b[0])-Math.atan2(b[1]-a[1],b[0]-a[0]);
   while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;curv+=Math.abs(d)}
- return {winding:wind,signedArea:area,enclosedArea:Math.abs(area),
+ return {winding:closed?wind:null,signedArea:closed?area:null,enclosedArea:closed?Math.abs(area):null,
   selfIntersections:xcount,totalCurvature:curv,centroid:[cx,cy],
-  closedOrbit:Math.abs(Math.round(wind)-wind)<.12&&Math.abs(wind)>=.88}}
+  closedOrbit:closed,closingGap,closureTolerance,closureMethod:'sample-scale-endpoint-distance'}}
 
 /* ================================================================ app layer */
 /* Takens reconstruction, Lyapunov exponents and critical slowing down are
@@ -12562,12 +12580,13 @@ function buildGeometry560(){const s=sweepSignal560();
   if(r&&r.epsilon>0)chords=recurrenceChords560(E.Z,attractor,r.epsilon,{theiler:Math.max(4,E.tau),cap:140})}catch(_){}
  return {version:V560,embedding:{m:E.m,tau:E.tau,converged:E.converged,states:E.Z.length,
    stride:E.stride||1,analysed:E.analysed||s.length,samples:s.length},
-  attractor,explained:P3.explained,eigenvalues:P3.eigenvalues,
+  stateVectors:E.Z,attractor,explained:P3.explained,eigenvalues:P3.eigenvalues,
   s3Curve:curve,s3Points:s3.length,fibres,base,section,chords,
   planeZ:cz,
   elapsedMs:Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10}}
-function geomKey560(){try{return [state.model,state.mode,state.sweep?.length,
- globalThis.__UPRS_APP__?.sceneRevision||0].join('|')}catch(_){return ''}}
+function geomKey560(){try{return JSON.stringify([state.model,state.mode,
+ (state.sweep||[]).map(r=>[r.x,r.gamma?.re,r.gamma?.im]),
+ globalThis.__UPRS_APP__?.sceneRevision||0])}catch(_){return ''}}
 function geometry560(force){const k=geomKey560();
  if(!force&&G.geom&&k===G.key)return G.geom;
  G.geom=buildGeometry560();G.key=k;return G.geom}
@@ -15023,29 +15042,13 @@ globalThis.__UPRS610__={version:V610,apply:applyAll610,checks:checks610,
    the one that survives every smooth change of coordinates, every rescaling of
    the axis, and every monotone distortion of the observable.
 
-   This layer computes the persistent homology of the reconstructed attractor
-   over a Vietoris-Rips filtration, exactly, over Z/2:
-
-     H0 - how many pieces the attractor has. Two or more is coexisting
-          attractors, i.e. multistability, which no single-trajectory metric
-          reports at all.
-     H1 - how many irreducible loops it has. One is a closed orbit, and it is
-          established without any spectral assumption; zero means the set is
-          contractible at the resolved scale (a fixed point, or a set that
-          fills in); several means several independent circulations.
-
-   Crucially the answer comes with the SCALE AT WHICH IT HOLDS. A Rips complex
-   cannot see a hole narrower than its own radius, so a hole smaller than that
-   is not "absent", it is UNDECIDED - and that is reported rather than rounded
-   to zero. The measured rule, from the reference tori below: an essential loop
-   survives exactly while the diameter of its hole exceeds the filtration
-   radius.
-
-   The result is an INDEPENDENT line of evidence. Where it agrees with the
-   v5.5.0 Lyapunov verdict the two together are worth far more than either;
-   where it disagrees, the disagreement is reported, because a conflict between
-   a metric and a topological reading of the same data is a finding, not a bug
-   to be hidden.
+   This layer computes H0 and H1 of a sampled Vietoris-Rips filtration over Z/2.
+   Distances use the original delay vectors; the 3D projection is for display.
+   H0 counts sampled components at a cutoff, not coexisting attractors. H1 counts
+   loops surviving to that cutoff; neither zero H1 nor one H1 determines
+   contractibility, periodicity or chaos. Surviving bars are cutoff-censored,
+   not infinite features of the underlying attractor. Truncated complexes do
+   not certify topology. Sampling and scale dependence must be investigated.
 
    Rendered as scene geometry - a persistence diagram standing beside the
    hologram, and the representative loop drawn on the attractor itself, so the
@@ -15059,17 +15062,18 @@ const FIN=Number.isFinite;
 /* Farthest-point sampling, not a stride: a stride along a trajectory keeps the
    time order and clumps where the orbit is slow, which biases every distance in
    the filtration. Farthest-point spreads the sample over the SET. */
+function distanceSquared620(a,b){if(a.length!==b.length)return NaN;
+ let s=0;for(let j=0;j<a.length;j++){const d=a[j]-b[j];s+=d*d}return s}
 function fps620(pts,k){const n=pts.length;if(n<=k)return pts.map((_,i)=>i);
  const idx=[0],d=new Float64Array(n).fill(Infinity);
  for(let s=1;s<k;s++){const L=pts[idx[idx.length-1]];let best=0,bd=-1;
-  for(let i=0;i<n;i++){const dx=pts[i][0]-L[0],dy=pts[i][1]-L[1],dz=pts[i][2]-L[2];
-   const v=dx*dx+dy*dy+dz*dz;if(v<d[i])d[i]=v;if(d[i]>bd){bd=d[i];best=i}}
-  idx.push(best)}
+  for(let i=0;i<n;i++){const v=distanceSquared620(pts[i],L);
+   if(v<d[i])d[i]=v;if(d[i]>bd){bd=d[i];best=i}}
+  if(!(bd>0))break;idx.push(best)}
  return idx}
 function distMatrix620(P){const n=P.length,D=new Float64Array(n*n);
  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
-  const dx=P[i][0]-P[j][0],dy=P[i][1]-P[j][1],dz=P[i][2]-P[j][2];
-  const v=Math.sqrt(dx*dx+dy*dy+dz*dz);D[i*n+j]=v;D[j*n+i]=v}
+  const v=Math.sqrt(distanceSquared620(P[i],P[j]));D[i*n+j]=v;D[j*n+i]=v}
  return D}
 function mstEdges620(P){const n=P.length,D=distMatrix620(P);
  const inTree=new Uint8Array(n),best=new Float64Array(n).fill(Infinity),out=[];
@@ -15182,60 +15186,54 @@ function representativeLoop620(H,birthSimplexIndex){
 
 /* ================================================== reading the shape out */
 function diameter620(P){let m=0;
- for(let i=0;i<P.length;i+=Math.max(1,Math.floor(P.length/40)))
-  for(let j=i+1;j<P.length;j+=Math.max(1,Math.floor(P.length/40))){
-   const dx=P[i][0]-P[j][0],dy=P[i][1]-P[j][1],dz=P[i][2]-P[j][2];
-   const v=dx*dx+dy*dy+dz*dz;if(v>m)m=v}
+ for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+  const v=distanceSquared620(P[i],P[j]);if(v>m)m=v}
  return Math.sqrt(m)}
 function classify620(H,diam){
- const c=H.components,l=H.essentialH1;
- const res=H.maxR;
+ const c=H.components,l=H.essentialH1,res=H.maxR;
  let structure,detail;
- if(c>1){structure='multistable';
-  detail=`${c} несвязных компонент — сосуществующие аттракторы`}
- else if(l===0){structure='contractible';
-  detail='стягиваемо на разрешённом масштабе: неподвижная точка либо множество, заполняющее свою оболочку'}
- else if(l===1){structure='single-loop';
-  detail='одна неустранимая петля — замкнутая орбита, установленная без спектральных допущений'}
- else{structure='multi-loop';
-  detail=`${l} независимых петли — несколько независимых циркуляций`}
+ if(H.truncated){structure='incomplete';detail='бюджет симплексов исчерпан — топологический вывод не определён'}
+ else if(c>1){structure='disconnected';detail=`${c} компонент выборочного комплекса при выбранном радиусе; это не устанавливает мультистабильность`}
+ else if(l===0){structure='no-h1-at-cutoff';detail='при конечном радиусе нет классов H₁; стягиваемость и тип динамики этим не определяются'}
+ else if(l===1){structure='single-h1-at-cutoff';detail='один класс H₁ сохраняется до конечного радиуса; замкнутая периодическая орбита этим не установлена'}
+ else{structure='multiple-h1-at-cutoff';detail=`${l} классов H₁ сохраняются до конечного радиуса`}
  return {structure,detail,components:c,essentialLoops:l,
-  /* a Rips complex cannot see a hole narrower than its own radius: below this
-     the answer is undecided, not zero */
-  resolvedScale:res,
+  scope:'sampled-vietoris-rips',dynamicalInterpretation:'undetermined',
+  cutoffCensored:true,truncated:!!H.truncated,resolvedScale:res,
   resolvedFraction:diam>0?res/diam:null,
-  undecidedBelow:`отверстия уже ${res.toFixed(4)} не разрешаются этой выборкой`}}
+  undecidedBelow:'структуры между отсчётами и вне исследованного диапазона масштабов не разрешаются этой выборкой'}}
 /* ================================================================ app layer */
 const G={enabled:true,result:null,key:'',rev:0,points:80,elapsedMs:0};
-function cloud620(){try{
+function cloud620(force){try{
  const m=globalThis.__UPRS560__;if(!m||typeof m.geometry!=='function')return null;
- const g=m.geometry();
- if(!g||g.degenerate||!g.attractor||g.attractor.length<24)return null;
- return g.attractor}catch(_){return null}}
-function key620(){try{
- const a=(typeof state!=='undefined'&&state.sweep)||[];
- let h=2166136261>>>0;const step=Math.max(1,Math.floor(a.length/10));
- const mix=v=>{h=(h^((Math.round((Number(v)||0)*1e6)|0)>>>0))>>>0;h=Math.imul(h,16777619)>>>0};
- for(let i=0;i<a.length;i+=step){const r=a[i];mix(r&&r.x);mix(r&&r.gamma&&r.gamma.re);mix(r&&r.gamma&&r.gamma.im)}
- return [state.model,state.mode,a.length,h.toString(36),G.points].join('|')}catch(_){return ''}}
+ const g=m.geometry(force);
+ if(!g||g.degenerate||!g.attractor||g.attractor.length<24||
+    !g.stateVectors||g.stateVectors.length!==g.attractor.length)return null;
+ return {metric:g.stateVectors,display:g.attractor,embedding:g.embedding,explained:g.explained}}
+ catch(_){return null}}
+function key620(){try{return JSON.stringify([state.model,state.mode,G.points,
+ UPRSO_MODELS[state.model]?.axis,UPRSO_MODELS[state.model]?.axisUnit,
+ (state.sweep||[]).map(r=>[r.x,r.gamma?.re,r.gamma?.im])])}catch(_){return ''}}
 function analyze620(force){
  const k=key620();
  if(!force&&G.result&&G.key===k)return G.result;
  const t0=(typeof performance!=='undefined'?performance.now():Date.now());
- const raw=cloud620();
- if(!raw){G.result=null;G.key=k;return null}
- const idx=fps620(raw,G.points);
- const P=idx.map(i=>raw[i]);
+ const cloud=cloud620(force);
+ if(!cloud){G.result=null;G.key=k;return null}
+ const raw=cloud.metric,idx=fps620(raw,G.points);
+ const P=idx.map(i=>raw[i]),display=idx.map(i=>cloud.display[i]);
  const H=persistence620(P,{capE:2200,capT:12000});
  const diam=diameter620(P);
  const cls=classify620(H,diam);
  /* representative loops: only for classes the filtration actually certifies */
  const loops=[];
- for(const ei of H.essentialEdges.slice(0,4)){
+ for(const ei of (H.truncated?[]:H.essentialEdges).slice(0,4)){
   const L=representativeLoop620(H,ei);
-  if(L&&L.length>3)loops.push(L.map(i=>P[i]))}
+  if(L&&L.length>3)loops.push(L.map(i=>display[i]))}
  G.elapsedMs=Math.round(((typeof performance!=='undefined'?performance.now():Date.now())-t0)*10)/10;
  G.result={version:V620,points:P.length,fromSamples:raw.length,diameter:diam,
+  metricSpace:'delay-embedding',embedding:{...cloud.embedding},projectionExplained:cloud.explained,
+  sampleIndices:idx,metricPoints:P,displayPoints:display,
   homology:{components:H.components,essentialH1:H.essentialH1,
    finiteH1:H.H1.length,maxR:H.maxR,spacing:H.spacing,
    edges:H.edges,triangles:H.triangles,simplices:H.simplices,truncated:H.truncated},
@@ -15248,27 +15246,12 @@ function analyze620(force){
 function crossCheck620(cls){try{
  const m=globalThis.__UPRS550__;
  if(!m||typeof m.analyze!=='function')return {status:'unavailable',detail:'фазовый анализ v5.5.0 недоступен'};
- const a=m.analyze();
- const L=a&&a.lyapunov;
+ const a=m.analyze(),L=a&&a.lyapunov;
  if(!L||!L.verdict)return {status:'unavailable',detail:'вердикт по показателю Ляпунова не выдан'};
- if(L.verdict==='not-applicable')
-  return {status:'not-applicable',lyapunov:L.verdict,
-   detail:'ось не временная — метрический вердикт неприменим; топология оси не требует и остаётся в силе'};
- const chaotic=L.verdict==='chaotic';
- if(chaotic&&cls.structure==='single-loop')
-  return {status:'conflict',lyapunov:L.verdict,
-   detail:'метрика говорит «хаос», топология видит одну замкнутую петлю — расхождение, требующее разбора'};
- if(!chaotic&&cls.structure==='contractible'&&cls.components===1)
-  return {status:'agree',lyapunov:L.verdict,
-   detail:'регулярная динамика и стягиваемое множество — согласовано'};
- if(chaotic&&cls.structure==='contractible')
-  return {status:'agree',lyapunov:L.verdict,
-   detail:'хаос заполняет свою оболочку: неустранимых петель на разрешённом масштабе нет — согласовано'};
- if(!chaotic&&cls.structure==='single-loop')
-  return {status:'agree',lyapunov:L.verdict,
-   detail:'регулярная динамика и одна замкнутая орбита — согласовано'};
+ if(L.verdict==='not-applicable')return {status:'not-applicable',lyapunov:L.verdict,
+  detail:'ось не временная; H₀/H₁ описывают только выборочное геометрическое множество'};
  return {status:'inconclusive',lyapunov:L.verdict,
-  detail:`метрика «${L.verdict}», топология «${cls.structure}» — однозначного соответствия нет`}}
+  detail:`метрика «${L.verdict}», топология «${cls.structure}»: H₀/H₁ не устанавливают хаос, регулярность или мультистабильность`}}
  catch(e){return {status:'unavailable',detail:String((e&&e.message)||e)}}}
 
 /* ------------------------------------------------------- scene construction */
@@ -16109,7 +16092,7 @@ function continuation(F,Fx,Fl,x0,l0,opt){
  return {points:pts,folds,closed,arclength,steps:pts.length}}
 /* ================= Kramers-Moyal drift & diffusion ================= */
 function kramersMoyal(series,dt,bins,minCount){
- const n=series.length;if(n<64)return null;
+ const n=series.length;if(n<64||!FIN(dt)||!(dt>0))return null;
  let lo=Infinity,hi=-Infinity;
  for(const v of series){if(v<lo)lo=v;if(v>hi)hi=v}
  if(!(hi>lo))return null;
@@ -16155,7 +16138,10 @@ function corr(a,b){const n=a.length;if(n<3)return NaN;
  for(let i=0;i<n;i++){const da=a[i]-ma,db=b[i]-mb;sa+=da*da;sb+=db*db;sab+=da*db}
  return (sa>0&&sb>0)?sab/Math.sqrt(sa*sb):NaN}
 /* predict TARGET from the shadow manifold of DRIVER-candidate `from` */
-function crossMap(from,target,E,tau,libSize,seed){
+function crossMap(from,target,E,tau,libSize,seed,opt){
+ if(from.length!==target.length||!Number.isInteger(E)||E<1||!Number.isInteger(tau)||tau<1||
+    !from.every(FIN)||!target.every(FIN))return NaN;
+ const o=opt||{},theiler=Math.max(0,Math.floor(o.theiler===undefined?Math.max(1,(E-1)*tau):o.theiler));
  const M=embed(from,E,tau);
  if(M.length<E+2)return NaN;
  const lib=[];
@@ -16168,7 +16154,7 @@ function crossMap(from,target,E,tau,libSize,seed){
   const vq=M[q].v;
   const d=[];
   for(const li of lib){
-   if(li===q)continue;
+   if(Math.abs(M[li].t-M[q].t)<=theiler)continue;
    const vl=M[li].v;let s=0;
    for(let e=0;e<E;e++){const dd=vq[e]-vl[e];s+=dd*dd}
    d.push([Math.sqrt(s),li])}
@@ -16184,15 +16170,22 @@ function crossMap(from,target,E,tau,libSize,seed){
  return corr(pred,act)}
 function ccm(X,Y,opt){
  const o=opt||{},E=o.E||3,tau=o.tau||1;
- const Ls=o.libSizes||[20,40,80,160,320];
+ const theiler=Math.max(0,Math.floor(o.theiler===undefined?Math.max(1,(E-1)*tau):o.theiler)),seed=o.seed===undefined?7:o.seed;
+ const maxLibrary=Math.min(X.length,Y.length)-(E-1)*tau;
+ const Ls=[...new Set((o.libSizes||[20,40,80,160,320]).map(L=>Math.min(Math.floor(L),maxLibrary)))]
+  .filter(L=>L>=E+2).sort((a,b)=>a-b);
  const xy=[],yx=[];
  for(const L of Ls){
-  /* X causes Y  <=>  X is recoverable from the shadow manifold of Y */
-  xy.push({L,rho:crossMap(Y,X,E,tau,L,7)});
-  yx.push({L,rho:crossMap(X,Y,E,tau,L,7)})}
- const conv=a=>{const f=a[0].rho,l=a[a.length-1].rho;
-  return {first:f,last:l,gain:l-f,converged:FIN(f)&&FIN(l)&&l-f>.05&&l>.2}};
- return {E,tau,libSizes:Ls,xCausesY:{curve:xy,...conv(xy)},yCausesX:{curve:yx,...conv(yx)}}}
+  xy.push({L,rho:crossMap(Y,X,E,tau,L,seed,{theiler})});
+  yx.push({L,rho:crossMap(X,Y,E,tau,L,seed,{theiler})})}
+ const conv=a=>{const f=a[0]?.rho,l=a[a.length-1]?.rho;
+  return {first:f,last:l,gain:l-f,converged:a.length>1&&FIN(f)&&FIN(l)&&l-f>.05&&l>.2}};
+ const xFromY={curve:xy,...conv(xy)},yFromX={curve:yx,...conv(yx)};
+ return {E,tau,theiler,seed,libSizes:Ls,xFromY,yFromX,
+  causal:false,evidence:'exploratory-reconstruction-dependence',
+  convergenceCriterion:'endpoint-gain-heuristic',surrogateTested:false,
+  /* Compatibility aliases encode the original curve direction, not a causal conclusion. */
+  xCausesY:xFromY,yCausesX:yFromX}}
 
 /* ================================================================ app layer */
 const G={enabled:true,result:null,key:'',rev:0,elapsedMs:0};
@@ -16210,6 +16203,18 @@ function series650(){try{
  for(const s of a){if(!s.gamma)continue;
   if(FIN(s.gamma.re)&&FIN(s.gamma.im)){re.push(s.gamma.re);im.push(s.gamma.im)}}
  return {re,im}}catch(_){return {re:[],im:[]}}}
+function sampling650(){
+ const a=state.sweep||[];
+ if(a.length<2||a.some(r=>!FIN(r.x)||!FIN(r.gamma?.re)||!FIN(r.gamma?.im)))
+  return {ok:false,reason:'invalid-samples',detail:'нужны конечные парные наблюдения с исходными временными координатами'};
+ const dt=a[1].x-a[0].x;
+ if(!(dt>0))return {ok:false,reason:'nonuniform-sampling',detail:'время должно строго возрастать с постоянным шагом'};
+ for(let i=2;i<a.length;i++){
+  const tolerance=Math.abs(dt)*1e-6+Number.EPSILON*Math.max(Math.abs(a[i].x),Math.abs(a[i-1].x))*16;
+  if(Math.abs((a[i].x-a[i-1].x)-dt)>tolerance)
+   return {ok:false,reason:'nonuniform-sampling',detail:'неравномерные отсчёты требуют отдельного метода; индексный лаг здесь неприменим'}}
+ return {ok:true,dt}}
+
 
 /* ---- 1. continuation of the logistic branches ---- */
 function continueLogistic650(){
@@ -16242,12 +16247,12 @@ function continueLogistic650(){
 
 /* ---- 2. Kramers-Moyal on the live trajectory ---- */
 function drift650(){
- if(!temporal650())return {status:'not-applicable',
-  detail:'снос и диффузия — свойства процесса во времени; ось не временная'};
+ if(!temporal650()||discrete650())return {status:'not-applicable',
+  detail:'оценка сноса и диффузии требует непрерывного времени; отдельные итерации не являются малым временным лагом'};
  const s=series650().re;
  if(s.length<200)return {status:'insufficient',detail:`нужно ≥200 отсчётов, есть ${s.length}`};
- const a=state.sweep;
- const dt=(a.length>1&&FIN(a[1].x)&&FIN(a[0].x))?Math.abs(a[1].x-a[0].x)||1:1;
+ const sampling=sampling650();if(!sampling.ok)return {status:'not-applicable',reason:sampling.reason,detail:sampling.detail};
+ const dt=sampling.dt;
  const km=kramersMoyal(s,dt,22,10);
  if(!km||km.cells.length<5)return {status:'insufficient',detail:'слишком мало заполненных ячеек'};
  const pot=potential(km),wb=wellsAndBarriers(pot);
@@ -16261,36 +16266,34 @@ function drift650(){
  const D=km.cells.reduce((q,c)=>q+c.D2,0)/km.cells.length;
  return {status:'applied',dt,cells:km.cells.length,potential:pot,
   wells:wb.wells,barriers:wb.barriers,meanD2:D,transition:best,
-  /* Kramers: the escape rate falls exponentially with the barrier measured in
-     units of the noise strength, so ΔU/D is what decides whether a transition
-     is reachable at all */
-  barrierOverNoise:best&&D>0?best.deltaU/D:null,
-  detail:best?`ям ${wb.wells.length}, барьер ΔU=${best.deltaU.toFixed(4)} при D₂≈${D.toExponential(2)} → ΔU/D=${(best.deltaU/D).toFixed(2)}`
+  /* U = -integral(D1/D2) dx already includes the diffusion normalization.
+     This is a finite-lag exploratory estimate; no escape-time prefactor or
+     Markov/stationarity/small-lag validation has been performed. */
+  potentialConvention:'dimensionless-minus-integral-D1-over-D2',
+  evidence:'exploratory-finite-increment-estimate',escapeRate:null,
+  barrierOverNoise:best?best.deltaU:null,
+  detail:best?`ям ${wb.wells.length}, безразмерный барьер ΔU=${best.deltaU.toFixed(4)} при D₂≈${D.toExponential(2)}; скорость перехода не определена`
    :`ям ${wb.wells.length}, барьеров ${wb.barriers.length}: доступного перехода между двумя ямами не найдено`}}
 
 /* ---- 3. CCM between the two observed coordinates ---- */
 function causality650(){
+ if(!temporal650()&&!discrete650())return {status:'not-applicable',causal:false,
+  detail:'перекрёстное восстановление динамики требует временной оси или последовательных итераций'};
  const {re,im}=series650();
  if(re.length<160)return {status:'insufficient',detail:`нужно ≥160 отсчётов, есть ${re.length}`};
+ const sampling=sampling650();if(!sampling.ok)return {status:'not-applicable',causal:false,reason:sampling.reason,detail:sampling.detail};
  const n=re.length;
  const Ls=[20,40,80,Math.min(160,n-8),Math.min(320,n-8)].filter((v,i,a)=>v>10&&a.indexOf(v)===i);
  const r=ccm(re,im,{E:3,tau:1,libSizes:Ls});
- const both=r.xCausesY.converged&&r.yCausesX.converged;
+ const both=r.xFromY.converged&&r.yFromX.converged;
  return {status:'applied',...r,
-  /* two coordinates of ONE system are not cause and effect: both directions
-     converging is the signature of shared dynamics, and saying so is the
-     honest reading of this test on this data */
-  verdict:both?'shared-dynamics':(r.xCausesY.converged?'re→im':(r.yCausesX.converged?'im→re':'no-convergence')),
-  detail:both?'обе стороны сходятся — это подпись общей динамики двух координат одной системы, а не причинности одной над другой'
-   :(r.xCausesY.converged||r.yCausesX.converged)?'сходится только одна сторона — асимметрия восстановления между координатами'
-   :'сходимости нет ни в одну сторону: свидетельства связи эти данные не дают'}}
+  verdict:both?'bidirectional-reconstruction':(r.xFromY.converged||r.yFromX.converged?'asymmetric-reconstruction':'no-convergence'),
+  detail:(both?'улучшение восстановления в обе стороны':
+   (r.xFromY.converged||r.yFromX.converged)?'асимметрия восстановления координат':'критерий улучшения восстановления не выполнен')+
+   '; описательная зависимость координат одной системы, без причинного вывода и без суррогатного теста'}}
 
-function key650(){try{
- const a=state.sweep||[];let h=2166136261>>>0;
- const step=Math.max(1,Math.floor(a.length/10));
- const mix=v=>{h=(h^((Math.round((Number(v)||0)*1e6)|0)>>>0))>>>0;h=Math.imul(h,16777619)>>>0};
- for(let i=0;i<a.length;i+=step){const r=a[i];mix(r&&r.x);mix(r&&r.gamma&&r.gamma.re)}
- return [state.model,a.length,h.toString(36)].join('|')}catch(_){return ''}}
+function key650(){try{const axis=axis650();return JSON.stringify([state.model,axis.name,axis.unit,
+ (state.sweep||[]).map(r=>[r.x,r.gamma?.re,r.gamma?.im])])}catch(_){return ''}}
 function analyze650(force){
  const k=key650();
  if(!force&&G.result&&G.key===k)return G.result;
@@ -16365,9 +16368,9 @@ function geometry650(){
    const pts=curve.filter(p=>FIN(p.rho)).map(p=>
     [X0+W*((p.L-lo)/((hi-lo)||1)),-1.05+.62*Math.max(0,Math.min(1,(p.rho+.2)/1.2)),Z]);
    if(pts.length>1)L(pts,color,1.4,{kind:'ps650-ccm',direction:name,
-    label:`${name}: ρ растёт с длиной библиотеки — сходимость и есть свидетельство, а не само значение корреляции`,priority:70})};
-  draw(q.xCausesY.curve,'rgba(255,214,140,.85)','Re восстанавливается из Im');
-  draw(q.yCausesX.curve,'rgba(195,173,255,.85)','Im восстанавливается из Re')}
+    label:`${name}: зависимость качества восстановления от длины библиотеки; эвристический критерий без причинного вывода`,priority:70})};
+  draw(q.xFromY.curve,'rgba(255,214,140,.85)','Re восстанавливается из Im');
+  draw(q.yFromX.curve,'rgba(195,173,255,.85)','Im восстанавливается из Re')}
  GEOM.key=k;GEOM.lines=lines;GEOM.points=points;
  return GEOM}
 function append650(){
